@@ -590,7 +590,7 @@ optimize_pacman()
             sed '$ a > [xyne-i686]' $PACMAN_FILE
             sed '$ a > SigLevel = Required' $PACMAN_FILE
             sed '$ a > Server = http://xyne.archlinux.ca/repos/xyne-i686' $PACMAN_FILE
-        if
+        fi
     fi
     #
     if ! is_string_in_file "$PACMAN_FILE" "[xyne-any]" ; then
@@ -604,7 +604,7 @@ optimize_pacman()
             sed '$ a > [xyne-x86_64]' $PACMAN_FILE
             sed '$ a > SigLevel = Required' $PACMAN_FILE
             sed '$ a > Server = http://xyne.archlinux.ca/repos/xyne-x86_64  ' $PACMAN_FILE
-        if
+        fi
     fi
     # python3 pyalpm
 }
