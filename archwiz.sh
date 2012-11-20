@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-LAST_UPDATE="19 Nov 2012 14:33"
+LAST_UPDATE="19 Nov 2012 16:33"
 SCRIPT_VERSION="1.0"
 SCRIPT_NAME="archwiz"
 SCRIPT_EXT=".sh"
