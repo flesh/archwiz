@@ -1,2 +1,0 @@
-cwZdfGDhEkATSCydtSVYI7e3LI4
-http://api.apertium.org/RegisterUserServlet
