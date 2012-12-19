@@ -1,0 +1,6 @@
+# Log: ArchLinux Installation Wizard Version: 1.0 on 17-03-12 @ 04:03:11 PM.
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/en/LC_MESSAGES/ from wizard.sh : 271 at 17-06-12 @ 05:06:39 PM (wizard.sh : 1355)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/en/LC_MESSAGES/ from wizard.sh : 271 at 18-38-12 @ 12:38:15 AM (wizard.sh : 1383)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/en/LC_MESSAGES/ from wizard.sh : 272 at 18-40-12 @ 12:40:02 AM (wizard.sh : 1384)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/en/LC_MESSAGES/ from wizard.sh : 277 at 18-44-12 @ 12:44:00 AM (wizard.sh : 1389)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/en/LC_MESSAGES/ from wizard.sh : 277 at 18-44-12 @ 12:44:46 AM (wizard.sh : 1389)

@@ -1,0 +1,21 @@
+#!/bin/bash
+clear
+echo "bash -n wizard.sh"
+bash -n wizard.sh
+echo " "
+echo "bash -n common-wiz.sh"
+bash -n common-wiz.sh
+echo " "
+echo "bash -n package-wiz.sh"
+bash -n package-wiz.sh
+echo " "
+echo "bash -n arch-wiz.sh"
+bash -n arch-wiz.sh
+echo " "
+echo "bash -n wiz"
+bash -n wiz
+echo " "
+echo "bash -n packages.sh"
+bash -n packages.sh
+echo " "
+

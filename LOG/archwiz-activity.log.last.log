@@ -1,0 +1,5 @@
+# Log: ArchLinux Installation Wizard Version: 1.0 on 17-01-12 @ 04:01:31 PM.
+make_dir /home/jflesher/Downloads/arch-git/archwiz/LOG from wizard.sh : 2191 at 17-03-12 @ 04:03:11 PM (wizard.sh : 1355)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/MENU from wizard.sh : 2192 at 17-03-12 @ 04:03:11 PM (wizard.sh : 1355)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/CONFIG from wizard.sh : 2193 at 17-03-12 @ 04:03:11 PM (wizard.sh : 1355)
+copy_file /home/jflesher/Downloads/arch-git/archwiz/LOG/archwiz-error.log to /home/jflesher/Downloads/arch-git/archwiz/LOG/archwiz-error.log.last.log from wizard.sh : 2194 at 17-03-12 @ 04:03:11 PM (wizard.sh : 1755)

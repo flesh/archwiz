@@ -1,0 +1,11 @@
+# Log: Arch Linux Installation Wizard Version: 1.0 on 12-10-12 @ 04:51:49 PM.
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/en/LC_MESSAGES/ from 277 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/af/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/ca/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/de/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/es/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/fr/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/ga/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/gl/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/hi/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
+make_dir /home/jflesher/Downloads/arch-git/archwiz/locale/it/LC_MESSAGES/ from 335 at 12-10-12 @ 04:51:49 PM (1176)
