@@ -20,59 +20,17 @@ ACTIVITY_LOG="${LOG_PATH}/${CONFIG_NAME}-activity.log"
 copy2flash()
 {
     #
-    cp -fv wiz            /media/jflesher/ArchWiz/
-    cp -fv wizard.sh      /media/jflesher/ArchWiz/
-    cp -fv common-wiz.sh  /media/jflesher/ArchWiz/
-    cp -fv package-wiz.sh /media/jflesher/ArchWiz/
-    cp -fv arch-wiz.sh    /media/jflesher/ArchWiz/
-    cp -fv packages.sh    /media/jflesher/ArchWiz/
-    cp -fv bashtest       /media/jflesher/ArchWiz/
-    cp -fv help.html      /media/jflesher/ArchWiz/
-    cp -rfv locale/       /media/jflesher/ArchWiz/
+    cp -fv wiz            $1
+    cp -fv wizard.sh      $1
+    cp -fv common-wiz.sh  $1
+    cp -fv package-wiz.sh $1
+    cp -fv arch-wiz.sh    $1
+    cp -fv packages.sh    $1
+    cp -fv bashtest       $1
+    cp -fv help.html      $1
+    cp -rfv locale/       $1
 }
 
-backup()
-{
-    # Backup
-    cp -fv /home/jflesher/Downloads/archwiz/wiz            /home/jflesher/Downloads/archwiz/wiz-old
-    cp -fv /home/jflesher/Downloads/archwiz/wizard.sh      /home/jflesher/Downloads/archwiz/wizard-old.sh
-    cp -fv /home/jflesher/Downloads/archwiz/common-wiz.sh  /home/jflesher/Downloads/archwiz/common-wiz-old.sh
-    cp -fv /home/jflesher/Downloads/archwiz/package-wiz.sh /home/jflesher/Downloads/archwiz/package-wiz-old.sh
-    cp -fv /home/jflesher/Downloads/archwiz/arch-wiz.sh    /home/jflesher/Downloads/archwiz/arch-wiz-old.sh
-    cp -fv /home/jflesher/Downloads/archwiz/packages.sh    /home/jflesher/Downloads/archwiz/packages-old.sh
-    cp -fv /home/jflesher/Downloads/archwiz/bashtest       /home/jflesher/Downloads/archwiz/bashtest-old
-    # Backup to hard drive
-    cp -fv wiz            /home/jflesher/Downloads/archwiz/
-    cp -fv wizard.sh      /home/jflesher/Downloads/archwiz/
-    cp -fv common-wiz.sh  /home/jflesher/Downloads/archwiz/
-    cp -fv package-wiz.sh /home/jflesher/Downloads/archwiz/
-    cp -fv arch-wiz.sh    /home/jflesher/Downloads/archwiz/
-    cp -fv packages.sh    /home/jflesher/Downloads/archwiz/
-    cp -fv bashtest       /home/jflesher/Downloads/archwiz/
-    #
-    cp -rfv /media/jflesher/ArchWiz/CONFIG/       /home/jflesher/Downloads/archwiz
-    cp -rfv /media/jflesher/ArchWiz/LOG/          /home/jflesher/Downloads/archwiz
-    cp -rfv /media/jflesher/ArchWiz/locale/       /home/jflesher/Downloads/archwiz
-}
-#
-
-all_packages()
-{
-    while getopts ":a" M_OPTION; do
-        case $M_OPTION in
-            a)
-                cp -rfv /media/jflesher/ArchWiz/Packages/     /home/jflesher/Downloads/archwiz
-                cp -rfv /media/jflesher/ArchWiz/AUR-Packages/ /home/jflesher/Downloads/archwiz
-                cp -rfv /media/jflesher/ArchWiz/Sync/         /home/jflesher/Downloads/archwiz
-                cp -rfv /media/jflesher/ArchWiz/etc           /home/jflesher/Downloads/archwiz
-                cp -rfv /media/jflesher/ArchWiz/MENU/         /home/jflesher/Downloads/archwiz
-                cp -rfv /media/jflesher/ArchWiz/USER/         /home/jflesher/Downloads/archwiz
-                cp -rfv /media/jflesher/ArchWiz/mateconf/     /home/jflesher/Downloads/archwiz
-                break;
-                ;;
-        esac
-    done
-}
 #
 localize_info "CHANGE-OWNER" "Change Owner on Flash Drive"
 localize_info "" ""
@@ -88,9 +46,7 @@ else
     #
     read_input_yn "CHANGE-OWNER" " " 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
-        sudo chown -R jflesher:jflesher /media/jflesher/ArchWiz
-        backup
-        all_packages
+        sudo chown -R $2:$2 $1
     fi
     copy2flash
     #
