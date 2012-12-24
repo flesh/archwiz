@@ -1,15 +1,41 @@
 #!/bin/bash
 #
-# LAST_UPDATE="17 Dec 2012 16:33"
+# LAST_UPDATE="22 Dec 2012 16:33"
 #
 ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
 FULL_SCRIPT_PATH=$(dirname $(readlink -f "$0"))
+
+CLEAN_ENV=1
+if [[ "$CLEAN_ENV" -eq 1 ]]; then
+    source "/etc/profile" > /dev/null
+    #set -eu
+    # -e causes menu to fail
+    set -u
+    shopt -s nullglob dotglob
+    #IFS=$'\n\t'
+    IFS=$' '
+    umask 022
+    unalias -a
+    unset -f $(declare -F | sed "s/^declare -f //")
+else
+    #set -o nounset 
+    echo ""
+fi
+
 # Wizard
 if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
     declare -i RUN_LOCALIZER=0
+    declare -i RUN_HELP=0
     declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
     declare LOCALIZED_FILE="arch-wizard.sh"
+    declare CONFIG_NAME="archwiz"
+    declare LOG_PATH="${FULL_SCRIPT_PATH}/LOG"
+    declare CONFIG_PATH="${FULL_SCRIPT_PATH}/CONFIG"
+    declare USER_FOLDER="${FULL_SCRIPT_PATH}/USER"    
+    declare ERROR_LOG="${LOG_PATH}/${CONFIG_NAME}-error.log"
+    declare ACTIVITY_LOG="${LOG_PATH}/${CONFIG_NAME}-activity.log"
+    declare SCRIPT_LOG="${LOG_PATH}/${CONFIG_NAME}-script.log"
     #. "${FULL_SCRIPT_PATH}/wizard.sh"
     source "${FULL_SCRIPT_PATH}/wizard.sh"
 else
@@ -18,6 +44,7 @@ else
 fi
 # Common Wizard
 if [ -f "${FULL_SCRIPT_PATH}/common-wiz.sh" ]; then
+    echo "Loading common-wiz.sh" 
     source "${FULL_SCRIPT_PATH}/common-wiz.sh"
 else
     echo "ERROR - ${FULL_SCRIPT_PATH}/common-wiz NOT FOUND"
@@ -25,6 +52,7 @@ else
 fi
 # Arch Wizard
 if [ -f "${FULL_SCRIPT_PATH}/arch-wiz.sh" ]; then
+    echo "Loading arch-wiz.sh" 
     source "${FULL_SCRIPT_PATH}/arch-wiz.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/arch-wiz.sh"
@@ -32,6 +60,7 @@ else
 fi
 # Packages
 if [ -f "${FULL_SCRIPT_PATH}/packages.sh" ]; then
+    echo "Loading packages.sh" 
     source "${FULL_SCRIPT_PATH}/packages.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/packages.sh"
@@ -39,6 +68,7 @@ else
 fi
 # Package Wizard
 if [ -f "${FULL_SCRIPT_PATH}/package-wiz.sh" ]; then
+    echo "Loading package-wiz.sh" 
     source "${FULL_SCRIPT_PATH}/package-wiz.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/package-wiz.sh"
@@ -96,16 +126,16 @@ fi
 # TEST {{{
 NAME="test"
 USAGE="test"
-DESCRIPTION=$(localize "TEST-DESC")
-NOTES=$(localize "TEST-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "TEST-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "TEST-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "TEST-DESC"  "Test functions out for Developers"
-localize_info "TEST-NOTES" "Put what ever code in there you want to Test."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-DESC"  "Test functions out for Developers"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-NOTES" "Put what ever code in there you want to Test."
 # -------------------------------------
 test()
 {
@@ -117,62 +147,59 @@ test()
 # CONFIG MENU {{{
 NAME="config_menu"
 USAGE="config_menu"
-DESCRIPTION=$(localize "CONFIG-MENU-DESC")
-NOTES=$(localize "CONFIG-MENU-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIG-MENU-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONFIG-MENU-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIG-MENU-DESC"               "Configuration Menu gives access to all Configuration Files."
-localize_info "CONFIG-MENU-NOTES"              "Fast place to make changes and verify Settings."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC"               "Configuration Menu gives access to all Configuration Files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-NOTES"              "Fast place to make changes and verify Settings."
 # Menu Localization
-localize_info "CONFIG-MENU-CREATE-CONF"        "Create Config"
-localize_info "CONFIG-MENU-EDIT-CONF"          "Edit Config"
-localize_info "CONFIG-MENU-BACKUP-CONF"        "Backup Config"
-localize_info "CONFIG-MENU-RESTORE-CONF"       "Restore Config"
-localize_info "CONFIG-MENU-CUSTOM-NAMESERVER"  "Custom Nameserver"
-localize_info "CONFIG-MENU-WEB-SERVER"         "Web Server"
-localize_info "CONFIG-MENU-FLESH"              "Flesh"
-localize_info "CONFIG-MENU-RETURN"             "Return"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-CREATE-CONF"        "Create Config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-EDIT-CONF"          "Edit Config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-BACKUP-CONF"        "Backup Config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-RESTORE-CONF"       "Restore Config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-CUSTOM-NAMESERVER"  "Custom Nameserver"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-WEB-SERVER"         "Web Server"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-FLESH"              "Flesh"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-RETURN"             "Return"
 # Menu Description Localization
-localize_info "CONFIG-MENU-DESC-CREATE"        "Create all Configuration files"
-localize_info "CONFIG-MENU-DESC-EDIT"          "Edit all etc Configuration files"
-localize_info "CONFIG-MENU-DESC-BACKUP"        "Backup all Configuration files from Hard Drive to Flash Drive."
-localize_info "CONFIG-MENU-DESC-RESTORE"       "Restore all Configuration files from Flash Drive."
-localize_info "CONFIG-MENU-DESC-C-NAMESERVERS" "Edit Custom Nameserver File and resolv.conf"
-localize_info "CONFIG-MENU-DESC-WEB-SERVER"    "Web Server Configuration"
-localize_info "CONFIG-MENU-DESC-FLESH"         "Flesh Configuration Files"
-localize_info "CONFIG-MENU-DESC-RETURN"        "Return to Main Menu"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-CREATE"        "Create all Configuration files"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-EDIT"          "Edit all etc Configuration files"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-BACKUP"        "Backup all Configuration files from Hard Drive to Flash Drive."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-RESTORE"       "Restore all Configuration files from Flash Drive."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-C-NAMESERVERS" "Edit Custom Nameserver File and resolv.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-WEB-SERVER"    "Web Server Configuration"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-FLESH"         "Flesh Configuration Files"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-DESC-RETURN"        "Return to Main Menu"
 # Status bar Localization
-localize_info "Make-Choose"                    "Make a Choose:"
-localize_info "CONFIG-MENU-SB-CREATE"          "Create Configuration files Completed."
-localize_info "CONFIG-MENU-SB-EDIT"            "Edit etc Configuration files Completed."
-localize_info "CONFIG-MENU-SB-BACKUP"          "Backup Completed."
-localize_info "CONFIG-MENU-SB-RESTORE"         "Restore Completed."
-localize_info "CONFIG-MENU-SB-C-NAMESERVERS"   "Custom Name Servers Completed"
-localize_info "CONFIG-MENU-SB-WEB-SERVER"      "Web Server Completed."
-localize_info "CONFIG-MENU-SB-FLESH"           "Flesh Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Make-Choose"                    "Make a Choose:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-CREATE"          "Create Configuration files Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-EDIT"            "Edit etc Configuration files Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-BACKUP"          "Backup Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-RESTORE"         "Restore Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-C-NAMESERVERS"   "Custom Name Servers Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-WEB-SERVER"      "Web Server Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-SB-FLESH"           "Flesh Completed"
 # Title Localization
-localize_info "CONFIG-MENU-TITLE" "Configuration Menu"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-MENU-TITLE"  "Configuration Menu"
 # Localization
-localize_info "" ""
-localize_info "" ""
-#
-localize_info "EDIT-HOSTS"         "Edit Configuration file /etc/hosts"
-localize_info "EDIT-FSTAB"         "Edit Configuration file /etc/fstab"
-localize_info "EDIT-DHCPCD"        "Edit Configuration file /etc/dhcpcd.conf"
-localize_info "EDIT-DHCPD"         "Edit Configuration file /etc/conf.d/dhcpd"
-localize_info "EDIT-LOCALE-CONF"   "Edit Configuration file /etc/locale.conf"
-localize_info "EDIT-LOCALE-GEN"    "Edit Configuration file /etc/locale.gen"
-localize_info "EDIT-PACMAN-MIRROR" "Edit Configuration file /etc/pacman.d/mirrorlist"
-localize_info "EDIT-SUDOERS"       "Edit Configuration file /etc/sudoers"
-localize_info "EDIT-RESOLV"        "Edit Configuration file /etc/resolv.conf"
-localize_info "EDIT-SSH"           "Edit Configuration file /etc/ssh/sshd_config"
-localize_info "EDIT-VCONSOLE"      "Edit Configuration file /etc/vconsole.conf"
-localize_info "EDIT-PACMAN"        "Edit Configuration file /etc/pacman.conf"
-localize_info "EDIT-HOSTNAME"      "Edit Configuration file /etc/hostname"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-HOSTS"         "Edit Configuration file /etc/hosts"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-FSTAB"         "Edit Configuration file /etc/fstab"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DHCPCD"        "Edit Configuration file /etc/dhcpcd.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DHCPD"         "Edit Configuration file /etc/conf.d/dhcpd"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-LOCALE-CONF"   "Edit Configuration file /etc/locale.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-LOCALE-GEN"    "Edit Configuration file /etc/locale.gen"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-PACMAN-MIRROR" "Edit Configuration file /etc/pacman.d/mirrorlist"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-SUDOERS"       "Edit Configuration file /etc/sudoers"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-RESOLV"        "Edit Configuration file /etc/resolv.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-SSH"           "Edit Configuration file /etc/ssh/sshd_config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-VCONSOLE"      "Edit Configuration file /etc/vconsole.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-PACMAN"        "Edit Configuration file /etc/pacman.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-HOSTNAME"      "Edit Configuration file /etc/hostname"
 # -------------------------------------
 config_menu()
 {
@@ -202,19 +229,18 @@ config_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        MAIN_MENU+=" "
-        read_input_options "$MAIN_MENU"
+        read_input_options
         for M_OPT in ${OPTIONS[@]}; do
             case "$M_OPT" in
                 1)  # View Config
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
 
                     create_config
                     
                     StatusBar=$(localize "CONFIG-MENU-SB-CREATE")
                     ;;
                 2)  # Edit Config
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     
                     cat ${MOUNTPOINT}/etc/pacman.conf
                     read_input_yn "EDIT-PACMAN" " " 0
@@ -320,36 +346,36 @@ config_menu()
                     break
                     ;;
                 3)  # Backup Config
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     
                     backup
                     
                     StatusBar=$(localize "CONFIG-MENU-SB-BACKUP")
                     ;;
                 4)  # Restore Config
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     
-                    copy_dir "$SCRIPT_DIR/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
+                    copy_dir "$FULL_SCRIPT_PATH/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
                     
                     StatusBar=$(localize "CONFIG-MENU-SB-RESTORE") 
                     ;;
                 5)  # Custom Nameservers
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
                     custom_nameservers
                     StatusBar=$(localize "CONFIG-MENU-SB-C-NAMESERVERS")
                     ;;
                 6)  # Web Server
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     StatusBar=$(localize "CONFIG-MENU-SB-WEB-SERVER")
                     ;;
                 7)  # Flesh
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     StatusBar=$(localize "CONFIG-MENU-SB-FLESH")
                     break;
                     ;;
                 8)  # Return; same as Quit
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     M_OPT="$BreakableKey"
                     break;
                     ;;
@@ -371,61 +397,61 @@ config_menu()
 # MAIN MENU {{{
 NAME="main_menu"
 USAGE="main_menu"
-DESCRIPTION=$(localize "MAIN-MENU-DESC")
-NOTES=$(localize "MAIN-MENU-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "MAIN-MENU-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "MAIN-MENU-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "MAIN-MENU-DESC"  "Main Menu"
-localize_info "MAIN-MENU-NOTES" "Notes."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC"  "Main Menu"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-NOTES" "Notes."
 # Menu Localization
-localize_info "MAIN-MENU-NEW-SOFTWARE"  "New Software Configure File"
-localize_info "MAIN-MENU-INSTALL"       "Install Arch Linux"
-localize_info "MAIN-MENU-LOAD-SOFTWARE" "Load Software Configuration File"
-localize_info "MAIN-MENU-DEBUG-MODE"    "Debug Mode"
-localize_info "MAIN-MENU-NETWORK"       "Network Troubleshooting."
-localize_info "MAIN-MENU-CONFIG"        "Config"
-localize_info "MAIN-MENU-TEST"          "Test"
-localize_info "MAIN-MENU-REBOOT"        "Reboot"
-localize_info "MAIN-MENU-QUIT"          "Quit"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-NEW-SOFTWARE"  "New Software Configure File"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-INSTALL"       "Install Arch Linux"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-LOAD-SOFTWARE" "Load Software Configuration File"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DEBUG-MODE"    "Debug Mode"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-NETWORK"       "Network Troubleshooting."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-CONFIG"        "Config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-TEST"          "Test"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-REBOOT"        "Reboot"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-QUIT"          "Quit"
 # Menu Description Localization
-localize_info "MAIN-MENU-DESC-SOFTWARE"      "Install Software: Will install Software Packages from Menu Driven Wizards."
-localize_info "MAIN-MENU-DESC-INSTALL"       "Install Arch Linux: Format Hard Drive and Install Arch Linux."
-localize_info "MAIN-MENU-DESC-LOAD-SOFTWARE" "Load Software: Will install Software Packages from above option."
-localize_info "MAIN-MENU-DESC-DEBUG-MODE"    "Debug Mode: Adds Debugging Information and pauses; helps troubleshoot, Call first, i.e. 4 1 2"
-localize_info "MAIN-MENU-DESC-NETWORK"       "Network Troubleshooting"
-localize_info "MAIN-MENU-DESC-CONFIG"        "Configuration Files: View, Edit, Backup and Restore Configuration files."
-localize_info "MAIN-MENU-DESC-TEST"          "Test: Put functions or Code that you wish to test here, for easy access."
-localize_info "MAIN-MENU-DESC-REBOOT"        "Reboot: Reboot the Computer."
-localize_info "MAIN-MENU-DESC-QUIT"          "Quit: Exit back to Command line"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-SOFTWARE"      "Install Software: Will install Software Packages from Menu Driven Wizards."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-INSTALL"       "Install Arch Linux: Format Hard Drive and Install Arch Linux."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-LOAD-SOFTWARE" "Load Software: Will install Software Packages from above option."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-DEBUG-MODE"    "Debug Mode: Adds Debugging Information and pauses; helps troubleshoot, Call first, i.e. 4 1 2"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-NETWORK"       "Network Troubleshooting"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-CONFIG"        "Configuration Files: View, Edit, Backup and Restore Configuration files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-TEST"          "Test: Put functions or Code that you wish to test here, for easy access."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-REBOOT"        "Reboot: Reboot the Computer."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-DESC-QUIT"          "Quit: Exit back to Command line"
 # Menu Warning Description Localization
-localize_info "MAIN-MENU-WARN-FORMAT" "Format Hard Drive"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-WARN-FORMAT" "Format Hard Drive"
 # Status bar Localization
-localize_info "MAIN-MENU-SB-SOFTWARE"      "Software and Configuration files are ready."
-localize_info "MAIN-MENU-SB-INSTALL"       "Hard Drive ready for Reboot."
-localize_info "MAIN-MENU-SB-LOAD-SOFTWARE" "Software Configuration Loaded."
-localize_info "MAIN-MENU-SB-DEBUG-MODE"    "Debugging Mode set to On."
-localize_info "MAIN-MENU-SB-NETWORK"       "Network Troubleshooting Completed"
-localize_info "MAIN-MENU-SB-CONFIG"        "Configuration Files Completed."
-localize_info "MAIN-MENU-SB-TEST"          "Test Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-SOFTWARE"      "Software and Configuration files are ready."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-INSTALL"       "Hard Drive ready for Reboot."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-LOAD-SOFTWARE" "Software Configuration Loaded."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-DEBUG-MODE"    "Debugging Mode set to On."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-NETWORK"       "Network Troubleshooting Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-CONFIG"        "Configuration Files Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-SB-TEST"          "Test Completed."
 # Title Localization
-localize_info "MAIN-MENU-TITLE" "Main Menu for Arch Wizard Installation Script"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAIN-MENU-TITLE" "Main Menu for Arch Wizard Installation Script"
 #
-localize_info "MM-INFO-1" "This is the Wizards way of installing an Arch OS in 3 Steps:"
-localize_info "MM-INFO-2" "1. Configure our Settings Data, which include our:"
-localize_info "MM-INFO-3" "   A. User Session: this includes User Name, Locale, Time Zone, and other User Specific Settings."
-localize_info "MM-INFO-4" "   B. Software: this includes Desktop Environment, Display Manager, and other Applications."
-localize_info "MM-INFO-5" "   C. Disk Manager: this includes the Disk Boot Scheme, Partitions, and other Disk format options."
-localize_info "MM-INFO-6" "2. Format Hard Drive, Install Bases System, and then do other options; like load a custom Repository."
-localize_info "MM-INFO-7" "3. Install Software."
-localize_info "MM-INFO-8" "First time use, Configure all settings, Wizard will guild you through all Steps, after its finished; you will reboot, then just run option to Load Software Configuration File."
-localize_info "MM-INFO-9" "If you have an problems while running script; pick Debug Mode; it will give you pauses to see how each step is doing; also review error.log."
-localize_info "INVALID_OPTION" "Invalid Option"
-localize_info "MM-BOOT-MODE-DETECTED"   "Boot Mode Detected."
-localize_info "MM-LIVE-MODE-DETECTED"   "Live Mode Detected."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-1"               "This is the Wizards way of installing an Arch OS in 3 Steps:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-2"               "1. Configure our Settings Data, which include our:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-3"               "   A. User Session: this includes User Name, Locale, Time Zone, and other User Specific Settings."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-4"               "   B. Software: this includes Desktop Environment, Display Manager, and other Applications."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-5"               "   C. Disk Manager: this includes the Disk Boot Scheme, Partitions, and other Disk format options."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-6"               "2. Format Hard Drive, Install Bases System, and then do other options; like load a custom Repository."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-7"               "3. Install Software."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-8"               "First time use, Configure all settings, Wizard will guild you through all Steps, after its finished; you will reboot, then just run option to Load Software Configuration File."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-INFO-9"               "If you have an problems while running script; pick Debug Mode; it will give you pauses to see how each step is doing; also review error.log."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INVALID_OPTION"          "Invalid Option"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-BOOT-MODE-DETECTED"   "Boot Mode Detected."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MM-LIVE-MODE-DETECTED"   "Live Mode Detected."
 # -------------------------------------
 main_menu()
 {
@@ -436,16 +462,24 @@ main_menu()
     #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" "1" "0" ) ) # MENU_PATH is Global
     local -a MenuChecks=( $(create_data_array 0 0 ) ) # 
     #
+    local -i DetectedMode=0
     if [ -d "/home/arch/" ]; then
         StatusBar="MM-BOOT-MODE-DETECTED"
+        DetectedMode=1
     else
         StatusBar="MM-LIVE-MODE-DETECTED"
+        DetectedMode=2
     fi
     #
     while [[ 1 ]]; do
         #
+        local -a MenuItems=( "" )
+        local -a MenuInfo=( "" )
+        RESET_MENU=1
+        #IFS=" "
+        #
         print_title "MAIN-MENU-TITLE" "$TEXT_SCRIPT_ID"
-        print_caution "${StatusBar}"
+        print_caution "${StatusBar}" "${StatusBar2}"
         #
         print_this "MM-INFO-1"
         print_this "MM-INFO-2"
@@ -458,10 +492,6 @@ main_menu()
         print_this "MM-INFO-8"
         print_this "MM-INFO-9"
         echo 
-        
-        declare -a MenuItems=( "" )
-        declare -a MenuInfo=( "" )
-        RESET_MENU=1
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NEW-SOFTWARE"  "" ""                      "MAIN-MENU-DESC-SOFTWARE"      "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-DESC-INSTALL"       "MenuThemeWarn[@]"
@@ -475,32 +505,34 @@ main_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        MAIN_MENU+=" "
-        read_input_options "$MAIN_MENU"
+        read_input_options
+        local M_OPT=""
         for M_OPT in ${OPTIONS[@]}; do
             case "$M_OPT" in
                 1)  # Install New Software
-                    MenuChecks[$(($M_OPT - 1))]=1
-                    set_debugging_mode 2 "$(basename $BASH_SOURCE) : $LINENO"
+                    MenuChecks[$((M_OPT - 1))]=1
+                    set_debugging_mode "$DetectedMode" "$(basename $BASH_SOURCE) : $LINENO"
                     clear_software
-                    verify_config 2
+                    verify_config "$DetectedMode"
                     StatusBar=$(localize "MAIN-MENU-SB-SOFTWARE")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 2)  # Install OS
-                    set_debugging_mode 1 "$(basename $BASH_SOURCE) : $LINENO"
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
+                    set_debugging_mode "$DetectedMode" "$(basename $BASH_SOURCE) : $LINENO"
                     FAST_INSTALL=1
                     BOOT_MODE=1
                     # Assume Boot mode
-                    verify_config 1
+                    verify_config "$DetectedMode"
                     start_screen 
                     StatusBar=$(localize "MAIN-MENU-SB-INSTALL")
-                    break
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    break        
                     ;;
                 3)  # Load Software
-                    MenuChecks[$(($M_OPT - 1))]=1
-                    set_debugging_mode 2 "$(basename $BASH_SOURCE) : $LINENO"
-                    verify_config 2
+                    MenuChecks[$((M_OPT - 1))]=1
+                    set_debugging_mode "$DetectedMode" "$(basename $BASH_SOURCE) : $LINENO"
+                    verify_config "$DetectedMode"
                     if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
                         echo "No Repository"
                     elif [[ "$PACMAN_REPO_TYPE" -eq 1 ]]; then # 1=Server
@@ -510,51 +542,55 @@ main_menu()
                     elif [[ "$PACMAN_REPO_TYPE" -eq 2 ]]; then # 2=Client
                         echo "mount repo"
                     fi
-                    DRIVE_FORMATED=1
                     install_loaded_software
                     StatusBar=$(localize "MAIN-MENU-SB-LOAD-SOFTWARE")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 4)  # Debug mode
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
-                    StatusBar=$(localize "MAIN-MENU-SB-DEBUG-MODE") 
+                    StatusBar=$(localize "MAIN-MENU-SB-DEBUG-MODE")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 5)  # Network
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
                     network_troubleshooting
                     StatusBar=$(localize "MAIN-MENU-SB-NETWORK")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 6)  # Config
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
-                    verify_config 2
+                    verify_config "$DetectedMode"
                     config_menu
                     StatusBar=$(localize "MAIN-MENU-SB-CONFIG")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 7)  # Test
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
                     test
                     StatusBar=$(localize "MAIN-MENU-SB-TEST")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 8)  # Reboot
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     reboot
-                    break;
+                    break
                     ;;
                 9)  # Quit
-                    MenuChecks[$(($M_OPT - 1))]=1
+                    MenuChecks[$((M_OPT - 1))]=1
                     M_OPT="$BreakableKey"
-                    break;
+                    break
                     ;;
                 *)
-                    if [[ $(to_lower_case "$M_OPT") == $(to_lower_case "$BreakableKey") ]]; then
-                        M_OPT="$BreakableKey"
+                    if [[ "$M_OPT" == $(to_lower_case "$BreakableKey") ]]; then
                         break;
                     fi
                     invalid_option "$M_OPT"
                     StatusBar=$(localize "INVALID_OPTION")
+                    StatusBar2=""
                     ;;
             esac
         done
@@ -565,11 +601,17 @@ main_menu()
 # -----------------------------------------------------------------------------
 #
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    SILENT_MODE=1
     localize_save
+    SILENT_MODE=0
+elif [[ "$RUN_HELP" -eq 1 ]]; then
+    SILENT_MODE=1
     print_help
+    SILENT_MODE=0
 else
     cls
     clear_logs
     main_menu
 fi
+print_this "BYY"
 # End of Script ***********
