@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-LAST_UPDATE="17 Dec 2012 16:33"
+LAST_UPDATE="22 Dec 2012 16:33"
 SCRIPT_VERSION="1.0"
 SCRIPT_NAME="ArchLinux Installation Wizard"
 #
@@ -8,22 +8,24 @@ shopt -s expand_aliases
 alias cls='printf "\033c"'
 cls
 # Get current Device Script is Executing from
-FULL_SCRIPT_PATH=$(dirname $(readlink -f "$0"))
-SCRIPT_DIR=`pwd`
-SCRIPT_DEVICE=`df | grep -w "$SCRIPT_DIR" | awk {'print \$1'}`
+declare SCRIPT_DEVICE=""
+if [[ "$EUID" -eq 0 ]]; then
+    SCRIPT_DEVICE=`df | grep -w "$FULL_SCRIPT_PATH" | awk {'print \$1'}`
+fi
 SCRIPT_DEVICE="${SCRIPT_DEVICE:5:4}"
 MENU_PATH="${FULL_SCRIPT_PATH}/MENU"
 # Debugging
 declare -i DEBUGGING=0
 declare -i SET_DEBUGGING=0 # Used in set_debugging_mode
-declare -i RUNTIME_MODE=1 # 1 = Boot Mode, 2 = Live
+declare -i RUNTIME_MODE=1  # 1 = Boot Mode, 2 = Live
+declare -i SILENT_MODE=0   # Used to Silentance Loging and warnings
 # Localization
 export TEXTDOMAINDIR="$LOCALIZED_PATH" # declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
 export TEXTDOMAIN="$LOCALIZED_FILE"    # declare LOCALIZED_FILE="wizard.sh"
 declare -a LOCALIZE_ID=( "" )
 declare -a LOCALIZE_MSG=( "" )
 # Help
-declare -a HELP_ARRAY=( "" )
+declare -a HELP_ARRAY=()
 #
 declare -r FILE_SIGNATURE="# ARCH WIZARD ID Signature" # Copy this into file to test for changes made by this script
 # Network Detection
@@ -39,6 +41,17 @@ check_eth1=" "
 check_eth2=" "
 SPACE='\x20'
 # COLORS {{{
+# Text color variables
+txtund=$(tput sgr 0 1)          # Underline
+txtbld=$(tput bold)             # Bold
+bldred=${txtbld}$(tput setaf 1) #  red
+bldblu=${txtbld}$(tput setaf 4) #  blue
+bldwht=${txtbld}$(tput setaf 7) #  white
+txtrst=$(tput sgr0)             # Reset
+info=${bldwht}*${txtrst}        # Feedback
+pass=${bldblu}*${txtrst}
+warn=${bldred}*${txtrst}
+ques=${bldblu}?${txtrst}
 # Regular Colors
 Black='\e[0;30m'        # Black
 Blue='\e[0;34m'         # Blue
@@ -57,11 +70,22 @@ BPurple='\e[1;35m'      # Purple
 BRed='\e[1;31m'         # Red
 BWhite='\e[1;37m'       # White
 BYellow='\e[1;33m'      # Yellow
+# Background
+BgBlack='\e[0;40m'        # Black
+BgBlue='\e[0;44m'         # Blue
+BgCyan='\e[0;46m'         # Cyan
+BgGreen='\e[0;42m'        # Green
+BgPurple='\e[0;45m'       # Purple
+BgRed='\e[0;41m'          # Red
+BgWhite='\e[0;47m'        # White
+BgYellow='\e[0;43m'       # Yellow
+
 #}}}
 # Menu Theme
 declare -a MenuTheme=( "${BYellow}" "${White}" ")" )
 # -----------------------------------------------------------------------------
 declare -i CREATE_HELP=1
+#
 # CREATE HELP {{{
 NAME="create_help"
 USAGE=$(gettext -s  "CREATE-HELP-USAGE")
@@ -74,21 +98,17 @@ REVISION="1 NOV 2012"
 # -------------------------------------
 create_help()
 {
-    if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-        if [[ "$CREATE_HELP" -eq 1 ]]; then
-            echo $(gettext -s "CREATE-HELP-WORKING")
-            CREATE_HELP=0
-        fi
-        echo -n "."
-        MY_HELP="<p class=\"function\" style=\"font-family:'Courier New'\"><span style=\"color:Crimson\">NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $1</span> <br /><span style=\"color:Blue\">USAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $2  </span><br /><span style=\"color:DarkBlue\">DESCRIPTION: $3  </span><br /><span style=\"color:RoyalBlue\">NOTES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $4  </span><br /><span style=\"color:Red\">AUTHOR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $5  </span><br /><span style=\"color:Cyan\">VERSION&nbsp;&nbsp;&nbsp;&nbsp;: $6  </span><br /><span style=\"color:DarkRed\">CREATED&nbsp;&nbsp;&nbsp;&nbsp;: $7  </span><br /><span style=\"color:FireBrick\">REVISION&nbsp;&nbsp;&nbsp;: $8  </span><br /><span style=\"color:Teal\">LINENO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $9 </span></p>"
-        if [[ "${#HELP_ARRAY}" -eq 0 ]]; then
-            HELP_ARRAY[0]="$MY_HELP" # Accessing below first will give unbound variable error
-        else
-            HELP_ARRAY[$[${#HELP_ARRAY[@]}]]="$MY_HELP"
-        fi    
+    if [[ "$RUN_HELP" -eq 0 ]]; then return 0; fi
+    if [[ "$CREATE_HELP" -eq 1 ]]; then
+        echo $(gettext -s "CREATE-HELP-WORKING")
+        CREATE_HELP=0
     fi
+    echo -n "."
+    #echo "> $1"
+    MY_HELP="<p class=\"function\" style=\"font-family:'Courier New'\"><span style=\"color:Crimson\">NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $1</span> <br /><span style=\"color:Blue\">USAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $2  </span><br /><span style=\"color:DarkBlue\">DESCRIPTION: $3  </span><br /><span style=\"color:RoyalBlue\">NOTES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $4  </span><br /><span style=\"color:Red\">AUTHOR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $5  </span><br /><span style=\"color:Cyan\">VERSION&nbsp;&nbsp;&nbsp;&nbsp;: $6  </span><br /><span style=\"color:DarkRed\">CREATED&nbsp;&nbsp;&nbsp;&nbsp;: $7  </span><br /><span style=\"color:FireBrick\">REVISION&nbsp;&nbsp;&nbsp;: $8  </span><br /><span style=\"color:Teal\">LINENO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: $9 </span></p>"
+    HELP_ARRAY[$[${#HELP_ARRAY[@]}]]="$MY_HELP"
 }
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 #}}}
 # -----------------------------------------------------------------------------
 # PRINT HELP {{{
@@ -100,7 +120,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="1 OCT 2012"
 REVISION="1 NOV 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 print_help()
 {
@@ -117,6 +137,8 @@ print_help()
             echo "${HELP_ARRAY[$i]}" >> "${FULL_SCRIPT_PATH}/help.html"
             echo "<hr />" >> "${FULL_SCRIPT_PATH}/help.html"
         done
+    else
+        print_warning "PRINT-HELP-ERROR"
     fi        
     echo "" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "" >> "${FULL_SCRIPT_PATH}/help.html"
@@ -135,10 +157,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 check_arg()
 {
+    #[[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if [ "$#" -ne "4" ]; then
         print_warning "CHECK-ARG-ERROR-1"
         exit 1
@@ -154,31 +177,31 @@ check_arg()
 # -----------------------------------------------------------------------------
 # TRIM {{{
 NAME="trim"
-USAGE="trim 1->[ String to Trim ]"
+USAGE="trim 1->( String to Trim )"
 DESCRIPTION=$(gettext -s "TRIM-DESC")
 NOTES=$(gettext -s "TRIM-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+REVISION="21 Dec 2012"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 trim() 
 { 
-    echo $(rtrim "$(ltrim "$1")")
+    echo "$(rtrim "$(ltrim "$1")")"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # LEFT TRIM {{{
 NAME="ltrim"
-USAGE="ltrim 1->[ String to Trim ]"
+USAGE="ltrim 1->( String to Trim )"
 DESCRIPTION=$(gettext -s "LEFT-TRIM-DESC")
 NOTES=$(gettext -s "LTRIM-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 ltrim()
 {
@@ -189,23 +212,25 @@ ltrim()
 # -----------------------------------------------------------------------------
 # RIGHT TRIM {{{
 NAME="rtrim"
-USAGE="rtrim 1->[ String to Trim ]"
+USAGE="rtrim 1->( String to Trim )"
 DESCRIPTION=$(gettext -s "RIGHT-TRIM-DESC")
 NOTES=$(gettext -s "RTRIM-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 rtrim()
 {
     # Remove Right or Trailing Space
+    [ -z "$1" ] && return 1
     echo "$1" | sed 's/ *$//g'
 }
 #}}}
 # -----------------------------------------------------------------------------
 declare -i ARR_INDEX=0
+#
 # IS IN ARRAY {{{
 NAME="is_in_array"
 USAGE=$(gettext -s "IS-IN-ARRAY-USAGE")
@@ -215,10 +240,12 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 is_in_array()
 {
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    [[ -z "$1" ]] && return 1
     local -a array=("${!1}")          # Cast as Array 'array[@]'
     local -i total="${#array[@]}"     # Total in Array
     local -i i=0
@@ -234,18 +261,18 @@ is_in_array()
 # -----------------------------------------------------------------------------
 # LOAD 2D ARRAY {{{
 NAME="load_2d_array"
-USAGE="Array=( &#36;(load_2d_array 1->[\Path\ArrayName.ext] 2->[0=First Array, 1=Second Array] ) )"
+USAGE="Array=( &#36;(load_2d_array 1->(/Path/ArrayName.ext) 2->(0=First Array, 1=Second Array) ) )"
 DESCRIPTION=$(gettext -s "LOAD-2D-ARRAY-DESC")
 NOTES=$(gettext -s "LOAD-2D-ARRAY-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 load_2d_array()
 {
-    check_arg "load_2d_array" "2" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "2" ]] && echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1
     if [ -f "$1" ]; then
         local lines=0
         local line=0
@@ -260,61 +287,69 @@ load_2d_array()
 }
 #}}}
 # -----------------------------------------------------------------------------
+declare -i CREATE_LOCALIZER=1
+#
 # LOCALIZE SAVE {{{
 NAME="localize_save"
-USAGE="localize 1->[Localize ID] 2->[Message to Localize] 3->[Print this with no Localization]"
+USAGE=$(gettext -s "LOCALIZE-SAVE-USAGE")
 DESCRIPTION=$(gettext -s "LOCALIZE-SAVE-DESC")
 NOTES=$(gettext -s "LOCALIZE-SAVE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 localize_save()
 {
     if [[ "$RUN_LOCALIZER" -eq 0 ]]; then return 0; fi
+    echo "Starting localize_save..."
+    
     make_dir "${LOCALIZED_PATH}/en/LC_MESSAGES/" "$(basename $BASH_SOURCE) : $LINENO"
-    if ! is_in_array "LOCALIZE_ID[@]" "$1" ; then
-        typeset -i total="${#LOCALIZE_ID[@]}"
-        for (( i=0; i<${total}; i++ )); do
-            if [[ "$i" == 0 ]]; then
-                echo "msgid \"${LOCALIZE_ID[$i]}\""    >  "${LOCALIZED_PATH}/en/en.po" # Overwrite
-                echo "msgstr \"${LOCALIZE_MSG[$i]}\""  >> "${LOCALIZED_PATH}/en/en.po" # Append
-            else
-                echo "msgid \"${LOCALIZE_ID[$i]}\""    >> "${LOCALIZED_PATH}/en/en.po" # Append
-                echo "msgstr \"${LOCALIZE_MSG[$i]}\""  >> "${LOCALIZED_PATH}/en/en.po" # Append
-            fi
-        done
-        msgfmt -o "${LOCALIZED_PATH}/en/LC_MESSAGES/${LOCALIZED_FILE}.mo"      "${LOCALIZED_PATH}/en/en.po"
+    echo "make_dir ${LOCALIZED_PATH}/en/LC_MESSAGES/"
+    
+    local -i total="${#LOCALIZE_ID[@]}"
+    echo "total=$total"
+    
+    for (( i=0; i<${total}; i++ )); do
+        if [[ "$i" == 0 ]]; then
+            echo "msgid \"${LOCALIZE_ID[$i]}\""    >  "${LOCALIZED_PATH}/en/en.po" # Overwrite
+            echo "msgstr \"${LOCALIZE_MSG[$i]}\""  >> "${LOCALIZED_PATH}/en/en.po" # Append
+        else
+            echo "msgid \"${LOCALIZE_ID[$i]}\""    >> "${LOCALIZED_PATH}/en/en.po" # Append
+            echo "msgstr \"${LOCALIZE_MSG[$i]}\""  >> "${LOCALIZED_PATH}/en/en.po" # Append
+        fi
+    done
+    msgfmt -o "${LOCALIZED_PATH}/en/LC_MESSAGES/${LOCALIZED_FILE}.mo"      "${LOCALIZED_PATH}/en/en.po"
         
-        #return 0
-        TRANSLATOR="moses"
-        if [[ "$TRANSLATOR" == "google" ]]; then
-            local -a TransLate=( $(load_2d_array "${FULL_SCRIPT_PATH}/gtranslate-cc.db" "1" ) ) # 1 is for Code
-        elif [[ "$TRANSLATOR" == "bing" ]]; then
-            echo "Bing Translator"
-            # Available for free up to 5,000 queries per month
-                
+    print_info "LOCALIZER-COMPLETED"
+    return 0
+        
+        
+        
+    TRANSLATOR="moses"
+    if [[ "$TRANSLATOR" == "google" ]]; then
+        local -a TransLate=( $(load_2d_array "${FULL_SCRIPT_PATH}/gtranslate-cc.db" "1" ) ) # 1 is for Code
+    elif [[ "$TRANSLATOR" == "bing" ]]; then
+        echo "Bing Translator"
+        # Available for free up to 5,000 queries per month
+              
         # curl 'http://api.apertium.org/json/translate?q=hello%20world&langpair=en%7Ces&callback=foo'
         #       http://api.apertium.org/json/translate?q=QUIT&langpair=en%7Csq
         # %7C = | (vertical bar)
-        elif [[ "$TRANSLATOR" == "apertium" ]]; then
-            TRANSURL="http://api.apertium.org/json/translate"
-            echo "set URL"
-            local -a TransLate=( "af" "ca" "de" "es" "fr" "ga" "gl" "hi" "it" "lt" "lv" "mt" "nl" "pl" "pt" "sco" "sq" )
-            API_Key="cwZdfGDhEkATSCydtSVYI7e3LI4" # @FIX config
-        elif [[ "$TRANSLATOR" == "moses" ]]; then
-        
-            local -a TransLate=( "af" "ca" "de" "es" "fr" "ga" "gl" "hi" "it" "lt" "lv" "mt" "nl" "pl" "pt" "sco" "sq" )
-
-        fi
+    elif [[ "$TRANSLATOR" == "apertium" ]]; then
+        TRANSURL="http://api.apertium.org/json/translate"
+        echo "set URL"
+        local -a TransLate=( "af" "ca" "de" "es" "fr" "ga" "gl" "hi" "it" "lt" "lv" "mt" "nl" "pl" "pt" "sco" "sq" )
+        API_Key="cwZdfGDhEkATSCydtSVYI7e3LI4" # @FIX config
+    elif [[ "$TRANSLATOR" == "moses" ]]; then
+        local -a TransLate=( "af" "ca" "de" "es" "fr" "ga" "gl" "hi" "it" "lt" "lv" "mt" "nl" "pl" "pt" "sco" "sq" )
+    fi
                 
                 
-        print_info "LOCALIZER-COMPLETED"
-        return 0         
+    return 0         
                 
-        typeset -i transtotal="${#TransLate[@]}"
+        local -i transtotal="${#TransLate[@]}"
         echo "transtotal=$transtotal"
         local -i index=0
         local LocalePath=""
@@ -368,7 +403,6 @@ localize_save()
                 fi    
             done
         done
-    fi
     print_info "LOCALIZER-COMPLETED"
 } 
 #}}}
@@ -382,31 +416,28 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # -------------------------------------
 localize_info()
 {
-    if [[ "$RUN_LOCALIZER" -eq 0 ]]; then return 0; fi
+    [[ "$RUN_LOCALIZER" -eq 0 ]] && return 0
+    if [[ "$CREATE_LOCALIZER" -eq 1 ]]; then
+        echo $(gettext -s "CREATE-LOCALIZER-WORKING")
+        CREATE_LOCALIZER=0
+    fi
+    echo -n "."
     #    
-    check_arg "localize_info" "2" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
-    CMD="$(rtrim $1)"
-    if [[ -z "$CMD" || "$CMD" == "" ]]; then
-        return 1
-    fi
-    CMD="$(rtrim $2)"
-    if [[ -z "$CMD" || "$CMD" == "" ]]; then
-        return 1
-    fi
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    [ -z "$1" ] && return 1
+    [ -z "$2" ] && return 1
+    #echo ">: $1"
     # Check to see if its in Array    
-    if ! is_in_array "LOCALIZE_ID[@]" "$1" ; then
-        if [ "${#LOCALIZE_ID}" -eq 0 ]; then
-            LOCALIZE_ID=( "$1" )
-        else
+    if [[ "${#LOCALIZE_ID}" -eq 0 ]]; then
+        LOCALIZE_ID[0]="$1"
+        LOCALIZE_MSG[0]="$2"
+    else    
+        if ! is_in_array "LOCALIZE_ID[@]" "$1" ; then
             LOCALIZE_ID=( "${LOCALIZE_ID[@]}" "$1" )
-        fi
-        if [ "${#LOCALIZE_MSG}" -eq 0 ]; then
-            LOCALIZE_MSG[0]="$2"
-        else
             LOCALIZE_MSG[${#LOCALIZE_MSG[*]}]="$2"
         fi
     fi
@@ -416,17 +447,17 @@ localize_info()
 # -----------------------------------------------------------------------------
 # LOCALIZE {{{
 NAME="localize"
-USAGE="localize 1->[Localize ID] 2->[Optional: Print this with no Localization]"
+USAGE="localize 1->(Localize ID) 2->(Optional: Print this with no Localization)"
 DESCRIPTION=$(gettext -s "LOCALIZE-DESC")
 NOTES=$(gettext -s "LOCALIZE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "LOCALIZE-DESC"  "Localize Text, look up ID and return Localized string."
-localize_info "LOCALIZE-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-DESC"  "Localize Text, look up ID and return Localized string."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-NOTES" "Localized."
 # -------------------------------------
 localize()
 {
@@ -441,16 +472,16 @@ localize()
 # PRINT LINE {{{
 NAME="print_line"
 USAGE="print_line"
-DESCRIPTION=$(localize "PRINT-LINE-DESC")
-NOTES=$(localize "PRINT-LINE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-LINE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-LINE-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-LINE-DESC"  "Prints a line of dashes --- across the screen."
-localize_info "PRINT-LINE-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-LINE-DESC"  "Prints a line of dashes --- across the screen."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-LINE-NOTES" "None."
 # -------------------------------------
 print_line()
 { 
@@ -460,17 +491,17 @@ print_line()
 # -----------------------------------------------------------------------------
 # PRINT TITLE {{{
 NAME="print_title"
-USAGE="print_title 1->[Localized Text ID] 2->[Optional Text not Localized]"
-DESCRIPTION=$(localize "PRINT-TITLE-DESC")
-NOTES=$(localize "PRINT-TITLE-NOTES")
+USAGE="print_title 1->(Localized Text ID) 2->(Optional Text not Localized)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-TITLE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-TITLE-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-TITLE-DESC"  "This will print a Header and clear the screen"
-localize_info "PRINT-TITLE-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-TITLE-DESC"  "This will print a Header and clear the screen"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-TITLE-NOTES" "Localized."
 # -------------------------------------
 print_title()
 { 
@@ -488,44 +519,48 @@ print_title()
 # -----------------------------------------------------------------------------
 # PRINT INFO {{{
 NAME="print_info"
-USAGE=$(localize "PRINT-INFO-USAGE")
-DESCRIPTION=$(localize "PRINT-INFO-DESC")
-NOTES=$(localize "PRINT-INFO-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "PRINT-INFO-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-INFO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-INFO-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-INFO-USAGE" "print_info 1->[Localized Text ID] 2->[Optional Not Localized Text]"
-localize_info "PRINT-INFO-DESC"  "Prints information on screen for end users to read, in a Column that is as wide as display will allow."
-localize_info "PRINT-INFO-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && (localize_info "PRINT-INFO-USAGE" "print_info 1->(Localized Text ID) 2->(Optional Not Localized Text)")
+[[ "$RUN_LOCALIZER" -eq 1 ]] && (localize_info "PRINT-INFO-DESC"  "Prints information on screen for end users to read, in a Column that is as wide as display will allow.")
+[[ "$RUN_LOCALIZER" -eq 1 ]] && (localize_info "PRINT-INFO-NOTES" "Localized.")
 # -------------------------------------
 print_info()
 { 
     # Console width number
     T_COLS=`tput cols`
+    tput sgr0
+    echo -ne "${BgBlack}"
     if [ "$#" -eq "1" ]; then
-       echo -e "${BWhite}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
+        echo -e "${BWhite}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     else
         echo -e "${BWhite}$(localize "$1") ${2}${White}\n" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     fi
+    echo -ne '\e[00m'
+    tput sgr0
 } #}}}
 # -----------------------------------------------------------------------------
 # PRINT THIS {{{
 NAME="print_this"
-USAGE=$(localize "PRINT-THIS-USAGE")
-DESCRIPTION=$(localize "PRINT-THIS-DESC")
-NOTES=$(localize "PRINT-THIS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "PRINT-THIS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-THIS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-THIS-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-THIS-USAGE" "print_this 1->[Localized Text ID] 2->[Optional Not Localized Text]"
-localize_info "PRINT-THIS-DESC"  "Like print_info, without a blank line."
-localize_info "PRINT-THIS-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-THIS-USAGE" "print_this 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-THIS-DESC"  "Like print_info, without a blank line."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-THIS-NOTES" "Localized."
 # -------------------------------------
 print_this()
 { 
@@ -541,18 +576,18 @@ print_this()
 # -----------------------------------------------------------------------------
 # PRINT THAT {{{
 NAME="print_that"
-USAGE=$(localize "PRINT-THAT-USAGE")
-DESCRIPTION=$(localize "PRINT-THAT-DESC")
-NOTES=$(localize "PRINT-THAT-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "PRINT-THAT-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-THAT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-THAT-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-THAT-USAGE" "print_that 1->[Localized Text ID] 2->[Optional Not Localized Text]"
-localize_info "PRINT-THAT-DESC"  "Like print_info, without a blank line and indented."
-localize_info "PRINT-THAT-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-THAT-USAGE" "print_that 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-THAT-DESC"  "Like print_info, without a blank line and indented."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-THAT-NOTES" "Localized."
 # -------------------------------------
 print_that()
 { 
@@ -568,18 +603,18 @@ print_that()
 # -----------------------------------------------------------------------------
 # PRINT INFO {{{
 NAME="print_caution"
-USAGE=$(localize "PRINT-INFO-USAGE")
-DESCRIPTION=$(localize "PRINT-INFO-DESC")
-NOTES=$(localize "PRINT-INFO-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "PRINT-INFO-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-INFO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-INFO-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-INFO-USAGE" "print_caution 1->[Localized Text ID] 2->[Optional Not Localized Text]"
-localize_info "PRINT-INFO-DESC"  "Prints information on screen for end users to read, in a Column that is as wide as display will allow."
-localize_info "PRINT-INFO-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-INFO-USAGE" "print_caution 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-INFO-DESC"  "Prints information on screen for end users to read, in a Column that is as wide as display will allow."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-INFO-NOTES" "Localized."
 # -------------------------------------
 print_caution()
 { 
@@ -594,17 +629,17 @@ print_caution()
 # -----------------------------------------------------------------------------
 # PRINT WARNING {{{
 NAME="print_warning"
-USAGE="print_warning 1->[Localized Text ID] 2->[Optional Not Localized Text]"
-DESCRIPTION=$(localize "PRINT-WARNING-DESC")
-NOTES=$(localize "PRINT-WARNING-NOTES")
+USAGE="print_warning 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-WARNING-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-WARNING-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-WARNING-DESC"  "Print Warning"
-localize_info "PRINT-WARNING-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-WARNING-DESC"  "Print Warning"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-WARNING-NOTES" "Localized."
 # -------------------------------------
 print_warning()
 { 
@@ -620,17 +655,17 @@ print_warning()
 # -----------------------------------------------------------------------------
 # CHECK BOX {{{
 NAME="checkbox"
-USAGE="checkbox 1->[1=True, else false]"
-DESCRIPTION=$(localize "CHECK-BOX-DESC")
-NOTES=$(localize "CHECK-BOX-NOTES")
+USAGE="checkbox 1->(1=True, else false)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CHECK-BOX-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CHECK-BOX-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CHECK-BOX-DESC"  "Display [X] or [ ] in Menus."
-localize_info "CHECK-BOX-NOTES" "Used in Menu System."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-BOX-DESC"  "Display {X} or { } in Menus."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-BOX-NOTES" "Used in Menu System."
 # -------------------------------------
 checkbox()
 { 
@@ -640,17 +675,17 @@ checkbox()
 # -----------------------------------------------------------------------------
 # CHECKBOX PACKAGE {{{
 NAME="checkbox_package"
-USAGE="checkbox_package 1->[checkboxlist]"
-DESCRIPTION=$(localize "CHECKBOX-PACKAGE-DESC")
-NOTES=$(localize "CHECKBOX-PACKAGE-NOTES")
+USAGE="checkbox_package 1->(checkboxlist)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CHECKBOX-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CHECKBOX-PACKAGE-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CHECKBOX-PACKAGE-DESC"  "check if [X] or [ ]"
-localize_info "CHECKBOX-PACKAGE-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECKBOX-PACKAGE-DESC"  "check if {X} or { }"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECKBOX-PACKAGE-NOTES" "None."
 # -------------------------------------
 checkbox_package()
 { 
@@ -660,17 +695,17 @@ checkbox_package()
 #}}}
 # CONTAINS ELEMENT {{{
 NAME="contains_element"
-USAGE="contains_element 1->[Search] 2->[&#36;{array[@]}]" 
-DESCRIPTION=$(localize "CONTAINS-ELEMENT-DESC")
-NOTES=$(localize "CONTAINS-ELEMENT-NOTES")
+USAGE="contains_element 1->(Search) 2->(&#36;{array[@]})" 
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONTAINS-ELEMENT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONTAINS-ELEMENT-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONTAINS-ELEMENT-DESC"  "Array Contains Element"
-localize_info "CONTAINS-ELEMENT-NOTES" "Used to Search Options in Select Statement for Valid Selections."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONTAINS-ELEMENT-DESC"  "Array Contains Element"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONTAINS-ELEMENT-NOTES" "Used to Search Options in Select Statement for Valid Selections."
 # -------------------------------------
 contains_element()
 { 
@@ -681,70 +716,72 @@ contains_element()
 # -----------------------------------------------------------------------------
 # INVALID OPTION {{{
 NAME="invalid_option"
-USAGE="invalid_option 1->[Invalid Option]"
-DESCRIPTION=$(localize "INVALID-OPTION-DESC")
-NOTES=$(localize "INVALID-OPTION-NOTES")
+USAGE="invalid_option 1->(Invalid Option)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INVALID-OPTION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INVALID-OPTION-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INVALID-OPTION-DESC"  "Invalid option"
-localize_info "INVALID-OPTION-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INVALID-OPTION-DESC"  "Invalid option"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INVALID-OPTION-NOTES" "None."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INVALID-OPTION-TEXT" "Invalid option. Try another one."
 # -------------------------------------
 invalid_option()
 { 
     print_line
-    if [ -z "$1" ]; then
-        echo $"Invalid option. Try another one."
+    if [ "$#" -eq 0 ]; then
+        print_this "INVALID-OPTION-TEXT"
     else
-        echo $"$1 Invalid option. Try another one."
+        print_this "INVALID-OPTION-TEXT" ": $1"
     fi
-    pause_function "invalid_option at line $LINENO"
+    pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 } 
 # -----------------------------------------------------------------------------
 #}}}
 # INVALID OPTIONS {{{
 NAME="invalid_options"
-USAGE="invalid_options 1->[Invalid Options]"
-DESCRIPTION=$(localize "INVALID-OPTIONS-DESC")
-NOTES=$(localize "INVALID-OPTIONS-NOTES")
+USAGE="invalid_options 1->(Invalid Options)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INVALID-OPTIONS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INVALID-OPTIONS-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INVALID-OPTIONS-DESC"  "Invalid options"
-localize_info "INVALID-OPTIONS-NOTES" "Idea was to show all valid options, still in work.."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INVALID-OPTIONS-DESC"  "Invalid options"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INVALID-OPTIONS-NOTES" "Idea was to show all valid options, still in work.."
 # -------------------------------------
 invalid_options()
 {
     print_line
     if [ -z "$1" ]; then
-        echo $"Invalid option. Try another one."
+        print_this "INVALID-OPTION-TEXT"
     else
-        echo $"$1 Invalid option. Try another one."
+        print_this "INVALID-OPTION-TEXT" ":$1"
     fi
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # PAUSE FUNCTION {{{
 NAME="pause_function"
-USAGE="pause_function 1->[Description &#36;LINENO]"
-DESCRIPTION=$(localize "PAUSE-FUNCTION-DESC")
-NOTES=$(localize "PAUSE-FUNCTION-NOTES")
+USAGE="pause_function 1->(Description &#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PAUSE-FUNCTION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PAUSE-FUNCTION-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PAUSE-FUNCTION-DESC"  "Pause function"
-localize_info "PAUSE-FUNCTION-NOTES" "Localized: Arguments passed in are not Localize, this is used for passing in Function names, that can not be localized; if required: localize before passing in."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PAUSE-FUNCTION-DESC"    "Pause function"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PAUSE-FUNCTION-NOTES"   "Localized: Arguments passed in are not Localize, this is used for passing in Function names, that can not be localized; if required: localize before passing in."
 #
-localize_info "PRESS-ANY-KEY-CONTINUE" "Press any key to continue"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRESS-ANY-KEY-CONTINUE" "Press any key to continue"
 # -------------------------------------
 pause_function()
 {
@@ -755,17 +792,17 @@ pause_function()
 # -----------------------------------------------------------------------------
 # ASSERT {{{
 NAME="assert"
-USAGE="assert 1->[Called from] 2->[Test] 1->[LINENO]"
-DESCRIPTION=$(localize "ASSERT-DESC")
-NOTES=$(localize "ASSERT-NOTES")
+USAGE="assert 1->(Called from) 2->(Test] 1->(LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ASSERT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ASSERT-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ASSERT-DESC"  "assert for debugging variables"
-localize_info "ASSERT-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ASSERT-DESC"  "assert for debugging variables"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ASSERT-NOTES" "None."
 # -------------------------------------
 assert()                  #  If condition false,
 {                         #+ exit from script with error message.
@@ -790,16 +827,16 @@ assert()                  #  If condition false,
 # GET NETWORK DEVICE {{{
 NAME="get_network_devices"
 USAGE="get_network_devices"
-DESCRIPTION=$(localize "GET-NETWORK-DEVICE-DESC")
-NOTES=$(localize "GET-NETWORK-DEVICE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-NETWORK-DEVICE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-NETWORK-DEVICE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-NETWORK-DEVICE-DESC"  "Get Network Devices."
-localize_info "GET-NETWORK-DEVICE-NOTES" "Holds IP Address if its an Active connection; no test of Internet Access are done."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-DEVICE-DESC"  "Get Network Devices."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-DEVICE-NOTES" "Holds IP Address if its an Active connection; no test of Internet Access are done."
 # -------------------------------------
 get_network_devices()
 {
@@ -842,16 +879,16 @@ get_network_devices()
 # SHOW USERS {{{
 NAME="show_users"
 USAGE="show_users"
-DESCRIPTION=$(localize "SHOW-USERS-DESC")
-NOTES=$(localize "SHOW-USERS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SHOW-USERS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SHOW-USERS-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SHOW-USERS-DESC"  "Show Users."
-localize_info "SHOW-USERS-NOTES" "Shows users in /etc/passwd."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-USERS-DESC"  "Show Users."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-USERS-NOTES" "Shows users in /etc/passwd."
 # -------------------------------------
 show_users()
 {
@@ -861,28 +898,28 @@ show_users()
 # -----------------------------------------------------------------------------
 # SET DEBUGGING MODE {{{
 NAME="set_debugging_mode"
-USAGE="set_debugging_mode 1->[1=Boot, 2=Live] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "SET-DEBUGGING-MODE-DESC")
-NOTES=$(localize "SET-DEBUGGING-MODE-NOTES")
+USAGE="set_debugging_mode 1->(1=Boot, 2=Live) 2->(&#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SET-DEBUGGING-MODE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SET-DEBUGGING-MODE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SET-DEBUGGING-MODE-DESC"  "Set Debugging Mode: also checks for Internet Connection."
-localize_info "SET-DEBUGGING-MODE-NOTES" "Fill try to Repair Internet Connection. Only sets Debugging switch if DEBUGGING is set to 1."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-DESC"  "Set Debugging Mode: also checks for Internet Connection."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-NOTES" "Fill try to Repair Internet Connection. Only sets Debugging switch if DEBUGGING is set to 1."
 #
-localize_info "SET-DEBUGGING-MODE-TITLE"         "Starting setup..."
-localize_info "SET-DEBUGGING-MODE-INTERNET-UP"   "Internet is Up!"
-localize_info "SET-DEBUGGING-MODE-TRIED-TO-FIX"  "I tried to fix Network, I will test it again, if it fails, first try to re-run this script over, if that fails, try Network Troubleshooting."
-localize_info "SET-DEBUGGING-MODE-TRY-AGAIN"     "trying again in 13 seconds..."
-localize_info "SET-DEBUGGING-MODE-INTERNET-DOWN" "Internet is Down: Internet is Down, this script requires an Internet Connection, fix and retry; try Network Troubleshooting; first try to rerun this script, I did try to fix this. Select Install with No Internet Connection option."
-localize_info "SET-DEBUGGING-MODE-NO-INTERNET"   "No Internet Install Set; if it fails; you must establish an Internet connection first; try Network Troubleshooting."
-localize_info "SET-DEBUGGING-MODE-WARN-1"        "Debug Mode will insert a Pause Function at critical functions and give you some information about how the script is running, it also may set other variables and run more test."
-localize_info "SET-DEBUGGING-MODE-WARN-2"        "Debugging is set on, if set -o nounset or set -u, you may get unbound errors that need to be fixed."
-localize_info "BOOT-MODE-DETECTED"               "Boot Mode Detected."
-localize_info "LIVE-MODE-DETECTED"               "Live Mode Detected."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-TITLE"         "Starting setup..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-INTERNET-UP"   "Internet is Up!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-TRIED-TO-FIX"  "I tried to fix Network, I will test it again, if it fails, first try to re-run this script over, if that fails, try Network Troubleshooting."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-TRY-AGAIN"     "trying again in 13 seconds..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-INTERNET-DOWN" "Internet is Down: Internet is Down, this script requires an Internet Connection, fix and retry; try Network Troubleshooting; first try to rerun this script, I did try to fix this. Select Install with No Internet Connection option."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-NO-INTERNET"   "No Internet Install Set; if it fails; you must establish an Internet connection first; try Network Troubleshooting."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-WARN-1"        "Debug Mode will insert a Pause Function at critical functions and give you some information about how the script is running, it also may set other variables and run more test."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-DEBUGGING-MODE-WARN-2"        "Debugging is set on, if set -o nounset or set -u, you may get unbound errors that need to be fixed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BOOT-MODE-DETECTED"               "Boot Mode Detected."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LIVE-MODE-DETECTED"               "Live Mode Detected."
 # -------------------------------------
 set_debugging_mode()
 {
@@ -923,28 +960,31 @@ set_debugging_mode()
 # DEVICE LIST {{{
 NAME="device_list"
 USAGE="device_list"
-DESCRIPTION=$(localize "DEVICE-LIST-DESC")
-NOTES=$(localize "DEVICE-LIST-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "DEVICE-LIST-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "DEVICE-LIST-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "DEVICE-LIST-DESC"  "Get Device List."
-localize_info "DEVICE-LIST-NOTES" "Used to get Hard Drive Letter, assumes you are running this from a Flash Drive."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DEVICE-LIST-DESC"  "Get Device List."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DEVICE-LIST-NOTES" "Used to get Hard Drive Letter, assumes you are running this from a Flash Drive."
 # -------------------------------------
 device_list()
 {
+    local old_IFS="$IFS"
+    IFS=$' '
     # Get all SD devices
-    LIST_ALL_DEVICES=`ls /dev/sd*`
+    LIST_ALL_DEVICES=$(ls /dev/sd*)
     # List: /dev/sda /dev/sda1 /dev/sda2 /dev/sdb /dev/sdb1
     LIST_DEVICES=( "" )
+    IFS=$'\n'
     arr=$(echo $LIST_ALL_DEVICES | tr " " "\n")
     for x in $arr; do
         if [[ "${#x}" -eq 8 ]]; then
             if [ -z "$LIST_DEVICES" ]; then
-                if [[ `cat /sys/block/${x: -3}/removable` == "1" ]]; then
+                if [[ "$(cat /sys/block/${x: -3}/removable)" == "1" ]]; then
                     if [[ "$SCRIPT_DEVICE" == "${x: -4}" ]]; then
                         LIST_DEVICES[0]="${x: -3} Removable Device Script is Exexcuting."
                         SCRIPT_DEVICE="/dev/${x: -4}"
@@ -960,7 +1000,7 @@ device_list()
                     fi
                 fi
             else
-                if [[ `cat /sys/block/${x: -3}/removable` == "1" ]]; then
+                if [[ "$(cat /sys/block/${x: -3}/removable)" == "1" ]]; then
                     if [[ "$SCRIPT_DEVICE" == "${x: -4}" ]]; then
                         LIST_DEVICES[$[${#LIST_DEVICES[@]}]]="${x: -3} Removable Device Script is Exexcuting."
                         SCRIPT_DEVICE="/dev/${x: -4}"
@@ -978,22 +1018,23 @@ device_list()
             fi
         fi
     done    
+    IFS="$old_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # RESTART INTERNET {{{
 NAME="restart_internet"
 USAGE="restart_internet"
-DESCRIPTION=$(localize "RESTART-INTERNET-DESC")
-NOTES=$(localize "RESTART-INTERNET-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "RESTART-INTERNET-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "RESTART-INTERNET-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "RESTART-INTERNET-DESC"  "Restart Internet."
-localize_info "RESTART-INTERNET-NOTES" "Assumes system.d."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RESTART-INTERNET-DESC"  "Restart Internet."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RESTART-INTERNET-NOTES" "Assumes system.d."
 # -------------------------------------
 restart_internet()
 {
@@ -1007,17 +1048,17 @@ restart_internet()
 # -----------------------------------------------------------------------------    
 # UMOUNT PARTITION {{{
 NAME="umount_partition"
-USAGE="umount_partition 1->[Device Name]"
-DESCRIPTION=$(localize "UMOUNT-PARTITION-DESC")
-NOTES=$(localize "UMOUNT-PARTITION-NOTES")
+USAGE="umount_partition 1->(Device Name)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "UMOUNT-PARTITION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "UMOUNT-PARTITION-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "UMOUNT-PARTITION-DESC"  "Umount partition."
-localize_info "UMOUNT-PARTITION-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UMOUNT-PARTITION-DESC"  "Umount partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UMOUNT-PARTITION-NOTES" "None."
 # -------------------------------------
 umount_partition()
 {
@@ -1028,17 +1069,17 @@ umount_partition()
 # -----------------------------------------------------------------------------
 # IS STRING IN FILE {{{
 NAME="is_string_in_file"
-USAGE="is_string_in_file 1->[/full-path/file] 2->[search for string]"
-DESCRIPTION=$(localize "IS-STRING-IN-FILE-DESC")
-NOTES=$(localize "IS-STRING-IN-FILE-NOTES")
+USAGE="is_string_in_file 1->(/full-path/file) 2->(search for string)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-STRING-IN-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-STRING-IN-FILE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-STRING-IN-FILE-DESC"  "Return true if string is in file."
-localize_info "IS-STRING-IN-FILE-NOTES" "Used to test files for Updates."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-STRING-IN-FILE-DESC"  "Return true if string is in file."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-STRING-IN-FILE-NOTES" "Used to test files for Updates."
 # -------------------------------------
 is_string_in_file()
 {
@@ -1053,17 +1094,17 @@ is_string_in_file()
 # -----------------------------------------------------------------------------
 # IS BREAKABLE {{{
 NAME="is_breakable"
-USAGE="is_breakable 1->[Breakable Key] 2->[Key]"
-DESCRIPTION=$(localize "IS-BREAKABLE-DESC")
-NOTES=$(localize "IS-BREAKABLE-NOTES")
+USAGE="is_breakable 1->(Breakable Key) 2->(Key)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-BREAKABLE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-BREAKABLE-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-BREAKABLE-DESC"  "is breakable checks to see if key input meets exit condition."
-localize_info "IS-BREAKABLE-NOTES" "Used to break out of Loops."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-BREAKABLE-DESC"  "is breakable checks to see if key input meets exit condition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-BREAKABLE-NOTES" "Used to break out of Loops."
 # -------------------------------------
 is_breakable() 
 { 
@@ -1075,17 +1116,17 @@ is_breakable()
 # -----------------------------------------------------------------------------
 # TO LOWER CASE {{{
 NAME="to_lower_case"
-USAGE="to_lower_case 1->[Word]"
-DESCRIPTION=$(localize "TO-LOWER-CASE-DESC")
-NOTES=$(localize "TO-LOWER-CASE-NOTES")
+USAGE="to_lower_case 1->(Word)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "TO-LOWER-CASE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "TO-LOWER-CASE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "TO-LOWER-CASE-DESC"  "Make all Lower Case."
-localize_info "TO-LOWER-CASE-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TO-LOWER-CASE-DESC"  "Make all Lower Case."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TO-LOWER-CASE-NOTES" "None."
 to_lower_case()
 { 
     echo $1 | tr '[A-Z]' '[a-z]'
@@ -1095,16 +1136,16 @@ to_lower_case()
 # READ INPUT {{{
 NAME="read_input"
 USAGE="read_input"
-DESCRIPTION=$(localize "READ-INPUT-DESC")
-NOTES=$(localize "READ-INPUT-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "READ-INPUT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "READ-INPUT-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "READ-INPUT-DESC"  "read keyboard input."
-localize_info "READ-INPUT-NOTES" "Sets Variable OPTION as return."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-DESC"  "read keyboard input."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-NOTES" "Sets Variable OPTION as return."
 # -------------------------------------
 read_input()
 { 
@@ -1114,23 +1155,23 @@ read_input()
 # -----------------------------------------------------------------------------
 # GET INPUT OPTION {{{
 NAME="get_input_option"
-USAGE="get_input_option 1->[array of devices] 2->[default]"
-DESCRIPTION=$(localize "GET-INPUT-OPTION-DESC")
-NOTES=$(localize "GET-INPUT-OPTION-NOTES")
+USAGE="get_input_option 1->(array of devices) 2->(default)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-INPUT-OPTION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-INPUT-OPTION-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-INPUT-OPTION-DESC"  "Get Keyboard Input Options between two numbers."
-localize_info "GET-INPUT-OPTION-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-INPUT-OPTION-DESC"  "Get Keyboard Input Options between two numbers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-INPUT-OPTION-NOTES" "None."
 # -------------------------------------
 get_input_option()
 { 
     declare -a array=("${!1}")
-    typeset -i total="${#array[@]}"
-    typeset -i index=0
+    local -i total="${#array[@]}"
+    local -i index=0
     for var in "${array[@]}"; do
         echo "$(( ++index ))) ${var}"
     done    
@@ -1154,66 +1195,106 @@ get_input_option()
 } 
 #}}}
 # -----------------------------------------------------------------------------
+# PRINT ARRAY {{{
+NAME="print_array"
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "PRINT-ARRAY-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-ARRAY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-ARRAY-NOTES")
+AUTHOR="Flesher"
+VERSION="1.0"
+CREATED="11 SEP 2012"
+REVISION="21 Dec 2012"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-ARRAY-USAGE" "print_array 1->(array{@})"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-ARRAY-DESC"  "Print Array; normally for Troubleshooting; but could be used to print a list."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-ARRAY-NOTES" "None."
+# -------------------------------------
+print_array()
+{
+    local -a myArray=("${!1}")     # Array 
+
+    local -i total=0
+    eval "total=\${#$1[@]}"
+    
+    local -i current=0
+    echo "-------------"
+    echo "$1 total=$total"
+    echo ""
+    for (( i=0; i<${total}; i++ )); do
+        eval "value=\${$1[$i]}"
+        echo "$1[$((current++))]=|$value|"
+    done    
+    echo "-------------"
+}
+#}}}
+# -----------------------------------------------------------------------------
 # READ INPUT OPTIONS {{{
 NAME="read_input_options"
-USAGE="read_input_options 1->[String of values: 1 2 3 or 1-3]" 
-DESCRIPTION=$(localize "READ-INPUT-OPTIONS-DESC")
-NOTES=$(localize "READ-INPUT-OPTIONS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "READ-INPUT-OPTIONS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "READ-INPUT-OPTIONS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "READ-INPUT-OPTIONS-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "READ-INPUT-OPTIONS-DESC"  "Read Keyboard Input Options."
-localize_info "READ-INPUT-OPTIONS-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-OPTIONS-USAGE" "read_input_options"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-OPTIONS-DESC"  "Read Keyboard Input Options:  String of values: 1 2 3 or 1-3"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-OPTIONS-NOTES" "None."
 # -------------------------------------
 read_input_options()
 { 
+    # |1|
+    # |1 2 3 4-5 7 Q|
     local line=""
     local packages_opt=""
     OPTION=""
     while [[ -z "$OPTION" ]]; do
         read -p "        $prompt2" OPTION
     done
-    array=("$OPTION")
+    IFS=" "
+    array=($(trim "$OPTION")) # 1 2 3-6 7 Q
+    # "1" "2" "3-6" "7" "Q"
     for line in ${array[@]/,/ }; do
         if [[ ${line/-/} != $line ]]; then
             for ((i=${line%-*}; i<=${line#*-}; i++)); do
-                packages_opt+=($i);
+                [ -n "$i" ] && packages_opt+=($i);
             done
         else
             packages_opt+=($line)
         fi
     done
-    OPTIONS=(`echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]'`)
-    #write_log "read_input_options  $1 = $OPTION" "$(basename $BASH_SOURCE) : $LINENO"
+    OPTIONS=($(echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]'))
+    #write_log "read_input_options  $OPTION" "$(basename $BASH_SOURCE) : $LINENO"
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # READ INPUT YN {{{
 NAME="read_input_yn"
-USAGE="read_input_yn 1->[Question] 2->[None Localize] 3->[0=No, 1=Yes]"
-DESCRIPTION=$(localize "READ-INPUT-YN-DESC")
-NOTES=$(localize "READ-INPUT-YN-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "READ-INPUT-YN-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "READ-INPUT-YN-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "READ-INPUT-YN-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="12 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "READ-INPUT-YN-DESC"  "Read Keyboard Input for Yes and No."
-localize_info "READ-INPUT-YN-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-YN-USAGE" "read_input_yn 1->(Question) 2->(None Localize) 3->(0=No, 1=Yes)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-YN-DESC"  "Read Keyboard Input for Yes and No."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-YN-NOTES" "Localized."
 #
-localize_info "Wrong-Key-Yn" "Wrong Key, [Y]es or [n]o required."
-localize_info "Wrong-Key-Ny" "Wrong Key, [y]es or [N]o required."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Wrong-Key-Yn" "Wrong Key, (Y)es or (n)o required."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Wrong-Key-Ny" "Wrong Key, (y)es or (N)o required."
 # -------------------------------------
 read_input_yn()
 { 
-    check_arg "read_input_yn" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    #check_arg "read_input_yn" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     local MY_OPTION=0
     # read_input_yn "Is this Correct" "This" 1
-    YN_OPTION="$3" # Set Default value
     # GET INPUT YN {{{
     get_input_yn()
     {
@@ -1223,7 +1304,7 @@ read_input_yn()
         else
             read  -n 1 -p "$(localize $1) $2 [y/N]: " 
         fi
-        YN_OPTION=`echo "$REPLY" | tr '[:upper:]' '[:lower:]'`
+        YN_OPTION=$(echo "$REPLY" | tr '[:upper:]' '[:lower:]')
         echo ""
     }
     #}}}
@@ -1232,7 +1313,7 @@ read_input_yn()
         get_input_yn "$1" "$2" "$3"
         if [ -z "$YN_OPTION" ]; then
             MY_OPTION=1
-            YN_OPTION=$3
+            YN_OPTION="$3"
         elif [[ "$YN_OPTION" == 'y' ]]; then
             MY_OPTION=1
             YN_OPTION=1
@@ -1246,26 +1327,26 @@ read_input_yn()
             else
                 print_warning "$(localize "Wrong-Key-Ny")"
             fi
-            pause_function "read_input_yn $LINENO"
+            pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     done
-    write_log "read_input_yn [$3] answer $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    #write_log "read_input_yn [$3] answer $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # READ INPUT DEFAULT {{{
 NAME="read_input_default"
 USAGE="read_input_default"
-DESCRIPTION=$(localize "READ-INPUT-DEFAULT-DESC")
-NOTES=$(localize "READ-INPUT-DEFAULT-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "READ-INPUT-DEFAULT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "READ-INPUT-DEFAULT-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "READ-INPUT-DEFAULT-DESC"  "Read Keyboard Input and allow Edit of Default value."
-localize_info "READ-INPUT-DEFAULT-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-DEFAULT-DESC"  "Read Keyboard Input and allow Edit of Default value."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-DEFAULT-NOTES" "None."
 # -------------------------------------
 read_input_default()
 { 
@@ -1277,18 +1358,18 @@ read_input_default()
 # -----------------------------------------------------------------------------
 # READ INPUT DATA {{{
 NAME="read_input_data"
-USAGE=$(localize "READ-INPUT-DATA-USAGE")
-DESCRIPTION=$(localize "READ-INPUT-DATA-DESC")
-NOTES=$(localize "READ-INPUT-DATA-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "READ-INPUT-DATA-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "READ-INPUT-DATA-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "READ-INPUT-DATA-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "READ-INPUT-DATA-USAGE" "read_input_data 1->[Localized Prompt]"
-localize_info "READ-INPUT-DATA-DESC"  "Read Data."
-localize_info "READ-INPUT-DATA-NOTES" "Return value in variable OPTION"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-DATA-USAGE" "read_input_data 1->(Localized Prompt)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-DATA-DESC"  "Read Data."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-INPUT-DATA-NOTES" "Return value in variable OPTION"
 # -------------------------------------
 read_input_data()
 { 
@@ -1299,108 +1380,159 @@ read_input_data()
 # -----------------------------------------------------------------------------
 # VERIFY INPUT DEFAULT DATA {{{
 NAME="verify_input_default_data"
-USAGE="verify_input_default_data 1->[Prompt] 2->[Default-Value] 3->[Default 1=Yes or 0=No]"
-DESCRIPTION=$(localize "VERIFY-INPUT-DEFAULT-DATA-DESC")
-NOTES=$(localize "VERIFY-INPUT-DEFAULT-DATA-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "VERIFY-INPUT-DEFAULT-DATA-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "VERIFY-INPUT-DEFAULT-DATA-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "VERIFY-INPUT-DEFAULT-DATA-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "VERIFY-INPUT-DEFAULT-DATA-DESC"  "Verify Keyboard Input of Default Editable Value."
-localize_info "VERIFY-INPUT-DEFAULT-DATA-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DEFAULT-DATA-USAGE"     "verify_input_default_data 1->(Prompt) 2->(Default-Value) 3->(Default 1=Yes or 0=No)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DEFAULT-DATA-DESC"      "Verify Keyboard Input of Default Editable Value."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DEFAULT-DATA-NOTES"     "None."
 #
-localize_info "Enter" "Enter"
-localize_info "Verify" "Verify"
-localize_info "Can not be empty" "Can not be empty"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DEFAULT-DATA-ENTER"     "Enter"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DEFAULT-DATA-VERIFY"    "Verify"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DEFAULT-DATA-NOT-EMPTY" "Can not be empty"
 # -------------------------------------
 verify_input_default_data()
 { 
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     read_verify_input()
     {
         echo ""
-        read -e -p "$(localize "Enter") $(localize "$1") >" -i "$2" OPTION
+        read -e -p "$(localize "VERIFY-INPUT-DEFAULT-DATA-ENTER") $(localize "$1") >" -i "$2" OPTION
         echo ""
     }
     YN_OPTION=0
     while [[ "$YN_OPTION" -ne 1 ]]; do
         read_verify_input "$1" "$2"
-        read_input_yn "$(localize "Verify") $1: " "[$OPTION]" "$3"
+        read_input_yn "VERIFY-INPUT-DEFAULT-DATA-VERIFY" " $(localize "$1") :  [$OPTION]" "$3"
         if [ -z "$OPTION" ]; then
-            echo "$(localize "Can not be empty")!"
+            echo "$(localize "VERIFY-INPUT-DEFAULT-DATA-NOT-EMPTY")!"
             YN_OPTION=0
         fi
     done
-    write_log "verify_input_data $1 = $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    write_log "$FUNCNAME $1 = $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # VERIFY INPUT DATA {{{
 NAME="verify_input_data"
-USAGE="verify_input_data 1->[Prompt] 2->[Data]"
-DESCRIPTION=$(localize "VERIFY-INPUT-DATA-DESC")
-NOTES=$(localize "VERIFY-INPUT-DATA-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "VERIFY-INPUT-DATA-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "VERIFY-INPUT-DATA-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "VERIFY-INPUT-DATA-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "VERIFY-INPUT-DATA-DESC"  "verify input data."
-localize_info "VERIFY-INPUT-DATA-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DATA-USAGE" "verify_input_data 1->(Prompt) 2->(Data)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DATA-DESC"  "verify input data."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DATA-NOTES" "Localized."
 #
-localize_info "Enter" "Enter"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DATA-ENTER"  "Enter"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DATA-VERIFY" "Verify"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-INPUT-DATA-EMPTY" "Can not be empty"
 # -------------------------------------
 verify_input_data()
 { 
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     read_verify_input()
     {
-        read -p $"$(localize "Enter") $1 : " OPTION
+        read -p "$(localize "VERIFY-INPUT-DATA-ENTER") $(localize "$1") : " OPTION
     }
     YN_OPTION=0
     while [[ "$YN_OPTION" -ne 1 ]]; do
         read_verify_input "$1"
-        read_input_yn "$(localize "Verify") $1: " "[$OPTION]" "$2"
+        read_input_yn "VERIFY-INPUT-DATA-VERIFY" "$(localize "$1"): [$OPTION]" "$2"
         if [ -z "$OPTION" ]; then
-            echo "$(localize "Can not be empty")!"
+            echo "$(localize "VERIFY-INPUT-DATA-EMPTY")!"
             YN_OPTION=0
         fi
     done
-    write_log "verify_input_data $1 = $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    write_log "$FUNCNAME $1 = $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
 } 
 #}}}
 # -----------------------------------------------------------------------------
-# MAKE DIR {{{
-NAME="make_dir"
-USAGE="make_dir 1->[mydir] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "MAKE-DIR-DESC")
-NOTES=$(localize "MAKE-DIR-NOTES")
+# COMMENT FILE {{{
+NAME="comment_file"
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "COMMENT-FILE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "COMMENT-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "MAKE-DIR-DESC"  "Make Directory."
-localize_info "MAKE-DIR-NOTES" "return 0 if dir created."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COMMENT-FILE-USAGE" "comment_file 1->(Text) 2->(/FullPath/FileName.ext)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COMMENT-FILE-DESC"  "Given text of Line, Comment it out in File"
+#
+# -------------------------------------
+comment_file()
+{
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    sed -i '' 's/^${1}/#${1}/g' "$2"
+}
+# -----------------------------------------------------------------------------
+# UN-COMMENT FILE {{{
+NAME="un_comment_file"
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "UN-COMMENT-FILE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "UN-COMMENT-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
+AUTHOR="Flesher"
+VERSION="1.0"
+CREATED="11 SEP 2012"
+REVISION="5 Dec 2012"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UN-COMMENT-FILE-USAGE" "un_comment_file 1->(Text) 2->(/FullPath/FileName.ext)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UN-COMMENT-FILE-DESC"  "Given text of Line, un-Comment it out in File"
+#
+# -------------------------------------
+un_comment_file()
+{
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    sed -i '' 's/^#${1}/${1}/g' "$2"           
+}
+# -----------------------------------------------------------------------------
+# MAKE DIR {{{
+NAME="make_dir"
+USAGE="make_dir 1->(/Full/Path) 2->(&#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "MAKE-DIR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "MAKE-DIR-NOTES")
+AUTHOR="Flesher"
+VERSION="1.0"
+CREATED="11 SEP 2012"
+REVISION="5 Dec 2012"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAKE-DIR-DESC"  "Make Directory."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAKE-DIR-NOTES" "return 0 if dir created."
 # -------------------------------------
 make_dir()
 {
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if [[ -n "$1" ]]; then # Check for Empty
         [[ ! -d "$1" ]] && mkdir -pv "$1"
         if [ -d "$1" ]; then
-            write_log "make_dir $1 from $2 at $DATE_TIME" "$(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$SILENT_MODE" -eq 0 ]]; then
+                write_log "make_dir $1 from $2 at $DATE_TIME" "$(basename $BASH_SOURCE) : $LINENO"
+            fi
             return 0
         else
             write_error "make_dir $1 failed to create directory from line $2." "$(basename $BASH_SOURCE) : $LINENO"
-            write_log "Log" "$(basename $BASH_SOURCE) : $LINENO"
+            print_warning "make_dir $1 failed to create directory from line $2." "$(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "make_dir @ $(basename $BASH_SOURCE) : $LINENO"; fi
             return 1
         fi
     else
         write_error "Empty: make_dir [$1] failed to create directory from line $2." "$(basename $BASH_SOURCE) : $LINENO"
-        write_log "Log" "Empty: $LINENO"
+        print_warning "make_dir $1 failed to create directory from line $2." "$(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "make_dir @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -1410,20 +1542,21 @@ make_dir()
 # -----------------------------------------------------------------------------
 # MAKE FILE {{{
 NAME="make_file"
-USAGE="make_file 1->[FileName.ext] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "MAKE-FILE-DESC")
-NOTES=$(localize "MAKE-FILE-NOTES")
+USAGE="make_file 1->(FileName.ext) 2->(&#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "MAKE-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "MAKE-FILE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "MAKE-FILE-DESC"  "Make file."
-localize_info "MAKE-FILE-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAKE-FILE-DESC"  "Make file."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MAKE-FILE-NOTES" "None."
 # -------------------------------------
 make_file()
 {
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if [ -n "$1" && -n "$2" ]; then # Check for Empty
         [[ ! -f "$1" ]] && touch "$1"    
         if [ -f "$1" ]; then
@@ -1445,20 +1578,21 @@ make_file()
 # -----------------------------------------------------------------------------
 # IS WILDCARD FILE {{{
 NAME="is_wildcard_file"
-USAGE="is_wildcard_file 1->[/from/path/] 2->[filter]" 
-DESCRIPTION=$(localize "IS-WILDCARD-FILE-DESC")
-NOTES=$(localize "IS-WILDCARD-FILE-NOTES")
+USAGE="is_wildcard_file 1->(/from/path/) 2->(filter)" 
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-WILDCARD-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-WILDCARD-FILE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="12 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-WILDCARD-FILE-DESC"  "Test for Files: is_wildcard_file '/from/path/' 'log' # if *.log exist."
-localize_info "IS-WILDCARD-FILE-NOTES" "filter: if ' ' all, else use extension, do not pass 'Array' in * as wildcard. If looking for a '/path/.hidden' file, a /path/* fails, so use no wild card, i.e. /path/."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-WILDCARD-FILE-DESC"  "Test for Files: is_wildcard_file '/from/path/' 'log' # if &lowast;.log exist."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-WILDCARD-FILE-NOTES" "filter: if ' ' all, else use extension, do not pass 'Array' in &lowast; as wildcard. If looking for a '/path/.hidden' file, a /path/&lowast; fails, so use no wild card, i.e. /path/."
 # -------------------------------------
 is_wildcard_file()
 {
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     get_filter()
     {
         echo $(find "$1" -type f \( -name "*.$2" \))
@@ -1488,21 +1622,21 @@ is_wildcard_file()
 # -----------------------------------------------------------------------------
 # SAVE ARRAY {{{
 NAME="save_array"
-USAGE="save_array 1->[Array[@]] 2->[/Path] 3->[MenuName.ext]"
-DESCRIPTION=$(localize "SAVE-ARRAY-DESC")
-NOTES=$(localize "SAVE-ARRAY-NOTES")
+USAGE="save_array 1->(Array(@)) 2->(/Path) 3->(MenuName.ext)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SAVE-ARRAY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SAVE-ARRAY-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SAVE-ARRAY-DESC"  "Save Array."
-localize_info "SAVE-ARRAY-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-ARRAY-DESC"  "Save Array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-ARRAY-NOTES" "None."
 # -------------------------------------
 save_array()
 {
-    check_arg "save_array" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     make_dir "${2}" "$(basename $BASH_SOURCE) : $LINENO"
     local -a array=("${!1}")
     local -i total="${#array[@]}"
@@ -1519,21 +1653,21 @@ save_array()
 # -----------------------------------------------------------------------------
 # LOAD ARRAY {{{
 NAME="load_array"
-USAGE="Array=( &#36;(load_array 1->[\Path\ArrayName.ext] 2->[ArrarySize] 3->[Default Data] ) )"
-DESCRIPTION=$(localize "LOAD-ARRAY-DESC")
-NOTES=$(localize "LOAD-ARRAY-NOTES")
+USAGE="Array=( &#36;(load_array 1->(/Path/ArrayName.ext) 2->(ArrarySize) 3->(Default Data) ) )"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "LOAD-ARRAY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "LOAD-ARRAY-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "LOAD-ARRAY-DESC"  "Load a saved Array from Disk."
-localize_info "LOAD-ARRAY-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-ARRAY-DESC"  "Load a saved Array from Disk."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-ARRAY-NOTES" "None."
 # -------------------------------------
 load_array()
 {
-    check_arg "load_array" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if [[ -f "$1" ]]; then
         while read line; do 
             echo "$line" # Stored Data
@@ -1548,21 +1682,22 @@ load_array()
 # -----------------------------------------------------------------------------
 # CREATE DATA ARRAY {{{
 NAME="create_data_array"
-USAGE="create_data_array 1->[ArrarySize] 2->[Default Data]" 
-DESCRIPTION=$(localize "CREATE-DATA-ARRAY-DESC")
-NOTES=$(localize "CREATE-DATA-ARRAY-NOTES")
+USAGE="create_data_array 1->(ArrarySize) 2->(Default Data)" 
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CREATE-DATA-ARRAY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CREATE-DATA-ARRAY-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-DATA-ARRAY-DESC"  "Create Data Array."
-localize_info "CREATE-DATA-ARRAY-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-DATA-ARRAY-DESC"  "Create Data Array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-DATA-ARRAY-NOTES" "None."
 # -------------------------------------
 create_data_array()
 { 
-    check_arg "create_data_array" "2" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    [[ "$1" -eq 0 ]] && return 0
     for (( i=0; i<${1}; i++ )); do
         echo "$1" # Default Data
     done
@@ -1571,17 +1706,17 @@ create_data_array()
 # -----------------------------------------------------------------------------
 # IS NUMBER {{{
 NAME="is_number"
-USAGE="is_number 1->[value]"
-DESCRIPTION=$(localize "IS-NUMBER-DESC")
-NOTES=$(localize "IS-NUMBER-NOTES")
+USAGE="is_number 1->(value)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-NUMBER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-NUMBER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-NUMBER-DESC"  "Is Number."
-localize_info "IS-NUMBER-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-NUMBER-DESC"  "Is Number."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-NUMBER-NOTES" "None."
 # -------------------------------------
 is_number()
 { 
@@ -1595,25 +1730,25 @@ is_number()
 # -----------------------------------------------------------------------------
 # PRINT MENU {{{
 NAME="print_menu"
-USAGE="print_menu 1->[MenuArray[@]] 2->[MenuInfoArray[@]] 3->[Letter to Exit]" 
-DESCRIPTION=$(localize "PRINT-MENU-DESC")
-NOTES=$(localize "PRINT-MENU-NOTES")
+USAGE="print_menu 1->(MenuArray[@]) 2->(MenuInfoArray[@]) 3->(Letter to Exit)" 
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PRINT-MENU-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PRINT-MENU-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PRINT-MENU-DESC"  "Print Menu."
-localize_info "PRINT-MENU-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-MENU-DESC"  "Print Menu."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-MENU-NOTES" "Localized."
 #
-localize_info "MENU-Q" "Quit"
-localize_info "MENU-B" "Back"
-localize_info "MENU-D" "Done"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MENU-Q" "Quit"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MENU-B" "Back"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "MENU-D" "Done"
 # -------------------------------------
 print_menu()
 { 
-    check_arg "print_menu" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     local -a arrayMenu=("${!1}")     # Array 
     local -i total="${#arrayMenu[@]}"
     #
@@ -1663,22 +1798,22 @@ print_menu()
 # -----------------------------------------------------------------------------
 # ADD MENU ITEM {{{
 NAME="add_menu_item"
-USAGE=$(localize "ADD-MENU-ITEM-USAGE")
-DESCRIPTION=$(localize "ADD-MENU-ITEM-DESC")
-NOTES=$(localize "ADD-MENU-ITEM-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ADD-MENU-ITEM-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-MENU-ITEM-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-MENU-ITEM-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-MENU-ITEM-USAGE" "add_menu_item 1->[Checkbox_List_Array] 2->[Menu_Array] 3->[Info_Array] 4->[Menu Description in White] 5->[In Yellow] 6->[In Red]  7->[Information Printed Above Menu] 8->[MenuTheme_Array[@]]"
-localize_info "ADD-MENU-ITEM-DESC"  "Add Menu Item."
-localize_info "ADD-MENU-ITEM-NOTES" "Text should be Localize ID."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-MENU-ITEM-USAGE" "add_menu_item 1->(Checkbox_List_Array) 2->(Menu_Array) 3->(Info_Array) 4->(Menu Description in White) 5->(In Yellow) 6->(In Red) 7->(Information Printed Above Menu) 8->(MenuTheme_Array{@})"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-MENU-ITEM-DESC"  "Add Menu Item."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-MENU-ITEM-NOTES" "Text should be Localize ID."
 # -------------------------------------
 add_menu_item()
 { 
-    check_arg "add_menu_item" "8" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "8" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     # 1. Checkbox List Array
     # 2. Menu Array
     # 3. Info-Array
@@ -1710,10 +1845,10 @@ add_menu_item()
         write_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " "$(basename $BASH_SOURCE) : $LINENO"
     fi
     #
-    declare -a arrayTheme=("${!8}")     # Array 
-    typeset -i total_theme="${#arrayMenu[@]}"
-    if [[ "$total_theme" -eq 3 ]]; then
-        write_error "add_menu_item MenuTheme_Array value is total! total=$total Menu Description: $4 " "$(basename $BASH_SOURCE) : $LINENO"
+    declare -a arrayTheme=("${!8}")     # Theme Array 
+    local -i total_theme="${#arrayTheme[@]}"
+    if [[ "$total_theme" -ne 3 ]]; then
+        write_error "add_menu_item MenuTheme_Array should have 3 elements: total=$total Menu Description: $4 " "$(basename $BASH_SOURCE) : $LINENO"
         arrayTheme[0]="${Yellow}"
         arrayTheme[1]="${White}"
         arrayTheme[2]=")"
@@ -1727,29 +1862,31 @@ add_menu_item()
 # -----------------------------------------------------------------------------
 # REMOVE FILE {{{
 NAME="remove_file"
-USAGE="remove_file 1->[/full-path/from.ext] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "REMOVE-FILE-DESC")
-NOTES=$(localize "REMOVE-FILE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "REMOVE-FILE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-FILE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-FILE-DESC"  "Remove File if it exist."
-localize_info "REMOVE-FILE-NOTES" "if -f > rm -f."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FILE-USAGE"     "remove_file 1->(/full-path/from.ext) 2->(&#36;LINENO)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FILE-DESC"      "Remove File if it exist."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FILE-NOTES"     "if -f > rm -f."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FILE-NOT_FOUND" "Not Found"
 # -------------------------------------
 remove_file()
 {
-    check_arg "remove_file" "2" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if [ -f "$1" ]; then
         rm -f "$1"
-        write_log "remove_file $1" "$2"
+        write_log  "remove_file $1" "$2"
         print_this "remove_file $1"
         return 0
     else
-        write_error "remove_file Not Found [$1]" "$2"
-        print_warning "remove_file Not Found [$1]"
+        write_error   "REMOVE-FILE-NOT_FOUND" ": remove_file [$1] @ $2"
+        print_warning "REMOVE-FILE-NOT_FOUND" ": remove_file [$1] @ $2"
         return 1
     fi
 } 
@@ -1757,21 +1894,22 @@ remove_file()
 # -----------------------------------------------------------------------------
 # COPY FILE {{{
 NAME="copy_file"
-USAGE="copy_file 1->[/full-path/from.ext] 2->[/full-path/to_must_end_with_a_slash/] 3->[&#36;LINENO]"
-DESCRIPTION=$(localize "COPY-FILE-DESC")
-NOTES=$(localize "COPY-FILE-NOTES")
+USAGE="copy_file 1->(/full-path/from.ext) 2->(/full-path/to_must_end_with_a_slash/) 3->(&#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "COPY-FILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "COPY-FILE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "COPY-FILE-DESC"  "Copy File."
-localize_info "COPY-FILE-NOTES" "Creates Destination Folder if not exist. LINENO is for Logging and Debugging."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FILE-DESC"  "Copy File."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FILE-NOTES" "Creates Destination Folder if not exist. LINENO is for Logging and Debugging."
 # -------------------------------------
 copy_file()
 {
-    check_arg "copy_file" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    #check_arg "copy_file" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
     # 
     if [ ! -f "$1" ]; then
         write_error "File Not Found! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." "$(basename $BASH_SOURCE) : $LINENO"
@@ -1808,21 +1946,22 @@ copy_file()
 # -----------------------------------------------------------------------------
 # COPY FILES {{{
 NAME="copy_files"
-USAGE="copy_files 1->[/full-path/] 2->[ext] 3->[/full-path/to_must_end_with_a_slash/] 4->[&#36;LINENO]" # All files with .ext extentions
-USAGE+="copy_files 1->[/full-path/] 2->[ ]   3->[/full-path/to_must_end_with_a_slash/] 4->[&#36;LINENO]" # All files including .hidden
-DESCRIPTION=$(localize "COPY-FILES-DESC")
-NOTES=$(localize "COPY-FILES-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "COPY-FILES-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "COPY-FILES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "COPY-FILES-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "COPY-FILES-DESC"  "Creates Destination Folder if not exist. LINENO is for Logging and Debugging."
-localize_info "COPY-FILES-NOTES" "If looking for a '/path/.hidden' file, a /path/* fails, so use no wild card, i.e. /path/"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FILES-USAGE" "copy_files 1->(/full-path/) 2->(ext) 3->(/full-path/to_must_end_with_a_slash/) 4->(&#36;LINENO)<br />copy_files 1->(/full-path/) 2->( ) 3->(/full-path/to_must_end_with_a_slash/) 4->(&#36;LINENO)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FILES-DESC"  "Creates Destination Folder if not exist. LINENO is for Logging and Debugging."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FILES-NOTES" "If looking for a '/path/.hidden' file, a /path/&lowast; fails, so use no wild card, i.e. /path/"
 # -------------------------------------
 copy_files()
 {
+    [[ "$#" -ne "4" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if ! is_wildcard_file "$1" "$2" ; then # " " | "ext" 
         if [[ "$2" == " " ]]; then
             write_error "Files Not Found! copy_files->is_wildcard_file [$1] to [$3] failed to copy file from $4 at $DATE_TIME." "$(basename $BASH_SOURCE) : $LINENO"
@@ -1857,6 +1996,7 @@ copy_files()
                 write_log "copy_files -rfv [$1*.$2] to [$3] from $4 at $DATE_TIME" "$(basename $BASH_SOURCE) : $LINENO"
             fi
         else
+            print_warning "copy_files -rfv [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." "$(basename $BASH_SOURCE) : $LINENO"
             if [[ "$2" == " " ]]; then
                 write_error "copy_files -rfv [$1.] to [$3] failed to copy file from $4." "$(basename $BASH_SOURCE) : $LINENO"
             else
@@ -1876,21 +2016,21 @@ copy_files()
 # -----------------------------------------------------------------------------
 # COPY DIRECTORY {{{
 NAME="copy_dir"
-USAGE="copy_dir 1->[/full-path/] 2->[/full-path/to_must_end_with_a_slash/] 3->[&#36;LINENO]"
-DESCRIPTION=$(localize "COPY-DIRECTORY-DESC")
-NOTES=$(localize "COPY-DIRECTORY-NOTES")
+USAGE="copy_dir 1->(/full-path/) 2->(/full-path/to_must_end_with_a_slash/) 3->(&#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "COPY-DIRECTORY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "COPY-DIRECTORY-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "COPY-DIRECTORY-DESC"  "Copy Directory."
-localize_info "COPY-DIRECTORY-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-DIRECTORY-DESC"  "Copy Directory."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-DIRECTORY-NOTES" "None."
 # -------------------------------------
 copy_dir()
 {
-    check_arg "copy_dir" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     #
     if [[ -z "$1" ]]; then
         write_error "Empty from path: copy_dir [$1] to [$2] failed to copy file from $3 at $DATE_TIME." "$(basename $BASH_SOURCE) : $LINENO"
@@ -1928,18 +2068,18 @@ copy_dir()
 # IS INTERNET {{{
 NAME="is_internet"
 USAGE="is_internet"
-DESCRIPTION=$(localize "IS-INTERNET-DESC")
-NOTES=$(localize "IS-INTERNET-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-INTERNET-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-INTERNET-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-INTERNET-DESC"  "Check if Internet is up by Pinging two Major DNS servers."
-localize_info "IS-INTERNET-NOTES" "This pings google.com and wikipedia.org; they are good to ping to see if the Internet is up."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-INTERNET-DESC"  "Check if Internet is up by Pinging two Major DNS servers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-INTERNET-NOTES" "This pings google.com and wikipedia.org; they are good to ping to see if the Internet is up."
 #
-localize_info "IS-INTERNET-INFO" "Checking for Internet Connection..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-INTERNET-INFO" "Checking for Internet Connection..."
 # -------------------------------------
 is_internet()
 {
@@ -1950,22 +2090,45 @@ is_internet()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# -------------------------- Array Functions ----------------------------------
-# -----------------------------------------------------------------------------
-# ARRAY PUSH {{{
-NAME="array_push"
-USAGE=$(localize "ARRAY-PUSH-USAGE")
-DESCRIPTION=$(localize "ARRAY-PUSH-DESC")
-NOTES=$(localize "ARRAY-PUSH-NOTES")
+# IS ONLINE {{{
+NAME="is_online"
+USAGE="is_online 1->(url)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-ONLINE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-ONLINE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ARRAY-PUSH-USAGE" "array_push 1->[array] 2->[Element]"
-localize_info "ARRAY-PUSH-DESC"  "Push Element into an Array."
-localize_info "ARRAY-PUSH-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-ONLINE-DESC"  "Check if URL can be Pinged through the Internet."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-ONLINE-NOTES" "This pings URL passed in."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-ONLINE-INFO" "Checking URL for Internet Connection..."
+# -------------------------------------
+is_online()
+{
+    print_info "IS-INTERNET-INFO"
+    ((ping -w5 -c3 "$1") > /dev/null 2>&1) && return 0 || return 1
+}
+#}}}
+# -----------------------------------------------------------------------------
+# -------------------------- Array Functions ----------------------------------
+# -----------------------------------------------------------------------------
+# ARRAY PUSH {{{
+NAME="array_push"
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ARRAY-PUSH-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ARRAY-PUSH-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ARRAY-PUSH-NOTES")
+AUTHOR="Flesher"
+VERSION="1.0"
+CREATED="11 SEP 2012"
+REVISION="5 Dec 2012"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ARRAY-PUSH-USAGE" "array_push 1->(array) 2->(Element)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ARRAY-PUSH-DESC"  "Push Element into an Array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ARRAY-PUSH-NOTES" "None."
 # -------------------------------------
 array_push()
 {
@@ -1975,24 +2138,24 @@ array_push()
 # -----------------------------------------------------------------------------
 # REMOVE FROM ARRAY {{{
 NAME="remove_from_array"
-USAGE=$(localize "REMOVE-FROM-ARRAY-USAGE")
-DESCRIPTION=$(localize "REMOVE-FROM-ARRAY-DESC")
-NOTES=$(localize "REMOVE-FROM-ARRAY-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "REMOVE-FROM-ARRAY-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-FROM-ARRAY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-FROM-ARRAY-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-FROM-ARRAY-USAGE" "remove_from_array 1->[array] 2->[Element]"
-localize_info "REMOVE-FROM-ARRAY-DESC"  "Remove Element from an Array."
-localize_info "REMOVE-FROM-ARRAY-NOTES" "Pass in Array by name 'array'."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FROM-ARRAY-USAGE" "remove_from_array 1->(array) 2->(Element)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FROM-ARRAY-DESC"  "Remove Element from an Array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FROM-ARRAY-NOTES" "Pass in Array by name 'array'."
 #
-localize_info "REMOVE-FROM-ARRAY-ERROR"  "Wrong Paramaters passed to remove_from_array"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-FROM-ARRAY-ERROR" "Wrong Parameters passed to remove_from_array"
 # -------------------------------------
 remove_from_array()
 {
-    if [ "$#" -ne "2" ]; then echo "REMOVE-FROM-ARRAY-ERROR"; exit 1; fi
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     # Check to see if its in Array    
     if is_in_array "$1[@]" "$2" ; then
         eval "local -a array=(\${$1[@]})"
@@ -2005,17 +2168,17 @@ remove_from_array()
 # -----------------------------------------------------------------------------
 # GET INDEX {{{
 NAME="get_index"
-USAGE="get_index 1->[array[@]] 2->[Search]"
-DESCRIPTION=$(localize "GET-INDEX-DESC")
-NOTES=$(localize "GET-INDEX-NOTES")
+USAGE="get_index 1->(array[@]) 2->(Search)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-INDEX-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-INDEX-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-INDEX-DESC"  "Get Index into an Array."
-localize_info "GET-INDEX-NOTES" "Bombs if not found; but finds errors in data; you could ask for data; but if its not in Array; this is a bug in Data not logic."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-INDEX-DESC"  "Get Index into an Array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-INDEX-NOTES" "Bombs if not found; but finds errors in data; you could ask for data; but if its not in Array; this is a bug in Data not logic."
 # -------------------------------------
 get_index() 
 {
@@ -2040,17 +2203,17 @@ declare -a REMOVED_INDEXES=( "" )
 #
 # ADD REMOVED INDEX {{{
 NAME="add_removed_index"
-USAGE="add_removed_index 1->[Index to remove]"
-DESCRIPTION=$(localize "ADD-REMOVED-INDEX-DESC")
-NOTES=$(localize "ADD-REMOVED-INDEX-NOTES")
+USAGE="add_removed_index 1->(Index to remove)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-REMOVED-INDEX-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-REMOVED-INDEX-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-REMOVED-INDEX-DESC"  "Add Removed Index."
-localize_info "ADD-REMOVED-INDEX-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-REMOVED-INDEX-DESC"  "Add Removed Index."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-REMOVED-INDEX-NOTES" "None."
 # -------------------------------------
 add_removed_index()
 {
@@ -2064,17 +2227,17 @@ add_removed_index()
 # -----------------------------------------------------------------------------
 # REMOVE ARRAY INDEXES {{{
 NAME="remove_array_indexes"
-USAGE="remove_array_indexes 1->[Array of indexs to remove]"
-DESCRIPTION=$(localize "REMOVE-ARRAY-INDEXES-DESC")
-NOTES=$(localize "REMOVE-ARRAY-INDEXES-NOTES")
+USAGE="remove_array_indexes 1->(Array of indexs to remove)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-ARRAY-INDEXES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-ARRAY-INDEXES-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-ARRAY-INDEXES-DESC"  "Remove array indexes."
-localize_info "REMOVE-ARRAY-INDEXES-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-ARRAY-INDEXES-DESC"  "Remove array indexes."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-ARRAY-INDEXES-NOTES" "None."
 # -------------------------------------
 remove_array_indexes()
 {
@@ -2101,23 +2264,23 @@ remove_array_indexes()
 # -----------------------------------------------------------------------------
 # REMOVE ARRAY DUPLICATES {{{
 NAME="remove_array_duplicates"
-USAGE="remove_array_duplicates 1->[Search]"
-DESCRIPTION=$(localize "REMOVE-ARRAY-DUPLICATES-DESC")
-NOTES=$(localize "REMOVE-ARRAY-DUPLICATES-NOTES")
+USAGE="remove_array_duplicates 1->(Search)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-ARRAY-DUPLICATES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-ARRAY-DUPLICATES-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-ARRAY-DUPLICATES-DESC"  "Remove array duplicates."
-localize_info "REMOVE-ARRAY-DUPLICATES-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-ARRAY-DUPLICATES-DESC"  "Remove array duplicates."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-ARRAY-DUPLICATES-NOTES" "None."
 # -------------------------------------
 remove_array_duplicates()
 {
     # Test Code
     # MY_ARR=("MY" "MY" "2" "2" "LIST" "LIST" "OK")
-    # typeset -i total=${#MY_ARR[@]}
+    # local -i total=${#MY_ARR[@]}
     # echo ${MY_ARR[@]} # Prints: MY MY 2 2 LIST LIST OK
     # MY_ARR=( $(remove_dups MY_ARR[@]) )
     # echo ${MY_ARR[@]} # Prints: MY 2 LIST OK    declare -a array=("${!1}")
@@ -2152,17 +2315,17 @@ remove_array_duplicates()
 # -----------------------------------------------------------------------------
 # REMOVE DUPLICATES {{{
 NAME="remove_duplicates"
-USAGE="remove_duplicates 1->[Search]"
-DESCRIPTION=$(localize "REMOVE-DUPLICATES-DESC")
-NOTES=$(localize "REMOVE-DUPLICATES-NOTES")
+USAGE="remove_duplicates 1->(Search)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-DUPLICATES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-DUPLICATES-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-DUPLICATES-DESC"  "remove duplicates in Array."
-localize_info "REMOVE-DUPLICATES-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-DUPLICATES-DESC"  "remove duplicates in Array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-DUPLICATES-NOTES" "None."
 # -------------------------------------
 remove_duplicates()
 {
@@ -2174,17 +2337,17 @@ remove_duplicates()
 # ----------------------------------------------------------------------------- 
 # IS LAST ITEM {{{
 NAME="is_last_item"
-USAGE="is_last_item 1->[array[@]] 2->[search]"
-DESCRIPTION=$(localize "IS-LAST-ITEM-DESC")
-NOTES=$(localize "IS-LAST-ITEM-NOTES")
+USAGE="is_last_item 1->(array[@]) 2->(search)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-LAST-ITEM-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-LAST-ITEM-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-LAST-ITEM-DESC"  "is last item in array."
-localize_info "IS-LAST-ITEM-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-LAST-ITEM-DESC"  "is last item in array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-LAST-ITEM-NOTES" "None."
 # -------------------------------------
 is_last_item() 
 {
@@ -2206,83 +2369,103 @@ is_last_item()
 # ----------------------------------------------------------------------------- 
 # WRITE ERROR {{{
 NAME="write_error"
-USAGE="write_error 1->[Error] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "WRITE-ERROR-DESC")
-NOTES=$(localize "WRITE-ERROR-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "WRITE-ERROR-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "WRITE-ERROR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "WRITE-ERROR-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "WRITE-ERROR-DESC"  "Write Error to log."
-localize_info "WRITE-ERROR-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-ERROR-USAGE" "write_error 1->(Error) 2->(&#36;LINENO) and other useful information."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-ERROR-DESC"  "Write Error to log."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-ERROR-NOTES" "Localized."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-ERROR-ARG"   "Wrong Number of Arguments passed to write_error!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NOT-FOUND"   "Not Found"
 # -------------------------------------
 write_error()
 {
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [ ! -f "$ERROR_LOG" ]; then
+        [[ ! -d "$LOG_PATH" ]] && (mkdir -pv "$LOG_PATH")
+        touch "$ERROR_LOG"
+    fi
     echo "$(localize "$1") ($2)" >> "$ERROR_LOG"
 }
 #}}}
 # ----------------------------------------------------------------------------- 
 # WRITE LOG {{{
 NAME="write_log"
-USAGE="write_log 1->[Log] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "WRITE-LOG-DESC")
-NOTES=$(localize "WRITE-LOG-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "WRITE-LOG-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "WRITE-LOG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "WRITE-LOG-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "WRITE-LOG-DESC"  "Write Log Entry."
-localize_info "WRITE-LOG-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-LOG-USAGE" "write_log 1->(Log) 2->(&#36;LINENO) and other useful information."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-LOG-DESC"  "Write Log Entry."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-LOG-NOTES" "Localized."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE-LOG-ARG"   "Wrong Number of Arguments passed to write_log!"
 # -------------------------------------
 write_log()
 {
+    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [ ! -f "$ACTIVITY_LOG" ]; then
+        [[ ! -d "$LOG_PATH" ]] && (mkdir -pv "$LOG_PATH")
+        touch "$ACTIVITY_LOG"
+    fi
     echo "$(localize "$1") ($2)"  >> "$ACTIVITY_LOG"
 }
 #}}}
 # ----------------------------------------------------------------------------- 
 # CLEAR LOGS {{{
 NAME="clear_logs"
-USAGE="clear_logs 1->[Log] 2->[&#36;LINENO]"
-DESCRIPTION=$(localize "CLEAR-LOGS-DESC")
-NOTES=$(localize "CLEAR-LOGS-NOTES")
+USAGE="clear_logs 1->(Log) 2->(&#36;LINENO)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CLEAR-LOGS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CLEAR-LOGS-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CLEAR-LOGS-DESC"  "Clear all Log Entries."
-localize_info "CLEAR-LOGS-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CLEAR-LOGS-DESC"  "Clear all Log Entries."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CLEAR-LOGS-NOTES" "None."
 # -------------------------------------
 clear_logs()
 {
-    make_dir "$LOG_PATH" "$(basename $BASH_SOURCE) : $LINENO"
-    make_dir "$MENU_PATH" "$(basename $BASH_SOURCE) : $LINENO"
+    echo "Clearing Log Files..."
+    make_dir "$LOG_PATH"    "$(basename $BASH_SOURCE) : $LINENO"
+    make_dir "$MENU_PATH"   "$(basename $BASH_SOURCE) : $LINENO"
     make_dir "$CONFIG_PATH" "$(basename $BASH_SOURCE) : $LINENO"
+    echo "Creaded Log Folders"
     copy_file "${ERROR_LOG}"    "${ERROR_LOG}.last.log"    "$(basename $BASH_SOURCE) : $LINENO"
     copy_file "${ACTIVITY_LOG}" "${ACTIVITY_LOG}.last.log" "$(basename $BASH_SOURCE) : $LINENO"
     echo "# Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "$ERROR_LOG"
     echo "# Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME."  > "$ACTIVITY_LOG"
+    echo "Logs Cleared"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # IS USER {{{
 NAME="is_user"
-USAGE="is_user 1->[USERNAME]"
-DESCRIPTION=$(localize "IS-USER-DESC")
-NOTES=$(localize "IS-USER-NOTES")
+USAGE="is_user 1->(USERNAME)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-USER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-USER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-USER-DESC"  "Checks if USERNAME exist."
-localize_info "IS-USER-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-USER-DESC"  "Checks if USERNAME exist."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-USER-NOTES" "None."
 # -------------------------------------
 is_user()
 {
@@ -2293,17 +2476,17 @@ is_user()
 # -----------------------------------------------------------------------------
 # ADD USER GROUP {{{
 NAME="add_user_group"
-USAGE="add_user_group 1->[Group Name]"
-DESCRIPTION=$(localize "ADD-USER-GROUP-DESC")
-NOTES=$(localize "ADD-USER-GROUP-NOTES")
+USAGE="add_user_group 1->(Group Name)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-USER-GROUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-USER-GROUP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-USER-GROUP-DESC"  "Add User group."
-localize_info "ADD-USER-GROUP-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-USER-GROUP-DESC"  "Add User group."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-USER-GROUP-NOTES" "None."
 # -------------------------------------
 add_user_group()
 {
@@ -2318,18 +2501,18 @@ add_user_group()
 # -----------------------------------------------------------------------------
 # REMOVE USER GROUP {{{
 NAME="add_user_group"
-USAGE=$(localize "REMOVE-USER-GROUP-USAGE")
-DESCRIPTION=$(localize "REMOVE-USER-GROUP-DESC")
-NOTES=$(localize "REMOVE-USER-GROUP-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "REMOVE-USER-GROUP-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-USER-GROUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-USER-GROUP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-USER-GROUP-USAGE" "remove_user_group 1->[Group Name]"
-localize_info "REMOVE-USER-GROUP-DESC"  "Remove User group."
-localize_info "REMOVE-USER-GROUP-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-USER-GROUP-USAGE" "remove_user_group 1->(Group Name)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-USER-GROUP-DESC"  "Remove User group."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-USER-GROUP-NOTES" "None."
 # -------------------------------------
 remove_user_group()
 {
@@ -2341,17 +2524,17 @@ remove_user_group()
 # -----------------------------------------------------------------------------
 # IS USER IN GROUP {{{
 NAME="is_user_in_group"
-USAGE="is_user_in_group 1->[GroupName]"
-DESCRIPTION=$(localize "IS-USER-IN-GROUP-DESC")
-NOTES=$(localize "IS-USER-IN-GROUP-NOTES")
+USAGE="is_user_in_group 1->(GroupName)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-USER-IN-GROUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-USER-IN-GROUP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-USER-IN-GROUP-DESC"  "is user in group."
-localize_info "IS-USER-IN-GROUP-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-USER-IN-GROUP-DESC"  "is user in group."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-USER-IN-GROUP-NOTES" "None."
 # -------------------------------------
 is_user_in_group()
 {
@@ -2362,17 +2545,17 @@ is_user_in_group()
 # -----------------------------------------------------------------------------
 # ADD USER 2 GROUP {{{
 NAME="add_user_2_group"
-USAGE="add_user_2_group 1->[GroupName]"
-DESCRIPTION=$(localize "ADD-USER-2-GROUP-DESC")
-NOTES=$(localize "ADD-USER-2-GROUP-NOTES")
+USAGE="add_user_2_group 1->(GroupName)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-USER-2-GROUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-USER-2-GROUP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-USER-2-GROUP-DESC"  "Add User to Group."
-localize_info "ADD-USER-2-GROUP-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-USER-2-GROUP-DESC"  "Add User to Group."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-USER-2-GROUP-NOTES" "None."
 # -------------------------------------
 add_user_2_group()
 {
@@ -2387,17 +2570,17 @@ add_user_2_group()
 # -----------------------------------------------------------------------------
 # IS GROUP {{{
 NAME="is_group"
-USAGE="is_group 1->[GROUPNAME]"
-DESCRIPTION=$(localize "IS-GROUP-DESC")
-NOTES=$(localize "IS-GROUP-NOTES")
+USAGE="is_group 1->(GROUPNAME)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-GROUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "IS-GROUP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-GROUP-DESC"  "Is Group."
-localize_info "IS-GROUP-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-GROUP-DESC"  "Is Group."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-GROUP-NOTES" "None."
 # -------------------------------------
 is_group()
 {
@@ -2408,17 +2591,17 @@ is_group()
 # -----------------------------------------------------------------------------
 # ADD GROUP {{{
 NAME="add_group"
-USAGE="add_group 1->[GroupName]"
-DESCRIPTION=$(localize "ADD-GROUP-DESC")
-NOTES=$(localize "ADD-GROUP-NOTES")
+USAGE="add_group 1->(GroupName)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-GROUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-GROUP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-GROUP-DESC"  "Add Group."
-localize_info "ADD-GROUP-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-GROUP-DESC"  "Add Group."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-GROUP-NOTES" "None."
 # -------------------------------------
 add_group()
 {
@@ -2434,22 +2617,24 @@ add_group()
 # GET COUNTRY CODES {{{
 NAME="country_list"
 USAGE="country_list"
-DESCRIPTION=$(localize "GET-COUNTRY-CODES-DESC")
-NOTES=$(localize "GET-COUNTRY-CODES-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-COUNTRY-CODES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-COUNTRY-CODES-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-COUNTRY-CODES-DESC"  "country list."
-localize_info "GET-COUNTRY-CODES-NOTES" "Sets COUNTRY."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-DESC"  "country list."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-NOTES" "Sets COUNTRY."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-SELECT" "Select your Country:"
 # -------------------------------------
 country_list()
 {
     #`reflector --list-countries | sed 's/[0-9]//g' | sed 's/^/"/g' | sed 's/,.*//g' | sed 's/ *$//g'  | sed 's/$/"/g' | sed -e :a -e '$!N; s/\n/ /; ta'`
     PS3="$prompt1"
-    echo "Select your country:"
+    print_info "GET-COUNTRY-CODES-SELECT"
     select COUNTRY in "${COUNTRIES[@]}"; do
         if contains_element "$COUNTRY" "${COUNTRIES[@]}"; then
           break
@@ -2463,21 +2648,25 @@ country_list()
 # GET COUNTRY CODES {{{
 NAME="get_country_codes"
 USAGE="get_country_codes"
-DESCRIPTION=$(localize "GET-COUNTRY-CODES-DESC")
-NOTES=$(localize "GET-COUNTRY-CODES-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-COUNTRY-CODES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-COUNTRY-CODES-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-COUNTRY-CODES-DESC"  "Get Country Code and set Counter."
-localize_info "GET-COUNTRY-CODES-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-DESC"  "Get Country Code and set Counter."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-NOTES" "None."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-WARN"  "You must enter your Country correctly, no validation is done!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-INPUT" "Country Code for Mirror List: (US) "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODES-TITLE" "Country Code for Mirror List"
 # -------------------------------------
 get_country_codes() 
 {
     # I pull the code from Locale, so it should always be right, so no need for a menu; default should work.
-    print_title "Country Code for Mirror List - https://www.archlinux.org/mirrorlist/"
+    print_title "GET-COUNTRY-CODES-TITLE" " - https://www.archlinux.org/mirrorlist/"
     print_this $"Australia     = AU | Belarus       = BY | Belgium       = BE"
     print_line
     print_this $"Brazil        = BR | Bulgaria      = BG | Canada        = CA"
@@ -2510,9 +2699,9 @@ get_country_codes()
     print_line
     print_this $"Uzbekistan    = UZ | Viet Nam = VN"
     print_line
-    print_warning "You must enter your Country corectly, no validation is done!"
+    print_warning "GET-COUNTRY-CODES-WARN"
     #
-    read_input_default "Country Code for Mirror List: [US] " "${LOCALE#*_}"
+    read_input_default "GET-COUNTRY-CODES-INPUT" "${LOCALE#*_}"
     COUNTRY_CODE=`echo "$OPTION" | tr '[:lower:]' '[:upper:]'`  # Upper case only
     COUNTRY="${COUNTRIES[$(get_index "COUNTRY_CODES[@]" "$COUNTRY_CODE")]}"
 }   
@@ -2521,18 +2710,18 @@ get_country_codes()
 # GET COUNTRY CODE {{{
 NAME="get_country_code"
 USAGE="get_country_code"
-DESCRIPTION=$(localize "GET-COUNTRY-CODE-DESC")
-NOTES=$(localize "GET-COUNTRY-CODE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-COUNTRY-CODE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-COUNTRY-CODE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-COUNTRY-CODE-DESC"  "Get Country and Country Code."
-localize_info "GET-COUNTRY-CODE-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODE-DESC"  "Get Country and Country Code."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-COUNTRY-CODE-NOTES" "Localized."
 #
-localize_info "Confirm Country Code" "Confirm Country Code"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Confirm Country Code" "Confirm Country Code"
 # -------------------------------------
 get_country_code() 
 {
@@ -2548,22 +2737,22 @@ get_country_code()
 # GET ROOT PASSWORD {{{
 NAME="get_root_password"
 USAGE="get_root_password"
-DESCRIPTION=$(localize "GET-ROOT-PASSWORD-DESC")
-NOTES=$(localize "GET-ROOT-PASSWORD-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-ROOT-PASSWORD-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-ROOT-PASSWORD-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-ROOT-PASSWORD-DESC"   "Get root password."
-localize_info "GET-ROOT-PASSWORD-NOTES"  "This shows the password on screen; not very secure, but its used so you can see the password, you don't want a mistake putting in passwords."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-DESC"   "Get root password."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-NOTES"  "This shows the password on screen; not very secure, but its used so you can see the password, you do not want a mistake putting in passwords."
 #
-localize_info "GET-ROOT-PASSWORD-TITLE"  "root"
-localize_info "GET-ROOT-PASSWORD-INFO-1" "No Special Characters, until I figure out how to do this."
-localize_info "GET-ROOT-PASSWORD-INFO-2" "Enter Root Password."
-localize_info "GET-ROOT-PASSWORD-VD"     "root Password"
-localize_info "GET-ROOT-PASSWORD-INFO-3" "Root Password is Set."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-TITLE"  "root"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-INFO-1" "No Special Characters, until I figure out how to do this."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-INFO-2" "Enter Root Password."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-VD"     "root Password"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-PASSWORD-INFO-3" "Root Password is Set."
 # -------------------------------------
 get_root_password()
 {
@@ -2582,21 +2771,21 @@ get_root_password()
 # GET USER NAME {{{
 NAME="get_user_name"
 USAGE="get_user_name"
-DESCRIPTION=$(localize "GET-USER-NAME-DESC")
-NOTES=$(localize "GET-USER-NAME-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-USER-NAME-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-USER-NAME-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-USER-NAME-DESC"  "Get User Name."
-localize_info "GET-USER-NAME-NOTES" "Sets USERNAME."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-NAME-DESC"   "Get User Name."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-NAME-NOTES"  "Sets USERNAME."
 #
-localize_info "GET-USER-NAME-TITLE" "User"
-localize_info "GET-USER-NAME-INFO-1" "No Special Characters, until I figure out how to do this."
-localize_info "GET-USER-NAME-INFO-2" "Enter User Name."
-localize_info "GET-USER-NAME-VD" "User Name"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-NAME-TITLE"  "User"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-NAME-INFO-1" "No Special Characters, until I figure out how to do this."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-NAME-INFO-2" "Enter User Name."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-NAME-VD"     "User Name"
 # -------------------------------------
 get_user_name()
 {
@@ -2613,29 +2802,29 @@ get_user_name()
 # GET USER PASSWORD {{{
 NAME="get_user_password"
 USAGE="get_user_password"
-DESCRIPTION=$(localize "GET-USER-PASSWORD-DESC")
-NOTES=$(localize "GET-USER-PASSWORD-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-USER-PASSWORD-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-USER-PASSWORD-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-USER-PASSWORD-DESC"   "get user password."
-localize_info "GET-USER-PASSWORD-NOTES"  "Password in clear text."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-DESC"   "get user password."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-NOTES"  "Password in clear text."
 #
-localize_info "GET-USER-PASSWORD-TITLE"  "User"
-localize_info "GET-USER-PASSWORD-INFO-1" "No Special Characters, until I figure out how to do this."
-localize_info "GET-USER-PASSWORD-INFO-2" "Enter User Password."
-localize_info "GET-USER-PASSWORD-VD"     "User Password for"
-localize_info "GET-USER-PASSWORD-INFO-3" "User Name and Password is Set."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-TITLE"  "User"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-INFO-1" "No Special Characters, until I figure out how to do this."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-INFO-2" "Enter User Password for"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-VD"     "User Password"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-USER-PASSWORD-INFO-3" "User Name and Password is Set."
 # -------------------------------------
 get_user_password()
 {
     print_title "GET-USER-PASSWORD-TITLE" " - https://wiki.archlinux.org/index.php/Users_and_Groups"
-    print_info "GET-USER-PASSWORD-INFO-1"
-    print_info "GET-USER-PASSWORD-INFO-2"
-    verify_input_data "GET-USER-PASSWORD-VD" " ${USERNAME}" 1
+    print_info  "GET-USER-PASSWORD-INFO-1"
+    print_info  "GET-USER-PASSWORD-INFO-2" ": ${USERNAME}"
+    verify_input_data "GET-USER-PASSWORD-VD" 1
     USERPASSWD="$OPTION"
     print_title "GET-USER-PASSWORD-TITLE" "https://wiki.archlinux.org/index.php/Users_and_Groups"
     print_info  "GET-USER-PASSWORD-INFO-3"
@@ -2646,32 +2835,32 @@ get_user_password()
 # GET LOCALE {{{
 NAME="get_locale"
 USAGE="get_locale"
-DESCRIPTION=$(localize "GET-LOCALE-DESC")
-NOTES=$(localize "GET-LOCALE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-LOCALE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-LOCALE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-LOCALE-DESC"     "Get Locale."
-localize_info "GET-LOCALE-NOTES"    "Used to get a Locale."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-DESC"     "Get Locale."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-NOTES"    "Used to get a Locale."
 #
-localize_info "GET-LOCALE-TITLE"    "LOCALE"
-localize_info "GET-LOCALE-INFO-1"   "Locales are used in Linux to define which language the user uses."
-localize_info "GET-LOCALE-INFO-2"   "As the locales define the character sets being used as well, setting up the correct locale is especially important if the language contains non-ASCII characters."
-localize_info "GET-LOCALE-INFO-3"   "We can only initize those Locales that are Available, if not in list, Install Language and rerun script."
-localize_info "GET-LOCALE-SELECT"   "Select your Language Locale:"
-localize_info "GET-LOCALE-TITLE-2"  "LANGUAGE/LOCALE"
-localize_info "GET-LOCALE-INFO-4"   "Locales are used in Linux to define which language the user uses."
-localize_info "GET-LOCALE-INFO-5"   "As the locales define the character sets being used as well, setting up the correct locale is especially important if the language contains non-ASCII characters."
-localize_info "GET-LOCALE-INFO-6"   "We can only initize those Locales that are Available, if not in list, Install Language and rerun script."
-localize_info "GET-LOCALE-INFO-7"   "First list shows all Available Languages, if yours is not in list choose No, then a full list will appear."
-localize_info "GET-LOCALE-INFO-8"   "Pick your Primary Language first, then you have an option to select as many languages as you wish."
-localize_info "GET-LOCALE-CONFIRM"  "Confirm Language Locale"
-localize_info "GET-LOCALE-DEFAULT"  "Use Default System Language" 
-localize_info "GET-LOCALE-ADD-MORE" "Add more Locales"
-localize_info "GET-LOCALE-EDIT"     "Edit system language [ex: en_US]: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-TITLE"    "LOCALE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-1"   "Locales are used in Linux to define which language the user uses."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-2"   "As the locales define the character sets being used as well, setting up the correct locale is especially important if the language contains non-ASCII characters."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-3"   "We can only initialize those Locales that are Available, if not in list, Install Language and rerun script."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-SELECT"   "Select your Language Locale:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-TITLE-2"  "LANGUAGE/LOCALE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-4"   "Locales are used in Linux to define which language the user uses."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-5"   "As the locales define the character sets being used as well, setting up the correct locale is especially important if the language contains non-ASCII characters."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-6"   "We can only initialize those Locales that are Available, if not in list, Install Language and rerun script."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-7"   "First list shows all Available Languages, if yours is not in list choose No, then a full list will appear."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-INFO-8"   "Pick your Primary Language first, then you have an option to select as many languages as you wish."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-CONFIRM"  "Confirm Language Locale"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-DEFAULT"  "Use Default System Language" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-ADD-MORE" "Add more Locales"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-LOCALE-EDIT"     "Edit system language (ex: en_US): "
 # -------------------------------------
 get_locale()
 {
@@ -2762,20 +2951,20 @@ get_locale()
 # -----------------------------------------------------------------------------
 # YES NO {{{
 NAME="yes_no"
-USAGE="yes_no 1->[0=no, 1=yes]"
-DESCRIPTION=$(localize "YES-NO-DESC")
-NOTES=$(localize "YES-NO-NOTES")
+USAGE="yes_no 1->(0=no, 1=yes)"
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "YES-NO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "YES-NO-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "YES-NO-DESC"  "Convert Digital to Analog."
-localize_info "YES-NO-NOTES" "Localized. Used to Show simple settings."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "YES-NO-DESC"  "Convert Digital to Analog."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "YES-NO-NOTES" "Localized. Used to Show simple settings."
 #
-localize_info "YES" "Yes"
-localize_info "NO"  "No" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "YES" "Yes"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NO"  "No" 
 # -------------------------------------
 yes_no()
 {
@@ -2790,20 +2979,20 @@ yes_no()
 # SELECT CREATE USER {{{
 NAME="select_create_user"
 USAGE="select_create_user"
-DESCRIPTION=$(localize "SELECT-CREATE-USER-DESC")
-NOTES=$(localize "SELECT-CREATE-USER-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SELECT-CREATE-USER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SELECT-CREATE-USER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SELECT-CREATE-USER-DESC"  "select user."
-localize_info "SELECT-CREATE-USER-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SELECT-CREATE-USER-DESC"  "select user."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SELECT-CREATE-USER-NOTES" "None."
 #
-localize_info "SUDO-WARNING" "WARNING: THE SELECTED USER MUST HAVE SUDO PRIVILEGES"
-localize_info "Create-new-user" "Create new user"
-localize_info "SELECT-CREATE-USER-AVAILABLE-USERS" "Avaliable Users: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SUDO-WARNING" "WARNING: THE SELECTED USER MUST HAVE SUDO PRIVILEGES"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Create-new-user" "Create new user"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SELECT-CREATE-USER-AVAILABLE-USERS" "Available Users: "
 # -------------------------------------
 select_create_user()
 {
@@ -2835,20 +3024,20 @@ select_create_user()
 # FIX NETWORK {{{
 NAME="fix_network"
 USAGE="fix_network"
-DESCRIPTION=$(localize "FIX-NETWORK-DESC")
-NOTES=$(localize "FIX-NETWORK-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "FIX-NETWORK-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "FIX-NETWORK-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "FIX-NETWORK-DESC"  "Fix Network."
-localize_info "FIX-NETWORK-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-NETWORK-DESC"  "Fix Network."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-NETWORK-NOTES" "None."
 #
-localize_info "FIX-NETWORK-NETWORKMANAGER" "Restarting networkmanager via systemctl..."
-localize_info "FIX-NETWORK-WICD"           "Restarting wicd via systemctl..."
-localize_info "FIX-NETWORK-TRIED-TO-FIX"   "Tried to fix network connection; you may have to run this script again."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-NETWORK-NETWORKMANAGER" "Restarting networkmanager via systemctl..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-NETWORK-WICD"           "Restarting wicd via systemctl..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-NETWORK-TRIED-TO-FIX"   "Tried to fix network connection; you may have to run this script again."
 # -------------------------------------
 fix_network()
 {
@@ -2902,37 +3091,39 @@ fix_network()
 # NETWORK TROUBLESHOOTING {{{
 NAME="network_troubleshooting"
 USAGE="network_troubleshooting"
-DESCRIPTION=$(localize "NETWORK-TROUBLESHOOTING-DESC")
-NOTES=$(localize "NETWORK-TROUBLESHOOTING-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "NETWORK-TROUBLESHOOTING-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NETWORK-TROUBLESHOOTING-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "NETWORK-TROUBLESHOOTING-DESC"    "Network Troubleshooting."
-localize_info "NETWORK-TROUBLESHOOTING-NOTES"   "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-DESC"    "Network Troubleshooting."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-NOTES"   "None."
 #
-localize_info "NETWORK-TROUBLESHOOTING-TITLE"   "Network Troubleshooting"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-1"  "Network Debugging"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-2"  "Networkmanager: install and start, this is always the best way to start troubleshooting."
-localize_info "NETWORK-TROUBLESHOOTING-INFO-3"  "Disk Resolv: Edit/Review namerservers.txt on disk, then copy it to local disk."
-localize_info "NETWORK-TROUBLESHOOTING-INFO-4"  "Local Resolv:Edit/Review local /etc/resolv.conf"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-5"  "Identify which network interfaces"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-6"  "Link status: "
-localize_info "NETWORK-TROUBLESHOOTING-INFO-7"  "IP Address: "
-localize_info "NETWORK-TROUBLESHOOTING-INFO-8"  "Ping: "
-localize_info "NETWORK-TROUBLESHOOTING-INFO-9"  "Devices: Show all ethx that are active"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-10" "Show Users: "
-localize_info "NETWORK-TROUBLESHOOTING-INFO-11" "Static IP: "
-localize_info "NETWORK-TROUBLESHOOTING-INFO-12" "Gateway: "
-localize_info "NETWORK-TROUBLESHOOTING-INFO-13" "Quit"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-14" "Indentify"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-15" "Link status"
-localize_info "NETWORK-TROUBLESHOOTING-INFO-16" "Network Debugging"
-localize_info "NETWORK-TROUBLESHOOTING-RD-1"    "Enter IP address [192.168.1.2] "
-localize_info "NETWORK-TROUBLESHOOTING-RD-2"    "Enter IP Mask [255.255.255.0 = 24] "
-localize_info "NETWORK-TROUBLESHOOTING-RD-3"    "Enter IP address for Gateway [192.168.1.1] "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-TITLE"   "Network Troubleshooting"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-1"  "Network Debugging"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-2"  "Networkmanager: install and start, this is always the best way to start troubleshooting."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-3"  "Disk Resolv: Edit/Review namerservers.txt on disk, then copy it to local disk."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-4"  "Local Resolv:Edit/Review local /etc/resolv.conf"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-5"  "Identify which network interfaces"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-6"  "Link status: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-7"  "IP Address: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-8"  "Ping: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-9"  "Devices: Show all ethx that are active"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-10" "Show Users: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-11" "Static IP: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-12" "Gateway: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-13" "Quit"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-14" "Identify"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-15" "Link status"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-INFO-16" "Network Debugging"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-RD-1"    "Enter IP address (192.168.1.2) "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-RD-2"    "Enter IP Mask (255.255.255.0 = 24) "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-RD-3"    "Enter IP address for Gateway (192.168.1.1) "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-SELECT"  "Select an Option:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "NETWORK-TROUBLESHOOTING-NIC"     "Select a NIC:"
 # -------------------------------------
 network_troubleshooting()
 {
@@ -2958,7 +3149,8 @@ network_troubleshooting()
         #                   1              2              3             4          5         6         7          8         9         10           11        12
         NETWORK_TROUBLE=("Networkmanager" "Disk Resolv" "Local Resolv" "Identify" "Link" "IP address" "Ping"  "Devices" "Show Users" "Static IP" "Gateway" "Quit");
         PS3="$prompt1"
-        echo -e "Select an Option:\n"
+        print_this "NETWORK-TROUBLESHOOTING-SELECT"
+        echo ""
         select OPT in "${NETWORK_TROUBLE[@]}"; do
             case "$REPLY" in
                 1)
@@ -2979,7 +3171,7 @@ network_troubleshooting()
                     break
                     ;;
                 4)
-                    # Indentify
+                    # Identify
                     print_info "NETWORK-TROUBLESHOOTING-INFO-14" ": ip a "
                     ip a
                     pause_function "network_troubleshooting $LINENO"
@@ -3038,7 +3230,8 @@ network_troubleshooting()
                     print_info  "NETWORK-TROUBLESHOOTING-INFO-16"
                     # Add Static IP address
                     PS3="$prompt1"
-                    echo -e "Select a NIC:\n"
+                    print_this "NETWORK-TROUBLESHOOTING-NIC"
+                    echo ""
                     select OPT in "${NIC[@]}"; do
                         case "$REPLY" in
                             1)
@@ -3095,24 +3288,27 @@ network_troubleshooting()
 # GET KEYBOARD LAYOUT {{{
 NAME="get_keyboard_layout"
 USAGE="get_keyboard_layout"
-DESCRIPTION=$(localize "GET-KEYBOARD-LAYOUT-DESC")
-NOTES=$(localize "GET-KEYBOARD-LAYOUT-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-KEYBOARD-LAYOUT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-KEYBOARD-LAYOUT-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-KEYBOARD-LAYOUT-DESC"  "Get Keyboard Layout, makes changes for some variants."
-localize_info "GET-KEYBOARD-LAYOUT-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-KEYBOARD-LAYOUT-DESC"   "Get Keyboard Layout, makes changes for some variants."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-KEYBOARD-LAYOUT-NOTES"  "None."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-KEYBOARD-LAYOUT-TITLE"  "Keymap."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-KEYBOARD-LAYOUT-SELECT" "Select keyboard layout:"
 # -------------------------------------
 get_keyboard_layout()
 {
     if [[ "$LANGUAGE" == 'es_ES' ]]; then
-        print_title "https://wiki.archlinux.org/index.php/KEYMAP"
+        print_title "GET-KEYBOARD-LAYOUT-TITLE" "https://wiki.archlinux.org/index.php/KEYMAP"
         KBLAYOUT=("es" "latam");
         PS3="$prompt1"
-        echo -e "Select keyboard layout:"
+        print_info "GET-KEYBOARD-LAYOUT-SELECT"
         select KBRD in "${KBLAYOUT[@]}"; do
             KEYBOARD="$KBRD"
         done
@@ -3123,22 +3319,23 @@ get_keyboard_layout()
 # CONFIGURE KEYMAP {{{
 NAME="configure_keymap"
 USAGE="configure_keymap"
-DESCRIPTION=$(localize "CONFIGURE-KEYMAP-DESC")
-NOTES=$(localize "CONFIGURE-KEYMAP-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-KEYMAP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONFIGURE-KEYMAP-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-KEYMAP-DESC"    "Allows user to decide if they wish to change the Default Keymap."
-localize_info "CONFIGURE-KEYMAP-NOTES"   "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-KEYMAP-DESC"    "Allows user to decide if they wish to change the Default Keymap."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-KEYMAP-NOTES"   "None."
 #
-localize_info "Load-Keymap"              "Load Keymap"
-localize_info "Confirm-Keymap"           "Confirm Keymap"
-localize_info "CONFIGURE-KEYMAP-TITLE"   "KEYMAP"
-localize_info "CONFIGURE-KEYMAP-INFO"    "The KEYMAP variable is specified in the /etc/rc.conf file. It defines what keymap the keyboard is in the virtual consoles. Keytable files are provided by the kbd package."
-localize_info "CONFIGURE-KEYMAP-DEFAULT" "If Default is ok, then no changes needed: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Load-Keymap"              "Load Keymap"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Confirm-Keymap"           "Confirm Keymap"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-KEYMAP-TITLE"   "KEYMAP"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-KEYMAP-INFO"    "The KEYMAP variable is specified in the /etc/rc.conf file. It defines what keymap the keyboard is in the virtual consoles. Keytable files are provided by the kbd package."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-KEYMAP-DEFAULT" "If Default is ok, then no changes needed: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-KEYMAP-LAYOUT"  "Keyboard Layout (ex: us-acentos): "
 # -------------------------------------
 configure_keymap()
 {
@@ -3152,7 +3349,7 @@ configure_keymap()
                 loadkeys $KEYMAP
                 break
             elif [[ "$KEYMAP" == more ]]; then
-                read -p "Type your Keyboard Layout [ex: us-acentos]: " KEYMAP
+                read -p "CONFIGURE-KEYMAP-LAYOUT" KEYMAP
                 loadkeys $KEYMAP
                 break
             else
@@ -3200,23 +3397,23 @@ configure_keymap()
 # GET EDITOR {{{
 NAME="get_editor"
 USAGE="get_editor"
-DESCRIPTION=$(localize "GET-EDITOR-DESC")
-NOTES=$(localize "GET-EDITOR-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-EDITOR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-EDITOR-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-EDITOR-DESC"  "This gets called from Boot mode and Live mode; it does not add software, only ask if you wish to change the default editor, called from the create_config function."
-localize_info "GET-EDITOR-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-DESC"  "This gets called from Boot mode and Live mode; it does not add software, only ask if you wish to change the default editor, called from the create_config function."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-NOTES" "None."
 #
-localize_info "Default-Editor"       "Do you wish to change the Default Editor of "
-localize_info "GET-EDITOR-TITLE"     "DEFAULT EDITOR"
-localize_info "GET-EDITOR-INSTALLED" "Installed Editor(s): "
-localize_info "GET-EDITOR-EDITORS"   "Editors"
-localize_info "GET-EDITOR-DEFAULT"   "Default-Editor"
-localize_info "GET-EDITOR-SELECT"    "Select default editor:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Default-Editor"       "Do you wish to change the Default Editor of "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-TITLE"     "DEFAULT EDITOR"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-INSTALLED" "Installed Editor(s): "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-EDITORS"   "Editors"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-DEFAULT"   "Default-Editor"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-EDITOR-SELECT"    "Select default editor:"
 # -------------------------------------
 get_editor()
 {
@@ -3230,7 +3427,7 @@ get_editor()
     read_input_yn "GET-EDITOR-DEFAULT" "$EDITOR" 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
-        echo -e "GET-EDITOR-SELECT"
+        print_this "GET-EDITOR-SELECT"
         select OPT in "${EDITORS[@]}"; do
             case "$REPLY" in
                 1)
@@ -3265,16 +3462,16 @@ get_editor()
 # SELECT EDITOR {{{
 NAME="select_editor"
 USAGE="select_editor"
-DESCRIPTION=$(localize "SELECT-EDITOR-DESC")
-NOTES=$(localize "SELECT-EDITOR-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SELECT-EDITOR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SELECT-EDITOR-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SELECT-EDITOR-DESC"  "This gets called from Boot mode only; it installs on the Boot OS, and schedules an install on the Live OS."
-localize_info "SELECT-EDITOR-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SELECT-EDITOR-DESC"  "This gets called from Boot mode only; it installs on the Boot OS, and schedules an install on the Live OS."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SELECT-EDITOR-NOTES" "None."
 # -------------------------------------
 select_editor()
 {
@@ -3297,34 +3494,37 @@ select_editor()
 # CONFIGURE TIMEZONE {{{
 NAME="configure_timezone"
 USAGE="configure_timezone"
-DESCRIPTION=$(localize "CONFIGURE-TIMEZONE-DESC")
-NOTES=$(localize "CONFIGURE-TIMEZONE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-TIMEZONE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONFIGURE-TIMEZONE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-TIMEZONE-DESC"   "Configure Timezone."
-localize_info "CONFIGURE-TIMEZONE-NOTES"  "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-TIMEZONE-DESC"    "Configure Timezone."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-TIMEZONE-NOTES"   "None."
 #
-localize_info "Default-Timezone"          "Is the Default Timezone Correct"
-localize_info "Confirm-Timezone"          "Confirm Timezone "
-localize_info "CONFIGURE-TIMEZONE-TITLE"  "TIMEZONE"
-localize_info "CONFIGURE-TIMEZONE-INFO-1" "In an operating system the time (clock) is determined by four parts: Time value, Time standard, Time Zone, and DST (Daylight Saving Time if applicable)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Default-Timezone"           "Is the Default Timezone Correct"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Confirm-Timezone"           "Confirm Timezone "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-TIMEZONE-TITLE"   "TIMEZONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-TIMEZONE-INFO-1"  "In an operating system the time (clock) is determined by four parts: Time value, Time standard, Time Zone, and DST (Daylight Saving Time if applicable)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-TIMEZONE-ZONE"    "Select zone:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-TIMEZONE-SUBZONE" "Select subzone:"
 # -------------------------------------
 configure_timezone()
 {
     settimezone()
     {
+        # @FIX Localize?
         local zone=("Africa" "America" "Antarctica" "Arctic" "Asia" "Atlantic" "Australia" "Brazil" "Canada" "Chile" "Europe" "Indian" "Mexico" "Midest" "Pacific" "US");
         PS3="$prompt1"
-        echo "Select zone:"
+        echo "CONFIGURE-TIMEZONE-ZONE"
         select ZONE in "${zone[@]}"; do
             if contains_element "$ZONE" ${zone[@]}; then
                 local subzone=(`ls /usr/share/zoneinfo/$ZONE/`)
                 PS3="$prompt1"
-                echo "Select subzone:"
+                echo "CONFIGURE-TIMEZONE-SUBZONE"
                 select SUBZONE in "${subzone[@]}"; do
                 if contains_element "$SUBZONE" ${subzone[@]}; then
                     add_packagemanager "remove_file \"/etc/localtime\" \"$LINENO\"; ln -s /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" "RUN-TIMEZONE"
@@ -3346,75 +3546,81 @@ configure_timezone()
         settimezone
         read_input_yn "Confirm-Timezone" "($ZONE/$SUBZONE)" 1
     done
-    if [[ "${MOUNTPOINT}" != " " ]]; then
+    if [[ "$RUNTIME_MODE" -eq 2 ]]; then # Live Mode
         if [[ "$DRIVE_FORMATED" -eq 1 ]]; then
             touch ${MOUNTPOINT}/etc/timezone
             echo "${ZONE}/${SUBZONE}" > ${MOUNTPOINT}/etc/timezone
-            copy_file ${MOUNTPOINT}/etc/timezone "${SCRIPT_DIR}/etc/timezone" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_file ${MOUNTPOINT}/etc/timezone "${FULL_SCRIPT_PATH}/etc/timezone" "$(basename $BASH_SOURCE) : $LINENO"
         else
-            echo "${ZONE}/${SUBZONE}" > "${SCRIPT_DIR}/etc/timezone" 
+            echo "${ZONE}/${SUBZONE}" > "${FULL_SCRIPT_PATH}/etc/timezone" 
         fi
-    else
-        echo "${ZONE}/${SUBZONE}" > "${SCRIPT_DIR}/etc/timezone"
+    else # Boot Mode
+        echo "${ZONE}/${SUBZONE}" > "${FULL_SCRIPT_PATH}/etc/timezone"
     fi
 }
 #}}}
 # -----------------------------------------------------------------------------
-localize_info "SCRIPT-ID1" "Arch Linux Wizard Installation Script"
-localize_info "SCRIPT-ID2" "Versions"
-localize_info "SCRIPT-ID3" "Last updated"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SCRIPT-ID1" "Arch Linux Wizard Installation Script"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SCRIPT-ID2" "Versions"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SCRIPT-ID3" "Last updated"
 TEXT_SCRIPT_ID="$(localize "SCRIPT-ID1"): $SCRIPT_NAME $(localize "SCRIPT-ID2"): $SCRIPT_VERSION $(localize "SCRIPT-ID3"): $LAST_UPDATE"
 # Menu
-localize_info "Make-Choose" "Make a Choose:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Make-Choose" "Make a Choose:"
 declare StatusBar=$(localize "Make-Choose")
 declare StatusBar2=""
 # PROMPT {{{
-localize_info "ENTER-OPTION" "Enter your option: "
-localize_info "ENTER-OPTIONS" "Enter n° of options (ex: 1 2 3 or 1-3): "
-localize_info "" ""
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ENTER-OPTION"  "Enter your option: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ENTER-OPTIONS" "Enter n of options (ex: 1 2 3 or 1-3): " # n°
 prompt1=$(localize "ENTER-OPTION")
 prompt2=$(localize "ENTER-OPTIONS")
 #}}}
 # All others that need to run before function is hit
-localize_info "LOCALIZER-COMPLETED" "Localizer Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZER-COMPLETED" "Localizer Completed."
 # Help file Localization
-localize_info "CREATE-HELP-USAGE"   "create_help 1->[NAME of Function.] 2->[USAGE] 3->[DESCRIPTION] 4->[NOTES] 5->[AUTHOR] 6->[VERSION] 7->[CREATED] 8->[REVISION] 9->[Source File and LINENO]"
-localize_info "CREATE-HELP-DESC"    "Create an HTML Help File on the Fly"
-localize_info "CREATE-HELP-NOTES"   "This Allows easy reading and Look up of all Functions in Program. This Function must be first Function all scripts see."
-localize_info "CREATE-HELP-WORKING" "Create Help Working"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-HELP-USAGE"   "create_help 1->(NAME of Function.) 2->(USAGE) 3->(DESCRIPTION) 4->(NOTES) 5->(AUTHOR) 6->(VERSION) 7->(CREATED) 8->(REVISION) 9->(Source File and LINENO)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-HELP-DESC"    "Create an HTML Help File on the Fly"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-HELP-NOTES"   "This Allows easy reading and Look up of all Functions in Program. This Function must be first Function all scripts see."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-HELP-WORKING" "Create Help Working"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-HELP-ERROR"    "Help Array Empty!"
 # Help file Localization
-localize_info "PRINT-HELP-DESC"  "Print an HTML Help File on the Fly"
-localize_info "PRINT-HELP-NOTES" "This Allows easy reading and Look up of all Functions in Program."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-HELP-DESC"  "Print an HTML Help File on the Fly"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PRINT-HELP-NOTES" "This Allows easy reading and Look up of all Functions in Program."
 # Help file Localization
-localize_info "CHECK-ARG-USAGE"     "check_arg 1->[Function Name] 2->[Number of Arguments] 3->[Total Arguments] 3->[&#36;LINENO]"
-localize_info "CHECK-ARG-DESC"      "check arguments for correct number passed into function"
-localize_info "CHECK-ARG-NOTES"     "Make sure this function comes at the top of the stack."
-localize_info "CHECK-ARG-ERROR-1"   "check_arg requires 4 aruments: check_arg 1->'Function Name' 2->'Number of Arguments' 3->'Total Arguments' 2->'&#36;LINENO'"
-localize_info "CHECK-ARG-ERROR-2"   "Error Wrong number of Arguments passed in; function name"
-localize_info "CHECK-ARG-EXPECTING" "expecting"
-localize_info "CHECK-ARG-FOUND"     "found"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-USAGE"     "check_arg 1->(Function Name) 2->(Number of Arguments) 3->(Total Arguments) 3->(&#36;LINENO)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-DESC"      "check arguments for correct number passed into function"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-NOTES"     "Make sure this function comes at the top of the stack."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-ERROR-1"   "check_arg requires 4 arguments: check_arg 1->'Function Name' 2->'Number of Arguments' 3->'Total Arguments' 2->'&#36;LINENO'"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-ERROR-2"   "Error Wrong number of Arguments passed in; function name"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-EXPECTING" "expecting"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-ARG-FOUND"     "found"
 # Help file Localization
-localize_info "TRIM-DESC"   "Remove space on Right and Left of string"
-localize_info "TRIM-NOTES"  "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(trim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(trim &#34;&#36;MY_SPACE&#34;)|&#34;"
-localize_info "LTRIM-NOTES" "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(ltrim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(ltrim &#34;&#36;MY_SPACE&#34;)|&#34;"
-localize_info "RTRIM-NOTES" "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(rtrim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(rtrim &#34;&#36;MY_SPACE&#34;)|&#34;"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TRIM-DESC"   "Remove space on Right and Left of string"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TRIM-NOTES"  "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(trim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(trim &#34;&#36;MY_SPACE&#34;)|&#34;"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LTRIM-NOTES" "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(ltrim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(ltrim &#34;&#36;MY_SPACE&#34;)|&#34;"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RTRIM-NOTES" "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(rtrim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(rtrim &#34;&#36;MY_SPACE&#34;)|&#34;"
 # Help file Localization
-localize_info "LEFT-TRIM-DESC"  "Remove space on Left of string"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LEFT-TRIM-DESC"  "Remove space on Left of string"
 # Help file Localization
-localize_info "RIGHT-TRIM-DESC"  "Remove space on Right of string"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RIGHT-TRIM-DESC"  "Remove space on Right of string"
 # Help file Localization
-localize_info "IS-IN-ARRAY-USAGE" "is_in_array 1->[Array[@]] 2->[Search]"
-localize_info "IS-IN-ARRAY-DESC"  "Is Search in Array[@]; return true (0) if found"
-localize_info "IS-IN-ARRAY-NOTES" "Use of Global ARR_INDEX can be used in array index: if is_in_array 'Array[@]' 'Search' ; then MyArray[ARR_INDEX]=1 ; fi; much like get_index; which bombs on not found; takes more code to write it."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-IN-ARRAY-USAGE" "is_in_array 1->(Array{@}) 2->(Search)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-IN-ARRAY-DESC"  "Is Search in Array{@}; return true (0) if found"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-IN-ARRAY-NOTES" "Use of Global ARR_INDEX can be used in array index: if is_in_array 'Array{@}' 'Search' ; then MyArray{ARR_INDEX}=1 ; fi; much like get_index; which bombs on not found; takes more code to write it."
 # Help file Localization
-localize_info "LOAD-2D-ARRAY-DESC"  "Load a saved 2D Array from Disk"
-localize_info "LOAD-2D-ARRAY-NOTES" "This Function Expects a file, bombs if not found."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-2D-ARRAY-DESC"  "Load a saved 2D Array from Disk"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-2D-ARRAY-NOTES" "This Function Expects a file, bombs if not found."
 # Help file Localization
-localize_info "LOCALIZE-SAVE-DESC"  "Localize ID and Message in &#36;{FULL_SCRIPT_PATH}/Localize/en.po file."
-localize_info "LOCALIZE-SAVE-NOTES" "Localization Support"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-SAVE-USAGE" "localize 1->(Localize ID) 2->(Message to Localize) 3->(Print this with no Localization)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-SAVE-DESC"  "Localize ID and Message in &#36;{FULL_SCRIPT_PATH}/Localize/en.po file."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-SAVE-NOTES" "Localization Support"
 # Help file Localization
-localize_info "LOCALIZE-INFO-DESC"  "Localize Info creates the &#36;{FULL_SCRIPT_PATH}/Localize/en.po file used for Localization."
-localize_info "LOCALIZE-INFO-NOTES" "Localized."
-localize_info "LOCALIZE-INFO-USAGE" "localize_info 1->[Localize ID] 2->[Message to Localize]"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-INFO-DESC"  "Localize Info creates the &#36;{FULL_SCRIPT_PATH}/Localize/en.po file used for Localization."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-INFO-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOCALIZE-INFO-USAGE" "localize_info 1->(Localize ID) 2->(Message to Localize)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-LOCALIZER-WORKING" "Create Localizer Working..."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRONG-NUMBER-ARGUMENTS-PASSED-TO" "Wrong Number of Arguments passed to "
+
+echo "wizard.sh Loaded"
 # ************************************* END OF SCRIPT *************************
 
