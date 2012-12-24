@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="17 Dec 2012 16:33"
+# LAST_UPDATE="22 Dec 2012 16:33"
 # SCRIPT_VERSION="1.0"
 #
 # VARIABLES {{{
@@ -8,13 +8,6 @@
 MOUNTPOINT="/mnt"
 # Instructions: on boot up of Arch ISO, mkdir usb, cd usb, call this script: path = /root/usb/; this is not hard coded; only a reference.
 #
-LOG_PATH="${SCRIPT_DIR}/LOG"
-CONFIG_PATH="${SCRIPT_DIR}/CONFIG"
-USER_FOLDER="${SCRIPT_DIR}/USER"
-CONFIG_NAME="archwiz"
-ERROR_LOG="${LOG_PATH}/${CONFIG_NAME}-error.log"
-ACTIVITY_LOG="${LOG_PATH}/${CONFIG_NAME}-activity.log"
-SCRIPT_LOG="${LOG_PATH}/${CONFIG_NAME}-script.log"
 CUSTOM_PACKAGES_NAME="Packages"
 AUR_REPO_NAME="AUR-Packages" # ${USERNAME}
 CUSTOM_PACKAGES="${FULL_SCRIPT_PATH}/${CUSTOM_PACKAGES_NAME}" # mount path of script: /root/usb/Packages
@@ -24,7 +17,7 @@ CUSTOM_REPO_NAME="custom"
 INSTALL_DEVICE='sda'
 SCRIPT_DEVICE='sdb1'
 #
-AUR=`echo -e "Arch User Repository (AUR)"`
+AUR="Arch User Repository (AUR)"
 declare -i PACMAN_OPTIMIZER=0
 declare -i PACMAN_REPO_TYPE=1 # 0=None, 1=Server, 2=Client
 declare -i INSTALL_NO_INTERNET=0
@@ -76,7 +69,7 @@ declare -i CUSTOM_MIRRORLIST=0
 declare -i SAFE_MODE=0
 declare -i FLESH=0
 declare -i VIDEO_CARD=7
-declare -a VIDEO_CARDS=("nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "Skip");
+declare -a VIDEO_CARDS=( "nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "Skip" );
 #
 NETWORK_MANAGER="networkmanager" # or wicd
 #
@@ -174,10 +167,10 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALLED-CORE-USAGE" "installed_core 1->[package-name]"
-localize_info "INSTALLED-CORE-DESC"  "Installed core"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALLED-CORE-USAGE" "installed_core 1->(package-name)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALLED-CORE-DESC"  "Installed core"
 # -------------------------------------
 installed_core()
 {
@@ -198,10 +191,10 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "FAILED-INSTALL-CORE-USAGE" "failed-install_core 1->[package-name]"
-localize_info "FAILED-INSTALL-CORE-DESC"  "Failed install core"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FAILED-INSTALL-CORE-USAGE" "failed-install_core 1->(package-name)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FAILED-INSTALL-CORE-DESC"  "Failed install core"
 # -------------------------------------
 failed_install_core()
 {
@@ -222,10 +215,10 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALLED-AUR-USAGE" "installed_aur 1->[package-name]"
-localize_info "INSTALLED-AUR-DESC"  "Installed aur"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALLED-AUR-USAGE" "installed_aur 1->(package-name)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALLED-AUR-DESC"  "Installed aur"
 # -------------------------------------
 installed_aur()
 {
@@ -246,10 +239,10 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "FAILED-INSTALL-AUR-USAGE" "failed_install_aur 1->[package-name]"
-localize_info "FAILED-INSTALL-AUR-DESC"  "Failed install aur"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FAILED-INSTALL-AUR-USAGE" "failed_install_aur 1->(package-name)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FAILED-INSTALL-AUR-DESC"  "Failed install aur"
 # -------------------------------------
 failed_install_aur()
 {
@@ -270,11 +263,11 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CHECK-PACKAGE-USAGE" "check_package 1->[Single-Package-to-Check Or Multiple Packages]"
-localize_info "CHECK-PACKAGE-DESC"  "checks package(s) to see if they are installed in pacman."
-localize_info "CHECK-PACKAGE-NOTES" "I have seen this fail for one or more packages that were already install: mate; so I added -Qm for this reason."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-USAGE" "check_package 1->(Single-Package-to-Check Or Multiple Packages)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-DESC"  "checks package(s) to see if they are installed in pacman."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-NOTES" "I have seen this fail for one or more packages that were already install: mate; so I added -Qm for this reason."
 # -------------------------------------
 check_package()
 {
@@ -302,9 +295,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SET-LANGUAGE-DESC"  "Set Language: Used to set Languages for packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-LANGUAGE-DESC"  "Set Language: Used to set Languages for packages"
 # -------------------------------------
 set_language()
 {
@@ -359,11 +352,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REFRESH-PACMAN-DESC"  "Refresh pacman"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REFRESH-PACMAN-DESC"  "Refresh pacman"
 #
-localize_info "REFRESH-PACMAN-INFO"  "Refresh Pacman Database..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REFRESH-PACMAN-INFO"  "Refresh Pacman Database..."
 # -------------------------------------
 refresh_pacman()
 {
@@ -384,11 +377,11 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SYSTEM-UPDATE-DESC"  "Full pacman System Upgrade: Set a var so you do not do this every call, then perform a pacman-optimize"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SYSTEM-UPDATE-DESC"  "Full pacman System Upgrade: Set a var so you do not do this every call, then perform a pacman-optimize"
 #
-localize_info "SYSTEM-UPDATE-INFO"  "UPDATING YOUR Pacman SYSTEM"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SYSTEM-UPDATE-INFO"  "UPDATING YOUR Pacman SYSTEM"
 # -------------------------------------
 system_upgrade()
 {
@@ -433,11 +426,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "UPDATE-SYSTEM-DESC"  "Update system"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UPDATE-SYSTEM-DESC"  "Update system"
 #
-localize_info "UPDATE-SYSTEM-INFO"  "Update system"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UPDATE-SYSTEM-INFO"  "Update system"
 # -------------------------------------
 update_system()
 {
@@ -460,15 +453,15 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "DOWNLOAD-AUR-REPO-PACKAGES-DESC"  "Download AUR Repository Packages: download all AUR Repository Packages into one folder, unarchive them, compile them, and copy package to Custom Package Repo"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-AUR-REPO-PACKAGES-DESC"  "Download AUR Repository Packages: download all AUR Repository Packages into one folder, unarchive them, compile them, and copy package to Custom Package Repo"
 #
-localize_info "DOWNLOAD-AUR-REPO-PACKAGES-NO-PACKAGES"          "No packages in download_aur_repo_packages; create Software Configuration first."
-localize_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING"          "Downloading AUR Repository with"
-localize_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING-PACKAGE"  "AUR downloading package"
-localize_info "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL"         "aur_download_packages Failed to download package"
-localize_info "DOWNLOAD-AUR-REPO-PACKAGES-COMPLETED"            "Download AUR Repo Packages Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-AUR-REPO-PACKAGES-NO-PACKAGES"          "No packages in download_aur_repo_packages; create Software Configuration first."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING"          "Downloading AUR Repository with"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING-PACKAGE"  "AUR downloading package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL"         "aur_download_packages Failed to download package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-AUR-REPO-PACKAGES-COMPLETED"            "Download AUR Repo Packages Completed"
 # -------------------------------------
 download_aur_repo_packages()
 {
@@ -477,7 +470,7 @@ download_aur_repo_packages()
     pacman -Syyu
     local all_packages=""
     if [ "${#AUR_PACKAGES}" -gt 0 ]; then
-        typeset -i total="${#AUR_PACKAGES[@]}"
+        local -i total="${#AUR_PACKAGES[@]}"
         for (( i=0; i<${total}; i++ )); do
             all_packages="$all_packages ${AUR_PACKAGES[$i]}"
         done
@@ -531,20 +524,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "COPY-CUSTOM-REPO-USAGE" "copy_custom_repo 1->[/From-Full-Path] 2->[Repo Name] 3->[/To-Full-Path/]"
-localize_info "COPY-CUSTOM-REPO-DESC"  "Copy Custom Repository"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-CUSTOM-REPO-USAGE" "copy_custom_repo 1->(/From-Full-Path) 2->(Repo Name) 3->(/To-Full-Path/)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-CUSTOM-REPO-DESC"  "Copy Custom Repository"
 #
-localize_info "COPY-CUSTOM-REPO-INFO"  "Copying Custom Repository..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-CUSTOM-REPO-INFO"  "Copying Custom Repository..."
 # -------------------------------------
 copy_custom_repo()
 {
     check_arg "copy_custom_repo" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
     print_info ""COPY-CUSTOM-REPO-INFO""
-    copy_file  "${1}/${2}.db.tar.gz" "$3" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file  "${1}/${2}.db.tar.gz" "$3"          "$(basename $BASH_SOURCE) : $LINENO"
     copy_file  "${1}/${2}.db.tar.gz" "${3}${2}.db" "$(basename $BASH_SOURCE) : $LINENO" # rename it to db
-    copy_files "${1}/" "xz" "$3" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_files "${1}/"               "xz" "$3"     "$(basename $BASH_SOURCE) : $LINENO"
     #copy_files "/var/lib/pacman/sync/" "db" "${MOUNTPOINT}/var/lib/pacman/sync/" "$(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
@@ -558,33 +551,33 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "DOWNLOAD-REPO-PACKAGES-DESC"  "Download Repository Packages: download all Arch/Repository Packages into one folder, unarchive them, compile them, and copy package to Custom Package Repo."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-DESC"  "Download Repository Packages: download all Arch/Repository Packages into one folder, unarchive them, compile them, and copy package to Custom Package Repo."
 #
-localize_info "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES"   "No Packages: create Software Configuration first: "
-localize_info "DOWNLOAD-REPO-PACKAGES-DOWNLOADING"   "pacman Downloading Package"
-localize_info "DOWNLOAD-REPO-PACKAGES-CREATEING"     "Creating Custom Repo with"
-localize_info "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" "pacman Failed to Download Package"
-localize_info "DOWNLOAD-REPO-PACKAGES-NOT-FOUND"     "Not Found Files"
-localize_info "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL"     "repo-add failed for"
-localize_info "DOWNLOAD-REPO-PACKAGES-COMPLETED"     "Download Repo Packages Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES"   "No Packages: create Software Configuration first: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-DOWNLOADING"   "pacman Downloading Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-CREATING"     "Creating Custom Repo with"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" "pacman Failed to Download Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-NOT-FOUND"     "Not Found Files"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL"     "repo-add failed for"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DOWNLOAD-REPO-PACKAGES-COMPLETED"     "Download Repo Packages Completed"
 # -------------------------------------
 download_repo_packages()
 {
     # Create a Custom Repository
     local all_packages="${PACSTRAP_PACKAGES}" # = pacstrap package list
     if [ "${#PACKAGES}" -gt 0 ]; then
-        typeset -i total="${#PACKAGES[@]}"
+        local -i total="${#PACKAGES[@]}"
         for (( i=0; i<${total}; i++ )); do
             all_packages="$all_packages ${PACKAGES[$i]}"
         done
     else
-        print_warning "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" "download_repo_packages"
-        write_error "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" "download_repo_packages $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages - $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages - $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
-    print_info "DOWNLOAD-REPO-PACKAGES-CREATEING" ": ${all_packages}"
+    print_info "DOWNLOAD-REPO-PACKAGES-CREATING" ": ${all_packages}"
     # @ FIX; is optimized use other methods
     # @FIX Optimize
     USE_PACMAN=1
@@ -595,14 +588,14 @@ download_repo_packages()
         for PACKAGE in $all_packages; do
             print_info "DOWNLOAD-REPO-PACKAGES-DOWNLOADING" ": [${PACKAGE}] -> [${CUSTOM_PACKAGES}]"
             if ! pacman -Sw "$PACKAGE" --noconfirm --cachedir "${CUSTOM_PACKAGES}/" ; then
-                print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE"
-                write_error "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" "$PACKAGE $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
+                write_error   "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
             fi
         done        
     else
         if ! pacman -Sw "$all_packages" --noconfirm --cachedir "${CUSTOM_PACKAGES}/" ; then
             print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $all_packages - $(basename $BASH_SOURCE) : $LINENO"
-            write_error "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL"   ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
+            write_error   "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages: pacman downloaded @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -616,17 +609,17 @@ download_repo_packages()
         fi
         repo-add "${CUSTOM_PACKAGES}/${CUSTOM_REPO_NAME}.db.tar.gz" "${CUSTOM_PACKAGES}"/*.pkg.tar.xz # /root/usb/Packages/
         if [[ "$?" -ne 0 ]]; then
-            print_warning "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz"
-            write_error "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz." "$(basename $BASH_SOURCE) : $LINENO"
+            print_warning "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz - $(basename $BASH_SOURCE) : $LINENO"
+            write_error   "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz - $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages: repo-add @ $(basename $BASH_SOURCE) : $LINENO"; fi
-            #cd "$SCRIPT_DIR"
+            #cd "$FULL_SCRIPT_PATH"
             return 1
         fi
     else
         print_warning "DOWNLOAD-REPO-PACKAGES-NOT-FOUND" ": [${CUSTOM_PACKAGES}/*.pkg.tar.xz]"
         ls "${CUSTOM_PACKAGES}"/*.pkg.tar.xz
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
-        #cd "$SCRIPT_DIR"
+        #cd "$FULL_SCRIPT_PATH"
         return 1
     fi
     print_info "DOWNLOAD-REPO-PACKAGES-COMPLETED"
@@ -644,13 +637,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="1 OCT 2012"
 REVISION="1 NOV 2012"
-create_help "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-CUSTOM-AUR-REPO-USAGE" "create_custom_aur_repo #1[ 1=archwiz Install OS, 2=packagewiz Install Software]"
-localize_info "CREATE-CUSTOM-AUR-REPO-DESC"  "Create a Custom Repository; so you can do installs real fast after the first try."
-localize_info "CREATE-CUSTOM-AUR-REPO-NOTES" "If we have more than one Arch Box; we want a common Repository; mounted drive or NAS; plus we want to copy those files to local cache."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-AUR-REPO-USAGE" "create_custom_aur_repo 1->( 1=archwiz Install OS, 2=packagewiz Install Software)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-AUR-REPO-DESC"  "Create a Custom Repository; so you can do installs real fast after the first try."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-AUR-REPO-NOTES" "If we have more than one Arch Box; we want a common Repository; mounted drive or NAS; plus we want to copy those files to local cache."
 #
-localize_info "CREATE-CUSTOM-AUR-REPO-ERROR"  "Failed Download AUR Repo Packages for"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-AUR-REPO-ERROR"  "Failed Download AUR Repo Packages for"
 # -------------------------------------
 create_custom_aur_repo()
 {
@@ -679,19 +672,19 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="1 OCT 2012"
 REVISION="1 NOV 2012"
-create_help "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-CUSTOM-REPO-USAGE" "create_custom_repo 1->[ 1=archwiz Install OS, 2=packagewiz Install Software]"
-localize_info "CREATE-CUSTOM-REPO-DESC"  "Create a Custom Repository; so you can do installs real fast after the first try."
-localize_info "CREATE-CUSTOM-REPO-NOTES" "If we have more than one Arch Box; we want a common Repository; mounted drive or NAS; plus we want to copy those files to local cache <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/var/lib/pacman/sync/{core,extra,testing,community}<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://wiki.archlinux.org/index.php/Pacman_Tips#Network_shared_pacman_cache<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://wiki.archlinux.org/index.php/Custom_local_repository_with_ABS_and_gensync#Custom_local_repository<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This Function assumes you have configured database, and will download all software into a Repository, if one is chosen; otherwise it just copies them to cache."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-USAGE" "create_custom_repo 1->( 1=archwiz Install OS, 2=packagewiz Install Software)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-DESC"  "Create a Custom Repository; so you can do installs real fast after the first try."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-NOTES" "If we have more than one Arch Box; we want a common Repository; mounted drive or NAS; plus we want to copy those files to local cache <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/var/lib/pacman/sync/{core,extra,testing,community}<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://wiki.archlinux.org/index.php/Pacman_Tips#Network_shared_pacman_cache<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://wiki.archlinux.org/index.php/Custom_local_repository_with_ABS_and_gensync#Custom_local_repository<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This Function assumes you have configured database, and will download all software into a Repository, if one is chosen; otherwise it just copies them to cache."
 #
-localize_info "CREATE-CUSTOM-REPO-ERROR-DOWNLOAD-REPO"          "Failed Download Repo Packages for"
-localize_info "CREATE-CUSTOM-REPO-COPYING-REPO-LOCAL-CACHE"     "Coping Repository to Local Cache..."
-localize_info "CREATE-CUSTOM-REPO-COPYING-REPO-SHARE-CACHE"     "Coping Repository to Sharable Cache..."
-localize_info "CREATE-CUSTOM-REPO-CLIENT-REPO"                  "Setting up Client Repository..."
-localize_info "CREATE-CUSTOM-REPO-NO-REPO"                      "No Repository."
-localize_info "CREATE-CUSTOM-REPO-EDIT-PACMAN-CONF-REPO-CACHE"  "Edit pacman.conf for Repository cache..."
-localize_info "CREATE-CUSTOM-REPO-COMPLETE"                     "Create Custom Repo Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-ERROR-DOWNLOAD-REPO"          "Failed Download Repo Packages for"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-COPYING-REPO-LOCAL-CACHE"     "Coping Repository to Local Cache..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-COPYING-REPO-SHARE-CACHE"     "Coping Repository to Sharable Cache..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-CLIENT-REPO"                  "Setting up Client Repository..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-NO-REPO"                      "No Repository."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-EDIT-PACMAN-CONF-REPO-CACHE"  "Edit pacman.conf for Repository cache..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CUSTOM-REPO-COMPLETE"                     "Create Custom Repo Completed"
 # -------------------------------------
 create_custom_repo()
 {
@@ -754,8 +747,8 @@ create_custom_repo()
         print_info "mount /var/lib/pacman/sync/"
         print_info "mount /var/cache/pacman/pkg"
     fi
-    copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-    copy_file "/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf"       "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
     #
     print_info "CREATE-CUSTOM-REPO-COMPLETE"
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_custom_repo completed at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -772,11 +765,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-REPO-USAGE" "add_repo 1->[repo-name] 2->[url] 3->[trust-level] 4->[1=add &#36;arch to url]"
-localize_info "ADD-REPO-DESC"  "Add repo: Ran from Task Manager."
-localize_info "ADD-REPO-NOTES" "trust-level: Optional TrustAll, PackageRequired, Never"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-REPO-USAGE" "add_repo 1->(repo-name) 2->(url) 3->(trust-level) 4->(1=add &#36;arch to url)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-REPO-DESC"  "Add repo: Ran from Task Manager."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-REPO-NOTES" "trust-level: Optional TrustAll, PackageRequired, Never"
 # -------------------------------------
 add_repo()
 {
@@ -793,24 +786,24 @@ add_repo()
         if [[ "$RUNTIME_MODE" -eq 1 ]]; then # Boot
             copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
         fi
-        copy_file "/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
+        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
     fi
 }
 #}}}
 # -----------------------------------------------------------------------------
 # REQUIRED REPO {{{
 NAME="required_repo"
-USAGE="required_repo 1->[repo]"
+USAGE="required_repo 1->(repo)"
 DESCRIPTION=$(localize "REQUIRED-REPO-DESC")
 NOTES=$(localize "REQUIRED-REPO-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="13 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REQUIRED-REPO-DESC"  "Add Required Repository."
-localize_info "REQUIRED-REPO-NOTES" "Ran from Boot Mode in Task Manager."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REQUIRED-REPO-DESC"  "Add Required Repository."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REQUIRED-REPO-NOTES" "Ran from Boot Mode in Task Manager."
 required_repo()
 {
     if [[ "$1" == "multilib" ]]; then
@@ -828,7 +821,7 @@ required_repo()
             fi
         fi
         copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-        copy_file "/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
+        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
     fi
 }
 #}}}
@@ -846,13 +839,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "OPTIMIZE-PACMAN-DESC"  "Optimize Pacman to use parallel downloads using Aria2, rsync and ppl parisync"
-localize_info "OPTIMIZE-PACMAN-NOTES" "Implement: UseDelta install xdelta3"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "OPTIMIZE-PACMAN-DESC"  "Optimize Pacman to use parallel downloads using Aria2, rsync and ppl parisync"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "OPTIMIZE-PACMAN-NOTES" "Implement: UseDelta install xdelta3"
 #
-localize_info "OPTIMIZE-PACMAN-FAILED"    "PACMAN Optimization Failed."
-localize_info "OPTIMIZE-PACMAN-COMPLETED" "PACMAN Optimization Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "OPTIMIZE-PACMAN-FAILED"    "PACMAN Optimization Failed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "OPTIMIZE-PACMAN-COMPLETED" "PACMAN Optimization Completed."
 optimize_pacman()
 {
     required_repo "multilib"
@@ -903,18 +896,18 @@ optimize_pacman()
                 USE_PACMAN=0
             fi
         fi
-        print_info "OPTIMIZE-PACMAN-COMPLETED" "$(basename $BASH_SOURCE) : $LINENO"
-        write_log "OPTIMIZE-PACMAN-COMPLETED"  "$(basename $BASH_SOURCE) : $LINENO"
+        print_info "OPTIMIZE-PACMAN-COMPLETED" " - $(basename $BASH_SOURCE) : $LINENO"
+        write_log  "OPTIMIZE-PACMAN-COMPLETED" " - $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "optimize_pacman @ $(basename $BASH_SOURCE) : $LINENO"; fi
     else
-        write_error "OPTIMIZE-PACMAN-FAILED"   "$(basename $BASH_SOURCE) : $LINENO"
-        print_warning "OPTIMIZE-PACMAN-FAILED" "$(basename $BASH_SOURCE) : $LINENO"
+        write_error   "OPTIMIZE-PACMAN-FAILED" " - $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "OPTIMIZE-PACMAN-FAILED" " - $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "optimize_pacman @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
     # Copy all files that can be changed by optimize_pacman
     copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-    copy_file "/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
     #
     #reflector -p rsync --sort rate -c "$COUNTRY" --save /etc/pacman.d/mirrorlist.rsync
     return 0
@@ -931,16 +924,16 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-PACKAGE-USAGE" "install_package 1->[NAME_OF_PACKAGE] 2->[NAME-OF-PACKAGE-MANAGER]"
-localize_info "INSTALL-PACKAGE-DESC"  "Install package from core or additional Repositories."
-localize_info "INSTALL-PACKAGE-NOTES" "Install one at a time, check to see if already install, if fails, try again with with confirm."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-USAGE" "install_package 1->(NAME_OF_PACKAGE) 2->(NAME-OF-PACKAGE-MANAGER)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-DESC"  "Install package from core or additional Repositories."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-NOTES" "Install one at a time, check to see if already install, if fails, try again with with confirm."
 #
-localize_info "INSTALL-PACKAGE-INSTALLING"     "pacman Installing"
-localize_info "INSTALL-PACKAGE-ERROR-1"        "pacman did not install Package"
-localize_info "INSTALL-PACKAGE-ERROR-2"        "for Install Package Manager"
-localize_info "INSTALL-PACKAGE-INSTALL-PM2ML"  "using pm2ml: Installing"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-INSTALLING"     "pacman Installing"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-ERROR-1"        "pacman did not install Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-ERROR-2"        "for Install Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PACKAGE-INSTALL-PM2ML"  "using pm2ml: Installing"
 # -------------------------------------
 install_package()
 {
@@ -994,27 +987,26 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PACKAGE-INSTALL-USAGE" "package_install 1->[SPACE DELIMITED LIST OF PACKAGES TO INSTALL] 2->[NAME-OF-PACKAGE-MANAGER]"
-localize_info "PACKAGE-INSTALL-DESC"  "Install package from core or additional Repositories."
-localize_info "PACKAGE-INSTALL-NOTES" "Install one at a time, check to see if already install, if fails, try again with with confirm."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-USAGE" "package_install 1->(SPACE DELIMITED LIST OF PACKAGES TO INSTALL) 2->(NAME-OF-PACKAGE-MANAGER)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-DESC"  "Install package from core or additional Repositories."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-NOTES" "Install one at a time, check to see if already install, if fails, try again with with confirm."
 #
-localize_info "PACKAGE-INSTALL-ERROR"            "pacman did not install Package"
-localize_info "PACKAGE-INSTALL-FAILED-INTERNET"  "Internet check failed"
-localize_info "PACKAGE-INSTALL-PACKAGE-MANAGER"  "for Package Manager"
-localize_info "PACKAGE-INSTALL-REFRESH"          "Refreshing pacman Database and Updates..."
-localize_info "PACKAGE-INSTALL-COMPLETE"         "Package Manager Completed"
-localize_info "PACKAGE-INSTALL-FAILURES"         "Installed"
-localize_info "PACKAGE-INSTALL-PACKAGES"         "Packages"
-localize_info "PACKAGE-INSTALL-FAILED"           "Failed"
-localize_info "PACKAGE-INSTALL-INSTALLED"        "Installed"
-localize_info "PACKAGE-INSTALL-RETRY"            "Retry"
-localize_info "PACKAGE-INSTALL-PACKAGE"          "install package"
-localize_info "PACKAGE-INSTALL-MANUAL"           "with Manual intervention."
-localize_info "PACKAGE-INSTALL-CURRENTLY"        "currently working on"
-localize_info "PACKAGE-INSTALL-RETRIES"          "Retries"
-localize_info "PACKAGE-INSTALL-X" ""
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-ERROR"            "pacman did not install Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-FAILED-INTERNET"  "Internet check failed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-PACKAGE-MANAGER"  "for Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-REFRESH"          "Refreshing pacman Database and Updates..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-COMPLETE"         "Package Manager Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-FAILURES"         "Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-PACKAGES"         "Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-FAILED"           "Failed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-INSTALLED"        "Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-RETRY"            "Retry"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-PACKAGE"          "install package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-MANUAL"           "with Manual intervention."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-CURRENTLY"        "currently working on"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-INSTALL-RETRIES"          "Retries"
 # -------------------------------------
 package_install()
 {
@@ -1028,7 +1020,7 @@ package_install()
                     sleep 13
                     if ! is_internet ; then
                         failed_install_core "$PACKAGE"
-                        write_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
+                        write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
                         print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
                         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
                         # @FIX what to do now: restart network adapter
@@ -1042,7 +1034,7 @@ package_install()
             print_this " " "${BRed} $(localize "PACKAGE-INSTALL-RETRY") ${BWhite}  $(localize "PACKAGE-INSTALL-PACKAGE") $PACKAGE $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 $(localize "PACKAGE-INSTALL-MANUAL")"
             if ! install_package "$1" "$2" "PACKAGE-INSTALL-$2" ; then
                 failed_install_core "$PACKAGE"
-                write_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
+                write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
                 print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
                 return 1           
@@ -1123,7 +1115,7 @@ package_install()
         return 0
     else
         print_warning "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") - $(basename $BASH_SOURCE) : $LINENO"
-        write_error "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") - $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") - $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -1139,12 +1131,12 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PACKAGE-REMOVE-USAGE" "package_remove 1->[SPACE DELIMITED LIST OF PACKAGES TO REMOVE] 2->[NAME-OF-PACKAGE-MANAGER]"
-localize_info "PACKAGE-REMOVE-DESC"  "Package remove"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-REMOVE-USAGE" "package_remove 1->(SPACE DELIMITED LIST OF PACKAGES TO REMOVE) 2->(NAME-OF-PACKAGE-MANAGER)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-REMOVE-DESC"  "Package remove"
 #
-localize_info "PACKAGE-REMOVE-INFO"  "Removing package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKAGE-REMOVE-INFO"  "Removing package"
 # -------------------------------------
 package_remove()
 {
@@ -1161,24 +1153,24 @@ package_remove()
 # -----------------------------------------------------------------------------
 # AUR DOWNLOAD {{{
 NAME="aur_download"
-USAGE="aur_download 1->[Package Name]"
+USAGE="aur_download 1->(Package Name)"
 DESCRIPTION=$(localize "AUR-DOWNLOAD-DESC")
 NOTES=$(localize "AUR-DOWNLOAD-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "AUR-DOWNLOAD-DESC"  "AUR Download Packages"
-localize_info "AUR-DOWNLOAD-NOTES" "&#36;AUR_CUSTOM_PACKAGES: if Boot Mode /root/usb/AUR-Packages, if Live Mode /mnt/AUR-Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-DESC"  "AUR Download Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-NOTES" "&#36;AUR_CUSTOM_PACKAGES: if Boot Mode /root/usb/AUR-Packages, if Live Mode /mnt/AUR-Packages"
 #
-localize_info "AUR-DOWNLOAD-DOWNLOADING-AUR-PACKAGE" "Downloading AUR Package"
-localize_info "AUR-DOWNLOAD-FILE-EXIST"              "File Exist, check date of file"
-localize_info "AUR-DOWNLOAD-DOWNLOADING"             "Downloading:"
-localize_info "AUR-DOWNLOAD-PACKAGE-UP2DATE"         "Up to date Package"
-localize_info "AUR-DOWNLOAD-FILE-CORRUPTED"          "File Corrupted:"
-localize_info "AUR-DOWNLOAD-FILE-NOT-FOUND"          "File Not Found"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-DOWNLOADING-AUR-PACKAGE" "Downloading AUR Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-FILE-EXIST"              "File Exist, check date of file"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-DOWNLOADING"             "Downloading:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGE-UP2DATE"         "Up to date Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-FILE-CORRUPTED"          "File Corrupted:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-FILE-NOT-FOUND"          "File Not Found"
 # -------------------------------------
 aur_download()
 { 
@@ -1213,19 +1205,19 @@ aur_download()
                 cd "${1}"
                 return 0
             else
-                write_error "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz" "$(basename $BASH_SOURCE) : $LINENO"
+                write_error "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then 
-                    print_this "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz"
+                    print_this     "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
                     pause_function "aur_download ${1} $(basename $BASH_SOURCE) : $LINENO"
                 fi
                 return 1
             fi
         fi           
     else
-        write_error "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz" "$(basename $BASH_SOURCE) : $LINENO"
+        write_error "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then 
-            print_this "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz"
-            pause_function "aur_download ${1} $(basename $BASH_SOURCE) : $LINENO"
+            print_this     "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
+            pause_function "aur_download ${1} - $(basename $BASH_SOURCE) : $LINENO"
         fi
         return 1
     fi
@@ -1235,21 +1227,21 @@ aur_download()
 # -----------------------------------------------------------------------------
 # GET AUR PACKAGES {{{
 NAME="get_aur_packages"
-USAGE="get_aur_packages 1->[package-name] 2->[&#36;DEBUGGING] 3->[&#36;AUR_REPO]"
+USAGE="get_aur_packages 1->(package-name) 2->(&#36;DEBUGGING) 3->(&#36;AUR_REPO)"
 DESCRIPTION=$(localize "GET-AUR-PACKAGES-DESC")
 NOTES=$(localize "GET-AUR-PACKAGES-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-AUR-PACKAGES-DESC"  "Get AUR packages"
-localize_info "GET-AUR-PACKAGES-NOTES" "Called from export under user, so script functions not available, cd folder before calling"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGES-DESC"  "Get AUR packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGES-NOTES" "Called from export under user, so script functions not available, cd folder before calling"
 #
-localize_info "WRONG-NUMBER-OF-ARGUMENTS" "Wrong Number of Arguments"
-localize_info "GET-AUR-PACKAGES-COMPILEING"        "Compileing Package"
-localize_info "GET-AUR-PACKAGES-FAILED-COMPILEING" "Failed to compile"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRONG-NUMBER-OF-ARGUMENTS" "Wrong Number of Arguments"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGES-COMPILING"        "Compiling Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGES-FAILED-COMPILING" "Failed to compile"
 # -------------------------------------
 get_aur_packages()
 { 
@@ -1264,11 +1256,11 @@ get_aur_packages()
     else                      # No Repo
         parms="-si"           # Install
     fi
-    echo -e "${BWhite}\t $(gettext -s "GET-AUR-PACKAGES-COMPILEING") ${1} makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
+    echo -e "${BWhite}\t $(gettext -s "GET-AUR-PACKAGES-COMPILING") ${1} makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
     cd "${1}"
     if ! makepkg ${parms} --noconfirm ; then
         if [[ "$2" -eq 1 ]]; then # DEBUGGING
-            echo -e "${BRed}\t${1} $(gettext -s "GET-AUR-PACKAGES-FAILED-COMPILEING") makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
+            echo -e "${BRed}\t${1} $(gettext -s "GET-AUR-PACKAGES-FAILED-COMPILING") makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
             read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE") (get_aur_packages ${1})..."
         fi
         return 1
@@ -1276,12 +1268,12 @@ get_aur_packages()
     return 0
         
     #
-    echo -e "${BWhite}\t $(gettext -s "GET-AUR-PACKAGES-COMPILEING") ${1} makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
+    echo -e "${BWhite}\t $(gettext -s "GET-AUR-PACKAGES-COMPILING") ${1} makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
     cd "${1}"
     if [[ "$3" -eq 1 ]]; then # AUR Repo 
         if ! makepkg -s --noconfirm ; then
             if [[ "$2" -eq 1 ]]; then # DEBUGGING
-                echo -e "${BRed}\t${1} $(gettext -s "GET-AUR-PACKAGES-FAILED-COMPILEING") makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
+                echo -e "${BRed}\t${1} $(gettext -s "GET-AUR-PACKAGES-FAILED-COMPILING") makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
                 read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE") (get_aur_packages ${1})..."
             fi
             return 1
@@ -1289,7 +1281,7 @@ get_aur_packages()
     else                      # No Repo
         if ! makepkg -si --noconfirm ; then
             if [[ "$2" -eq 1 ]]; then # DEBUGGING
-                echo -e "${BRed}\t${1} $(gettext -s "GET-AUR-PACKAGES-FAILED-COMPILEING") makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
+                echo -e "${BRed}\t${1} $(gettext -s "GET-AUR-PACKAGES-FAILED-COMPILING") makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
                 read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE") (get_aur_packages ${1})..."
             fi
             return 1
@@ -1304,23 +1296,23 @@ export -f get_aur_packages # need to export so if we are running as user it will
 #
 # AUR DOWNLOAD PACKAGES {{{
 NAME="aur_download_packages"
-USAGE="aur_download_packages 1->[Package Names Space Delimited]"
+USAGE="aur_download_packages 1->(Package Names Space Delimited)"
 DESCRIPTION=$(localize "AUR-DOWNLOAD-PACKAGES-DESC")
 NOTES=$(localize "AUR-DOWNLOAD-PACKAGES-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "AUR-DOWNLOAD-PACKAGES-DESC"  "AUR Download Packages"
-localize_info "AUR-DOWNLOAD-PACKAGES-NOTES" "AUR_CUSTOM_PACKAGES: if Boot Mode /root/usb/AUR-Packages, if Live Mode /mnt/AUR-Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-DESC"  "AUR Download Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-NOTES" "AUR_CUSTOM_PACKAGES: if Boot Mode /root/usb/AUR-Packages, if Live Mode /mnt/AUR-Packages"
 #
-localize_info "AUR-DOWNLOAD-PACKAGES-TITLE" "AUR Package Downloader."
-localize_info "AUR-DOWNLOAD-PACKAGES-WARN-CREATE-FOLDER" "Could not create folder "
-localize_info "AUR-DOWNLOAD-PACKAGES-WORKING-ON" "Working on Package "
-localize_info "AUR-DOWNLOAD-PACKAGES-RETRIES" "retries"
-localize_info "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" "Failed Downloading AUR Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-TITLE" "AUR Package Downloader."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-WARN-CREATE-FOLDER" "Could not create folder "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-WORKING-ON" "Working on Package "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-RETRIES" "retries"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" "Failed Downloading AUR Package"
 # -------------------------------------
 aur_download_packages()
 { 
@@ -1334,7 +1326,7 @@ aur_download_packages()
             if ! make_dir "$AUR_CUSTOM_PACKAGES/" "$(basename $BASH_SOURCE) : $LINENO" ; then
                 print_warning  "AUR-DOWNLOAD-PACKAGES-WARN-CREATE-FOLDER" "$AUR_CUSTOM_PACKAGES"
                 pause_function "aur_download_packages $(basename $BASH_SOURCE) : $LINENO"
-                cd "$SCRIPT_DIR"
+                cd "$FULL_SCRIPT_PATH"
                 return 1
             fi
             chmod -R 770 "$AUR_CUSTOM_PACKAGES/${1}"
@@ -1355,8 +1347,8 @@ aur_download_packages()
             fi
             if [[ "$retries" -gt 3 ]]; then
                 YN_OPTION=1
-                write_error "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" "$PACKAGE $(basename $BASH_SOURCE) : $LINENO"
-                print_warning "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE"
+                write_error   "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "aur_download_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
             fi
             ((retries++))
@@ -1365,7 +1357,7 @@ aur_download_packages()
         done
         #
     done
-    cd "$SCRIPT_DIR"
+    cd "$FULL_SCRIPT_PATH"
     return "$FUN_RETURN"
 } 
 #}}}
@@ -1379,11 +1371,11 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-DOWNLOAD-USAGE" "install_download 1->[PACKAGE FROM AUR] 2->[Args: NoConfirm, Force]"
-localize_info "INSTALL-DOWNLOAD-DESC"  "Install AUR Package using AUR_HELPER"
-localize_info "INSTALL-DOWNLOAD-NOTES" "Called from add_packagemanager, run in Live Mode: Install one at a time, check to see if its already installed, if fail, try again with confirm.<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: --needed --recursive --force --upgrades"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-DOWNLOAD-USAGE" "install_download 1->(PACKAGE FROM AUR) 2->(Args: NoConfirm, Force)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-DOWNLOAD-DESC"  "Install AUR Package using AUR_HELPER"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-DOWNLOAD-NOTES" "Called from add_packagemanager, run in Live Mode: Install one at a time, check to see if its already installed, if fail, try again with confirm.<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: --needed --recursive --force --upgrades"
 # -------------------------------------
 install_download()
 {
@@ -1406,27 +1398,27 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "AUR-PACKAGE-INSTALL-USAGE" "aur_package_install 1->[SPACE DELIMITED LIST OF PACKAGES TO INSTALL FROM AUR] 2->[NAME-OF-PACKAGE-MANAGER]"
-localize_info "AUR-PACKAGE-INSTALL-DESC"  "Install AUR Package using AUR_HELPER"
-localize_info "AUR-PACKAGE-INSTALL-NOTES" "Called from add_packagemanager, run in Live Mode: Install one at a time, check to see if its already installed, if fail, try again with confirm."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-USAGE" "aur_package_install 1->(SPACE DELIMITED LIST OF PACKAGES TO INSTALL FROM AUR) 2->(NAME-OF-PACKAGE-MANAGER)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-DESC"  "Install AUR Package using AUR_HELPER"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-NOTES" "Called from add_packagemanager, run in Live Mode: Install one at a time, check to see if its already installed, if fail, try again with confirm."
 #
-localize_info "AUR-PACKAGE-INSTALL-WORKING-ON"     "AUR Package Install"
-localize_info "AUR-PACKAGE-INSTALL-CURRENTLY"      "currently Working on"
-localize_info "AUR-PACKAGE-INSTALL-OF"             "of"
-localize_info "AUR-PACKAGE-INSTALL-PACKAGES"       "packages"
-localize_info "AUR-PACKAGE-INSTALL-INSTALLED"      "Installed"
-localize_info "AUR-PACKAGE-INSTALL-FAIL"           "Fails"
-localize_info "AUR-PACKAGE-INSTALL-RETRIES"        "retries"
-localize_info "AUR-PACKAGE-INSTALL-REFRESH"        "Refreshing"
-localize_info "AUR-PACKAGE-INSTALL-ERROR-1"        "Error: Did not install AUR Package"
-localize_info "AUR-PACKAGE-INSTALL-ERROR-2"        "Package Manager"
-localize_info "AUR-PACKAGE-INSTALL-INTERNET"       "Internet check failed."
-localize_info "AUR-PACKAGE-INSTALL-UPDATE"         "Updating"
-localize_info "AUR-PACKAGE-INSTALL-NOT-INSTALLED"  "Package(s) Not Installed"
-localize_info "AUR-PACKAGE-INSTALL-COMPLETE"       "AUR Package Manager Completed"
-localize_info "AUR-PACKAGE-INSTALL-TRY-AGAIN"      "Try install again" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-WORKING-ON"     "AUR Package Install"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-CURRENTLY"      "currently Working on"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-OF"             "of"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-PACKAGES"       "packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-INSTALLED"      "Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-FAIL"           "Fails"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-RETRIES"        "retries"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-REFRESH"        "Refreshing"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-ERROR-1"        "Error: Did not install AUR Package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-ERROR-2"        "Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-INTERNET"       "Internet check failed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-UPDATE"         "Updating"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-NOT-INSTALLED"  "Package(s) Not Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-COMPLETE"       "AUR Package Manager Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "AUR-PACKAGE-INSTALL-TRY-AGAIN"      "Try install again" 
 # -------------------------------------
 aur_package_install()
 {
@@ -1526,8 +1518,8 @@ aur_package_install()
     if [[ "$number_installed" -eq "$total_packages" ]]; then
         return 0
     else
-        print_warning "AUR-PACKAGE-INSTALL-WORKING-ON $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "AUR-PACKAGE-INSTALL-WORKING-ON $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "aur_package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -1543,13 +1535,13 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "PACKMAN-PACKAGE-SIGNING-DESC"      "Configure pacman package signing."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKMAN-PACKAGE-SIGNING-DESC"      "Configure pacman package signing."
 #
-localize_info "PACKMAN-PACKAGE-SIGNING-TITLE"     "PACMAN PACKAGE SIGNING"
-localize_info "PACKMAN-PACKAGE-SIGNING-INFO"      "Pacman-key is a new tool available with pacman 4. It allows the user to manage pacmans list of trusted keys in the new package signing implementation."
-localize_info "PACKMAN-PACKAGE-SIGNING-COMPLETE"  "Pacman Package Signing Configured"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKMAN-PACKAGE-SIGNING-TITLE"     "PACMAN PACKAGE SIGNING"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKMAN-PACKAGE-SIGNING-INFO"      "Pacman-key is a new tool available with pacman 4. It allows the user to manage pacmans list of trusted keys in the new package signing implementation."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "PACKMAN-PACKAGE-SIGNING-COMPLETE"  "Pacman Package Signing Configured"
 # -------------------------------------
 configure_pacman_package_signing()
 {
@@ -1562,23 +1554,23 @@ configure_pacman_package_signing()
         killall haveged
         #package_remove 'haveged' "REMOVE-HAVEGED"
     fi
-    echo "PACKMAN-PACKAGE-SIGNING-COMPLETE"
+    print_this "PACKMAN-PACKAGE-SIGNING-COMPLETE"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # CONFIG XINITRC {{{
 NAME="config_xinitrc"
-USAGE="config_xinitrc 1->[module name]"
+USAGE="config_xinitrc 1->(module name)"
 DESCRIPTION=$(localize "CONFIG-XINITRC-DESC")
 NOTES=$(localize "CONFIG-XINITRC-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIG-XINITRC-DESC"  "Edit .xinitrc file for manual start of Desktop"
-localize_info "CONFIG-XINITRC-NOTES" "Info: https://wiki.archlinux.org/index.php/Xinitrc"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-XINITRC-DESC"  "Edit .xinitrc file for manual start of Desktop"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-XINITRC-NOTES" "Info: https://wiki.archlinux.org/index.php/Xinitrc"
 # -------------------------------------
 config_xinitrc()
 { 
@@ -1597,26 +1589,33 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CHOOSE-AUR-HELPER-DESC"  "Choose AUR Helper"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-DESC"   "Choose AUR Helper"
 #
-localize_info "CHOOSE-AUR-HELPER-X"  ""
-localize_info "Change-AUR-Helper" "Do you wish to change the Default Editor" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-TITLE"   "AUR HELPER"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-INFO-1"  "AUR Helpers are written to make using the Arch User Repository more comfortable."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-INFO-2"  "YAOURT"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-INFO-3"  "Yaourt (Yet AnOther User Repository Tool) is a community-contributed wrapper for pacman which adds seamless access to the AUR, allowing and automating package compilation and installation from your choice of the thousands of PKGBUILDs in the AUR, in addition to the many thousands of available Arch Linux binary packages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-INFO-4"  "Yaourt is Recommended."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-INFO-5"  "List of AUR Helpers: yaourt, packer and pacaur."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-INFO-6"  "None of these tools are officially supported by Arch devs."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHOOSE-AUR-HELPER-SELECT"  "Choose your default AUR helper to install"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Change-AUR-Helper"         "Do you wish to change the Default Editor" 
 # -------------------------------------
 choose_aurhelper()
 {
-    print_title "AUR HELPER - https://wiki.archlinux.org/index.php/AUR_Helpers"
-    print_info "AUR Helpers are written to make using the Arch User Repository more comfortable."
-    print_info "YAOURT - https://wiki.archlinux.org/index.php/Yaourt"
-    print_info "Yaourt (Yet AnOther User Repository Tool) is a community-contributed wrapper for pacman which adds seamless access to the AUR, allowing and automating package compilation and installation from your choice of the thousands of PKGBUILDs in the AUR, in addition to the many thousands of available Arch Linux binary packages."
-    print_info "Yaourt is Recommended."
-    print_info "List of AUR Helpers: ${AUR_HELPERS[*]}"
-    print_warning "\tNone of these tools are officially supported by Arch devs."
+    print_title    "CHOOSE-AUR-HELPER-TITLE" " - https://wiki.archlinux.org/index.php/AUR_Helpers"
+    print_info    "CHOOSE-AUR-HELPER-INFO-1"
+    print_info    "CHOOSE-AUR-HELPER-INFO-2" " - https://wiki.archlinux.org/index.php/Yaourt"
+    print_info    "CHOOSE-AUR-HELPER-INFO-3"
+    print_info    "CHOOSE-AUR-HELPER-INFO-4"
+    print_info    "CHOOSE-AUR-HELPER-INFO-5"
+    print_warning "CHOOSE-AUR-HELPER-INFO-6"
     read_input_yn "Change-AUR-Helper" "$AUR_HELPER" 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
-        echo -e "Choose your default AUR helper to install\n"
+        print_info "CHOOSE-AUR-HELPER-SELECT"
         select OPT in "${AUR_HELPERS[@]}"; do
             case "$REPLY" in
                 1)
@@ -1649,12 +1648,12 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "LOAD-CUSTOM-SOFTWARE-DESC"  "load custom software"
-localize_info "LOAD-CUSTOM-SOFTWARE-NOTES" "@FIX write function"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-CUSTOM-SOFTWARE-DESC"  "load custom software"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-CUSTOM-SOFTWARE-NOTES" "@FIX write function"
 #
-localize_info "LOAD-CUSTOM-SOFTWARE-INFO"  "Edit or review file first."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-CUSTOM-SOFTWARE-INFO"  "Edit or review file first."
 # -------------------------------------
 load_custom_software()
 {
@@ -1685,17 +1684,17 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-MIRRORLIST-USAGE" "get_mirrorlist 1->[Country Code]"
-localize_info "GET-MIRRORLIST-DESC"  "get mirrorlist"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-MIRRORLIST-USAGE" "get_mirrorlist 1->(Country Code)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-MIRRORLIST-DESC"  "get mirrorlist"
 #
-localize_info "GET-MIRRORLIST-DOWNLOADING"  "Downloading pacman Mirror"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-MIRRORLIST-DOWNLOADING"  "Downloading pacman Mirror"
 # -------------------------------------
 get_mirrorlist() 
 {
-    if [[ "$CUSTOM_MIRRORLIST" -eq 1 && -f "${SCRIPT_DIR}/mirrorlist" ]]; then
-        copy_file "${SCRIPT_DIR}/mirrorlist" "/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
+    if [[ "$CUSTOM_MIRRORLIST" -eq 1 && -f "${FULL_SCRIPT_PATH}/mirrorlist" ]]; then
+        copy_file "${FULL_SCRIPT_PATH}/mirrorlist" "/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
     else
         url="https://www.archlinux.org/mirrorlist/?country=${1}&protocol=http&ip_version=4&use_mirror_status=on"
         print_info "GET-MIRRORLIST-DOWNLOADING" " ${url}..."
@@ -1717,20 +1716,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-MIRRORLIST-DESC"  "Configure mirrorlist"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-MIRRORLIST-DESC"  "Configure mirrorlist"
 #
-localize_info "CONFIGURE-MIRRORLIST-FOUND"  "Mirrorlist found on"
-localize_info "CONFIGURE-MIRRORLIST-MIRRORS"  "MIRRORS"
-localize_info "CONFIGURE-MIRRORLIST-INFO"  "Edit or Review your mirrorlist and exit to continue."
-localize_info "Use-Mirrorlist" "Do you wish to use" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-MIRRORLIST-FOUND"  "Mirrorlist found on"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-MIRRORLIST-MIRRORS"  "MIRRORS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-MIRRORLIST-INFO"  "Edit or Review your mirrorlist and exit to continue."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Use-Mirrorlist" "Do you wish to use" 
 # -------------------------------------
 configure_mirrorlist()
 {
-    if [ -f "${SCRIPT_DIR}/mirrorlist" ]; then
-        print_info "CONFIGURE-MIRRORLIST-FOUND" ": ${SCRIPT_DIR}"
-        read_input_yn "Use-Mirrorlist" "${SCRIPT_DIR}/mirrorlist" 1
+    if [ -f "${FULL_SCRIPT_PATH}/mirrorlist" ]; then
+        print_info "CONFIGURE-MIRRORLIST-FOUND" ": ${FULL_SCRIPT_PATH}"
+        read_input_yn "Use-Mirrorlist" "${FULL_SCRIPT_PATH}/mirrorlist" 1
         if [[ "YN_OPTION" -eq 1 ]]; then
             CUSTOM_MIRRORLIST=1
         fi
@@ -1747,8 +1746,8 @@ configure_mirrorlist()
     fi
     # Lets copy all config files to Device where this script ran from
     # pacstrap will overwrite mirror list so create temp files on media script ran from
-    make_dir "${SCRIPT_DIR}/etc/pacman.d" "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/pacman.d/mirrorlist" "${SCRIPT_DIR}/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${FULL_SCRIPT_PATH}/etc/pacman.d" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/pacman.d/mirrorlist" "${FULL_SCRIPT_PATH}/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1761,16 +1760,16 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "READ-NAMESERVERS-DESC"  "Read Nameserver"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-NAMESERVERS-DESC"  "Read Nameserver"
 #
-localize_info "READ-NAMESERVERS-ERROR"  "Missing"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "READ-NAMESERVERS-ERROR"  "Missing"
 # -------------------------------------
 read_nameserver()
 {
     CUSTOM_NS1=" "; CUSTOM_NS2=" "; CUSTOM_NS_SEARCH=" "
-    if [[ -f "$SCRIPT_DIR/nameservers.txt" ]]; then
+    if [[ -f "$FULL_SCRIPT_PATH/nameservers.txt" ]]; then
         N=1
         while read line; do 
             case "$N" in
@@ -1789,9 +1788,9 @@ read_nameserver()
                     ;;
             esac                                        
             N=$(( N + 1 ))
-        done < "${SCRIPT_DIR}/nameservers.txt"
+        done < "${FULL_SCRIPT_PATH}/nameservers.txt"
     else
-        write_error "READ-NAMESERVERS-ERROR" " nameservers.txt - $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "READ-NAMESERVERS-ERROR" " nameservers.txt - $(basename $BASH_SOURCE) : $LINENO"
         print_warning "READ-NAMESERVERS-ERROR" " nameservers.txt - $(basename $BASH_SOURCE) : $LINENO"
         CUSTOM_NS1=" "
         CUSTOM_NS2=" "
@@ -1809,53 +1808,53 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CUSTOM-NAMESERVERS-DESC"       "Custom Nameservers"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-DESC"       "Custom Nameservers"
 #
-localize_info "Use-custom-nameserers"         "Use custom nameserers" 
-localize_info "CORRECT" "Is this correct"
-localize_info "CUSTOM-NAMESERVERS-INFO-1"     "The resolver is a set of routines in the C library that provide access to the Internet Domain Name System (DNS)."
-localize_info "CUSTOM-NAMESERVERS-INFO-2"     "The resolver configuration file contains information that is read by the resolver routines the first time they are invoked by a process."
-localize_info "CUSTOM-NAMESERVERS-INFO-3"     "The file is designed to be human readable and contains a list of keywords with values that provide various types of resolver information."
-localize_info "CUSTOM-NAMESERVERS-INFO-4"     "On a normally configured system this file should not be necessary."
-localize_info "CUSTOM-NAMESERVERS-INFO-5"     "The only name server to be queried will be on the local machine; the domain name is determined from the host name and the domain search path is constructed from the domain name."
-localize_info "CUSTOM-NAMESERVERS-INFO-6"     "OpenDNS servers 208.67.222.222 and 208.67.220.220"
-localize_info "CUSTOM-NAMESERVERS-INFO-7"     "Google nameservers 8.8.8.8 and 8.8.4.4"
-localize_info "CUSTOM-NAMESERVERS-INFO-8"     "Or use the ones form your Local ISP, or own DNS Servers."
-localize_info "CUSTOM-NAMESERVERS-WARN-1"     "You must enter two nameservers corectly, no validation is done!"
-localize_info "CUSTOM-NAMESERVERS-DEFAULT-1"  "Enter NAMESERVER 1 [123.123.123.123]: "
-localize_info "CUSTOM-NAMESERVERS-DEFAULT-2"  "Enter Search [ex: (sub-domain.)url.tdl or Blank (enter) for none]: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Use-custom-nameserers"         "Use custom nameserers" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CORRECT" "Is this correct"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-1"     "The resolver is a set of routines in the C library that provide access to the Internet Domain Name System (DNS)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-2"     "The resolver configuration file contains information that is read by the resolver routines the first time they are invoked by a process."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-3"     "The file is designed to be human readable and contains a list of keywords with values that provide various types of resolver information."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-4"     "On a normally configured system this file should not be necessary."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-5"     "The only name server to be queried will be on the local machine; the domain name is determined from the host name and the domain search path is constructed from the domain name."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-6"     "OpenDNS servers 208.67.222.222 and 208.67.220.220"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-7"     "Google nameservers 8.8.8.8 and 8.8.4.4"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-INFO-8"     "Or use the ones form your Local ISP, or own DNS Servers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-WARN-1"     "You must enter two nameservers correctly, no validation is done!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-DEFAULT-1"  "Enter NAMESERVER 1 (123.123.123.123): "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-NAMESERVERS-DEFAULT-2"  "Enter Search (ex: (sub-domain.)url.tdl or Blank (enter) for none): "
 # -------------------------------------
 custom_nameservers()
 {
     write_nameserver()
     {
         # Write settings
-        chattr -i ${SCRIPT_DIR}/etc/resolv.conf
-        touch "${SCRIPT_DIR}/nameservers.txt" # Create if not exist, then update it
+        chattr -i ${FULL_SCRIPT_PATH}/etc/resolv.conf
+        touch "${FULL_SCRIPT_PATH}/nameservers.txt" # Create if not exist, then update it
         #
-        echo "# Created: $DATE_TIME"      > "${SCRIPT_DIR}/etc/resolv.conf"
-        echo "# /etc/resolv.conf"        >> "${SCRIPT_DIR}/etc/resolv.conf"
-        echo "#"                         >> "${SCRIPT_DIR}/etc/resolv.conf"
-        echo "# search <yourdomain.tld>" >> "${SCRIPT_DIR}/etc/resolv.conf"
-        echo "# nameserver <ip>"         >> "${SCRIPT_DIR}/etc/resolv.conf"
-        echo "#"                         >> "${SCRIPT_DIR}/etc/resolv.conf"
+        echo "# Created: $DATE_TIME"      > "${FULL_SCRIPT_PATH}/etc/resolv.conf"
+        echo "# /etc/resolv.conf"        >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
+        echo "#"                         >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
+        echo "# search <yourdomain.tld>" >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
+        echo "# nameserver <ip>"         >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
+        echo "#"                         >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
         if [ -n "$CUSTOM_NS1" ]; then
-            echo "$CUSTOM_NS1"             > "${SCRIPT_DIR}/nameservers.txt"
-            echo "nameserver $CUSTOM_NS1" >> "${SCRIPT_DIR}/etc/resolv.conf"
+            echo "$CUSTOM_NS1"             > "${FULL_SCRIPT_PATH}/nameservers.txt"
+            echo "nameserver $CUSTOM_NS1" >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
         fi
         if [ -n "$CUSTOM_NS2" ]; then
-            echo "$CUSTOM_NS2"            >> "${SCRIPT_DIR}/nameservers.txt"
-            echo "nameserver $CUSTOM_NS2" >> "${SCRIPT_DIR}/etc/resolv.conf"
+            echo "$CUSTOM_NS2"            >> "${FULL_SCRIPT_PATH}/nameservers.txt"
+            echo "nameserver $CUSTOM_NS2" >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
         fi
         if [ -n "$CUSTOM_NS_SEARCH" ]; then
-            echo "$CUSTOM_NS_SEARCH"        >> "${SCRIPT_DIR}/nameservers.txt"
-            echo "search $CUSTOM_NS_SEARCH" >> "${SCRIPT_DIR}/etc/resolv.conf"
+            echo "$CUSTOM_NS_SEARCH"        >> "${FULL_SCRIPT_PATH}/nameservers.txt"
+            echo "search $CUSTOM_NS_SEARCH" >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
         fi
-        echo "# End of file" >> "${SCRIPT_DIR}/etc/resolv.conf"
+        echo "# End of file" >> "${FULL_SCRIPT_PATH}/etc/resolv.conf"
         # 
-        chattr +i ${SCRIPT_DIR}/etc/resolv.conf
+        chattr +i ${FULL_SCRIPT_PATH}/etc/resolv.conf
     }
     #
     while [[ 1 ]]; do
@@ -1884,7 +1883,7 @@ custom_nameservers()
             read_input_yn "CORRECT" " " 1
             if [[ "$YN_OPTION" -eq 1 ]]; then
                 write_nameserver
-                cat "${SCRIPT_DIR}"/etc/resolv.conf
+                cat "${FULL_SCRIPT_PATH}"/etc/resolv.conf
                 break
             fi
         else
@@ -1906,13 +1905,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-FLESH-DESC"     "Set FLESH, so Custom User Settings can be Created, add some Flesh to this Bare Bones Skeleton"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FLESH-DESC"     "Set FLESH, so Custom User Settings can be Created, add some Flesh to this Bare Bones Skeleton"
 #
-localize_info "GET-FLESH-TITLE"    "Pacman Tips"
-localize_info "GET-FLESH-INFO"     "The Basic Bare Bones Skeleton install is good, but its best to add some Flesh to it, by Customizing the user folder with some extra Configuration from helmuthdu, and Flesher."
-localize_info "GET-FLESH-INSTALL"  "Install Flesh"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FLESH-TITLE"    "Pacman Tips"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FLESH-INFO"     "The Basic Bare Bones Skeleton install is good, but its best to add some Flesh to it, by Customizing the user folder with some extra Configuration from helmuthdu, and Flesher."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FLESH-INSTALL"  "Install Flesh"
 # -------------------------------------
 get_flesh()
 {
@@ -1936,19 +1935,19 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CUSTOM-REPOSITORIES-DESC"  "Add Custom Repositories"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-DESC"  "Add Custom Repositories"
 #
-localize_info "CUSTOM-REPOSITORIES-ADD-REPO"     "Add custom Repositories"
-localize_info "CUSTOM-REPOSITORIES-TITLE"        "CUSTOM REPOSITORIES"
-localize_info "CUSTOM-REPOSITORIES-INFO"         "Do not add &#36;arch to the end, the script will do that for you."
-localize_info "CUSTOM-REPOSITORIES-NEW"          "Add new repository"
-localize_info "CUSTOM-REPOSITORIES-MENU"         "D. DONE"
-localize_info "CUSTOM-REPOSITORIES-REPO-NAME"    "Repository Name [ex: custom]: "
-localize_info "CUSTOM-REPOSITORIES-REPO-ADDRESS" "Repository Address [ex: http://domain.url.tdl/archlinux]: "
-localize_info "CUSTOM-REPOSITORIES-TRUST-LEVEL"  "Select your Trust Level:"
-localize_info "CUSTOM-REPOSITORIES-APPEND-ARCH"  "Append arch to end of url for auto detect Architecture: 64 or 32 bit."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-ADD-REPO"     "Add custom Repositories"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-TITLE"        "CUSTOM REPOSITORIES"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-INFO"         "Do not add &#36;arch to the end, the script will do that for you."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-NEW"          "Add new repository"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-MENU"         "D. DONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-REPO-NAME"    "Repository Name (ex: custom): "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-REPO-ADDRESS" "Repository Address (ex: http://domain.url.tdl/archlinux): "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-TRUST-LEVEL"  "Select your Trust Level:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CUSTOM-REPOSITORIES-APPEND-ARCH"  "Append arch to end of url for auto detect Architecture: 64 or 32 bit."
 # -------------------------------------
 add_custom_repositories()
 {
@@ -2008,7 +2007,7 @@ add_custom_repositories()
         done
     fi
     # pacstrap will overwrite pacman.conf so copy it to temp 
-    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2021,9 +2020,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "BACKUP-FILES-DESC"  "Backup files"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BACKUP-FILES-DESC"  "Backup files"
 # -------------------------------------
 backup_files()
 {
@@ -2043,9 +2042,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-CONFIG-DESC"  "Create Configuration files for Last Config."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-CONFIG-DESC"  "Create Configuration files for Last Config."
 # -------------------------------------
 create_config()
 {
@@ -2086,9 +2085,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CHANGE-USER-DESC"  "Change user in Configuration files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHANGE-USER-DESC"  "Change user in Configuration files."
 # -------------------------------------
 change_user()
 {
@@ -2109,14 +2108,14 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "EDIT-DISK-DESC"  "Edit Disk Configuration files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DISK-DESC"  "Edit Disk Configuration files."
 #
-localize_info "EDIT-DISK-EDIT-DRIVE" "Edit Drive with gdisk" 
-localize_info "EDIT-DISK-IS-SSD-DISK" "Is this an SSD Disk" 
-localize_info "EDIT-DISK-INFO-1"  "After Drive is formated, you can edit it using gdisk."
-localize_info "EDIT-DISK-INFO-2"  "Special Settings can help with SSD Drives."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DISK-EDIT-DRIVE" "Edit Drive with gdisk" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DISK-IS-SSD-DISK" "Is this an SSD Disk" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DISK-INFO-1"  "After Drive is formated, you can edit it using gdisk."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "EDIT-DISK-INFO-2"  "Special Settings can help with SSD Drives."
 # -------------------------------------
 edit_disk()
 {
@@ -2156,9 +2155,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SHOW-PACKMANAGER-DESC"  "Show All Packages to Manage"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-PACKMANAGER-DESC"  "Show All Packages to Manage"
 # -------------------------------------
 show_packmanager()
 {
@@ -2179,22 +2178,22 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SHOW-SOFTWARE-DESC"  "Show Loaded Variables for Software Configuration"
-localize_info "SHOW-SOFTWARE-NOTES" "Configuaration files exist"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-DESC"  "Show Loaded Variables for Software Configuration"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-NOTES" "Configuration files exist"
 #
-localize_info "SHOW-SOFTWARE-INFO-1"        "Software Configuration Database is built using the Full install menu; then saved to this file; the menu settings are store also, so you can visually see what you installed."
-localize_info "SHOW-SOFTWARE-INFO-2"        "If the Menu's get out of sync with the Database, they will have to be deleted; the software handles this automatically; but if you know the Database is out of sync; create a new one."
-localize_info "SHOW-SOFTWARE-INFO-3"        "If you want to create a New Software Configuartion file; you must not load the last one."
-localize_info "SHOW-SOFTWARE-LOAD-SOFTWARE" "Load Software Configuration Database" 
-localize_info "View-Package-Manager"        "View Package Manager Commands: " 
-localize_info "SCROLL-INFO"                 "Use Shift-PageUp and Down if scrolls off screen"
-localize_info "CREATE-NEW-CONFIG"           "Do you wish to Create a New Software Configuration File"
-localize_info "SHOW-SOFTWARE-INFO-ERROR"    "Software Config failed to load"
-localize_info "SHOW-SOFTWARE-INFO-VAR"      "Configuration and Software Install Variables:"
-localize_info "SHOW-SOFTWARE-INFO-4"        "The Menus shows you what you installed last time; the configuration will be overwriten; as such, it doesn't save what you have, unless you loaded it earlier; which is the case to get here."
-localize_info "SHOW-SOFTWARE-INFO-5"        "You have two Options; Create a New Software Configuraion File, or edit this one; which relies on the Menu System and Menu Database being in sync."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-1"        "Software Configuration Database is built using the Full install menu; then saved to this file; the menu settings are store also, so you can visually see what you installed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-2"        "If the Menu's get out of sync with the Database, they will have to be deleted; the software handles this automatically; but if you know the Database is out of sync; create a new one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-3"        "If you want to create a New Software Configuration file; you must not load the last one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-LOAD-SOFTWARE" "Load Software Configuration Database" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "View-Package-Manager"        "View Package Manager Commands: " 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SCROLL-INFO"                 "Use Shift-PageUp and Down if scrolls off screen"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-NEW-CONFIG"           "Do you wish to Create a New Software Configuration File"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-ERROR"    "Software Config failed to load"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-VAR"      "Configuration and Software Install Variables:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-4"        "The Menus shows you what you installed last time; the configuration will be overwritten; as such, it does not save what you have, unless you loaded it earlier; which is the case to get here."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-SOFTWARE-INFO-5"        "You have two Options; Create a New Software Configuration File, or edit this one; which relies on the Menu System and Menu Database being in sync."
 # -------------------------------------
 show_software()
 {
@@ -2261,18 +2260,18 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="12 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SHOW-LOADED-DESC"  "Show Loaded Variables"
-localize_info "SHOW-LOADED-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-LOADED-DESC"  "Show Loaded Variables"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-LOADED-NOTES" "Localized."
 #
-localize_info "Last-Config" "Last Configuration Database contain User specific Settings."
-localize_info "Load-User-Config" "Load User Configuration Database"
-localize_info "Last-Config-Failed" "Last Config Failed to load at line"
-localize_info "The-below-Config" "The below Configuration Settings can be changed without re-running Software install."
-localize_info "Change-UserName" "You can just change User Name [Y], or whole configuration [N]."
-localize_info "Do-You-Want-To-Change-UserName" "Do you wish to change User Name"
-localize_info "Edit-Settings" "Do you wish to edit these settings"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Last-Config"                    "Last Configuration Database contain User specific Settings."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Load-User-Config"               "Load User Configuration Database"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Last-Config-Failed"             "Last Config Failed to load at line"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "The-below-Config"               "The below Configuration Settings can be changed without re-running Software install."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Change-UserName"                "You can just change User Name (Y), or whole configuration (N)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Do-You-Want-To-Change-UserName" "Do you wish to change User Name"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Edit-Settings"                  "Do you wish to edit these settings"
 # -------------------------------------
 show_last_config()
 {
@@ -2343,11 +2342,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SHOW-DISK-PROFILE-DESC"  "Show Disk Profile"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-DISK-PROFILE-DESC"  "Show Disk Profile"
 #
-localize_info "SHOW-DISK-PROFILE-TITLE"  "Disk Profile: Configuration Variables:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SHOW-DISK-PROFILE-TITLE"  "Disk Profile: Configuration Variables:"
 # -------------------------------------
 show_disk_profile()
 {
@@ -2391,23 +2390,23 @@ show_disk_profile()
 # -----------------------------------------------------------------------------
 # GET INSTALL MODE {{{
 NAME="get_install_mode"
-USAGE="get_install_mode 1->[1=Install OS, 2=Install Software]"
+USAGE="get_install_mode 1->(1=Install OS, 2=Install Software)"
 DESCRIPTION=$(localize "GET-INSTALL-MODE-DESC")
 NOTES=$(localize "Localized.")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-INSTALL-MODE-DESC"  "Change MOUNTPOINT"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-INSTALL-MODE-DESC"  "Change MOUNTPOINT"
 #
-localize_info "Install-Mode"         "Install mode has two options: Boot and Live:"
-localize_info "Boot-Mode"            "Boot mode is when you Boot from an Arch ISO to install OS for first time, not to be confused with LIVE CD."
-localize_info "Live-Mode"            "Live mode is after you install Boot, and then reboot into Live mode, i.e. Active Installed OS."
-localize_info "Is-Install-Mode-Live" "Is Install Mode Live"
-localize_info "BOOT-MODE-DETECTED"   "Boot Mode Detected."
-localize_info "LIVE-MODE-DETECTED"   "Live Mode Detected."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install-Mode"         "Install mode has two options: Boot and Live:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Boot-Mode"            "Boot mode is when you Boot from an Arch ISO to install OS for first time, not to be confused with LIVE CD."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Live-Mode"            "Live mode is after you install Boot, and then reboot into Live mode, i.e. Active Installed OS."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Is-Install-Mode-Live" "Is Install Mode Live"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BOOT-MODE-DETECTED"   "Boot Mode Detected."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LIVE-MODE-DETECTED"   "Live Mode Detected."
 # -------------------------------------
 get_install_mode()
 {
@@ -2444,28 +2443,27 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "VERIFY-CONFIG-USAGE" " 1->[1=Install OS, 2=Install Software]" 
-localize_info "VERIFY-CONFIG-DESC"  "Verify Configfiguration settings and load all files or create new ones."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-USAGE" " 1->(1=Install OS, 2=Install Software)" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-DESC"  "Verify Configuration settings and load all files or create new ones."
 #
-localize_info "VERIFY-CONFIG-Optimization"          "Do you wish to Configure pacman Optimization" 
-localize_info "Create-New-Software-Config"          "Do you wish to Create a New Software Configuration File" 
-localize_info "Disk-Profile"                        "Do you wish change Disk Profile" 
-localize_info "KEEP-Disk-Profile"                   "Do you wish to continue with this Disk Profile" 
-localize_info "VERIFY-CONFIG-Import-User-Folder-settings" "Import User Folder settings" 
-localize_info "COPY-FOLDER"                         "Do you wish to Copy saved Flash Folder /etc/ to /" 
-localize_info "VERIFY-CONFIG-PACMAN-OPTIMIZATION"   "pacman Optimization will configure system to use aria2 reflector and pm2ml; it will also configure a local repository which can be share accross a local Network; this will help download files faster."
-localize_info "VERIFY-CONFIG-CHECKING-OPTMIZE"      "Checking for pacman Optimization"
-localize_info "VERIFY-CONFIG-NO-OPTIMIZE"           "No Optimized pacman!"
-localize_info "VERIFY-CONFIG-NO-CONFIG"             "No Configuration file found."
-localize_info "VERIFY-CONFIG-SOFTWARE-CONFIG-FOUND" "A Software Configuration file has not been detected, you can Create a New one."
-localize_info "VERIFY-CONFIG-VERIFY-DISK-SETTINGS"  "You now need to verify the Disk Settings"
-localize_info "VERIFY-CONFIG-RUN-SCRIPT-AGAIN"      "Run Script again, after you decide on a Disk Profile."
-localize_info "VERIFY-CONFIG-FOLDER-ETC-HOLDS"      "The Folder etc holds various configurations fiies like: pacman.conf, fstab, hostname, hosts, resolve.conf, sudoers, timezone, vconsole.conf, and mirrorlist."
-localize_info "VERIFY-CONFIG-CONFIG-COMPLETED"      "Configuration File Check Completed..."
-localize_info "VERIFY-CONFIG-USER-FOLDER-SETTINGS"  "User Folder Settings are stored on Disk; they are part of the Flesh, to add to the Bare Bones install and add customization to user settings."
-localize_info "VERIFY-CONFIG-X" ""
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-Optimization"          "Do you wish to Configure pacman Optimization" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Create-New-Software-Config"          "Do you wish to Create a New Software Configuration File" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Disk-Profile"                        "Do you wish change Disk Profile" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "KEEP-Disk-Profile"                   "Do you wish to continue with this Disk Profile" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-Import-User-Folder-settings" "Import User Folder settings" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FOLDER"                         "Do you wish to Copy saved Flash Folder /etc/ to /" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-PACMAN-OPTIMIZATION"   "pacman Optimization will configure system to use aria2 reflector and pm2ml; it will also configure a local repository which can be share across a local Network; this will help download files faster."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-CHECKING-OPTIMIZE"      "Checking for pacman Optimization"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-NO-OPTIMIZE"           "No Optimized pacman!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-NO-CONFIG"             "No Configuration file found."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-SOFTWARE-CONFIG-FOUND" "A Software Configuration file has not been detected, you can Create a New one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-VERIFY-DISK-SETTINGS"  "You now need to verify the Disk Settings"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-RUN-SCRIPT-AGAIN"      "Run Script again, after you decide on a Disk Profile."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-FOLDER-ETC-HOLDS"      "The Folder etc holds various configurations files like: pacman.conf, fstab, hostname, hosts, resolve.conf, sudoers, timezone, vconsole.conf, and mirrorlist."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-CONFIG-COMPLETED"      "Configuration File Check Completed..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-USER-FOLDER-SETTINGS"  "User Folder Settings are stored on Disk; they are part of the Flesh, to add to the Bare Bones install and add customization to user settings."
 verify_config()
 {
     if [[ "$CONFIG_VERIFIED" -eq 1 ]]; then return 0; fi
@@ -2476,7 +2474,7 @@ verify_config()
         print_this "VERIFY-CONFIG-PACMAN-OPTIMIZATION"
         read_input_yn "VERIFY-CONFIG-Optimization" " " 0
         if [[ "$YN_OPTION" -eq 1 ]]; then
-            print_info "VERIFY-CONFIG-CHECKING-OPTMIZE"
+            print_info "VERIFY-CONFIG-CHECKING-OPTIMIZE"
             if check_package "pm2ml" ; then
                 echo "VERIFY-CONFIG-NO-OPTIMIZE"
                 USE_PACMAN=0
@@ -2530,7 +2528,7 @@ verify_config()
         fi
     fi
     # User Configuration Files
-    if [[ -f "${USER_FOLDER}/.xinitrc" && ! -f "/home/${USERNAME}/.xinitrc" && "$RUNTIME_MODE" -eq 2 ]]; then  # USER_FOLDER = "${SCRIPT_DIR}/USER"
+    if [[ -f "${USER_FOLDER}/.xinitrc" && ! -f "/home/${USERNAME}/.xinitrc" && "$RUNTIME_MODE" -eq 2 ]]; then  # USER_FOLDER = "${FULL_SCRIPT_PATH}/USER"
         print_info "VERIFY-CONFIG-USER-FOLDER-SETTINGS"
         read_input_yn "VERIFY-CONFIG-Import-User-Folder-settings" " " 1
         if [[ "$YN_OPTION" -eq 1 ]]; then
@@ -2538,7 +2536,7 @@ verify_config()
         fi
     else
         if [[ "$RUNTIME_MODE" -eq 1 ]]; then
-            USER_FOLDER="${SCRIPT_DIR}/USER"
+            USER_FOLDER="${FULL_SCRIPT_PATH}/USER"
             make_dir "${USER_FOLDER}/" "$(basename $BASH_SOURCE) : $LINENO"
         else
             USER_FOLDER="/home/${USERNAME}"
@@ -2562,12 +2560,12 @@ verify_config()
         fi
     fi
     if [[ "$1" -eq 2 ]]; then
-        if [ -d "${SCRIPT_DIR}/etc/" ]; then
+        if [ -d "${FULL_SCRIPT_PATH}/etc/" ]; then
             print_info "VERIFY-CONFIG-FOLDER-ETC-HOLDS"
             read_input_yn "COPY-FOLDER" " " 0
             if [[ "$YN_OPTION" -eq 0 ]]; then
-                 # copy_dir "${SCRIPT_DIR}/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO" # runs out of space
-                 copy_dir "${SCRIPT_DIR}/etc/" "${MOUNTPOINT}/" "$(basename $BASH_SOURCE) : $LINENO"
+                 # copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO" # runs out of space
+                 copy_dir "${FULL_SCRIPT_PATH}/etc/" "${MOUNTPOINT}/" "$(basename $BASH_SOURCE) : $LINENO"
             fi
         fi
     fi
@@ -2586,13 +2584,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CLEAR-SOFTWARE-DESC"      "Clear All variables that effect Software"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CLEAR-SOFTWARE-DESC"      "Clear All variables that effect Software"
 #
-localize_info "CLEAR-SOFTWARE-ERROR"     "No Menus found"
-localize_info "CLEAR-SOFTWARE-INFO"      "Removed Menus"
-localize_info "CLEAR-SOFTWARE-COMPLETE"  "Removed Software Configuration"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CLEAR-SOFTWARE-ERROR"     "No Menus found"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CLEAR-SOFTWARE-INFO"      "Removed Menus"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CLEAR-SOFTWARE-COMPLETE"  "Removed Software Configuration"
 # -------------------------------------
 clear_software()
 {
@@ -2664,9 +2662,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SAVE-INSTALL-DESC"  "Save Install"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-INSTALL-DESC"  "Save Install"
 # -------------------------------------
 save_install()
 {
@@ -2739,9 +2737,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SAVE-SOFTWARE-DESC"  "Save Software Configuration: All variables that effect PACKMANAGER"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-SOFTWARE-DESC"  "Save Software Configuration: All variables that effect PACKMANAGER"
 # -------------------------------------
 save_software()
 {
@@ -2749,7 +2747,7 @@ save_software()
     # add_packagemanager TASKMANAGER TASKMANAGER_NAME
     # TASKMANAGER_NAME
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name-old.db" "$(basename $BASH_SOURCE) : $LINENO"
-    typeset -i total="${#TASKMANAGER_NAME[@]}"
+    local -i total="${#TASKMANAGER_NAME[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
             echo "${TASKMANAGER_NAME[$i]}"  > "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" # add_taskmanager  - array
@@ -2759,7 +2757,7 @@ save_software()
     done
     # TASKMANAGER
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-old.db" "$(basename $BASH_SOURCE) : $LINENO"
-    typeset -i total="${#TASKMANAGER[@]}"
+    local -i total="${#TASKMANAGER[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
             echo "${TASKMANAGER[$i]}"       > "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"      # add_taskmanager  - array
@@ -2771,7 +2769,7 @@ save_software()
     # add_packagemanager PACKMANAGER PACKMANAGER_NAME
     # PACKMANAGER_NAME
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name-old.db" "$(basename $BASH_SOURCE) : $LINENO"
-    typeset -i total="${#PACKMANAGER_NAME[@]}"
+    local -i total="${#PACKMANAGER_NAME[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
             echo "${PACKMANAGER_NAME[$i]}"  > "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" # add_packagemanager  - array
@@ -2781,7 +2779,7 @@ save_software()
     done
     # PACKMANAGER
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-old.db" "$(basename $BASH_SOURCE) : $LINENO"
-    typeset -i total="${#PACKMANAGER[@]}"
+    local -i total="${#PACKMANAGER[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
             echo "${PACKMANAGER[$i]}"       > "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"      # add_packagemanager  - array
@@ -2792,7 +2790,7 @@ save_software()
     #
     # PACKAGES
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-packages-old.db" "$(basename $BASH_SOURCE) : $LINENO"
-    typeset -i total="${#PACKAGES[@]}"
+    local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
             echo "${PACKAGES[$i]}"         > "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"             # add_package         - array
@@ -2803,7 +2801,7 @@ save_software()
     #
     # AUR_PACKAGES
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages-old.db" "$(basename $BASH_SOURCE) : $LINENO"
-    typeset -i total="${#AUR_PACKAGES[@]}"
+    local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
             echo "${AUR_PACKAGES[$i]}"   > "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"           # add_aur_package  - array
@@ -2890,9 +2888,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SAVE-LAST-CONFIG-DESC"  "Save Last Config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-LAST-CONFIG-DESC"  "Save Last Config"
 # -------------------------------------
 save_last_config()
 {
@@ -2990,9 +2988,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SAVE-DISK-CONFIG-DESC"  "Save Disk Configuration"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-DISK-CONFIG-DESC"  "Save Disk Configuration"
 # -------------------------------------
 save_disk_config()
 {
@@ -3079,9 +3077,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-SOFTWARE-FILES-DESC"  "Test if all Config files exist"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-SOFTWARE-FILES-DESC"  "Test if all Config files exist"
 # -------------------------------------
 is_software_files()
 {
@@ -3113,9 +3111,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "LOAD-SOFTWARE-DESC"  "Load Software Configuration files"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-SOFTWARE-DESC"  "Load Software Configuration files"
 # -------------------------------------
 load_software()
 {
@@ -3299,9 +3297,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-LAST-CONFIG-FILES-DESC"  "Test if all Config files exist"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-LAST-CONFIG-FILES-DESC"  "Test if all Config files exist"
 # -------------------------------------
 is_last_config_files()
 {
@@ -3333,9 +3331,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "LOAD-LAST-CONFIG-DESC"  "Last Configuration is User Specific Settings like USERNAME, LOCALE, HOSTNAME, KEYMAP COUNTRY, TIMEZONE and more."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-LAST-CONFIG-DESC"  "Last Configuration is User Specific Settings like USERNAME, LOCALE, HOSTNAME, KEYMAP COUNTRY, TIMEZONE and more."
 # -------------------------------------
 load_last_config()
 {
@@ -3445,9 +3443,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "LOAD-DISK-CONFIG-DESC"  "Load Disk Configuration"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "LOAD-DISK-CONFIG-DESC"  "Load Disk Configuration"
 # -------------------------------------
 load_disk_config()
 {
@@ -3546,13 +3544,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-PACKAGEMANAGER-USAGE" "add_packagemanager 1->[COMMAND-LINE] 2->[NAME-OF-PACKAGE]"
-localize_info "ADD-PACKAGEMANAGER-DESC"  "Add A Package to the Manager"
-localize_info "ADD-PACKAGEMANAGER-NOTES" "Hart of System."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGEMANAGER-USAGE" "add_packagemanager 1->(COMMAND-LINE) 2->(NAME-OF-PACKAGE)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGEMANAGER-DESC"  "Add A Package to the Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGEMANAGER-NOTES" "Hart of System."
 #
-localize_info "ADD-PACKAGEMANAGER-ERROR"  "Wrong Paramaters passed to add_packagemanager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGEMANAGER-ERROR"  "Wrong Parameters passed to add_packagemanager"
 # -------------------------------------
 add_packagemanager()
 {
@@ -3591,13 +3589,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-PACKAGEMANAGER-USAGE" "remove_packagemanager 1->[NAME-OF-PACKAGE]"
-localize_info "REMOVE-PACKAGEMANAGER-DESC"  "Remove A Package to the Manager"
-localize_info "REMOVE-PACKAGEMANAGER-NOTES" "Hart of System."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGEMANAGER-USAGE" "remove_packagemanager 1->(NAME-OF-PACKAGE)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGEMANAGER-DESC"  "Remove A Package to the Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGEMANAGER-NOTES" "Hart of System."
 #
-localize_info "REMOVE-PACKAGEMANAGER-ERROR"  "Wrong Paramaters to add_packagemanager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGEMANAGER-ERROR"  "Wrong Parameters to add_packagemanager"
 # -------------------------------------
 remove_packagemanager()
 {
@@ -3618,12 +3616,12 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-TASKMANAGER-USAGE" "add_taskmanager 1->[COMMAND-LINE] 2->[NAME-OF-PACKAGE]"
-localize_info "ADD-TASKMANAGER-DESC"  "Add A Task to the Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-TASKMANAGER-USAGE" "add_taskmanager 1->(COMMAND-LINE) 2->(NAME-OF-PACKAGE)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-TASKMANAGER-DESC"  "Add A Task to the Manager"
 #
-localize_info "ADD-TASKMANAGER-ERROR"  "Wrong Paramaters to add_taskmanager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-TASKMANAGER-ERROR"  "Wrong Parameters to add_taskmanager"
 # -------------------------------------
 add_taskmanager()
 {
@@ -3663,13 +3661,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-PACKAGE-USAGE" "add_package 1->[package]"
-localize_info "ADD-PACKAGE-DESC"  "Add Package to PACKAGES array; for testing and building cache folder"
-localize_info "ADD-PACKAGE-NOTES" "Call per Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGE-USAGE" "add_package 1->(package)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGE-DESC"  "Add Package to PACKAGES array; for testing and building cache folder"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGE-NOTES" "Call per Package Manager"
 #
-localize_info "ADD-PACKAGE-ERROR"  "Wrong Paramaters to add_package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-PACKAGE-ERROR"  "Wrong Parameters to add_package"
 # -------------------------------------
 add_package()
 { 
@@ -3705,13 +3703,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-PACKAGE-USAGE" "remove_package 1->[package]"
-localize_info "REMOVE-PACKAGE-DESC"  "Remove Package from PACKAGES array; for testing and building cache folder"
-localize_info "REMOVE-PACKAGE-NOTES" "Call per Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGE-USAGE" "remove_package 1->(package)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGE-DESC"  "Remove Package from PACKAGES array; for testing and building cache folder"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGE-NOTES" "Call per Package Manager"
 #
-localize_info "REMOVE-PACKAGE-ERROR"  "Wrong Paramaters to remove_package"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-PACKAGE-ERROR"  "Wrong Parameters to remove_package"
 # -------------------------------------
 remove_package()
 { 
@@ -3743,13 +3741,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-AUR-PACKAGE-USAGE" "add_aur_package 1->[package]"
-localize_info "ADD-AUR-PACKAGE-DESC"  "Add AUR Package to PACKAGES array; for testing and building cache folder."
-localize_info "ADD-AUR-PACKAGE-NOTES" "Call per AUR Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-AUR-PACKAGE-USAGE" "add_aur_package 1->(package)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-AUR-PACKAGE-DESC"  "Add AUR Package to PACKAGES array; for testing and building cache folder."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-AUR-PACKAGE-NOTES" "Call per AUR Package Manager"
 #
-localize_info "ADD-AUR-PACKAGE-ERROR"  "Wrong Paramaters to"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-AUR-PACKAGE-ERROR"  "Wrong Parameters to"
 # -------------------------------------
 add_aur_package()
 { 
@@ -3785,13 +3783,13 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-AUR-PACKAGE-USAGE" "remove_aur_package 1->[package]"
-localize_info "REMOVE-AUR-PACKAGE-DESC"  "Remove AUR Package from PACKAGES array."
-localize_info "REMOVE-AUR-PACKAGE-NOTES" "Call per AUR Package Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-AUR-PACKAGE-USAGE" "remove_aur_package 1->(package)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-AUR-PACKAGE-DESC"  "Remove AUR Package from PACKAGES array."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-AUR-PACKAGE-NOTES" "Call per AUR Package Manager"
 #
-localize_info "REMOVE-AUR-PACKAGE-ERROR"  "Wrong Paramaters to"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-AUR-PACKAGE-ERROR"  "Wrong Parameters to"
 # -------------------------------------
 remove_aur_package()
 { 
@@ -3823,11 +3821,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ADD-MODULE-USAGE" "add_module 1->[Name of Module] 2->[Package Manager]"
-localize_info "ADD-MODULE-DESC"  "Add Module to Package Manager."
-localize_info "ADD-MODULE-NOTES" "Call per Module"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-MODULE-USAGE" "add_module 1->(Name of Module) 2->(Package Manager)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-MODULE-DESC"  "Add Module to Package Manager."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ADD-MODULE-NOTES" "Call per Module"
 # -------------------------------------
 add_module()
 { 
@@ -3845,11 +3843,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "REMOVE-MODULE-USAGE" "remove_module 1->[Package Manager]"
-localize_info "REMOVE-MODULE-DESC"  "Remove Module from Package Manager."
-localize_info "REMOVE-MODULE-NOTES" "Call per Module"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-MODULE-USAGE" "remove_module 1->(Package Manager)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-MODULE-DESC"  "Remove Module from Package Manager."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "REMOVE-MODULE-NOTES" "Call per Module"
 # -------------------------------------
 remove_module()
 { 
@@ -3866,17 +3864,18 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "USER-CONFIG-USAGE" "user_config 1->[USERNAME]"
-localize_info "USER-CONFIG-DESC"  "User Configuration settings."
-localize_info "USER-CONFIG-NOTES" "This is run by User, Library is unavailable, unless you export all the functions to use it."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-USAGE" "user_config 1->(USERNAME)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-DESC"  "User Configuration settings."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-NOTES" "This is run by User, Library is unavailable, unless you export all the functions to use it."
 #
-localize_info "USER-CONFIG-COMPLETED"  "User Configuration Completed."
-localize_info "USER-CONFIG-ERROR-1"      "Failure in creating .Xauthority; try generate new one."
-localize_info "USER-CONFIG-ERROR-2"      "Failure in creating .Xauthority; try add new one."
-localize_info "USER-CONFIG-ERROR-3"      "Failure in creating .Xauthority, giving up and creating file."
-localize_info "USER-CONFIG-ERROR-4"      "User Configuration Completed with Errors."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-TITLE"      "Configuring User:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-COMPLETED"  "User Configuration Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-ERROR-1"    "Failure in creating .Xauthority; try generate new one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-ERROR-2"    "Failure in creating .Xauthority; try add new one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-ERROR-3"    "Failure in creating .Xauthority, giving up and creating file."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "USER-CONFIG-ERROR-4"    "User Configuration Completed with Errors."
 # -------------------------------------
 user_config()
 {
@@ -3885,7 +3884,7 @@ user_config()
     BWhite='\e[1;37m'       # White
     White='\e[0;37m'        # White
     # cd /home/${USERNAME} or cd ~
-    echo -e $"\t${BWhite} Configuring User: $1 ${White}"
+    echo -e "\t${BWhite} $(gettext -s "USER-CONFIG-TITLE") $1 ${White}"
     if [[ ! -f "/home/$1/.Xauthority" && ! -h "/home/$1/.Xauthority" ]]; then # if its not a file or a link
         echo ""
         ln -sv `dirname $(xauth info | awk '/Authority file/{print $3}')` /home/$1/.Xauthority
@@ -3901,7 +3900,7 @@ user_config()
     if [[ ! -f "/home/$1/.Xauthority" && ! -h "/home/$1/.Xauthority" ]]; then # just in case failure; last resort
         echo -e "${BRed} $(gettext -s "USER-CONFIG-ERROR-3") ${White}"
         touch /home/$1/.Xauthority
-        echo -e $"\t${BWhite} $(gettext -s "USER-CONFIG-ERROR-4") ${White}"
+        echo -e "\t${BWhite} $(gettext -s "USER-CONFIG-ERROR-4") ${White}"
         return 1
     fi
     #
@@ -3920,18 +3919,19 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-USER-ACCOUNT-DESC"  "This function gets called after software is installed, so configure what is needed here."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-DESC"  "This function gets called after software is installed, so configure what is needed here."
 #
-localize_info "CONFIGURE-USER-ACCOUNT-TITLE"     "Configuring User Account"
-localize_info "CONFIGURE-USER-ACCOUNT-INFO"      "BASHRC"
-localize_info "CONFIGURE-USER-ACCOUNT-ERROR-1"   "configure_user_account: vim failed to Download"
-localize_info "CONFIGURE-USER-ACCOUNT-ERROR-2"   "configure_user_account: pentadactyl failed to Download"
-localize_info "CONFIGURE-USER-ACCOUNT-ERROR-3"   "configure_user_account: dotfiles failed to Download"
-localize_info "CONFIGURE-USER-ACCOUNT-ERROR-4"   "configure_user_account: Failure in creating .Xauthority for user"
-localize_info "CONFIGURE-USER-ACCOUNT-COMPLETED" "Configuring User Account Completed."
-localize_info "CONFIGURE-USER-ACCOUNT-CONFIG"    "Configuring Dot Files..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-TITLE"     "Configuring User Account"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-CONFIG"    "Configuring :"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-INFO"      "BASHRC"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-ERROR-1"   "configure_user_account: vim failed to Download"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-ERROR-2"   "configure_user_account: pentadactyl failed to Download"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-ERROR-3"   "configure_user_account: dotfiles failed to Download"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-ERROR-4"   "configure_user_account: Failure in creating .Xauthority for user"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-COMPLETED" "Configuring User Account Completed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-USER-ACCOUNT-CONFIG"    "Configuring Dot Files..."
 # -------------------------------------
 configure_user_account()
 {
@@ -3984,23 +3984,23 @@ configure_user_account()
     fi
     print_this "CONFIGURE-USER-ACCOUNT-CONFIG"
     if [[ "$EDITOR" == "nano" ]]; then
-        echo -e $"\tConfiguring Nano..."
+        print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Nano..."
         sed -i '/EDITOR/s/vim/nano/' "/home/${USERNAME}/.bashrc"
         sed -i '/VISUAL/s/vim/nano/' "/home/${USERNAME}/.bashrc"
         sed -i '/EDITOR/s/vim/nano/' ~/.bashrc
         sed -i '/VISUAL/s/vim/nano/' ~/.bashrc
     elif [[ "$EDITOR" == "vim" ]]; then
-        echo -e $"\t${BWhite} Configuring Vim...${White}"
+        print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Vim..."
         # VIM
         # VIMRC
     elif [[ "$EDITOR" == "joe" ]]; then
-        echo -e $"\t${BWhite}Configuring Joe...${White}"
+        print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Joe..."
         sed -i '/EDITOR/s/vim/joe/' "/home/${USERNAME}/.bashrc"
         sed -i '/VISUAL/s/vim/joe/' "/home/${USERNAME}/.bashrc"
         sed -i '/EDITOR/s/vim/joe/' ~/.bashrc
         sed -i '/VISUAL/s/vim/joe/' ~/.bashrc
     elif [[ "$EDITOR" == "emacs" ]]; then
-        echo -e $"\t${BWhite}Configuring Emacs...${White}"
+        print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Emacs..."
         sed -i '/EDITOR/s/vim/emacs\ -nw/' "/home/${USERNAME}/.bashrc"
         sed -i '/VISUAL/s/vim/emacs\ -nw/' "/home/${USERNAME}/.bashrc"
         sed -i '/EDITOR/s/vim/emacs\ -nw/' ~/.bashrc
@@ -4052,7 +4052,7 @@ configure_user_account()
         print_warning "CONFIGURE-USER-ACCOUNT-ERROR-4" ": ${USERNAME} function: user_config - $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Failed for XAUTHORITY at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
-    cd /"$SCRIPT_DIR" # Is this required, if cd from within a su, it shouldn't leave the pwd there, it should revert back, as if it never happened.
+    cd /"$FULL_SCRIPT_PATH" # Is this required, if cd from within a su, it shouldn't leave the pwd there, it should revert back, as if it never happened.
     chmod 600 "/home/${USERNAME}/.Xauthority" # User=RW, Group and Others=None
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.Xauthority"
     #
@@ -4069,22 +4069,21 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-AUR-PACKAGE-FOLDER-DESC"  "Get AUR package folder and AUR Repository Setting."
-localize_info "GET-AUR-PACKAGE-FOLDER-NOTES" "Notes."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-DESC"  "Get AUR package folder and AUR Repository Setting."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-NOTES" "Notes."
 #
-localize_info "Use-AUR-Repository" "Use AUR Repository"
-localize_info "Enter-Name-for-AUR-Packages" "Enter Name for AUR Packages"
-localize_info "GET-AUR-PACKAGE-FOLDER-INFO-1" "This is the Folder where AUR Projects get Downloaded into and Compiled At."
-localize_info "GET-AUR-PACKAGE-FOLDER-INFO-2" "This will create a folder in your /mnt folder, to give you an Option to Share (Server) or Mount (Client) as a share drive; where it will be compiled, then the Package will be copied over into the Custom Packages Folder, so we can create a Custom Repository to install the Package from."
-localize_info "GET-AUR-PACKAGE-FOLDER-INFO-3" "Even if you do not use the Repository, you still have to download and compile AUR projects here."
-localize_info "GET-AUR-PACKAGE-FOLDER-INFO-4" "The reason I chose /mnt is obvious, /mnt is owned by the root, so its chained to that folder, even though this folder will have User r/w/x Permissions; so its more Secure; and can be Shared with just as much Security."
-localize_info "GET-AUR-PACKAGE-FOLDER-INFO-5" "AUR Repository allows you to share your AUR Packages in your Local Network; it can also make updates easier."
-localize_info "" ""
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Use-AUR-Repository" "Use AUR Repository"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Enter-Name-for-AUR-Packages" "Enter Name for AUR Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-INFO-1" "This is the Folder where AUR Projects get Downloaded into and Compiled At."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-INFO-2" "This will create a folder in your /mnt folder, to give you an Option to Share (Server) or Mount (Client) as a share drive; where it will be compiled, then the Package will be copied over into the Custom Packages Folder, so we can create a Custom Repository to install the Package from."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-INFO-3" "Even if you do not use the Repository, you still have to download and compile AUR projects here."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-INFO-4" "The reason I chose /mnt is obvious, /mnt is owned by the root, so its chained to that folder, even though this folder will have User r/w/x Permissions; so its more Secure; and can be Shared with just as much Security."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-AUR-PACKAGE-FOLDER-INFO-5" "AUR Repository allows you to share your AUR Packages in your Local Network; it can also make updates easier."
 get_aur_package_folder()
 {
-    print_title "https://aur.archlinux.org/ and https://wiki.archlinux.org/index.php/AUR_User_Guidelines"
+    print_title "Use-AUR-Repository" "https://aur.archlinux.org/ and https://wiki.archlinux.org/index.php/AUR_User_Guidelines"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-1"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-2"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-3"
@@ -4111,15 +4110,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-FSTAB-CONFIG-DESC"  "Get fstab config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FSTAB-CONFIG-DESC"  "Get fstab config"
 #
-localize_info "GET-FSTAB-CONFIG-TITLE"      "FSTAB"
-localize_info "GET-FSTAB-CONFIG-INFO"       "The /etc/fstab file contains static filesystem information. It defines how storage devices and partitions are to be mounted and integrated into the overall system. It is read by the mount command to determine which options to use when mounting a specific device or partition."
-localize_info "GET-FSTAB-CONFIG-RECOMMEND"  "UUID is the perfered way to create fstab."
-localize_info "GET-FSTAB-CONFIG-COFIGURE"   "Configure fstab based on:"
-localize_info "GET-FSTAB-CONFIG-EDIT"       "Edit fstab file" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FSTAB-CONFIG-TITLE"      "FSTAB"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FSTAB-CONFIG-INFO"       "The /etc/fstab file contains static filesystem information. It defines how storage devices and partitions are to be mounted and integrated into the overall system. It is read by the mount command to determine which options to use when mounting a specific device or partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FSTAB-CONFIG-RECOMMEND"  "UUID is the preferred way to create fstab."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FSTAB-CONFIG-CONFIGURE"  "Configure fstab based on:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FSTAB-CONFIG-EDIT"       "Edit fstab file" 
 # -------------------------------------
 get_fstab_config()
 {
@@ -4127,7 +4126,7 @@ get_fstab_config()
     print_info "GET-FSTAB-CONFIG-INFO"
     print_info "GET-FSTAB-CONFIG-RECOMMEND"
     PS3="$prompt1"
-    echo -e "GET-FSTAB-CONFIG-COFIGURE"
+    print_this "GET-FSTAB-CONFIG-CONFIGURE"
     select OPT in "${FSTAB[@]}"; do
         case "$REPLY" in
             1)
@@ -4163,15 +4162,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-FSTAB-DESC"  "Configure fstab"
-localize_info "CONFIGURE-FSTAB-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-DESC"  "Configure fstab"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-NOTES" "Localized."
 #
-localize_info "Configuring-fstab" "Configuring fstab..."
-localize_info "Edit-fstab" "The /etc/fstab file contains static filesystem information. It defines how storage devices and partitions are to be mounted and integrated into the overall system. It is read by the mount command to determine which options to use when mounting a specific device or partition."
-localize_info "Review-fstab" "Review your fstab."
-localize_info "fstab-complete" "fstab configuration complete."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Configuring-fstab" "Configuring fstab..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Edit-fstab" "The /etc/fstab file contains static filesystem information. It defines how storage devices and partitions are to be mounted and integrated into the overall system. It is read by the mount command to determine which options to use when mounting a specific device or partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Review-fstab" "Review your fstab."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "fstab-complete" "fstab configuration complete."
 # -------------------------------------
 configure_fstab()
 {
@@ -4204,7 +4203,7 @@ configure_fstab()
         $EDITOR ${MOUNTPOINT}/etc/fstab
     fi
     # pacstrap will overwrite fstab so copy it to temp 
-    copy_file ${MOUNTPOINT}/etc/fstab "${SCRIPT_DIR}/etc/fstab" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/fstab "${FULL_SCRIPT_PATH}/etc/fstab" "$(basename $BASH_SOURCE) : $LINENO"
     echo "fstab-complete"
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_fstab @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
@@ -4219,11 +4218,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-HOSTNAME-DESC"  "Configure hostname"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-HOSTNAME-DESC"  "Configure hostname"
 #
-localize_info "CONFIGURE-HOSTNAME-COMPLETE"  "Configured Hostname..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-HOSTNAME-COMPLETE"  "Configured Hostname..."
 # -------------------------------------
 configure_hostname()
 {
@@ -4239,8 +4238,8 @@ configure_hostname()
     echo "# End of file" >> ${MOUNTPOINT}/etc/hosts
     # 
     # pacstrap will overwrite hosts so copy it to temp 
-    copy_file ${MOUNTPOINT}/etc/hostname "${SCRIPT_DIR}/etc/hostname" "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/hosts    "${SCRIPT_DIR}/etc/hosts"    "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hostname "${FULL_SCRIPT_PATH}/etc/hostname" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hosts    "${FULL_SCRIPT_PATH}/etc/hosts"    "$(basename $BASH_SOURCE) : $LINENO"
     echo "CONFIGURE-HOSTNAME-COMPLETE"
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_hostname @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
@@ -4255,16 +4254,16 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-HOSTNAME-DESC"    "Get hostname"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-DESC"    "Get hostname"
 #
-localize_info "GET-HOSTNAME-TITLE"   "HOSTNAME"
-localize_info "GET-HOSTNAME-INFO-1"  "A host name is a unique name created to identify a machine on a network.Host names are restricted to alphanumeric characters."
-localize_info "GET-HOSTNAME-INFO-2"  "The hyphen (-) can be used, but a host name cannot start or end with it. Length is restricted to 63 characters."
-localize_info "GET-HOSTNAME-INFO-3"  "Do not add any comments or empty lines."
-localize_info "GET-HOSTNAME-INFO-4"  "Do not use a domain name."
-localize_info "GET-HOSTNAME-DEFAULT" "Hostname [ex: archlinux]"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-TITLE"   "HOSTNAME"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-INFO-1"  "A host name is a unique name created to identify a machine on a network.Host names are restricted to alphanumeric characters."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-INFO-2"  "The hyphen (-) can be used, but a host name cannot start or end with it. Length is restricted to 63 characters."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-INFO-3"  "Do not add any comments or empty lines."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-INFO-4"  "Do not use a domain name."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOSTNAME-DEFAULT" "Hostname (ex: archlinux)"
 # -------------------------------------
 get_hostname()
 {
@@ -4288,14 +4287,14 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ABORT-INSTALL-USAGE" "abort_install 1->[1=Boot OS Install, 2=Install Software]"
-localize_info "ABORT-INSTALL-DESC"  "Finsh with script; clean up and do backups"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-USAGE" "abort_install 1->(1=Boot OS Install, 2=Install Software)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-DESC"  "Finish with script; clean up and do backups"
 #
-localize_info "ABORT-INSTALL-INFO-1"  "I made a back copy of the profile in /root; you can delete these files."
-localize_info "ABORT-INSTALL-ERROR"   "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
-localize_info "ABORT-INSTALL-INFO-2"  "You should now have a full system install, just reboot and you are ready to go."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-INFO-1"  "I made a back copy of the profile in /root; you can delete these files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-ERROR"   "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-INFO-2"  "You should now have a full system install, just reboot and you are ready to go."
 # -------------------------------------
 abort_install()
 {
@@ -4306,17 +4305,17 @@ abort_install()
     if [[ "$1" -eq 1 ]]; then
         print_info    "ABORT-INSTALL-INFO-1"
         print_warning "ABORT-INSTALL-ERROR"
-        copy_dir "$SCRIPT_DIR/etc/"          ${MOUNTPOINT}/root/ "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "${CONFIG_PATH}/" "db"    ${MOUNTPOINT}/root/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "$LOG_PATH/"      "log"   ${MOUNTPOINT}/root/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$SCRIPT_DIR/arch-wiz.sh" ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
+        copy_dir   "$FULL_SCRIPT_PATH/etc/"        ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
+        copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/root/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
+        copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/root/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh" ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
     else
         print_info "ABORT-INSTALL-INFO-2"
     fi
     # @FIX, where to save it to
     chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
     chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
-    chown -R ${USERNAME}:${USERNAME} "${SCRIPT_DIR}/etc/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
     chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
     exit 1
 }
@@ -4331,19 +4330,19 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "FINISH-USAGE" "finish 1->[1=Boot OS Install, 2=Install Software]"
-localize_info "FINISH-DESC"  "Finsh with script; clean up and do backups"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-USAGE"   "finish 1->(1=Boot OS Install, 2=Install Software)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-DESC"    "Finish with script; clean up and do backups"
 #
-localize_info "FINISH-TITLE"  "Finish"
-localize_info "FINISH-INFO-1"  "INSTALL COMPLETED"
-localize_info "FINISH-INFO-2"  "If all went right you should be able to reboot into a fully functioning Desktop."
-localize_info "FINISH-INFO-3"  "Make sure to check the root for install files like install_scripts, install_scripts_root_secrets, install_scripts_user_secrets, you can also delete /boot/grub_uefi.log."
-localize_info "FINISH-INFO-4"  "I made a back copy of the profile in /root; you can delete these files."
-localize_info "FINISH-ERROR"   "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
-localize_info "FINISH-INFO-5"  "You should now have a full system install, just reboot and you are ready to go."
-localize_info "FINISH-REBOOT"  "Reboot system" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-TITLE"   "Finish"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-1"  "INSTALL COMPLETED"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-2"  "If all went right you should be able to reboot into a fully functioning Desktop."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-3"  "Make sure to check the root for install files like install_scripts, install_scripts_root_secrets, install_scripts_user_secrets, you can also delete /boot/grub_uefi.log."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-4"  "I made a back copy of the profile in /root; you can delete these files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-ERROR"   "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-5"  "You should now have a full system install, just reboot and you are ready to go."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-REBOOT"  "Reboot system" 
 # -------------------------------------
 finish()
 {
@@ -4356,17 +4355,21 @@ finish()
     if [[ "$1" -eq 1 ]]; then
         print_info    "FINISH-INFO-4"
         print_warning "FINISH-ERROR"
-        copy_dir "$SCRIPT_DIR/etc/"          ${MOUNTPOINT}/root/ "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "${CONFIG_PATH}/" "db"    ${MOUNTPOINT}/root/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "$LOG_PATH/"      "log"   ${MOUNTPOINT}/root/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$SCRIPT_DIR/arch-wiz.sh" ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
+        copy_dir   "$FULL_SCRIPT_PATH/etc/"        ${MOUNTPOINT}/${USERNAME}/        "$(basename $BASH_SOURCE) : $LINENO"
+        copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/${USERNAME}/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
+        copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/${USERNAME}/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        "$(basename $BASH_SOURCE) : $LINENO"
     else
         print_info "FINISH-INFO-5"
+        if is_string_in_file "${MOUNTPOINT}/etc/sudoers" "$FILE_SIGNATURE COMMENT-OUT" ; then # Only make changes once
+            comment_file "Defaults:${USERNAME}   !authenticate" "${MOUNTPOINT}/etc/sudoers"
+            cat "${MOUNTPOINT}/etc/sudoers"
+        fi
     fi
     # @FIX, where to save it to
     chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
     chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
-    chown -R ${USERNAME}:${USERNAME} "${SCRIPT_DIR}/etc/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
     chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
     #
     read_input_yn "FINISH-REBOOT" " " 1
@@ -4386,12 +4389,12 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "IS-UEFI-MODE-DESC"  "Is UEFI Mode will return True (0), if it is in UEFI Mode"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-UEFI-MODE-DESC"  "Is UEFI Mode will return True (0), if it is in UEFI Mode"
 #
-localize_info "IS-UEFI-MODE-INFO"  "UEFI Mode Test Passed."
-localize_info "IS-UEFI-MODE-WARN"  "UEFI Mode Test Failed! UEFI Installation will not work correctly, switching to BIOS mode."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-UEFI-MODE-INFO"  "UEFI Mode Test Passed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "IS-UEFI-MODE-WARN"  "UEFI Mode Test Failed! UEFI Installation will not work correctly, switching to BIOS mode."
 # -------------------------------------
 is_uefi_mode()
 {
@@ -4422,16 +4425,16 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SET-LOG-DRIVE-DESC"  "Get Device that Script is running from."
-localize_info "SET-LOG-DRIVE-NOTES" "Localized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-LOG-DRIVE-DESC"  "Get Device that Script is running from."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SET-LOG-DRIVE-NOTES" "Localized."
 #
-localize_info "Correct-Device"        "Is this the Correct Device that this Script is running from" 
-localize_info "Device-Script"         "Device Script is running from, used to Copy Profile (Logs, Configuration and Database files) to Drive, this is normally the Flash Drive you use to run this Script from."
-localize_info "Device-Script-running" "What Device is Script running from"
-localize_info "Copying-Device"        "Copying to Device"
-localize_info "Device-does-not-exist" "Device does not exist! Try running script again using correct device name, run fdisk -l for a list of Device names."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Correct-Device"        "Is this the Correct Device that this Script is running from" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Device-Script"         "Device Script is running from, used to Copy Profile (Logs, Configuration and Database files) to Drive, this is normally the Flash Drive you use to run this Script from."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Device-Script-running" "What Device is Script running from"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Copying-Device"        "Copying to Device"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Device-does-not-exist" "Device does not exist! Try running script again using correct device name, run fdisk -l for a list of Device names."
 # -------------------------------------
 set_log_drive()
 {
@@ -4442,8 +4445,8 @@ set_log_drive()
         SCRIPT_DEVICE="$OPTION"
     fi
     if [[ -b "/dev/$SCRIPT_DEVICE" ]]; then
-        print_info "Copying-Device" "/dev/$SCRIPT_DEVICE"
-        write_log  "Copying-Device" "/dev/$SCRIPT_DEVICE" "$(basename $BASH_SOURCE) : $LINENO"
+        print_info "Copying-Device" "/dev/$SCRIPT_DEVICE @ $(basename $BASH_SOURCE) : $LINENO"
+        write_log  "Copying-Device" "/dev/$SCRIPT_DEVICE @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_warning "Device-does-not-exist" "/dev/$SCRIPT_DEVICE"
         lsblk
@@ -4462,24 +4465,25 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "FIX-REPO-DESC"  "Fix Repository in pacman configure."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-REPO-DESC"  "Fix Repository in pacman configure."
 #
-localize_info "FIX-REPO-INFO-1"  "Edit"
-localize_info "FIX-REPO-INFO-2"  "Put Mate into"
-localize_info "FIX-REPO-INFO-3"  "Copy"
-localize_info "FIX-REPO-INFO-4"  "Quit."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-REPO-INFO-1"  "Edit"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-REPO-INFO-2"  "Put Mate into"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-REPO-INFO-3"  "Copy"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-REPO-INFO-4"  "Quit."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FIX-REPO-SELECT"  "Select a Repository to fix :"
 # -------------------------------------
 fix_repo()
 {
     print_info "FIX-REPO-INFO-1" " /etc/pacman.conf."
     print_info "FIX-REPO-INFO-2" " /etc/pacman.conf."
-    print_info "FIX-REPO-INFO-3" " ${SCRIPT_DIR}/etc/* to /etc/*."
+    print_info "FIX-REPO-INFO-3" " ${FULL_SCRIPT_PATH}/etc/* to /etc/*."
     print_info "FIX-REPO-INFO-4"
     SYSTEM_TYPES=("Edit" "MATE" "Copy" "Quit");
     PS3="$prompt1"
-    echo -e "Select a Boot BIOS System Type:\n"
+    print_this "FIX-REPO-SELECT"
     select OPT in "${SYSTEM_TYPES[@]}"; do
         case "$REPLY" in
             1)
@@ -4491,7 +4495,7 @@ fix_repo()
                 break
                 ;;
             3)
-                copy_dir "${SCRIPT_DIR}/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
+                copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
                 pause_function "fix_repo $(basename $BASH_SOURCE) : $LINENO"
                 break
                 ;;
@@ -4515,11 +4519,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-FORMAT-TYPE-DESC"  "Get format type"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-TYPE-DESC"  "Get format type"
 #
-localize_info "GET-FORMAT-TYPE-ERROR"  "format not recognized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-TYPE-ERROR"  "format not recognized."
 # -------------------------------------
 get_format_type()
 {
@@ -4559,30 +4563,30 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-FORMAT-SYSTEM-DESC"  "Get format system"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-DESC"  "Get format system"
 #
-localize_info "GET-FORMAT-SYSTEM-TITLE"    "Get File Format System: "
-localize_info "GET-FORMAT-SYSTEM-INFO-1"   "ext2  Second Extended Filesystem is an established, mature GNU/Linux filesystem that is very stable."
-localize_info "GET-FORMAT-SYSTEM-INFO-2"   "A drawback is that it does not have journaling support or barriers."
-localize_info "GET-FORMAT-SYSTEM-INFO-3"   "Lack of journaling can result in data loss in the event of a power failure or system crash."
-localize_info "GET-FORMAT-SYSTEM-INFO-4"   "It may also be inconvenient for root (/) and /home partitions because file-system checks can take a long time."
-localize_info "GET-FORMAT-SYSTEM-INFO-5"   "An ext2 filesystem can be converted to ext3."
-localize_info "GET-FORMAT-SYSTEM-INFO-6"   "ext3  Third Extended Filesystem is essentially the ext2 system with journaling support and write barriers."
-localize_info "GET-FORMAT-SYSTEM-INFO-7"   "It is backward compatible with ext2, well tested, and extremely stable."
-localize_info "GET-FORMAT-SYSTEM-INFO-8"   "ext4  Fourth Extended Filesystem is a newer filesystem that is also compatible with ext2 and ext3."
-localize_info "GET-FORMAT-SYSTEM-INFO-9"   "It provides support for volumes with sizes up to 1 exabyte (i.e. 1,048,576 terabytes) and files sizes up to 16 terabytes."
-localize_info "GET-FORMAT-SYSTEM-INFO-10"  "It increases the 32,000 subdirectory limit in ext3 to 64,000. It also offers online defragmentation capability."
-localize_info "GET-FORMAT-SYSTEM-INFO-11"  "Btrfs Also known as 'Better FS', Btrfs is a new filesystem with powerful features similar to Sun/Oracle's excellent ZFS."
-localize_info "GET-FORMAT-SYSTEM-INFO-12"  "These include snapshots, multi-disk striping and mirroring (software RAID without mdadm), checksums, incremental backup, and on-the-fly compression that can give a significant performance boost as well as save space."
-localize_info "GET-FORMAT-SYSTEM-INFO-13"  "As of January 2011, Btrfs is considered unstable although it has been merged into the mainline kernel with an experimental status."
-localize_info "GET-FORMAT-SYSTEM-INFO-14"  "Btrfs appears to be the future of GNU/Linux filesystems and is offered as a root filesystem option in all major distribution installers."
-localize_info "GET-FORMAT-SYSTEM-INFO-15"  "vfat  or Virtual File Allocation Table is technically simple and supported by virtually all existing operating systems."
-localize_info "GET-FORMAT-SYSTEM-INFO-16"  "This makes it a useful format for solid-state memory cards and a convenient way to share data between operating systems."
-localize_info "GET-FORMAT-SYSTEM-INFO-17"  "VFAT supports long file names."
-localize_info "GET-FORMAT-SYSTEM-INFO-18"  "NTFS  File system used by windows. Mountable with many utilities (e.g. NTFS-3G)."
-localize_info "GET-FORMAT-SYSTEM-SELECT"   "Select Format Type:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-TITLE"    "Get File Format System: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-1"   "ext2  Second Extended Filesystem is an established, mature GNU/Linux filesystem that is very stable."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-2"   "A drawback is that it does not have journaling support or barriers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-3"   "Lack of journaling can result in data loss in the event of a power failure or system crash."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-4"   "It may also be inconvenient for root (/) and /home partitions because file-system checks can take a long time."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-5"   "An ext2 filesystem can be converted to ext3."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-6"   "ext3  Third Extended Filesystem is essentially the ext2 system with journaling support and write barriers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-7"   "It is backward compatible with ext2, well tested, and extremely stable."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-8"   "ext4  Fourth Extended Filesystem is a newer filesystem that is also compatible with ext2 and ext3."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-9"   "It provides support for volumes with sizes up to 1 exabyte (i.e. 1,048,576 terabytes) and files sizes up to 16 terabytes."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-10"  "It increases the 32,000 subdirectory limit in ext3 to 64,000. It also offers online defragmentation capability."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-11"  "Btrfs Also known as 'Better FS', Btrfs is a new filesystem with powerful features similar to Sun/Oracle's excellent ZFS."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-12"  "These include snapshots, multi-disk striping and mirroring (software RAID without mdadm), checksums, incremental backup, and on-the-fly compression that can give a significant performance boost as well as save space."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-13"  "As of January 2011, Btrfs is considered unstable although it has been merged into the mainline kernel with an experimental status."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-14"  "Btrfs appears to be the future of GNU/Linux filesystems and is offered as a root filesystem option in all major distribution installers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-15"  "vfat  or Virtual File Allocation Table is technically simple and supported by virtually all existing operating systems."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-16"  "This makes it a useful format for solid-state memory cards and a convenient way to share data between operating systems."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-17"  "VFAT supports long file names."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-INFO-18"  "NTFS  File system used by windows. Mountable with many utilities (e.g. NTFS-3G)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-FORMAT-SYSTEM-SELECT"   "Select Format Type:"
 # -------------------------------------
 get_format_system()
 {
@@ -4630,40 +4634,40 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-BOOT-TYPE-DESC"  "Get boot type"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-DESC"  "Get boot type"
 #
-localize_info "GET-BOOT-TYPE-TITLE"   "Get BIOS Size of GPT."
-localize_info "GET-BOOT-TYPE-INFO-1"  "GRUB2 in BIOS-GPT configuration requires a BIOS Boot Partition to embed its core.img in the absence of post-MBR gap in GPT partitioned systems (which is taken over by the GPT Primary Header and Primary Partition table)."
-localize_info "GET-BOOT-TYPE-INFO-2"  "This partition is used by GRUB2 only in BIOS-GPT setups."
-localize_info "GET-BOOT-TYPE-INFO-3"  "No such partition type exists in case of MBR partitioning (at least not for GRUB2)."
-localize_info "GET-BOOT-TYPE-INFO-4"  "This partition is also not required if the system is UEFI based, as no embedding of bootsectors takes place in that case."
-localize_info "GET-BOOT-TYPE-INFO-5"  "Syslinux does not require this partition."
-localize_info "GET-BOOT-TYPE-INFO-6"  "You can boot using BIOS or UEFI if you have a UEFI BIOS, setup depends on type of Boot System."
-localize_info "GET-BOOT-TYPE-SELECT"  "Select a Boot BIOS System Type:"
-localize_info "GET-BOOT-TYPE-SPECIFY" "Specify BIOS Partition size as such: 1M or 1G"
-localize_info "GET-BOOT-TYPE-DEFAULT" "BIOS Recommened Size: [2M] "
-localize_info "GET-BOOT-TYPE-INFO-7"  "The UEFISYS partition can be of any size supported by FAT32 filesystem."
-localize_info "GET-BOOT-TYPE-INFO-8"  "According to Microsuck Documentation, the minimum partition/volume size for FAT32 is 512 MiB."
-localize_info "GET-BOOT-TYPE-INFO-9"  "Therefore it is recommended for UEFISYS partition to be atleast 512 MiB."
-localize_info "GET-BOOT-TYPE-INFO-10"  "Higher partition sizes are fine, especially if you use multiple UEFI bootloaders, or multiple OSes booting via UEFI, so that there is enough space to hold all the related files."
-localize_info "GET-BOOT-TYPE-INFO-11"  "If you are using Linux EFISTUB booting, then you need to make sure there is adequate space available for keeping the Kernel and Initramfs files in the UEFISYS partition."
-localize_info "GET-BOOT-TYPE-INFO-12"  "Specify UEFI Partition size as such: 512M or 1G"
-localize_info "GET-BOOT-TYPE-UEFI-MIN"  "UEFI Minimal Size: [512M]"
-localize_info "GET-BOOT-TYPE-SELECT-BIOS"  "Select a Boot BIOS System Type:"
-localize_info "GET-BOOT-TYPE-TITLE-2"      "UEFI Boot Loader"
-localize_info "GET-BOOT-TYPE-INFO-13"      "Unified Extensible Firmware Interface (or UEFI for short) is a new type of firmware that was initially designed by Intel (known as EFI then) mainly for its Itanium based systems."
-localize_info "GET-BOOT-TYPE-INFO-14"      "It introduces new ways of booting an OS that is distinct from the commonly used 'MBR boot code' method followed for BIOS systems."
-localize_info "GET-BOOT-TYPE-INFO-15"      "It started as Intel's EFI in versions 1.x and then a group of companies called the UEFI Forum took over its development from which it was called Unified EFI starting with version 2.0 ."
-localize_info "GET-BOOT-TYPE-INFO-16"      "As of 23 May 2012, UEFI Specification 2.3.1 is the most recent version."
-localize_info "GET-BOOT-TYPE-INFO-17"      "The NONE Option will not create a Boot Partition, it will install a Bootloader on the root partition."
-localize_info "GET-BOOT-TYPE-INFO-18"  "You have 3 Options for Boot Mode: UEFI (if you have a UEFI BIOS, Recommended), BIOS, or None (Installing to root, not recommended)."
-localize_info "Default-Boot-Mode" "Do you wish to change the Default Boot Mode: " 
-localize_info "GET-BOOT-TYPE-INFO-WARN-1"  "Your Motherboard failed to register in UEFI Mode, so this script will only be able to use BIOS Mode or None."
-localize_info "GET-BOOT-TYPE-INFO-WARN-2"  "You do not have a UEFI Bios, switching to BIOS Mode."
-localize_info "GET-BOOT-TYPE-INFO-WARN-3"  "You have an Option have no partition for Boot, this will force it to load to the Root, this is not recommended, but an option."
-localize_info "DEFAULT-NONE" "Default is BIOS mode, do you wish to change Boot to NONE?" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-TITLE"       "Get BIOS Size of GPT."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-1"      "GRUB2 in BIOS-GPT configuration requires a BIOS Boot Partition to embed its core.img in the absence of post-MBR gap in GPT partitioned systems (which is taken over by the GPT Primary Header and Primary Partition table)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-2"      "This partition is used by GRUB2 only in BIOS-GPT setups."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-3"      "No such partition type exists in case of MBR partitioning (at least not for GRUB2)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-4"      "This partition is also not required if the system is UEFI based, as no embedding of boot sectors takes place in that case."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-5"      "Syslinux does not require this partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-6"      "You can boot using BIOS or UEFI if you have a UEFI BIOS, setup depends on type of Boot System."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-SELECT"      "Select a Boot BIOS System Type:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-SPECIFY"     "Specify BIOS Partition size as such: 1M or 1G"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-DEFAULT"     "BIOS Recommend Size: (2M) "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-7"      "The UEFISYS partition can be of any size supported by FAT32 filesystem."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-8"      "According to Microsuck Documentation, the minimum partition/volume size for FAT32 is 512 MiB."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-9"      "Therefore it is recommended for UEFISYS partition to be at least 512 MiB."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-10"     "Higher partition sizes are fine, especially if you use multiple UEFI boot loaders, or multiple OSes booting via UEFI, so that there is enough space to hold all the related files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-11"     "If you are using Linux EFISTUB booting, then you need to make sure there is adequate space available for keeping the Kernel and Initramfs files in the UEFISYS partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-12"     "Specify UEFI Partition size as such: 512M or 1G"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-UEFI-MIN"    "UEFI Minimal Size: (512M)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-SELECT-BIOS" "Select a Boot BIOS System Type:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-TITLE-2"     "UEFI Boot Loader"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-13"     "Unified Extensible Firmware Interface (or UEFI for short) is a new type of firmware that was initially designed by Intel (known as EFI then) mainly for its Itanium based systems."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-14"     "It introduces new ways of booting an OS that is distinct from the commonly used 'MBR boot code' method followed for BIOS systems."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-15"     "It started as Intel's EFI in versions 1.x and then a group of companies called the UEFI Forum took over its development from which it was called Unified EFI starting with version 2.0 ."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-16"     "As of 23 May 2012, UEFI Specification 2.3.1 is the most recent version."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-17"     "The NONE Option will not create a Boot Partition, it will install a Bootloader on the root partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-18"     "You have 3 Options for Boot Mode: UEFI (if you have a UEFI BIOS, Recommended), BIOS, or None (Installing to root, not recommended)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Default-Boot-Mode"          "Do you wish to change the Default Boot Mode: " 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-WARN-1" "Your Motherboard failed to register in UEFI Mode, so this script will only be able to use BIOS Mode or None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-WARN-2" "You do not have a UEFI BIOS, switching to BIOS Mode."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-TYPE-INFO-WARN-3" "You have an Option have no partition for Boot, this will force it to load to the Root, this is not recommended, but an option."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DEFAULT-NONE"              "Default is BIOS mode, do you wish to change Boot to NONE" 
 # -------------------------------------
 get_boot_type()
 {
@@ -4786,20 +4790,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-BOOT-PARTITION-DESC"  "Get boot partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-DESC"          "Get boot partition"
 #
-localize_info "GET-BOOT-PARTITION-TITLE"         "Get Boot Partition"
-localize_info "GET-BOOT-PARTITION-INFO-1"        "The /boot directory contains the kernel and ramdisk images as well as the bootloader configuration file and bootloader stages."
-localize_info "GET-BOOT-PARTITION-INFO-2"        "It also stores data that is used before the kernel begins executing user-space programs."
-localize_info "GET-BOOT-PARTITION-INFO-3"        "/boot is not required for normal system operation, but only during boot and kernel upgrades (when regenerating the initial ramdisk)."
-localize_info "GET-BOOT-PARTITION-INFO-4"        "If kept on a separate partition, /boot does not require a journaled file system."
-localize_info "GET-BOOT-PARTITION-INFO-5"        "A separate /boot partition is needed if installing a software RAID0 (stripe) system."
-localize_info "GET-BOOT-PARTITION-INFO-6"        "Do not confuse BOOT with UEFI or BIOS Boot strap, where as BOOT contains the Kernels, UEFI and BIOS contain Grub only."
-localize_info "GET-BOOT-PARTITION-SEPARATE-PART" "Use boot on a separate Partition" 
-localize_info "GET-BOOT-PARTITION-SPECIFY"       "Specify BOOT Partition size as such: 100M or 1G"
-localize_info "GET-BOOT-PARTITION-BOOT-SIZE"     "BOOT Size: [100M]"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-TITLE"         "Get Boot Partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-INFO-1"        "The /boot directory contains the kernel and ramdisk images as well as the bootloader configuration file and bootloader stages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-INFO-2"        "It also stores data that is used before the kernel begins executing user-space programs."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-INFO-3"        "/boot is not required for normal system operation, but only during boot and kernel upgrades (when regenerating the initial ramdisk)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-INFO-4"        "If kept on a separate partition, /boot does not require a journaled file system."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-INFO-5"        "A separate /boot partition is needed if installing a software RAID0 (stripe) system."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-INFO-6"        "Do not confuse BOOT with UEFI or BIOS Boot strap, where as BOOT contains the Kernels, UEFI and BIOS contain Grub only."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-SEPARATE-PART" "Use boot on a separate Partition" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-SPECIFY"       "Specify BOOT Partition size as such: 100M or 1G"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-BOOT-PARTITION-BOOT-SIZE"     "BOOT Size: (100M)"
 # -------------------------------------
 get_boot_partition()
 {
@@ -4831,24 +4835,24 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-SWAP-PARTITION-DESC"           "Get swap partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-DESC"           "Get swap partition"
 #
-localize_info "GET-SWAP-PARTITION-TITLE"          "Get swap partition"
-localize_info "GET-SWAP-PARTITION-INFO-1"         "The swap partition provides memory that can be used as virtual RAM. It is recommended for PCs with 1GB or less of physical RAM."
-localize_info "GET-SWAP-PARTITION-INFO-2"         "Historically, the general rule for swap partition size was to allocate twice the amount of physical RAM."
-localize_info "GET-SWAP-PARTITION-INFO-3"         "As computers have gained ever larger memory capacities, this rule has become deprecated."
-localize_info "GET-SWAP-PARTITION-INFO-4"         "On machines with up to 512MB RAM, the 2x rule is usually adequate."
-localize_info "GET-SWAP-PARTITION-INFO-5"         "If a sufficient amount of RAM (more than 1024MB) is available, it may be possible to have a smaller swap partition or even eliminate it."
-localize_info "GET-SWAP-PARTITION-INFO-6"         "With more than 2 GB of physical RAM, one can generally expect good performance without a swap partition."
-localize_info "GET-SWAP-PARTITION-INFO-7"         "There is always an option to create a swap file after the system is setup."
-localize_info "GET-SWAP-PARTITION-SWAP"           "Use SWAP" 
-localize_info "GET-SWAP-PARTITION-RAM"            "RAM size is"
-localize_info "GET-SWAP-PARTITION-RECOMMEND"      "Recommended"
-localize_info "GET-SWAP-PARTITION-RECOMMEND-MIN"  "Recommended Minimum"
-localize_info "GET-SWAP-PARTITION-SPECIFY"        "Specify SWAP size as such: 512M or 16G"
-localize_info "GET-SWAP-PARTITION-SIZE"           "SWAP Size: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-TITLE"          "Get swap partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-1"         "The swap partition provides memory that can be used as virtual RAM. It is recommended for PCs with 1GB or less of physical RAM."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-2"         "Historically, the general rule for swap partition size was to allocate twice the amount of physical RAM."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-3"         "As computers have gained ever larger memory capacities, this rule has become deprecated."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-4"         "On machines with up to 512MB RAM, the 2x rule is usually adequate."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-5"         "If a sufficient amount of RAM (more than 1024MB) is available, it may be possible to have a smaller swap partition or even eliminate it."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-6"         "With more than 2 GB of physical RAM, one can generally expect good performance without a swap partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-INFO-7"         "There is always an option to create a swap file after the system is setup."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-SWAP"           "Use SWAP" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-RAM"            "RAM size is"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-RECOMMEND"      "Recommended"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-RECOMMEND-MIN"  "Recommended Minimum"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-SPECIFY"        "Specify SWAP size as such: 512M or 16G"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SWAP-PARTITION-SIZE"           "SWAP Size: "
 # -------------------------------------
 get_swap_partition()
 {
@@ -4908,20 +4912,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-HOME-PARTITION-DESC"  "Get home Partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-DESC"      "Get home Partition"
 #
-localize_info "GET-HOME-PARTITION-TITLE"  "HOME"
-localize_info "GET-HOME-PARTITION-INFO-1"  "Specify HOME Partition size as such: 512M or 50G"
-localize_info "GET-HOME-PARTITION-INFO-2"  "Specify 0 for all remaining space on drive, if no more partitions, use 0."
-localize_info "GET-HOME-PARTITION-SIZE"       "HOME Size: [50G]"
-localize_info "GET-HOME-PARTITION-INFO-3"  "The /home directory stores personal files in different folders."
-localize_info "GET-HOME-PARTITION-INFO-4"  "It holds miscellaneous personal data as well as user-specific configuration files for applications."
-localize_info "GET-HOME-PARTITION-INFO-5"  "Keeping it in a separate partition can be very useful for backup: it often requires the most disk space (for desktop users) and may need to be expanded at a later date."
-localize_info "GET-HOME-PARTITION-INFO-6"  "You can also use HOME on a Separate Drive, in this case pick N, and  choose Y for home on a separate Drive and the below will be commented in your fstab for later editing."
-localize_info "GET-HOME-PARTITION-PARTITION" "Use home on a separate Partition" 
-localize_info "GET-HOME-PARTITION-DRIVE" "Use home on a separate Drive" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-TITLE"     "HOME"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-INFO-1"    "Specify HOME Partition size as such: 512M or 50G"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-INFO-2"    "Specify 0 for all remaining space on drive, if no more partitions, use 0."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-SIZE"      "HOME Size: (50G)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-INFO-3"    "The /home directory stores personal files in different folders."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-INFO-4"    "It holds miscellaneous personal data as well as user-specific configuration files for applications."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-INFO-5"    "Keeping it in a separate partition can be very useful for backup: it often requires the most disk space (for desktop users) and may need to be expanded at a later date."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-INFO-6"    "You can also use HOME on a Separate Drive, in this case pick N, and  choose Y for home on a separate Drive and the below will be commented in your fstab for later editing."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-PARTITION" "Use home on a separate Partition" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-HOME-PARTITION-DRIVE"     "Use home on a separate Drive" 
 # -------------------------------------
 get_home_partition()
 {
@@ -4966,20 +4970,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-VAR-PARTITION-DESC"         "Get var partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-DESC"         "Get var partition"
 #
-localize_info "GET-VAR-PARTITION-TITLE"        "var Size"
-localize_info "GET-VAR-PARTITION-SPECIFY-VAR"  "Specify VAR Partition size as such: Minimum: 8-12 GB"
-localize_info "GET-VAR-PARTITION-VAR-SIZE"     "VAR Size: [13G]"
-localize_info "GET-VAR-PARTITION-INFO-1"       "The /var directory stores Contains variable data such as spool directories and files, administrative and logging data, pacman's cache, the ABS tree, etc."
-localize_info "GET-VAR-PARTITION-INFO-2"       "It is used for example for caching and logging, and hence frequently read or written."
-localize_info "GET-VAR-PARTITION-INFO-3"       "Keeping it in a separate partition avoids running out of disk space due to flunky logs, etc."
-localize_info "GET-VAR-PARTITION-INFO-4"       "It exists to make it possible to mount /usr as read-only. Everything that historically went into /usr that is written to during system operation (as opposed to installation and software maintenance) must reside under /var."
-localize_info "GET-VAR-PARTITION-INFO-5"       "You can also use VAR on a Separate Drive, good for Webservers, in this case pick N, and  choose Y for VAR on a separate Drive and the below will be commented in your fstab for later editing."
-localize_info "GET-VAR-PARTITION-PARTITION"    "Use var on a separate Partition" 
-localize_info "GET-VAR-PARTITION-DRIVE"        "Use var on a separate Drive" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-TITLE"        "var Size"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-SPECIFY-VAR"  "Specify VAR Partition size as such: Minimum: 8-12 GB"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-VAR-SIZE"     "VAR Size: (13G)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-INFO-1"       "The /var directory stores Contains variable data such as spool directories and files, administrative and logging data, pacman's cache, the ABS tree, etc."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-INFO-2"       "It is used for example for caching and logging, and hence frequently read or written."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-INFO-3"       "Keeping it in a separate partition avoids running out of disk space due to flunky logs, etc."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-INFO-4"       "It exists to make it possible to mount /usr as read-only. Everything that historically went into /usr that is written to during system operation (as opposed to installation and software maintenance) must reside under /var."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-INFO-5"       "You can also use VAR on a Separate Drive, good for Webservers, in this case pick N, and  choose Y for VAR on a separate Drive and the below will be commented in your fstab for later editing."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-PARTITION"    "Use var on a separate Partition" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-VAR-PARTITION-DRIVE"        "Use var on a separate Drive" 
 # -------------------------------------
 get_var_partition()
 {
@@ -5024,37 +5028,37 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-TMP-PARTITION-DESC"       "Get tmp partition"
-localize_info "GET-TMP-PARTITION-NOTES"      "@FIX need to fully implement this."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-DESC"       "Get tmp partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-NOTES"      "@FIX need to fully implement this."
 #
-localize_info "GET-TMP-PARTITION-TITLE"      "Get tmp partition"
-localize_info "GET-TMP-PARTITION-INFO-1"     "By default, a tmpfs partition has its maximum size set to half your total RAM, but this can be customized."
-localize_info "GET-TMP-PARTITION-INFO-2"     "Note that the actual memory/swap consumption depends on how much you fill it up, as tmpfs partitions do not consume any memory until it is actually needed."
-localize_info "GET-TMP-PARTITION-INFO-3"     "Specify TMP Partition size as such: Current RAM size is"
-localize_info "GET-TMP-PARTITION-INFO-4"     "half of that is"
-localize_info "GET-TMP-PARTITION-TMP-SIZE"   "TMP Size: "
-localize_info "GET-TMP-PARTITION-INFO-6"     "Directory for programs that require temporary storage of files such as .lck , which can be used to prevent multiple instances of their respective program until a task is completed. Upon completion, the .lck file will be automatically removed."
-localize_info "GET-TMP-PARTITION-INFO-7"     "Programs must not assume that any files or directories in /tmp are preserved between invocations of the program and files and directories located under /tmp will typically be deleted whenever the system is booted."
-localize_info "GET-TMP-PARTITION-INFO-8"     "tmpfs:"
-localize_info "GET-TMP-PARTITION-INFO-9"     "tmpfs is a temporary filesystem that resides in memory and/or your swap partition(s), depending on how much you fill it up."
-localize_info "GET-TMP-PARTITION-INFO-10"    "Mounting directories as tmpfs can be an effective way of speeding up accesses to their files, or to ensure that their contents are automatically cleared upon reboot."
-localize_info "GET-TMP-PARTITION-INFO-11"    "Some directories where tmpfs is commonly used are /tmp, /var/lock and /var/run."
-localize_info "GET-TMP-PARTITION-INFO-12"    "Do NOT use it on /var/tmp, because that folder is meant for temporary files that are preserved across reboots."
-localize_info "GET-TMP-PARTITION-INFO-13"    "Arch uses a tmpfs /run directory, with /var/run and /var/lock simply existing as symlinks for compatibility."
-localize_info "GET-TMP-PARTITION-INFO-14"    "It is also used for /tmp in the default /etc/fstab."
-localize_info "GET-TMP-PARTITION-INFO-15"    "By default, a tmpfs partition has its maximum size set to half your total RAM, but this can be customized."
-localize_info "GET-TMP-PARTITION-INFO-16"    "Note that the actual memory/swap consumption depends on how much you fill it up, as tmpfs partitions do not consume any memory until it is actually needed."
-localize_info "GET-TMP-PARTITION-INFO-17"    "To use tmpfs for /tmp, add this line to /etc/fstab:"
-localize_info "GET-TMP-PARTITION-INFO-18"    "You may or may not wish to specify the size here, but you should leave the mode option alone in these cases to ensure that they have the correct permissions (1777)."
-localize_info "GET-TMP-PARTITION-INFO-19"    "In the example above, /tmp will be set to use up to half of your total RAM. To explicitly set a maximum size, use the size mount option:"
-localize_info "GET-TMP-PARTITION-INFO-20"    "Here is a more advanced example showing how to add tmpfs mounts for users. This is useful for websites, mysql tmp files, ~/.vim/, and more."
-localize_info "GET-TMP-PARTITION-INFO-21"    "It is important to try and get the ideal mount options for what you are trying to accomplish."
-localize_info "GET-TMP-PARTITION-INFO-22"    "The goal is to have as secure settings as possible to prevent abuse. Limiting the size, and specifying uid and gid + mode is very secure."
-localize_info "GET-TMP-PARTITION-INFO-23"    "The Default is to use tmpfs."
-localize_info "GET-TMP-PARTITION-tmpfs"      "Use tmp as tmpfs" 
-localize_info "GET-TMP-PARTITION-SIZE-TMPFS" "Set size of tmpfs" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-TITLE"      "Get tmp partition"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-1"     "By default, a tmpfs partition has its maximum size set to half your total RAM, but this can be customized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-2"     "Note that the actual memory/swap consumption depends on how much you fill it up, as tmpfs partitions do not consume any memory until it is actually needed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-3"     "Specify TMP Partition size as such: Current RAM size is"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-4"     "half of that is"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-TMP-SIZE"   "TMP Size: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-6"     "Directory for programs that require temporary storage of files such as .lck , which can be used to prevent multiple instances of their respective program until a task is completed. Upon completion, the .lck file will be automatically removed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-7"     "Programs must not assume that any files or directories in /tmp are preserved between invocations of the program and files and directories located under /tmp will typically be deleted whenever the system is booted."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-8"     "tmpfs:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-9"     "tmpfs is a temporary filesystem that resides in memory and/or your swap partition(s), depending on how much you fill it up."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-10"    "Mounting directories as tmpfs can be an effective way of speeding up accesses to their files, or to ensure that their contents are automatically cleared upon reboot."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-11"    "Some directories where tmpfs is commonly used are /tmp, /var/lock and /var/run."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-12"    "Do NOT use it on /var/tmp, because that folder is meant for temporary files that are preserved across reboots."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-13"    "Arch uses a tmpfs /run directory, with /var/run and /var/lock simply existing as symlinks for compatibility."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-14"    "It is also used for /tmp in the default /etc/fstab."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-15"    "By default, a tmpfs partition has its maximum size set to half your total RAM, but this can be customized."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-16"    "Note that the actual memory/swap consumption depends on how much you fill it up, as tmpfs partitions do not consume any memory until it is actually needed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-17"    "To use tmpfs for /tmp, add this line to /etc/fstab:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-18"    "You may or may not wish to specify the size here, but you should leave the mode option alone in these cases to ensure that they have the correct permissions (1777)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-19"    "In the example above, /tmp will be set to use up to half of your total RAM. To explicitly set a maximum size, use the size mount option:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-20"    "Here is a more advanced example showing how to add tmpfs mounts for users. This is useful for websites, mysql tmp files, ~/.vim/, and more."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-21"    "It is important to try and get the ideal mount options for what you are trying to accomplish."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-22"    "The goal is to have as secure settings as possible to prevent abuse. Limiting the size, and specifying uid and gid + mode is very secure."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-INFO-23"    "The Default is to use tmpfs."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-tmpfs"      "Use tmp as tmpfs" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-TMP-PARTITION-SIZE-TMPFS" "Set size of tmpfs" 
 # -------------------------------------
 get_tmp_partition()
 {
@@ -5121,20 +5125,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-ROOT-SIZE-DESC"    "Get the Size of the Root"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-DESC"    "Get the Size of the Root"
 #
-localize_info "GET-ROOT-SIZE-TITLE"   "Get the Size of the Root"
-localize_info "GET-ROOT-SIZE-INFO-1"  "The root directory is the top of the hierarchy, the point where the primary filesystem is mounted and from which all other filesystems stem."
-localize_info "GET-ROOT-SIZE-INFO-2"  "All files and directories appear under the root directory /, even if they are stored on different physical devices."
-localize_info "GET-ROOT-SIZE-INFO-3"  "The contents of the root filesystem must be adequate to boot, restore, recover, and/or repair the system."
-localize_info "GET-ROOT-SIZE-INFO-4"  "Therefore, certain directories under / are not candidates for separate partitions."
-localize_info "GET-ROOT-SIZE-INFO-5"  "The / partition or root partition is necessary and it is the most important."
-localize_info "GET-ROOT-SIZE-INFO-6"  "The other partitions can be replaced by it, even though having different partitions is recommended."
-localize_info "GET-ROOT-SIZE-INFO-7"  "Specify ROOT Partition size as such: 512M or 50G"
-localize_info "GET-ROOT-SIZE-INFO-8"  "Specify 0 for all remaining space on drive, if no more partitions, use 0."
-localize_info "GET-ROOT-SIZE-SIZE"    "ROOT Size: Default is remaining space [0]"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-TITLE"   "Get the Size of the Root"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-1"  "The root directory is the top of the hierarchy, the point where the primary filesystem is mounted and from which all other filesystems stem."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-2"  "All files and directories appear under the root directory /, even if they are stored on different physical devices."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-3"  "The contents of the root filesystem must be adequate to boot, restore, recover, and/or repair the system."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-4"  "Therefore, certain directories under / are not candidates for separate partitions."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-5"  "The / partition or root partition is necessary and it is the most important."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-6"  "The other partitions can be replaced by it, even though having different partitions is recommended."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-7"  "Specify ROOT Partition size as such: 512M or 50G"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-INFO-8"  "Specify 0 for all remaining space on drive, if no more partitions, use 0."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-SIZE-SIZE"    "ROOT Size: Default is remaining space (0)"
 # -------------------------------------
 get_root_size()
 {
@@ -5163,17 +5167,17 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-ROOT-FORMAT-DESC"    "Get the Format of the Root"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-DESC"    "Get the Format of the Root"
 #
-localize_info "GET-ROOT-FORMAT-TITLE"   "Get the Format of the Root"
-localize_info "GET-ROOT-FORMAT-INFO-1"  "The root directory is the top of the hierarchy, the point where the primary filesystem is mounted and from which all other filesystems stem."
-localize_info "GET-ROOT-FORMAT-INFO-2"  "All files and directories appear under the root directory /, even if they are stored on different physical devices."
-localize_info "GET-ROOT-FORMAT-INFO-3"  "The contents of the root filesystem must be adequate to boot, restore, recover, and/or repair the system."
-localize_info "GET-ROOT-FORMAT-INFO-4"  "Therefore, certain directories under / are not candidates for separate partitions."
-localize_info "GET-ROOT-FORMAT-INFO-5"  "The / partition or root partition is necessary and it is the most important."
-localize_info "GET-ROOT-FORMAT-INFO-6"  "The other partitions can be replaced by it, even though having different partitions is recommended."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-TITLE"   "Get the Format of the Root"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-INFO-1"  "The root directory is the top of the hierarchy, the point where the primary filesystem is mounted and from which all other filesystems stem."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-INFO-2"  "All files and directories appear under the root directory /, even if they are stored on different physical devices."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-INFO-3"  "The contents of the root filesystem must be adequate to boot, restore, recover, and/or repair the system."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-INFO-4"  "Therefore, certain directories under / are not candidates for separate partitions."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-INFO-5"  "The / partition or root partition is necessary and it is the most important."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-ROOT-FORMAT-INFO-6"  "The other partitions can be replaced by it, even though having different partitions is recommended."
 # -------------------------------------
 get_root_format()
 {
@@ -5199,18 +5203,18 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "STATIC-IP-DESC"  "Static IP Address."
-localize_info "STATIC-IP-NOTES" "Not yet implemented"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-DESC"  "Static IP Address."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-NOTES" "Not yet implemented"
 #
-localize_info "STATIC-IP-TITLE"  "Static IP Address"
-localize_info "STATIC-IP-INFO"   "Available NICs"
-localize_info "STATIC-IP-NIC-0"  "device eth0 active"
-localize_info "STATIC-IP-NIC-1"  "device eth1 active"
-localize_info "STATIC-IP-NIC-2"  "device eth2 active"
-localize_info "STATIC-IP-STATIC"  "Enter Static IP Address:  [123.123.123.123]: "
-localize_info "CORRECT" "Is this correct" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-TITLE"  "Static IP Address"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-INFO"   "Available NICs"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-NIC-0"  "device eth0 active"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-NIC-1"  "device eth1 active"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-NIC-2"  "device eth2 active"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "STATIC-IP-STATIC"  "Enter Static IP Address:  [123.123.123.123]: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CORRECT" "Is this correct" 
 # -------------------------------------
 static_ip()
 {
@@ -5246,9 +5250,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ESCAPE-SED-DESC"  "escape sed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ESCAPE-SED-DESC"  "escape sed"
 # -------------------------------------
 escape_sed() 
 {
@@ -5264,11 +5268,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "ESCAPE-SPECIAL-CHARACTERS-USAGE" "escape_special_characters"
-localize_info "ESCAPE-SPECIAL-CHARACTERS-DESC"  "escape special characters"
-localize_info "ESCAPE-SPECIAL-CHARACTERS-NOTES" "Not yet Implemented."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ESCAPE-SPECIAL-CHARACTERS-USAGE" "escape_special_characters"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ESCAPE-SPECIAL-CHARACTERS-DESC"  "escape special characters"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ESCAPE-SPECIAL-CHARACTERS-NOTES" "Not yet Implemented."
 # -------------------------------------
 escape_special_characters()
 {
