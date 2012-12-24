@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="17 Dec 2012 16:33"
+# LAST_UPDATE="22 Dec 2012 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -50,7 +50,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 declare -i BOOT_PARTITION_NO=0
-declare $SCRIPT_STAGE="Alpha"
+declare SCRIPT_STAGE="Alpha"
 # -----------------------------------------------------------------------------
 # BACKUP {{{
 NAME="backup"
@@ -61,24 +61,24 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="13 Dec 2012"
 REVISION="13 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "BACKUP-DESC"  "Backup all Configuration Files from Hard Drvie to Flash."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BACKUP-DESC"  "Backup all Configuration Files from Hard Drive to Flash."
 backup()
 {
-    copy_file ${MOUNTPOINT}/etc/pacman.conf         "${SCRIPT_DIR}/etc/pacman.conf"         "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/pacman.d/mirrorlist "${SCRIPT_DIR}/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/fstab               "${SCRIPT_DIR}/etc/fstab"               "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/hosts               "${SCRIPT_DIR}/etc/hosts"               "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/hostname            "${SCRIPT_DIR}/etc/hostname"            "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/resolv.conf         "${SCRIPT_DIR}/etc/resolv.conf"         "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/locale.conf         "${SCRIPT_DIR}/etc/locale.conf"         "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/locale.gen          "${SCRIPT_DIR}/etc/locale.gen"          "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/sudoers             "${SCRIPT_DIR}/etc/sudoers"             "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/vconsole.conf       "${SCRIPT_DIR}/etc/vconsole.conf"       "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/conf.d/dhcpd        "${SCRIPT_DIR}/etc/conf.d/dhcpd"        "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/dhcpcd.conf         "${SCRIPT_DIR}/etc/dhcpcd.conf"         "$(basename $BASH_SOURCE) : $LINENO"
-    #copy_file ${MOUNTPOINT}/etc/ssh/sshd_config     "${SCRIPT_DIR}/etc/ssh/sshd_config"     "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/pacman.conf         "${FULL_SCRIPT_PATH}/etc/pacman.conf"         "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/pacman.d/mirrorlist "${FULL_SCRIPT_PATH}/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/fstab               "${FULL_SCRIPT_PATH}/etc/fstab"               "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hosts               "${FULL_SCRIPT_PATH}/etc/hosts"               "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hostname            "${FULL_SCRIPT_PATH}/etc/hostname"            "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/resolv.conf         "${FULL_SCRIPT_PATH}/etc/resolv.conf"         "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/locale.conf         "${FULL_SCRIPT_PATH}/etc/locale.conf"         "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/locale.gen          "${FULL_SCRIPT_PATH}/etc/locale.gen"          "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/sudoers             "${FULL_SCRIPT_PATH}/etc/sudoers"             "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/vconsole.conf       "${FULL_SCRIPT_PATH}/etc/vconsole.conf"       "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/conf.d/dhcpd        "${FULL_SCRIPT_PATH}/etc/conf.d/dhcpd"        "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/dhcpcd.conf         "${FULL_SCRIPT_PATH}/etc/dhcpcd.conf"         "$(basename $BASH_SOURCE) : $LINENO"
+    #copy_file ${MOUNTPOINT}/etc/ssh/sshd_config     "${FULL_SCRIPT_PATH}/etc/ssh/sshd_config"     "$(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -91,14 +91,14 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-BASE-SYSTEM-DESC"        "Install Base System"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASE-SYSTEM-DESC"        "Install Base System"
 #
-localize_info "INSTALL-BASE-SYSTEM-BASE-SYSTEM" "INSTALL BASE SYSTEM"
-localize_info "INSTALL-BASE-SYSTEM-MSG-1"       "Using the pacstrap script we install the base system. The base-devel package group will be installed also."
-localize_info "INSTALL-BASE-SYSTEM-COMPLETE"    "INSTALL BASE SYSTEM Completed..."
-localize_info "INSTALL-BASE-SYSTEM-ERROR"       "INSTALL BASE SYSTEM: pacstrap Failed!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASE-SYSTEM-BASE-SYSTEM" "INSTALL BASE SYSTEM"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASE-SYSTEM-MSG-1"       "Using the pacstrap script we install the base system. The base-devel package group will be installed also."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASE-SYSTEM-COMPLETE"    "INSTALL BASE SYSTEM Completed..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASE-SYSTEM-ERROR"       "INSTALL BASE SYSTEM: pacstrap Failed!"
 # -------------------------------------
 install_base_system()
 {
@@ -149,11 +149,11 @@ install_base_system()
     #
     PACSTRAP_PACKAGES="base base-devel sudo wget dbus git systemd haveged btrfs-progs xorg-xauth pkgfile $PACMAN_OPTIMIZE_PACKAGES $NETWORK_MANAGER $extras"
     #
-    copy_dir "${SCRIPT_DIR}/etc/" "${MOUNTPOINT}/" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_dir "${FULL_SCRIPT_PATH}/etc/" "${MOUNTPOINT}/" "$(basename $BASH_SOURCE) : $LINENO"
     #
     create_custom_repo 1
     #
-    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Fresh Copy of pacman.conf
+    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Fresh Copy of pacman.conf
     #        
     
     #pacman_args+=(--cachedir="$newroot/var/cache/pacman/pkg")
@@ -162,8 +162,8 @@ install_base_system()
     
     
     if ! pacstrap "${MOUNTPOINT}" ${PACSTRAP_PACKAGES} ; then # do not quote PACSTRAP_PACKAGES
-        write_error "INSTALL-BASE-SYSTEM-ERROR" "$(basename $BASH_SOURCE) : $LINENO"
-        print_warning "INSTALL-BASE-SYSTEM-ERROR" "$(basename $BASH_SOURCE) : $LINENO"
+        write_error    "INSTALL-BASE-SYSTEM-ERROR" " - $(basename $BASH_SOURCE) : $LINENO"
+        print_warning  "INSTALL-BASE-SYSTEM-ERROR" " - $(basename $BASH_SOURCE) : $LINENO"
         pause_function "install_base_system FAILED at line $(basename $BASH_SOURCE) : $LINENO"
         exit 1
     fi
@@ -184,9 +184,9 @@ install_base_system()
     #       It is no longer necessary to leave KEYMAP= and FONT= empty.
     # Now files can be copied to MOUNTPOINT
     echo "KEYMAP=$KEYMAP" > ${MOUNTPOINT}/etc/vconsole.conf
-    echo "FONT=\"\"" >> ${MOUNTPOINT}/etc/vconsole.conf
+    echo "FONT=\"\""     >> ${MOUNTPOINT}/etc/vconsole.conf
     echo "FONT_MAP=\"\"" >> ${MOUNTPOINT}/etc/vconsole.conf
-    copy_file ${MOUNTPOINT}/etc/vconsole.conf "${SCRIPT_DIR}/etc/vconsole.conf" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/vconsole.conf "${FULL_SCRIPT_PATH}/etc/vconsole.conf" "$(basename $BASH_SOURCE) : $LINENO"
     mv -f "${MOUNTPOINT}/${CUSTOM_PACKAGES_NAME}/" "${MOUNTPOINT}${MOUNTPOINT}/${CUSTOM_PACKAGES_NAME}/"
     print_info "INSTALL-BASE-SYSTEM-COMPLETE"
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_base_system @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -202,14 +202,14 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-AUR-HELPER-DESC"  "Configure AUR Helper"
-localize_info "CONFIGURE-AUR-HELPER-NOTES" "Should only be run from Live Mode."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-AUR-HELPER-DESC"  "Configure AUR Helper"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-AUR-HELPER-NOTES" "Should only be run from Live Mode."
 #
-localize_info "CONFIGURE-AUR-HELPER-CONFIG-HELP"   "Configuring AUR Helper"
-localize_info "CONFIGURE-AUR-HELPER-NOT-INSTALLED" "Not Installed"
-localize_info "CONFIGURE-AUR-HELPER-INSTALLED"     "Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-AUR-HELPER-CONFIG-HELP"   "Configuring AUR Helper"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-AUR-HELPER-NOT-INSTALLED" "Not Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-AUR-HELPER-INSTALLED"     "Installed"
 configure_aur_helper()
 {
     # base-devel installed with pacstrap
@@ -219,12 +219,12 @@ configure_aur_helper()
             package_install "yajl namcap" "INSTALL-AUR-HELPER-$AUR_HELPER"
             pacman -D --asdeps yajl namcap
             if ! aur_download_packages "package-query yaourt" ; then
-                write_error "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER" "$(basename $BASH_SOURCE) : $LINENO"
-                print_warning "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER $(basename $BASH_SOURCE) : $LINENO"
+                write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
+                print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "configure_aur_helper at line $(basename $BASH_SOURCE) : $LINENO"
                 if ! aur_download_packages "package-query yaourt" ; then
-                    write_error "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER" "$(basename $BASH_SOURCE) : $LINENO"
-                    print_warning "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER $(basename $BASH_SOURCE) : $LINENO"
+                    write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
+                    print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
                     pause_function "configure_aur_helper at line $(basename $BASH_SOURCE) : $LINENO"
                     return 1
                 fi    
@@ -233,8 +233,8 @@ configure_aur_helper()
             fi
             pacman -D --asdeps package-query
             if ! check_package "yaourt" ; then
-                print_warning "Yaourt not installed. EXIT now"
-                write_error "$AUR_HELPER not Installed" "$(basename $BASH_SOURCE) : $LINENO"
+                print_warning "CONFIGURE-AUR-HELPER-NOT-INSTALLED" ": $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
+                write_error   "CONFIGURE-AUR-HELPER-NOT-INSTALLED" ": $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
                 # @FIX how to fix this
                 pause_function "configure_aur_helper at line $(basename $BASH_SOURCE) : $LINENO"
                 return 1
@@ -248,8 +248,8 @@ configure_aur_helper()
             aur_download_packages "packer"
             if ! check_package "packer" ; then
                 echo "Packer not installed. EXIT now"
-                write_error "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER" "$(basename $BASH_SOURCE) : $LINENO"
-                print_warning "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER $(basename $BASH_SOURCE) : $LINENO"
+                write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
+                print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "configure_aur_helper at line $(basename $BASH_SOURCE) : $LINENO"
                 return 1
             fi
@@ -265,8 +265,8 @@ configure_aur_helper()
             pacman -D --asdeps cower
             if ! check_package "pacaur" ; then
                 echo "Pacaur not installed. EXIT now"
-                write_error "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER" "$(basename $BASH_SOURCE) : $LINENO"
-                print_warning "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER $(basename $BASH_SOURCE) : $LINENO"
+                write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
+                print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER - $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "configure_aur_helper at line $(basename $BASH_SOURCE) : $LINENO"
                 return 1
             fi
@@ -287,28 +287,28 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-SUDO-DESC"  "Configure sudo"
-localize_info "CONFIGURE-SUDO-NOTES" "Called from Boot Mode."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-SUDO-DESC"  "Configure sudo"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-SUDO-NOTES" "Called from Boot Mode."
 #
-localize_info "CONFIGURE-SUDO-COMPLETE" "Sudo Configured"
-localize_info "CONFIGURE-SUDO-SUDO" "SUDO"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-SUDO-COMPLETE" "Sudo Configured"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-SUDO-SUDO" "SUDO"
 configure_sudo()
 {
     # sudo is installed during pacstrap
     if [[ ! -f  "${MOUNTPOINT}/etc/sudoers-old" ]]; then                            # Used to get the lastest sudoers file from ISO boot OS
         copy_file "/etc/sudoers" "${MOUNTPOINT}/etc/sudoers-old" "$(basename $BASH_SOURCE) : $LINENO"
         if ! is_string_in_file "${MOUNTPOINT}/etc/sudoers" "$FILE_SIGNATURE" ; then # Only make changes once
-            echo "$FILE_SIGNATURE" >> ${MOUNTPOINT}/etc/sudoers
+            echo "$FILE_SIGNATURE"                                            >> ${MOUNTPOINT}/etc/sudoers
             ## Uncomment to allow members of group wheel to execute any command
             sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
             ## This config is especially helpful for those using terminal multiplexers like screen, tmux, or ratpoison, and those using sudo from scripts/cronjobs:
-            echo ' ' >> ${MOUNTPOINT}/etc/sudoers
-            echo 'Defaults !requiretty, !tty_tickets, !umask' >> ${MOUNTPOINT}/etc/sudoers
-            echo 'Defaults visiblepw, path_info, insults, lecture=always' >> ${MOUNTPOINT}/etc/sudoers
+            echo ' '                                                          >> ${MOUNTPOINT}/etc/sudoers
+            echo 'Defaults !requiretty, !tty_tickets, !umask'                 >> ${MOUNTPOINT}/etc/sudoers
+            echo 'Defaults visiblepw, path_info, insults, lecture=always'     >> ${MOUNTPOINT}/etc/sudoers
             echo 'Defaults loglinelen = 0, logfile =/var/log/sudo.log, log_year, log_host, syslog=auth' >> ${MOUNTPOINT}/etc/sudoers
-            echo 'Defaults passwd_tries = 8, passwd_timeout = 1' >> ${MOUNTPOINT}/etc/sudoers
+            echo 'Defaults passwd_tries = 8, passwd_timeout = 1'              >> ${MOUNTPOINT}/etc/sudoers
             echo 'Defaults env_reset, always_set_home, set_home, set_logname' >> ${MOUNTPOINT}/etc/sudoers
             # @FIX for each EDITOR
             if [[ "$EDITOR" == "nano" ]]; then
@@ -317,12 +317,19 @@ configure_sudo()
                 echo 'Defaults !env_editor, editor=/usr/bin/vim:/usr/bin/vi:/usr/bin/nano' >> ${MOUNTPOINT}/etc/sudoers
             fi
             #
-            echo 'Defaults timestamp_timeout=300' >> ${MOUNTPOINT}/etc/sudoers
+            echo 'Defaults timestamp_timeout=300'                 >> ${MOUNTPOINT}/etc/sudoers
             echo 'Defaults passprompt="[sudo] password for %u: "' >> ${MOUNTPOINT}/etc/sudoers
+            echo "Defaults:${USERNAME} timestamp_timeout=20"      >> ${MOUNTPOINT}/etc/sudoers
             ## Allow user to execute any command with sudo and password 
-            echo "${USERNAME}   ALL=(ALL) ALL" >> ${MOUNTPOINT}/etc/sudoers
+            echo "${USERNAME}   ALL=(ALL) ALL"                    >> ${MOUNTPOINT}/etc/sudoers
+            ## Uncomment to allow user to execute any command with No Password; not secure
+            ## Make sure you disable this after software install.
+            echo "$FILE_SIGNATURE COMMENT-OUT"                    >> ${MOUNTPOINT}/etc/sudoers
+            echo "Defaults:${USERNAME}   !authenticate"           >> ${MOUNTPOINT}/etc/sudoers
+            chown -c root:root ${MOUNTPOINT}/etc/sudoers
+            chmod -c 0440 ${MOUNTPOINT}/etc/sudoers
         fi
-        copy_file "${MOUNTPOINT}/etc/sudoers" "${SCRIPT_DIR}/etc/sudoers" "$(basename $BASH_SOURCE) : $LINENO"
+        copy_file "${MOUNTPOINT}/etc/sudoers" "${FULL_SCRIPT_PATH}/etc/sudoers" "$(basename $BASH_SOURCE) : $LINENO"
     fi
     print_this "CONFIGURE-SUDO-COMPLETE"
 }
@@ -337,12 +344,12 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "RUN-TASK-MANAGER-DESC"  "Run Task"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-TASK-MANAGER-DESC"  "Run Task"
 #
-localize_info "RUN-TASK-MANAGER-ERROR" "Error in run_task_manager..."
-localize_info "RUN-TASK-MANAGER-INFO"  "Install TASK MANAGER..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-TASK-MANAGER-ERROR" "Error in run_task_manager..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-TASK-MANAGER-INFO"  "Install TASK MANAGER..."
 # -------------------------------------
 run_task_manager()
 {
@@ -356,14 +363,14 @@ run_task_manager()
             if [ "$?" -eq 0 ]; then
                 write_log "$TASKMANAGER_NAME - ${TASKMANAGER[$index]}" "$(basename $BASH_SOURCE) : $LINENO"
             else
-                write_error "RUN-TASK-MANAGER-ERROR" "$TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
-                print_warning "RUN-TASK-MANAGER-ERROR" "$TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
+                write_error   "RUN-TASK-MANAGER-ERROR" " $TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "RUN-TASK-MANAGER-ERROR" " $TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "run_task_manager: eval TASKMANAGER at line $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
             fi
         done
         # Copy all files that can be changed by Task Manager
         copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-        copy_file "/etc/pacman.conf" "${SCRIPT_DIR}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
         REFRESH_REPO=1
         refresh_pacman
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "run_task_manager: eval TASKMANAGER @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -380,9 +387,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "WRITE SECRET-DESC"  "Write Secret"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "WRITE SECRET-DESC"  "Write Secret"
 write_secret()
 {
     # @FIX Add encryption and escape_special_characters
@@ -409,9 +416,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-SECRET-DESC"  "Get Secret"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-SECRET-DESC"  "Get Secret"
 get_secret()
 {
     # @FIX Add decryption escape special characters
@@ -434,9 +441,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "DELETE-SECRET-DESC"  "Delete Secret"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "DELETE-SECRET-DESC"  "Delete Secret"
 delete_secret()
 {
     if [[ "$1" == "root_user" ]]; then
@@ -456,9 +463,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-SCRIPT-LIB-DESC"  "Create Script to run in arch-chroot"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-SCRIPT-LIB-DESC"  "Create Script to run in arch-chroot"
 create_script_lib()
 {
     touch ${MOUNTPOINT}/install_scripts
@@ -684,9 +691,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-INSTALL-SCRIPTS-DESC"  "Create Script Boot, which gets run in arch-chroot to install bootloader"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-INSTALL-SCRIPTS-DESC"  "Create Script Boot, which gets run in arch-chroot to install bootloader"
 create_script_boot()
 {
     echo "print_title \$\"Installing Arch Linux\"" >> ${MOUNTPOINT}/install_scripts
@@ -882,15 +889,15 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-SCRIPT-LOG-DESC"  "Create Script Log"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-SCRIPT-LOG-DESC"  "Create Script Log"
 create_script_log()
 {
     # -------------------------------------------------------------------------
-    # 
-    #
     # Log file
+    # Run from arch-chroot
+    # 
     #
     echo "print_info \$\"Writing log files...\"" >> ${MOUNTPOINT}/install_scripts
     echo "make_dir \"$LOG_PATH\"  \"\$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts
@@ -957,9 +964,9 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CREATE-INSTALL-SCRIPTS-DESC"  "Create Install Scripts"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CREATE-INSTALL-SCRIPTS-DESC"  "Create Install Scripts"
 create_install_scripts()
 {
     # NOTE: /boot and /boot/efi (if UEFI) should exist and be mounted, this is done during Drive Preperation so when modprobe efivars will create folders
@@ -989,14 +996,14 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "RUN-INSTALL-SCRIPTS-DESC"  "Run install scripts"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-INSTALL-SCRIPTS-DESC"  "Run install scripts"
 #
-localize_info "RUN-INSTALL-SCRIPTS-TITLE" "Run Install Scripts in arch-chroot..."
-localize_info "RUN-INSTALL-SCRIPTS-SUDOERS" "Configure sudo..."
-localize_info "RUN-INSTALL-SCRIPTS-MSG-1" "If all went right you should be able to reboot into a fully functioning Desktop."
-localize_info "RUN-INSTALL-SCRIPTS-MSG-2" "Make sure to check the root for install files like install_scripts, install_scripts_root_secrets, install_scripts_user_secrets, you can also delete /boot/grub_uefi.log."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-INSTALL-SCRIPTS-TITLE" "Run Install Scripts in arch-chroot..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-INSTALL-SCRIPTS-SUDOERS" "Configure sudo..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-INSTALL-SCRIPTS-MSG-1" "If all went right you should be able to reboot into a fully functioning Desktop."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "RUN-INSTALL-SCRIPTS-MSG-2" "Make sure to check the root for install files like install_scripts, install_scripts_root_secrets, install_scripts_user_secrets, you can also delete /boot/grub_uefi.log."
 run_install_scripts()
 {
     print_title "RUN-INSTALL-SCRIPTS-TITLE" "https://wiki.archlinux.org/index.php/Installation_Chroot"
@@ -1016,16 +1023,16 @@ run_install_scripts()
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: configure_sudo @ $(basename $BASH_SOURCE) : $LINENO"; fi
     #
     copy_file  ${MOUNTPOINT}/boot/grub_uefi.log "${LOG_PATH}/"  "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file  ${MOUNTPOINT}/install_scripts    "${SCRIPT_DIR}" "$(basename $BASH_SOURCE) : $LINENO"
-    # Copy all files to root
-    copy_file  "${SCRIPT_DIR}/arch-wiz.sh"       ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
-    copy_files "$CONFIG_PATH/" "db"              ${MOUNTPOINT}/root/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
-    copy_files "${LOG_PATH}/"  "log"             ${MOUNTPOINT}/root/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file  ${MOUNTPOINT}/install_scripts     ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file  ${MOUNTPOINT}/install_scripts    "${FULL_SCRIPT_PATH}" "$(basename $BASH_SOURCE) : $LINENO"
+    # Copy all files to root @FIX
+    copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh"       ${MOUNTPOINT}/${USERNAME}/        "$(basename $BASH_SOURCE) : $LINENO"
+    copy_files "$CONFIG_PATH/" "db"              ${MOUNTPOINT}/${USERNAME}/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
+    copy_files "${LOG_PATH}/"  "log"             ${MOUNTPOINT}/${USERNAME}/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file  ${MOUNTPOINT}/install_scripts     ${MOUNTPOINT}/${USERNAME}/        "$(basename $BASH_SOURCE) : $LINENO"
     rm ${MOUNTPOINT}"/install_scripts"
     # Overwrite all Config files 
-    # copy_dir "$SCRIPT_DIR/etc/" ${MOUNTPOINT}/ "$(basename $BASH_SOURCE) : $LINENO"
-    # copy_file "${SCRIPT_DIR}"/etc/hosts "/etc/hosts" "$(basename $BASH_SOURCE) : $LINENO"
+    # copy_dir "$FULL_SCRIPT_PATH/etc/" ${MOUNTPOINT}/ "$(basename $BASH_SOURCE) : $LINENO"
+    # copy_file "${FULL_SCRIPT_PATH}"/etc/hosts "/etc/hosts" "$(basename $BASH_SOURCE) : $LINENO"
     # Make sure to delete these files, they have passwords in them
     delete_secret 'user_user'
     delete_secret 'root_user'
@@ -1046,26 +1053,26 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GDISK-PARTITION-DESC"  "Format Hard Drive and setup Partitions."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-DESC"  "Format Hard Drive and setup Partitions."
 #
-localize_info "GDISK-PARTITION-TITLE"       "Partition Setup..."
-localize_info "GDISK-PARTITION-ERASING"     "Erasing Disk..."
-localize_info "GDISK-PARTITION-CREATE-UEFI" "Creating UEFI Disk..."
-localize_info "GDISK-PARTITION-CREATE-BIOS" "Creating BIOS Disk..."
-localize_info "GDISK-PARTITION-CREATE-BOOT" "Creating BOOT disk Partition ..."
-localize_info "GDISK-PARTITION-CREATE-SWAP" "Creating SWAP Partition ..."
-localize_info "GDISK-PARTITION-CREATE-ROOT" "Creating ROOT Partition ..."
-localize_info "GDISK-PARTITION-CREATE-HOME" "Creating HOME disk Partition ..."
-localize_info "GDISK-PARTITION-CREATE-VAR"  "Creating VAR disk Partition ..."
-localize_info "GDISK-PARTITION-FORMAT-ROOT" "Formating ROOT Partition..."
-localize_info "GDISK-PARTITION-FORMAT-HOME" "Formating HOME disk Partition..."
-localize_info "GDISK-PARTITION-FORMAT-VAR"  "Formating VAR disk Partition..."
-localize_info "GDISK-PARTITION-FORMAT-BOOT" "Formating BOOT disk Partition..."
-localize_info "GDISK-PARTITION-FORMAT-UEFI" "Formating UEFI disk..."
-localize_info "GDISK-PARTITION-FORMAT-BIOS" "Formating BIOS disk..."
-localize_info "GDISK-PARTITION-MAKE-SWAP"   "Creating SWAP Partition..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-TITLE"       "Partition Setup..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-ERASING"     "Erasing Disk..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-UEFI" "Creating UEFI Disk..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-BIOS" "Creating BIOS Disk..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-BOOT" "Creating BOOT disk Partition ..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-SWAP" "Creating SWAP Partition ..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-ROOT" "Creating ROOT Partition ..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-HOME" "Creating HOME disk Partition ..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-CREATE-VAR"  "Creating VAR disk Partition ..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-FORMAT-ROOT" "Formating ROOT Partition..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-FORMAT-HOME" "Formating HOME disk Partition..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-FORMAT-VAR"  "Formating VAR disk Partition..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-FORMAT-BOOT" "Formating BOOT disk Partition..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-FORMAT-UEFI" "Formating UEFI disk..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-FORMAT-BIOS" "Formating BIOS disk..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GDISK-PARTITION-MAKE-SWAP"   "Creating SWAP Partition..."
 # -------------------------------------
 gdisk_partition()
 {
@@ -1281,34 +1288,34 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "SETUP-OS-DESC"  "Setup OS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SETUP-OS-DESC"  "Setup OS"
 #
-localize_info "Install-Arch" "Install Arch Linux on Drive"
-localize_info "Script-uses-GPT" "This Script uses GPT: GUID Partition Table (GPT) is a new style of partitioning which is part of the Unified Extensible Firmware Interface Specification, using the globally unique identifier for devices. It is different from the Master Boot Record (the more commonly used partitioning style) in many aspects and has many advantages."
-localize_info "Partitioning-hard-drive" "Partitioning a hard drive allows one to logically divide the available space into sections that can be accessed independently of one another. Partition information is stored within a hard drive's Master Boot Record."
-localize_info "Running-gdisk" "Running gdisk options will DESTROY all DATA on installation disk!"
-localize_info "Standard-Partition-4-Primary-Types" "This function sets up a Standard Partition of 4 Primary Types: UEFI - BOOT - SWAP and ROOT; you can also specify to create HOME and VAR Partitions."
-localize_info "Unified-Extensible-Firmware-Interface" "Unified Extensible Firmware Interface (or UEFI for short) is a new type of firmware that was initially designed by Intel (known as EFI then) mainly for its Itanium based systems. It introduces new ways of booting an OS that is distinct from the commonly used 'MBR boot code' method followed for BIOS systems. It started as Intel's EFI in versions 1.x and then a group of companies called the UEFI Forum took over its development from which it was called Unified EFI starting with version 2.0."
-localize_info "UEFI is formated as FAT32" "UEFI is formated as FAT32"
-localize_info "BIOS" "If your motherboard supports UEFI Mode, then use it, otherwise use BIOS mode; both use GPT for this Script."
-localize_info "BOOT" "The /boot directory contains the kernel and ramdisk images as well as the bootloader configuration file and bootloader stages."
-localize_info "BOOT-Partition-not-required" "BOOT is not required to be a separate Partition, its recommended, BOOT is formated as Ext2"
-localize_info "ROOT" "ROOT is required, and is recommended to be formated as Ext4."
-localize_info "SWAP" "The swap partition provides memory that can be used as virtual RAM. It is recommended for PCs with 1GB or less of physical RAM."
-localize_info "HOME" "The /home directory contains user-specific configuration files (the so-called 'dot files'). Optionally, it can also hold any type of media (videos, music, etc), and if you use Wine, the games/programs will be installed in ~/.wine/ by default. So please take this into account if you chose to create a separate home partition. While keeping it on a separate partition can be useful in case you reinstall, some prefer to start fresh (because that's usually the reason for a reinstall), instead of reusing old, and possibly deprecated or problematic, configuration files. The main advantage is that, in very rare cases, if the root partition becomes too full, it will not impact your web browser, media player, torrent client, etc. They will keep working uninhibited, and will keep saving new changes to their setting files or to their cache. A home partition can also be shared with other installed Linux distributions, but this is not recommended because of possible incompatibilities between user-specific configuration files. The only exception is if each distribution has its own user dir on the shared home partition."
-localize_info "VAR" "The /var directory stores Contains variable data such as spool directories and files, administrative and logging data, pacman's cache, the ABS tree, etc. It is used for example for caching and logging, and hence frequently read or written. Keeping it in a separate partition avoids running out of disk space due to flunky logs, etc. It exists to make it possible to mount /usr as read-only. Everything that historically went into /usr that is written to during system operation (as opposed to installation and software maintenance) must reside under /var."
-localize_info "series-of-question" "A series of question will guild us to setting up the Partition Table."
-localize_info "Order-Partitions" "The Order the Partitions are made are: UEFI - BOOT - SWAP - ROOT - HOME - VAR"
-localize_info "SETUP-INFO" "You can hit Shift-Page Up or Down to scroll screens, Ctrl-C to exit script at any time."
-localize_info "choose-Drive-install-OS" "You must choose a Drive to install OS on, make sure you wish to Format this Whole Drive."
-localize_info "what-drive" "Figure out what drive you wish to install to, then re-run this Script."
-localize_info "Format-Drive" "About to Format Drive, be very sure you wish to continue! Hit Ctrl-C to Cancel, any key to Continue."
-localize_info "Last-Chance" "Last Chance at line"
-localize_info "same-drive-Script" "You can not install to same drive Script is Executing from."
-localize_info "Install-on-Device" "Installing on Device"
-localize_info "Device-does-not-exist" "Device does not exist! Try running script again using correct device name, run sgdisk -p for a list of Device names."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install-Arch" "Install Arch Linux on Drive"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Script-uses-GPT" "This Script uses GPT: GUID Partition Table (GPT) is a new style of partitioning which is part of the Unified Extensible Firmware Interface Specification, using the globally unique identifier for devices. It is different from the Master Boot Record (the more commonly used partitioning style) in many aspects and has many advantages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Partitioning-hard-drive" "Partitioning a hard drive allows one to logically divide the available space into sections that can be accessed independently of one another. Partition information is stored within a hard drive's Master Boot Record."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Running-gdisk" "Running gdisk options will DESTROY all DATA on installation disk!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Standard-Partition-4-Primary-Types" "This function sets up a Standard Partition of 4 Primary Types: UEFI - BOOT - SWAP and ROOT; you can also specify to create HOME and VAR Partitions."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Unified-Extensible-Firmware-Interface" "Unified Extensible Firmware Interface (or UEFI for short) is a new type of firmware that was initially designed by Intel (known as EFI then) mainly for its Itanium based systems. It introduces new ways of booting an OS that is distinct from the commonly used 'MBR boot code' method followed for BIOS systems. It started as Intel's EFI in versions 1.x and then a group of companies called the UEFI Forum took over its development from which it was called Unified EFI starting with version 2.0."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "UEFI is formated as FAT32" "UEFI is formated as FAT32"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BIOS" "If your motherboard supports UEFI Mode, then use it, otherwise use BIOS mode; both use GPT for this Script."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BOOT" "The /boot directory contains the kernel and ramdisk images as well as the bootloader configuration file and bootloader stages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "BOOT-Partition-not-required" "BOOT is not required to be a separate Partition, its recommended, BOOT is formated as Ext2"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ROOT" "ROOT is required, and is recommended to be formated as Ext4."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SWAP" "The swap partition provides memory that can be used as virtual RAM. It is recommended for PCs with 1GB or less of physical RAM."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "HOME" "The /home directory contains user-specific configuration files (the so-called 'dot files'). Optionally, it can also hold any type of media (videos, music, etc), and if you use Wine, the games/programs will be installed in ~/.wine/ by default. So please take this into account if you chose to create a separate home partition. While keeping it on a separate partition can be useful in case you reinstall, some prefer to start fresh (because that's usually the reason for a reinstall), instead of reusing old, and possibly deprecated or problematic, configuration files. The main advantage is that, in very rare cases, if the root partition becomes too full, it will not impact your web browser, media player, torrent client, etc. They will keep working uninhibited, and will keep saving new changes to their setting files or to their cache. A home partition can also be shared with other installed Linux distributions, but this is not recommended because of possible incompatibilities between user-specific configuration files. The only exception is if each distribution has its own user dir on the shared home partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VAR" "The /var directory stores Contains variable data such as spool directories and files, administrative and logging data, pacman's cache, the ABS tree, etc. It is used for example for caching and logging, and hence frequently read or written. Keeping it in a separate partition avoids running out of disk space due to flunky logs, etc. It exists to make it possible to mount /usr as read-only. Everything that historically went into /usr that is written to during system operation (as opposed to installation and software maintenance) must reside under /var."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "series-of-question" "A series of question will guild us to setting up the Partition Table."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Order-Partitions" "The Order the Partitions are made are: UEFI - BOOT - SWAP - ROOT - HOME - VAR"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SETUP-INFO" "You can hit Shift-Page Up or Down to scroll screens, Ctrl-C to exit script at any time."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "choose-Drive-install-OS" "You must choose a Drive to install OS on, make sure you wish to Format this Whole Drive."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "what-drive" "Figure out what drive you wish to install to, then re-run this Script."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Format-Drive" "About to Format Drive, be very sure you wish to continue! Hit Ctrl-C to Cancel, any key to Continue."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Last-Chance" "Last Chance at line"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "same-drive-Script" "You can not install to same drive Script is Executing from."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install-on-Device" "Installing on Device"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Device-does-not-exist" "Device does not exist! Try running script again using correct device name, run sgdisk -p for a list of Device names."
 setup_os()
 {
     print_title "https://wiki.archlinux.org/index.php/Partitioning and https://wiki.archlinux.org/index.php/GUID_Partition_Table"
@@ -1369,7 +1376,7 @@ setup_os()
     set_log_drive # just run it from mounted drive
     #
     print_warning "Format-Drive" "$INSTALL_DEVICE"
-    pause_function "$(localize "Last-Chance") $(basename $BASH_SOURCE) : $LINENO"
+    pause_function "$(localize "Last-Chance") @ $(basename $BASH_SOURCE) : $LINENO"
     #
     get_user_name           # $USERNAME
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "setup_os get_user_name line @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -1458,20 +1465,20 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "START-SCREEN-DESC"  "Start Screen"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-DESC"  "Start Screen"
 #
-localize_info "root-privileges" "This script must be run with root privileges"
-localize_info "START-SCREEN-TITLE" "Arch Installation"
-localize_info "START-SCREEN-INFO-1" "The Arch Install Script are a set of Bash scripts that simplify Arch installation."
-localize_info "START-SCREEN-INFO-2" "This program was Originally Created by helmuthdu mailto: helmuthdu[at]gmail[dot]com called Archlinux Ultimate Install or AUI"
-localize_info "START-SCREEN-INFO-3" "And refactored by and new functionally written by Jeffrey Scott Flesher, so its more like a Wizard, and its called: ($ARCH_WIZ_SCRIPT_NAME), it allows the user to chose to install from a menu driven selection, then save it so you can load it next time, making this a one stop custom installer, you can edit all your configuration files, save changes to flash drive, and reuse them to install on someone elses machine."
-localize_info "START-SCREEN-INFO-4" "This Script will write Configuration files on mounted Flash Drive, its up to the user to remove them after Script finishes, so you must have enough space on device to hold files."
-localize_info "START-SCREEN-INFO-5" "This Script will also write a log file on mounted Flash Drive."
-localize_info "START-SCREEN-WARN-1" "This script is still in $SCRIPT_STAGE Stage"
-localize_info "START-SCREEN-WARN-2" "Warning: This script will completly format the Target Drive, its not designed to preserve partitions, it ERASES THE WHOLE HARD DRIVE!. so you have been warned."
-localize_info "START-SCREEN-INFO-6" "If you are installing this to a dual boot Windows System (or any other OS) on the same drive, it will be lost, which in the case of Windoze, will not be all that much of a lost, but in future version of this script, we will work on converting to GPT Disk and preserving Partitions, and mounting them in the fstab and grub."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "root-privileges" "This script must be run with root privileges"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-TITLE" "Arch Installation"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-INFO-1" "The Arch Install Script are a set of Bash scripts that simplify Arch installation."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-INFO-2" "This program was Originally Created by helmuthdu mailto: helmuthdu[at]gmail[dot]com called Archlinux Ultimate Install or AUI"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-INFO-3" "And refactored by and new functionally written by Jeffrey Scott Flesher, so its more like a Wizard, and its called: ($ARCH_WIZ_SCRIPT_NAME), it allows the user to chose to install from a menu driven selection, then save it so you can load it next time, making this a one stop custom installer, you can edit all your configuration files, save changes to flash drive, and reuse them to install on someone elses machine."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-INFO-4" "This Script will write Configuration files on mounted Flash Drive, its up to the user to remove them after Script finishes, so you must have enough space on device to hold files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-INFO-5" "This Script will also write a log file on mounted Flash Drive."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-WARN-1" "This script is still in $SCRIPT_STAGE Stage"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-WARN-2" "Warning: This script will completely format the Target Drive, its not designed to preserve partitions, it ERASES THE WHOLE HARD DRIVE!. so you have been warned."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "START-SCREEN-INFO-6" "If you are installing this to a dual boot Windows System (or any other OS) on the same drive, it will be lost, which in the case of Windoze, will not be all that much of a lost, but in future version of this script, we will work on converting to GPT Disk and preserving Partitions, and mounting them in the fstab and grub."
 start_screen()
 {
     # Run this script after your first boot with archlinux (as root)
