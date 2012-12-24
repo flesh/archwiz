@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="18 Dec 2012 16:33"
+# LAST_UPDATE="22 Dec 2012 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -63,84 +63,61 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-MENU-DESC"  "Install Menu"
-localize_info "INSTALL-MENU-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-DESC"  "Install Menu"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-NOTES" "NONE"
 #
-localize_info "Save-Software-Configuration" "Save Software Configuration for later use" 
-localize_info "INSTALL-MENU-ITEM-1"  "Basic Setup"
-localize_info "INSTALL-MENU-ITEM-2"  "Desktop Environment"
-localize_info "INSTALL-MENU-ITEM-3"  "Display Manager"
-localize_info "INSTALL-MENU-ITEM-4"  "Accessories Apps"
-localize_info "INSTALL-MENU-ITEM-5"  "Development Apps"
-localize_info "INSTALL-MENU-ITEM-6"  "Office Apps"
-localize_info "INSTALL-MENU-ITEM-7"  "System Apps"
-localize_info "INSTALL-MENU-ITEM-8"  "Graphics Apps"
-localize_info "INSTALL-MENU-ITEM-9"  "Internet Apps"
-localize_info "INSTALL-MENU-ITEM-10" "Audio Apps"
-localize_info "INSTALL-MENU-ITEM-11" "Video Apps"
-localize_info "INSTALL-MENU-ITEM-12" "Games"
-localize_info "INSTALL-MENU-ITEM-13" "Science"
-localize_info "INSTALL-MENU-ITEM-14" "Web server"
-localize_info "INSTALL-MENU-ITEM-15" "Fonts"
-localize_info "INSTALL-MENU-ITEM-16" "Extra"
-localize_info "INSTALL-MENU-ITEM-17" "Kernel"
-localize_info "INSTALL-MENU-ITEM-18" "Clean Orphan Packages"
-localize_info "INSTALL-MENU-ITEM-19" "Edit Configuration"
-localize_info "INSTALL-MENU-ITEM-20" "Load Custom Software"
-localize_info "INSTALL-MENU-ITEM-21" "Load Software"
-localize_info "INSTALL-MENU-ITEM-22" "Save Software"
-localize_info "INSTALL-MENU-ITEM-23" "Quit"
-localize_info "INSTALL-MENU-INFO-1"  "Basic Setup: Required: SYSTEMD, Video Card, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
-localize_info "INSTALL-MENU-INFO-2"  "Desktop Environment: Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and Unity."
-localize_info "INSTALL-MENU-INFO-3"  "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
-localize_info "INSTALL-MENU-INFO-4"  "Accessories Apps: cairo-dock-bzr, Conky, deepin-scrot, dockbarx, speedcrunch, galculator, gnome-pie, guake, kupfer, pyrenamer, shutter, synapse, terminator, zim, Revelation."
-localize_info "INSTALL-MENU-INFO-5"  "Development Apps: aptana-studio, bluefish, eclipse, emacs, gvim, geany, IntelliJ IDEA, kdevelop, Oracle Java, Qt and Creator, Sublime Text 2, Debugger Tools, MySQL Workbench, meld, RabbitVCS, Wt, astyle and putty."
-localize_info "INSTALL-MENU-INFO-6"  "Office Apps: Libre Office, Caligra or Abiword + Gnumeric, latex, calibre, gcstar, homebank, impressive, nitrotasks, ocrfeeder, xmind and zathura."
-localize_info "INSTALL-MENU-INFO-7"  "System Apps:"
-localize_info "INSTALL-MENU-INFO-8"  "Graphics Apps:"
-localize_info "INSTALL-MENU-INFO-9"  "Internet Apps:"
-localize_info "INSTALL-MENU-INFO-10" "Audio Apps:"
-localize_info "INSTALL-MENU-INFO-11" "Video Apps:"
-localize_info "INSTALL-MENU-INFO-12" "Games:"
-localize_info "INSTALL-MENU-INFO-13" "Science and Education: ${INSTALL_SCIENCE_EDUCATION}."
-localize_info "INSTALL-MENU-INFO-14" "Web server:"
-localize_info "INSTALL-MENU-INFO-15" "Fonts:"
-localize_info "INSTALL-MENU-INFO-16" "Extra:"
-localize_info "INSTALL-MENU-INFO-17" "Install optional Kernals: "
-localize_info "INSTALL-MENU-INFO-18" "Clean Orphan Packages:"
-localize_info "INSTALL-MENU-INFO-19" "Edit Configuration: Loads Saved Software."
-localize_info "INSTALL-MENU-INFO-20" "Load Custom Software; Not yet written."
-localize_info "INSTALL-MENU-INFO-21" "Allows you to review and edit configuration variables before installing software."
-localize_info "INSTALL-MENU-INFO-22" "Save Software: Saves and Installs list and configurations creates with this menu."
-localize_info "INSTALL-MENU-INFO-23" "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
-localize_info "INSTALL-MENU-STATUS-1" ""
-localize_info "INSTALL-MENU-STATUS-2" ""
-localize_info "INSTALL-MENU-STATUS-3" ""
-localize_info "INSTALL-MENU-STATUS-4" ""
-localize_info "INSTALL-MENU-STATUS-5" ""
-localize_info "INSTALL-MENU-STATUS-6" ""
-localize_info "INSTALL-MENU-STATUS-7" ""
-localize_info "INSTALL-MENU-STATUS-8" ""
-localize_info "INSTALL-MENU-STATUS-9" ""
-localize_info "INSTALL-MENU-STATUS-10" ""
-localize_info "INSTALL-MENU-STATUS-11" ""
-localize_info "INSTALL-MENU-STATUS-12" ""
-localize_info "INSTALL-MENU-STATUS-13" ""
-localize_info "INSTALL-MENU-STATUS-14" ""
-localize_info "INSTALL-MENU-STATUS-15" ""
-localize_info "INSTALL-MENU-STATUS-16" ""
-localize_info "INSTALL-MENU-STATUS-17" ""
-localize_info "INSTALL-MENU-STATUS-18" ""
-localize_info "INSTALL-MENU-STATUS-19" ""
-localize_info "INSTALL-MENU-STATUS-20" ""
-localize_info "INSTALL-MENU-STATUS-21" ""
-localize_info "INSTALL-MENU-STATUS-22" ""
-localize_info "INSTALL-MENU-STATUS-23" ""
-localize_info "INSTALL-MENU-STATUS-X" ""
-localize_info "INSTALL-MENU-INSTALLED" "Installed"
-localize_info "INSTALL-MENU-REMOVED" "Removed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Save-Software-Configuration" "Save Software Configuration for later use" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-1"  "Basic Setup"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-2"  "Desktop Environment"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-3"  "Display Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-4"  "Accessories Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-5"  "Development Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-6"  "Office Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-7"  "System Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-8"  "Graphics Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-9"  "Internet Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-10" "Audio Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-11" "Video Apps"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-12" "Games"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-13" "Science"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-14" "Web server"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-15" "Fonts"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-16" "Extra"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-17" "Kernel"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-18" "Clean Orphan Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-19" "Edit Configuration"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-20" "Load Custom Software"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-21" "Load Software"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-22" "Save Software"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-23" "Quit"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-1"  "Basic Setup: Required: SYSTEMD, Video Card, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-2"  "Desktop Environment: Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and Unity."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-3"  "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-4"  "Accessories Apps: cairo-dock-bzr, Conky, deepin-scrot, dockbarx, speedcrunch, galculator, gnome-pie, guake, kupfer, pyrenamer, shutter, synapse, terminator, zim, Revelation."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-5"  "Development Apps: aptana-studio, bluefish, eclipse, emacs, gvim, geany, IntelliJ IDEA, kdevelop, Oracle Java, Qt and Creator, Sublime Text 2, Debugger Tools, MySQL Workbench, meld, RabbitVCS, Wt, astyle and putty."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-6"  "Office Apps: Libre Office, Caligra or Abiword + Gnumeric, latex, calibre, gcstar, homebank, impressive, nitrotasks, ocrfeeder, xmind and zathura."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-7"  "System Apps:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-8"  "Graphics Apps:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-9"  "Internet Apps:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-10" "Audio Apps:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-11" "Video Apps:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-12" "Games:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-13" "Science and Education: ${INSTALL_SCIENCE_EDUCATION}."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-14" "Web server:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-15" "Fonts:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-16" "Extra:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-17" "Install optional Kernals: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-18" "Clean Orphan Packages:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-19" "Edit Configuration: Loads Saved Software."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-20" "Load Custom Software; Not yet written."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-21" "Allows you to review and edit configuration variables before installing software."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-22" "Save Software: Saves and Installs list and configurations creates with this menu."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-23" "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-COMPLETED" "Completed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INSTALLED" "Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-REMOVED"   "Removed"
 # -------------------------------------
 install_menu()
 {
@@ -185,129 +162,150 @@ install_menu()
         for OPT in ${OPTIONS[@]}; do
             case "$OPT" in
                 1)  # Basic Setup with Add and Remove
-                    if [[ "${MenuChecks[$(($OPT - 1))]}" -eq 0 ]]; then
-                        MenuChecks[$(($OPT - 1))]=1
+                    if [[ "${MenuChecks[$((OPT - 1))]}" -eq 0 ]]; then
+                        MenuChecks[$((OPT - 1))]=1
                         install_basic 1
                         StatusBar="INSTALL-MENU-ITEM-1"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$(($OPT - 1))]=0
+                        MenuChecks[$((OPT - 1))]=0
                         install_basic 2
                         StatusBar="INSTALL-MENU-ITEM-1"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     fi
                     ;;
                 2)  # Desktop Environment
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_desktop_environment 
-                    StatusBar=" Completed."
+                    StatusBar="INSTALL-MENU-ITEM-2"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 3)  # Display Manager
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_display_manager
-                    StatusBar="Desktop Environment Completed."
+                    StatusBar="INSTALL-MENU-ITEM-3"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 4)  # Accessories Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_accessories_apps    
-                    StatusBar=" Completed."
+                    StatusBar="INSTALL-MENU-ITEM-4"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 5)  # Development Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_development_apps    
-                    StatusBar="Accessories Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-5"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 6)  # Office Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_office_apps         
-                    StatusBar="Office Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-6"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 7)  # System Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_system_apps
-                    StatusBar="System Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-7"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 8)  # Graphics Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_graphics_apps
-                    StatusBar="Graphics Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-8"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 9)  # Internet Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_internet_apps
-                    StatusBar="Internet Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-9"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                10)  # Audio Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_audio_apps
-                    StatusBar="Audio Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-10"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                11)  # Video Apps
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_video_apps
-                    StatusBar="Video Apps Completed."
+                    StatusBar="INSTALL-MENU-ITEM-11"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                12)  # Games
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_games
-                    StatusBar="Games Completed."
+                    StatusBar="INSTALL-MENU-ITEM-12"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                13)  # Science
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_science
-                    StatusBar="Science Completed."
+                    StatusBar="INSTALL-MENU-ITEM-13"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                14)  # Web server
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_web_server
-                    StatusBar="Web server Completed."
+                    StatusBar="INSTALL-MENU-ITEM-14"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                15)  # Fonts
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_fonts
-                    StatusBar="Fonts Completed."
+                    StatusBar="INSTALL-MENU-ITEM-15"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                16)  # Extra
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_extra
-                    StatusBar="Extra Completed."
+                    StatusBar="INSTALL-MENU-ITEM-16"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                17)  # Kernel
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     install_kernel
-                    StatusBar="Kernel Completed."
+                    StatusBar="INSTALL-MENU-ITEM-17"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                18)  # Clean Orphan Packages
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     clean_orphan_packages
-                    StatusBar="Clean Orphan Packages Completed."
+                    StatusBar="INSTALL-MENU-ITEM-18"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                19)  # Edit Configuration
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     get_hostname
                     configure_timezone
                     get_user_name
                     add_custom_repositories
-                    StatusBar="Edit Configuration Completed."
+                    StatusBar="INSTALL-MENU-ITEM-19"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                20)  # Load Custom Software
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     # load_custom_software
-                    StatusBar="Load Custom Software Completed."
+                    StatusBar="INSTALL-MENU-ITEM-20"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                21)  # Load Software
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     load_software # @FIX
-                    StatusBar="Load Software Completed."
+                    StatusBar="INSTALL-MENU-ITEM-21"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                22)  # Save Software
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     save_software
                     SAVED_SOFTWARE=1
-                    StatusBar="Save Software Completed."
+                    StatusBar="INSTALL-MENU-ITEM-22"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                23)  # Install Software
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     save_software
                     SAVED_SOFTWARE=1
                     if [[ "$MOUNTPOINT" == " " ]]; then
@@ -318,7 +316,8 @@ install_menu()
                         SAVED_MAIN_MENU=1
                     fi
                     break;
-                    StatusBar="Install Software Completed."
+                    StatusBar="INSTALL-MENU-ITEM-23"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
               "q")
                     if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
@@ -352,11 +351,11 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-BASIC-USAGE" "install_basic 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-BASIC-DESC"  "Install Basic Packages"
-localize_info "INSTALL-BASIC-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-USAGE" "install_basic 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-DESC"  "Install Basic Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-NOTES" "NONE"
 # -------------------------------------
 install_basic()
 {
@@ -389,15 +388,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-GIT-TOR-USAGE" "install_git_tor_pack 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-GIT-TOR-DESC"  "Install GIT TOR Packages"
-localize_info "INSTALL-GIT-TOR-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-USAGE" "install_git_tor_pack 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-DESC"  "Install GIT TOR Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-NOTES" "NONE"
 #
-localize_info "INSTALL-GIT-TOR-TITLE" "GIT-TOR"
-localize_info "INSTALL-GIT-TOR-INFO"  "Tor is an open source implementation of 2nd generation onion routing that provides free access to an anonymous proxy network. Its primary goal is to enable online anonymity by protecting against traffic analysis attacks."
-localize_info "INSTALL-GIT-TOR-YN"    "Ensuring access to GIT through a firewall (bypass college/work firewall)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-TITLE" "GIT-TOR"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-INFO"  "Tor is an open source implementation of 2nd generation onion routing that provides free access to an anonymous proxy network. Its primary goal is to enable online anonymity by protecting against traffic analysis attacks."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-YN"    "Ensuring access to GIT through a firewall (bypass college/work firewall)"
 # -------------------------------------
 install_git_tor_pack()
 {
@@ -409,7 +408,7 @@ install_git_tor_pack()
     fi
     print_title "INSTALL-GIT-TOR-TITLE" " - https://wiki.archlinux.org/index.php/Tor"
     print_info  "INSTALL-GIT-TOR-INFO"
-    read_input_yn "INSTALL-GIT-TOR-YN" 0
+    read_input_yn "INSTALL-GIT-TOR-YN" " " 0
     if [[ $YN_OPTION -eq 1 ]]; then
         
         add_package "$INSTALL_GIT_TOR"
@@ -429,27 +428,27 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-BASIC-SETUP-USAGE" "install_basic_setup 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-BASIC-SETUP-DESC"  "Install Basic Packages"
-localize_info "INSTALL-BASIC-SETUP-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-USAGE" "install_basic_setup 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-DESC"  "Install Basic Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-NOTES" "NONE"
 #
-localize_info "INSTALL-BASIC-SETUP-TITLE"           "The Following will be installed by Default."
-localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD"    "SYSTEMD"
-localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD-1"  "systemd is a replacement for the init daemon for Linux (either System V or BSD-style). It is intended to provide a better framework for expressing services' dependencies, allow more work to be done in parallel at system startup, and to reduce shell overhead."
-localize_info "INSTALL-BASIC-SETUP-INFO-BASH-TOOLS" "BASH TOOLS"
-localize_info "INSTALL-BASIC-SETUP-ARCHIVE-TOOLS"   "(UN)COMPRESS TOOLS - https://wiki.archlinux.org/index.php/P7zip"
-localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI"      "AVAHI"
-localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI-1"    "Avahi is a free Zero Configuration Networking (Zeroconf) implementation, including a system for multicast DNS/DNS-SD service discovery. It allows programs to publish and discover services and hosts running on a local network with no specific configuration."
-localize_info "INSTALL-BASIC-SETUP-INFO-ACPI"       "ACPI"
-localize_info "INSTALL-BASIC-SETUP-ACPI-1"          "acpid is a flexible and extensible daemon for delivering ACPI events."
-localize_info "INSTALL-BASIC-SETUP-ALSA"            "ALSA"
-localize_info "INSTALL-BASIC-SETUP-ALSA-1"          "The Advanced Linux Sound Architecture (ALSA) is a Linux kernel component intended to replace the original Open Sound System (OSSv3) for providing device drivers for sound cards."
-localize_info "INSTALL-BASIC-SETUP-NTFS-1"          "NTFS/FAT/exFAT"
-localize_info "INSTALL-BASIC-SETUP-NTFS-2"          "A file system (or filesystem) is a means to organize data expected to be retained after a program terminates by providing procedures to store, retrieve and update data, as well as manage the available space on the device(s) which contain it. A file system organizes data in an efficient manner and is tuned to the specific characteristics of the device."
-localize_info "INSTALL-BASIC-SETUP-SSH-1"           "SSH"
-localize_info "INSTALL-BASIC-SETUP-SSH-2"           "Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-TITLE"           "The Following will be installed by Default."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD"    "SYSTEMD"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD-1"  "systemd is a replacement for the init daemon for Linux (either System V or BSD-style). It is intended to provide a better framework for expressing services' dependencies, allow more work to be done in parallel at system startup, and to reduce shell overhead."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-BASH-TOOLS" "BASH TOOLS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ARCHIVE-TOOLS"   "(UN)COMPRESS TOOLS - https://wiki.archlinux.org/index.php/P7zip"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI"      "AVAHI"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI-1"    "Avahi is a free Zero Configuration Networking (Zeroconf) implementation, including a system for multicast DNS/DNS-SD service discovery. It allows programs to publish and discover services and hosts running on a local network with no specific configuration."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-ACPI"       "ACPI"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ACPI-1"          "acpid is a flexible and extensible daemon for delivering ACPI events."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ALSA"            "ALSA"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ALSA-1"          "The Advanced Linux Sound Architecture (ALSA) is a Linux kernel component intended to replace the original Open Sound System (OSSv3) for providing device drivers for sound cards."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-NTFS-1"          "NTFS/FAT/exFAT"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-NTFS-2"          "A file system (or filesystem) is a means to organize data expected to be retained after a program terminates by providing procedures to store, retrieve and update data, as well as manage the available space on the device(s) which contain it. A file system organizes data in an efficient manner and is tuned to the specific characteristics of the device."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-SSH-1"           "SSH"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-SSH-2"           "Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers."
 # -------------------------------------
 install_basic_setup()
 {
@@ -553,15 +552,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-NFS-USAGE" "install_nfs_pack 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-NFS-DESC"  "Install NFS Packages"
-localize_info "INSTALL-NFS-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-USAGE" "install_nfs_pack 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-DESC"  "Install NFS Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-NOTES" "NONE"
 #
-localize_info "INSTALL-NFS-TITLE" "NFS"
-localize_info "INSTALL-NFS-INFO"  "NFS allowing a user on a client computer to access files over a network in a manner similar to how local storage is accessed."
-localize_info "INSTALL-NFS-YN"    "Install NFS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-TITLE" "NFS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-INFO"  "NFS allowing a user on a client computer to access files over a network in a manner similar to how local storage is accessed."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-YN"    "Install NFS"
 # -------------------------------------
 install_nfs_pack()
 {
@@ -573,7 +572,7 @@ install_nfs_pack()
     fi
     print_title "INSTALL-NFS-TITLE" " - https://wiki.archlinux.org/index.php/Nfs"
     print_info  "INSTALL-NFS-INFO"
-    read_input_yn "INSTALL-NFS-YN" 1
+    read_input_yn "INSTALL-NFS-YN" " " 1
     if [[ $YN_OPTION -eq 1 ]]; then
         add_package "$INSTALL_NFS"
         add_packagemanager "package_install \"$INSTALL_NFS\" 'INSTALL-NFS'" "INSTALL-NFS"
@@ -591,15 +590,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-SAMBA-USAGE" "install_samba_pack 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-SAMBA-DESC"  "Install samba Packages"
-localize_info "INSTALL-SAMBA-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-USAGE" "install_samba_pack 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-DESC"  "Install samba Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-NOTES" "NONE"
 #
-localize_info "INSTALL-SAMBA-TITLE" "SAMBA"
-localize_info "INSTALL-SAMBA-INFO"  "Samba is a re-implementation of the SMB/CIFS networking protocol, it facilitates file and printer sharing among Linux and Windows systems as an alternative to NFS."
-localize_info "INSTALL-SAMBA-YN"    "Install Samba"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-TITLE" "SAMBA"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-INFO"  "Samba is a re-implementation of the SMB/CIFS networking protocol, it facilitates file and printer sharing among Linux and Windows systems as an alternative to NFS."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-YN"    "Install Samba"
 # -------------------------------------
 install_samba_pack()
 {
@@ -613,14 +612,14 @@ install_samba_pack()
     fi
     print_title "INSTALL-SAMBA-TITLE" " - https://wiki.archlinux.org/index.php/Samba"
     print_info  "INSTALL-SAMBA-INFO"
-    read_input_yn "INSTALL-SAMBA-YN" 1
+    read_input_yn "INSTALL-SAMBA-YN" " " 1
     if [[ $YN_OPTION -eq 1 ]]; then
         add_package "$INSTALL_SAMBA"
         add_packagemanager "package_install \"$INSTALL_SAMBA\" 'INSTALL-SAMBA'" "INSTALL-SAMBA"
         add_packagemanager "cp /etc/samba/smb.conf.default /etc/samba/smb.conf" "COPY-CONFIG-SAMBA"
         add_packagemanager "systemctl enable smbd.service enable nmbd.service winbindd.service" "SYSTEMD-ENABLE-SAMBA"
         # installing samba will overwrite /etc/samba/smb.conf so copy it to temp 
-        copy_file "/etc/samba/smb.conf" "${SCRIPT_DIR}/etc/samba/smb.conf" "$LINENO"
+        copy_file "/etc/samba/smb.conf" "${FULL_SCRIPT_PATH}/etc/samba/smb.conf" "$LINENO"
     fi
 }
 #}}}
@@ -634,15 +633,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-PRELOAD-USAGE" "install_preload_pack 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-PRELOAD-DESC"  "Install preload Packages"
-localize_info "INSTALL-PRELOAD-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-USAGE" "install_preload_pack 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-DESC"  "Install preload Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-NOTES" "NONE"
 #
-localize_info "INSTALL-PRELOAD-TITLE" "PRELOAD"
-localize_info "INSTALL-PRELOAD-INFO"  "Preload is a program which runs as a daemon and records statistics about usage of programs using Markov chains; files of more frequently-used programs are, during a computer's spare time, loaded into memory. This results in faster startup times as less data needs to be fetched from disk. preload is often paired with prelink."
-localize_info "INSTALL-PRELOAD-YN"    "Install Preload"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-TITLE" "PRELOAD"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-INFO"  "Preload is a program which runs as a daemon and records statistics about usage of programs using Markov chains; files of more frequently-used programs are, during a computer's spare time, loaded into memory. This results in faster startup times as less data needs to be fetched from disk. preload is often paired with prelink."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-YN"    "Install Preload"
 # -------------------------------------
 install_preload_pack()
 {
@@ -654,7 +653,7 @@ install_preload_pack()
     fi
     print_title "INSTALL-PRELOAD-TITLE" " - https://wiki.archlinux.org/index.php/Preload"
     print_info  "INSTALL-PRELOAD-INFO"
-    read_input_yn "INSTALL-PRELOAD-YN" 0
+    read_input_yn "INSTALL-PRELOAD-YN" " " 0
     if [[ $YN_OPTION -eq 1 ]]; then
         add_package "$INSTALL_PRELOAD"
         add_packagemanager "package_install \"$INSTALL_PRELOAD\" 'INSTALL-PRELOAD'" "INSTALL-PRELOAD"
@@ -672,15 +671,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-ZRAM-USAGE" "install_zram 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-ZRAM-DESC"  "Install zram Packages"
-localize_info "INSTALL-ZRAM-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-USAGE" "install_zram 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-DESC"  "Install zram Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-NOTES" "NONE"
 #
-localize_info "INSTALL-ZRAM-TITLE" "ZRAM"
-localize_info "INSTALL-ZRAM-INFO"  "Zram creates a device in RAM and compresses it. If you use for swap means that part of the RAM can hold much more information but uses more CPU. Still, it is much quicker than swapping to a hard drive. If a system often falls back to swap, this could improve responsiveness. Zram is in mainline staging (therefore its not stable yet, use with caution)."
-localize_info "INSTALL-ZRAM-YN"    "Install Zram"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-TITLE" "ZRAM"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-INFO"  "Zram creates a device in RAM and compresses it. If you use for swap means that part of the RAM can hold much more information but uses more CPU. Still, it is much quicker than swapping to a hard drive. If a system often falls back to swap, this could improve responsiveness. Zram is in mainline staging (therefore its not stable yet, use with caution)."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-YN"    "Install Zram"
 # -------------------------------------
 install_zram()
 {
@@ -693,7 +692,7 @@ install_zram()
     fi
     print_title "INSTALL-ZRAM-TITLE" " - https://wiki.archlinux.org/index.php/Maximizing_Performance"
     print_info  "INSTALL-ZRAM-INFO" 
-    read_input_yn "INSTALL-ZRAM-YN" 0
+    read_input_yn "INSTALL-ZRAM-YN" " " 0
     if [[ $YN_OPTION -eq 1 ]]; then
         add_aur_package "$AUR_INSTALL_ZRAM"
         add_packagemanager "aur_package_install \"$AUR_INSTALL_ZRAM\" 'AUR-INSTALL-ZRAM'" "AUR-INSTALL-ZRAM"
@@ -711,15 +710,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-LAPTOP-MODE-TOOLS-USAGE" "install_laptop_mode_tools_pack 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-LAPTOP-MODE-TOOLS-DESC"  "Install LAPTOP-MODE-TOOLS Packages"
-localize_info "INSTALL-LAPTOP-MODE-TOOLS-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-USAGE" "install_laptop_mode_tools_pack 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-DESC"  "Install LAPTOP-MODE-TOOLS Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-NOTES" "NONE"
 #
-localize_info "INSTALL-LAPTOP-MODE-TOOLS-TITLE" "LAPTOP MODE TOOLS"
-localize_info "INSTALL-LAPTOP-MODE-TOOLS-INFO"  "Laptop Mode Tools is a laptop power saving package for Linux systems. It is the primary way to enable the Laptop Mode feature of the Linux kernel, which lets your hard drive spin down. In addition, it allows you to tweak a number of other power-related settings using a simple configuration file."
-localize_info "INSTALL-LAPTOP-MODE-TOOLS-YN"    "Install Laptop Mode Tools"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-TITLE" "LAPTOP MODE TOOLS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-INFO"  "Laptop Mode Tools is a laptop power saving package for Linux systems. It is the primary way to enable the Laptop Mode feature of the Linux kernel, which lets your hard drive spin down. In addition, it allows you to tweak a number of other power-related settings using a simple configuration file."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-YN"    "Install Laptop Mode Tools"
 # -------------------------------------
 install_laptop_mode_tools_pack()
 {
@@ -732,7 +731,7 @@ install_laptop_mode_tools_pack()
     fi
     print_title "INSTALL-LAPTOP-MODE-TOOLS-TITLE" "- https://wiki.archlinux.org/index.php/Laptop_Mode_Tools"
     print_info  "INSTALL-LAPTOP-MODE-TOOLS-INFO"
-    read_input_yn "INSTALL-LAPTOP-MODE-TOOLS-YN" 0
+    read_input_yn "INSTALL-LAPTOP-MODE-TOOLS-YN" " " 0
     if [[ $YN_OPTION -eq 1 ]]; then
         add_package        "$INSTALL_LAPTOP_MODE_TOOLS"
         add_packagemanager "package_install \"$INSTALL_LAPTOP_MODE_TOOLS\" 'INSTALL-LAPTOP-MODE-TOOLS'" "INSTALL-LAPTOP-MODE-TOOLS"
@@ -750,16 +749,16 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-XORG-USAGE" "install_xorg 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-XORG-DESC"  "Install Basic Packages"
-localize_info "INSTALL-XORG-NOTES" "NONE"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-USAGE" "install_xorg 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-DESC"  "Install Basic Packages"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-NOTES" "NONE"
 #
-localize_info "INSTALL-XORG-TITLE"   "XORG"
-localize_info "INSTALL-XORG-INFO-1"  "Xorg is the public, open-source implementation of the X window system version 11."
-localize_info "INSTALL-XORG-INFO-2"  "Installing X-Server (req. for Desktopenvironment, GPU Drivers, Keyboardlayout,...)"
-localize_info "INSTALL-XORG-SELECT"  "Select keyboard layout:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-TITLE"   "XORG"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-INFO-1"  "Xorg is the public, open-source implementation of the X window system version 11."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-INFO-2"  "Installing X-Server (req. for Desktopenvironment, GPU Drivers, Keyboardlayout,...)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-SELECT"  "Select keyboard layout:"
 # -------------------------------------
 install_xorg()
 {
@@ -796,7 +795,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_desktop_environment() 
 { 
     # 2
@@ -829,47 +828,47 @@ install_desktop_environment()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_mate
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_kde
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_xfce
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_awesome
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_cinnamon
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_e17
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_lxde
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_openbox
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_gnome
                     ;;
                 10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_unity
                     ;;
                 11)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_de_extras
                     ;;
                "d")
@@ -898,7 +897,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_mate()
 {
     # 1
@@ -913,7 +912,7 @@ install_mate()
     add_packagemanager "package_install \"$INSTALL_MATE\" 'INSTALL-MATE'" "INSTALL-MATE"
     add_packagemanager "systemctl enable accounts-daemon.service polkitd.service upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-MATE"
     # pacstrap will overwrite pacman.conf so copy it to temp 
-    # copy_file ${MOUNTPOINT}/etc/pacman.conf "${SCRIPT_DIR}"/etc/pacman.conf "$(basename $BASH_SOURCE) : $LINENO"
+    # copy_file ${MOUNTPOINT}/etc/pacman.conf "${FULL_SCRIPT_PATH}"/etc/pacman.conf "$(basename $BASH_SOURCE) : $LINENO"
     pause_function "$(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
@@ -927,7 +926,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_kde()
 {
     # 2
@@ -964,42 +963,42 @@ install_kde()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_APPER"
                     add_packagemanager "package_install \"$INSTALL_APPER\" 'INSTALL-APPER'" "INSTALL-APPER"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_BANGARANG" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_BANGARANG\" 'AUR-INSTALL-BANGARANG'" "AUR-INSTALL-BANGARANG"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_CHOQOK" #  
                     add_packagemanager "package_install \"$INSTALL_CHOQOK\" 'INSTALL-CHOQOK'" "INSTALL-CHOQOK"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_DIGIKAM" #  
                     add_packagemanager "package_install \"$INSTALL_DIGIKAM\" 'INSTALL-DIGIKAM'" "INSTALL-DIGIKAM"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_K3B" #  
                     add_packagemanager "package_install \"$INSTALL_K3B\" 'INSTALL-K3B'" "INSTALL-K3B"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ROSA_ICONS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_ICONS\" 'AUR-INSTALL-ROSA-ICONS'" "AUR-INSTALL-ROSA-ICONS"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_PLASMA_THEMES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_PLASMA_THEMES\" 'AUR-INSTALL-PLASMA-THEMES'" "AUR-INSTALL-PLASMA-THEMES"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_YAKUAKE" #  
                     add_packagemanager "package_install \"$INSTALL_YAKUAKE\" 'INSTALL-YAKUAKE'" "INSTALL-YAKUAKE"
                     add_aur_package "$AUR_INSTALL_YAKUAKE" # 
@@ -1035,15 +1034,15 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "CONFIGURE-GNOME-DESC"    "Install Gnome"
-localize_info "CONFIGURE-GNOME-NOTES"   "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-DESC"    "Install Gnome"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-NOTES"   "None."
 #
-localize_info "CONFIGURE-GNOME-TITLE" "GNOME"
-localize_info "CONFIGURE-GNOME-INFO-1" "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
-localize_info "CONFIGURE-GNOME-INFO-2" "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
-localize_info "CONFIGURE-GNOME-INFO-3" "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-TITLE" "GNOME"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-1" "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-2" "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-3" "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
 # -------------------------------------
 
 install_gnome()
@@ -1081,33 +1080,33 @@ install_gnome()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_gnomeshell_extensions
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_gnomeshell_themes
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GNOME_PACKAGEKIT" #  
                     add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     # activity-journal
                     add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL'" "AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL"
                     ;;
                 5)
                     # activity-log-manager
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER'" "AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER"
                     ;;
                 6)
                     # gloobus-sushi-bzr
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS\" 'AUR-INSTALL-GNOME-CUSTOM-GLOOBUS'" "AUR-INSTALL-GNOME-CUSTOM-GLOOBUS"
                     ;;
@@ -1144,7 +1143,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_gnomeshell_extensions()
 {
     local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -1173,47 +1172,47 @@ install_gnomeshell_extensions()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_DISPER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_DISPER\" 'AUR-INSTALL-GSHELL-DISPER'" "AUR-INSTALL-GSHELL-DISPER"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_GPASTE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GPASTE\" 'AUR-INSTALL-GSHELL-GPASTE'" "AUR-INSTALL-GSHELL-GPASTE"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_MEDIAPLAYER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_MEDIAPLAYER\" 'AUR-INSTALL-GSHELL-MEDIAPLAYER'" "AUR-INSTALL-GSHELL-MEDIAPLAYER"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_NOA11Y" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_NOA11Y\" 'AUR-INSTALL-GSHELL-NOA11Y'" "AUR-INSTALL-GSHELL-NOA11Y"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_POMODORO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_POMODORO\" 'AUR-INSTALL-GSHELL-POMODORO'" "AUR-INSTALL-GSHELL-POMODORO"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_SYSTEM_MONITOR" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_SYSTEM_MONITOR\" 'AUR-INSTALL-GSHELL-SYSTEM-MONITOR'" "AUR-INSTALL-GSHELL-SYSTEM-MONITOR"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_USER_THEME" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_USER_THEME\" 'AUR-INSTALL-GSHELL-USER-THEME'" "AUR-INSTALL-GSHELL-USER-THEME"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_WEATHER" # \"$AUR_INSTALL_GSHELL_WEATHER\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-GSHELL-WEATHER'" "AUR-INSTALL-GSHELL-WEATHER"
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_GTILE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GTILE\" 'AUR-INSTALL-GSHELL-GTILE'" "AUR-INSTALL-GSHELL-GTILE"
                     ;;
@@ -1243,7 +1242,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_gnomeshell_themes()
 {
     local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -1269,32 +1268,32 @@ install_gnomeshell_themes()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DEFAULT" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DEFAULT\" 'AUR-INSTALL-GSHELL-THEMES-DEFAULT'" "AUR-INSTALL-GSHELL-THEMES-DEFAULT"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE\" 'AUR-INSTALL-GSHELL-THEMES-DARK-SHINE'" "AUR-INSTALL-GSHELL-THEMES-DARK-SHINE"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_THEMES_ELEGANCE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_ELEGANCE\" 'AUR-INSTALL-GSHELL-THEMES-ELEGANCE'" "AUR-INSTALL-GSHELL-THEMES-ELEGANCE"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_THEMES_EOS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_EOS\" 'AUR-INSTALL-GSHELL-THEMES-EOS'" "AUR-INSTALL-GSHELL-THEMES-EOS"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_THEMES_FRIEZE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_FRIEZE\" 'AUR-INSTALL-GSHELL-THEMES-FRIEZE'" "AUR-INSTALL-GSHELL-THEMES-FRIEZE"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GSHELL_THEMES_GOOGLE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_GOOGLE\" 'AUR-INSTALL-GSHELL-THEMES-GOOGLE'" "AUR-INSTALL-GSHELL-THEMES-GOOGLE"
                     ;;
@@ -1324,7 +1323,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_awesome()
 {
     # 4
@@ -1365,52 +1364,52 @@ install_awesome()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XCOMPMGR" #  
                     add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIEWNIOR" #  
                     add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GMRUN" #  
                     add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_PCMANFM" #  
                     add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_RXVT_UNICODE" #  
                     add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCROT" #  
                     add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_THUNAR" #  
                     add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_TINT2" #  
                     add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VOLWHEEL" #  
                     add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL"
                     ;;
                10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XFBURN" #  
                     add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
                     ;;
@@ -1443,7 +1442,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_cinnamon()
 {
     # 5
@@ -1482,29 +1481,29 @@ install_cinnamon()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_CINNAMON_APPLETS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_APPLETS\" 'AUR-INSTALL-CINNAMON-APPLETS'" "AUR-INSTALL-CINNAMON-APPLETS"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_CINNAMON_THEMES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_THEMES\" 'AUR-INSTALL-CINNAMON-THEMES'" "AUR-INSTALL-CINNAMON-THEMES"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GNOME_PACKAGEKIT" #  
                     add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_ZEITGEIST" #  
                     add_packagemanager "package_install \"$INSTALL_ZEITGEIST\" 'INSTALL-ZEITGEIST'" "INSTALL-ZEITGEIST"
                     add_aur_package "$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL\" 'AUR-INSTALL-GNOME-ACTIVITY-JOURNAL'" "AUR-INSTALL-GNOME-ACTIVITY-JOURNAL"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GLOOBUS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GLOOBUS\" 'AUR-INSTALL-GLOOBUS'" "AUR-INSTALL-GLOOBUS"
                     ;;
@@ -1540,7 +1539,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_e17()
 {
     # 6
@@ -1580,47 +1579,47 @@ install_e17()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_E17_ICONS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_ICONS\" 'AUR-INSTALL-E17-ICONS'" "AUR-INSTALL-E17-ICONS"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_E17_THEMES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_THEMES\" 'AUR-INSTALL-E17-THEMES'" "AUR-INSTALL-E17-THEMES"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIEWNIOR" #  
                     add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GMRUN" #  
                     add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_PCMANFM" #  
                     add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_RXVT_UNICODE" #  
                     add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCROT" #  
                     add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_THUNAR" #  
                     add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XFBURN" #  
                     add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
                     ;;
@@ -1653,7 +1652,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_lxde()
 {
     # 7
@@ -1683,12 +1682,12 @@ install_lxde()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIEWNIOR" #  
                     add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR '" "INSTALL-VIEWNIOR"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XFBURN" #  
                     add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
                     ;;
@@ -1721,7 +1720,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_openbox() 
 { 
     # 8
@@ -1762,52 +1761,52 @@ install_openbox()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XCOMPMGR" #  
                     add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIEWNIOR" #  
                     add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GMRUN" #  
                     add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_PCMANFM" #  
                     add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_RXVT_UNICODE" #  
                     add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCROT" #  
                     add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_THUNAR" #  
                     add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_TINT2" #  
                     add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VOLWHEEL" #  
                     add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL"
                     ;;
                10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XFBURN" #  
                     add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
                     ;;
@@ -1840,7 +1839,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_xfce() 
 { 
     # 3
@@ -1871,7 +1870,7 @@ install_xfce()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_XFCE_CUSTOM" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_XFCE_CUSTOM\" 'AUR-INSTALL-XFCE-CUSTOM'" "AUR-INSTALL-XFCE-CUSTOM"
                     ;;
@@ -1899,24 +1898,28 @@ install_xfce()
 # INSTALL UNITY {{{
 NAME="install_unity"
 USAGE="install_unity"
-DESCRIPTION="Install Unity"
+DESCRIPTION=$(localize "INSTALL-UNITY-DESC")
 NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-localize_info "Are you sure you wish to continue" "Are you sure you wish to continue" 
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-UNITY-DESC"  "Install Unity"
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-UNITY-CONTINUE" "Are you sure you wish to continue" 
 install_unity() 
 { 
     # 10
     UNITY_INSTALLED=1
     print_warning "\nWARNING: EXPERIMENTAL OPTION, USE AT YOUR OWN RISK\nDo not install this if already have a DE or WM installed."
-    read_input_yn "Are you sure you wish to continue" " " 1
-    [[ $YN_OPTION -eq 1 ]] && continue
+    read_input_yn "INSTALL-UNITY-CONTINUE" " " 1
+    [[ $YN_OPTION -eq 0 ]] && return 0
     print_title "UNITY - https://wiki.archlinux.org/index.php/Unity"
     print_info "Unity is an alternative shell for the GNOME desktop environment, developed by Canonical in its Ayatana project. It consists of several components including the Launcher, Dash, lenses, Panel, indicators, Notify OSD and Overlay Scrollbar."
-    echo -e '\n[unity]\nServer = http://unity.xe-xe.org/$arch' >> $MOUNTPOINT/etc/pacman.conf
+    
+    echo -e '\n[unity]\nServer = http://unity.xe-xe.org/$arch'             >> $MOUNTPOINT/etc/pacman.conf
     echo -e '\n[unity-extra]\nServer = http://unity.xe-xe.org/extra/$arch' >> $MOUNTPOINT/etc/pacman.conf
     add_package "$INSTALL_UNITY" #  
     add_packagemanager "package_install \"$INSTALL_UNITY\" 'INSTALL-UNITY'" "INSTALL-UNITY"
@@ -1929,7 +1932,7 @@ install_unity()
     # Network Management daemon
     add_packagemanager "systemctl enable lightdm.service accounts-daemon.service polkitd.service upower.service console-kit-daemon.service NetworkManager.service" "SYSTEMD-ENABLE-UNITY"
     # pacstrap will overwrite pacman.conf so copy it to temp 
-    copy_file $MOUNTPOINT"/etc/pacman.conf" "$SCRIPT_DIR/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file $MOUNTPOINT"/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1942,7 +1945,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_display_manager() 
 {
     # 3
@@ -1971,7 +1974,7 @@ install_display_manager()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # GDM
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GDM" #  
                     add_packagemanager "package_install \"$INSTALL_GDM\" 'INSTALL-GDM'" "INSTALL-GDM"
                     # dbus-launch
@@ -1993,7 +1996,7 @@ install_display_manager()
                     break
                     ;;
                 2)  # KDM
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_KDM" #  
                     add_packagemanager "package_install \"$INSTALL_KDM\" 'INSTALL-KDM'" "INSTALL-KDM"
                     add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
@@ -2008,7 +2011,7 @@ install_display_manager()
                     break
                     ;;
                 4)  # LightDM
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_LIGHTDM" #  
                     add_packagemanager "package_install \"$INSTALL_LIGHTDM\" 'INSTALL-LIGHTDM'" "INSTALL-LIGHTDM"
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
@@ -2022,7 +2025,7 @@ install_display_manager()
                     break
                     ;;
                 5)  # LXDM
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_LXDM" #  
                     add_packagemanager "package_install \"$INSTALL_LXDM\" 'INSTALL-LXDM'" "INSTALL-LXDM"
                     add_packagemanager "systemctl enable lxdm.service" "SYSTEMD-ENABLE-LXDM"
@@ -2031,21 +2034,21 @@ install_display_manager()
                     break
                     ;;
                 6)  # Slim
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SLIM" #  
                     add_packagemanager "package_install \"$INSTALL_SLIM\" 'INSTALL-SLIM'" "INSTALL-SLIM"
                     add_packagemanager "systemctl enable slim.service" "SYSTEMD-ENABLE-SLIM"
                     break
                     ;;
                 7)  # Qingy
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_QINGY" #  
                     add_packagemanager "package_install \"$INSTALL_QINGY\" 'INSTALL-QINGY'" "INSTALL-QINGY"
                     add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-QINGY"
                     break
                     ;;
                 8)  # XDM
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XDM" #  
                     add_packagemanager "package_install \"$INSTALL_XDM\" 'INSTALL-XDM'" "INSTALL-XDM"
                     add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-XDM"
@@ -2077,7 +2080,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_extra()
 {
     # 13
@@ -2103,11 +2106,11 @@ install_extra()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_extras
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_YAPAN" #  
                     add_packagemanager "package_install \"$INSTALL_YAPAN\" 'INSTALL-YAPAN'" "INSTALL-YAPAN"
                     add_aur_package "$AUR_INSTALL_YAPAN" # 
@@ -2140,7 +2143,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_extras()
 {
     local -i total_menu_items=21    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -2182,108 +2185,108 @@ install_extras()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_AUDIENCE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_AUDIENCE\" 'AUR-INSTALL-EP-AUDIENCE'" "AUR-INSTALL-EP-AUDIENCE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_CONTRACTOR" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_CONTRACTOR\" 'AUR-INSTALL-EP-CONTRACTOR'" "AUR-INSTALL-EP-CONTRACTOR"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_EIDETE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EIDETE\" 'AUR-INSTALL-EP-EIDETE'" "AUR-INSTALL-EP-EIDETE"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_DEXTER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_DEXTER\" 'AUR-INSTALL-EP-DEXTER'" "AUR-INSTALL-EP-DEXTER"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_FEEDLER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FEEDLER\" 'AUR-INSTALL-EP-FEEDLER'" "AUR-INSTALL-EP-FEEDLER"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_FILES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FILES\" 'AUR-INSTALL-EP-FILES'" "AUR-INSTALL-EP-FILES"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_FOOTNOTE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FOOTNOTE\" 'AUR-INSTALL-EP-FOOTNOTE'" "AUR-INSTALL-EP-FOOTNOTE"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_GALA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GALA\" 'AUR-INSTALL-EP-GALA'" "AUR-INSTALL-EP-GALA"
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_GEARY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GEARY\" 'AUR-INSTALL-EP-GEARY'" "AUR-INSTALL-EP-GEARY"
                     ;;
                10)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_LINGO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_LINGO\" 'AUR-INSTALL-EP-LINGO'" "AUR-INSTALL-EP-LINGO"
                     ;;
                11)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_MAYA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MAYA\" 'AUR-INSTALL-EP-MAYA'" "AUR-INSTALL-EP-MAYA"
                     ;;
                12)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_MIDORI" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MIDORI\" 'AUR-INSTALL-EP-MIDORI'" "AUR-INSTALL-EP-MIDORI"
                     ;;
                13)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_NOISE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_NOISE\" 'AUR-INSTALL-EP-NOISE'" "AUR-INSTALL-EP-NOISE"
                     ;;
                14)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_SCRATCH" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SCRATCH\" 'AUR-INSTALL-EP-SCRATCH'" "AUR-INSTALL-EP-SCRATCH"
                     ;;
                15)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_PLANK" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PLANK\" 'AUR-INSTALL-EP-PLANK'" "AUR-INSTALL-EP-PLANK"
                     ;;
                16)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_PANTHEON" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PANTHEON\" 'AUR-INSTALL-EP-PANTHEON'" "AUR-INSTALL-EP-PANTHEON"
                     ;;
                17)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_SLINGSHOT" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SLINGSHOT\" 'AUR-INSTALL-EP-SLINGSHOT'" "AUR-INSTALL-EP-SLINGSHOT"
                     ;;
                18)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_SWITCHBOARD" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SWITCHBOARD\" 'AUR-INSTALL-EP-SWITCHBOARD" "AUR-INSTALL-EP-SWITCHBOARD"
                     ;;
                19)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_WINGPANEL" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_WINGPANEL\" 'AUR-INSTALL-EP-WINGPANEL'" "AUR-INSTALL-EP-WINGPANEL"
                     ;;
                20)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_ICONS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_ICONS\" 'AUR-INSTALL-EP-ICONS'" "AUR-INSTALL-EP-ICONS"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK_UPDATE"
                     ;;
                21)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EP_EGTK" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EGTK\" 'AUR-INSTALL-EP-EGTK'" "AUR-INSTALL-EP-EGTK"
                     ;;
@@ -2313,7 +2316,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_audio_apps()
 {
     # 8
@@ -2337,16 +2340,16 @@ install_audio_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_players
                     #}}}
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_audio_editors
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_AUDIO_CODECS" #  
                     add_packagemanager "package_install \"$INSTALL_AUDIO_CODECS\" 'INSTALL-AUDIO-CODECS'" "INSTALL-AUDIO-CODECS"
                     ;;
@@ -2376,7 +2379,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_audio_editors()
 {
     local -i total_menu_items=4    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -2399,7 +2402,7 @@ install_audio_editors()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
                            add_package "$INSTALL_SOUNDCONVERTER" #  
@@ -2413,17 +2416,17 @@ install_audio_editors()
                      fi
                      ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_PUDDLETAG" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_PUDDLETAG\" 'AUR-INSTALL-PUDDLETAG'" "AUR-INSTALL-PUDDLETAG"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_AUDACITY" #  
                     add_packagemanager "package_install \"$INSTALL_AUDACITY\" 'INSTALL-AUDACITY'" "INSTALL-AUDACITY"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_OCENAUDIO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_OCENAUDIO\" 'AUR-INSTALL-OCENAUDIO'" "AUR-INSTALL-OCENAUDIO"
                     ;;
@@ -2453,7 +2456,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_players()
 {
     local -i total_menu_items=13    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -2487,67 +2490,67 @@ install_players()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_AMAROK" #  
                     add_packagemanager "package_install \"$INSTALL_AMAROK\" 'INSTALL-AMAROK'" "INSTALL-AMAROK"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_AUDACIOUS" #  
                     add_packagemanager "package_install \"$INSTALL_AUDACIOUS\" 'INSTALL-AUDACIOUS'" "INSTALL-AUDACIOUS"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_BANSHEE" #  
                     add_packagemanager "package_install \"$INSTALL_BANSHEE\" 'INSTALL-BANSHEE'" "INSTALL-BANSHEE"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_CLEMENTINE" #  
                     add_packagemanager "package_install \"$INSTALL_CLEMENTINE\" 'INSTALL-CLEMENTINE'" "INSTALL-CLEMENTINE"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_DEADBEEF" #  
                     add_packagemanager "package_install \"$INSTALL_DEADBEEF\" 'INSTALL-DEADBEEF'" "INSTALL-DEADBEEF"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EXAILE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EXAILE\" 'AUR-INSTALL-EXAILE'" "AUR-INSTALL-EXAILE"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MUSIQUE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MUSIQUE\" 'AUR-INSTALL-MUSIQUE'" "AUR-INSTALL-MUSIQUE"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_NUVOLAPLAYER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_NUVOLAPLAYER\" 'AUR-INSTALL-NUVOLAPLAYER" "AUR-INSTALL-NUVOLAPLAYER"
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_RHYTHMBOX" #  
                     add_packagemanager "package_install \"$INSTALL_RHYTHMBOX\" 'INSTALL-RHYTHMBOX'" "INSTALL-RHYTHMBOX"
                    ;;
                10)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_RADIOTRAY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_RADIOTRAY\" 'AUR-INSTALL-RADIOTRAY'" "AUR-INSTALL-RADIOTRAY"
                     ;;
                11)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SPOTIFY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SPOTIFY\" 'AUR-INSTALL-SPOTIFY'" "AUR-INSTALL-SPOTIFY"
                     ;;
                12)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_TOMAHAWK" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_TOMAHAWK\" 'AUR-INSTALL-TOMAHAWK'" "AUR-INSTALL-TOMAHAWK"
                     ;;
                13)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_TIMIDITY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_TIMIDITY\" 'AUR-INSTALL-TIMIDITY'" "AUR-INSTALL-TIMIDITY"
                     add_packagemanager"echo -e 'soundfont /usr/share/soundfonts/fluidr3/FluidR3GM.SF2' >> /etc/timidity++/timidity.cfg" "RUN-TIMIDITY"
@@ -2578,7 +2581,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_office_apps()
 {
     # 4
@@ -2609,7 +2612,7 @@ install_office_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     print_title "LIBREOFFICE - https://wiki.archlinux.org/index.php/LibreOffice"
                     print_title "Libre Office - https://wiki.archlinux.org/index.php/LibreOffice"
                     add_package "$INSTALL_LIBRE_OFFICE" # 
@@ -2627,7 +2630,7 @@ install_office_apps()
                     fi
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
                             add_package "$INSTALL_GNUMERIC" #  
@@ -2645,7 +2648,7 @@ install_office_apps()
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_LANGUAGE\" \"AUR-INSTALL-ASPELL-LANGUAGE\"" "AUR-INSTALL-ASPELL-LANGUAGE"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     print_title "LATEX - https://wiki.archlinux.org/index.php/LaTeX"
                     add_package "$INSTALL_LATEX" #  
                     add_packagemanager "package_install \"$INSTALL_LATEX\" 'INSTALL-LATEX'" "INSTALL-LATEX"
@@ -2657,44 +2660,44 @@ install_office_apps()
                     fi
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_CALIBRE" #  
                     add_packagemanager "package_install \"$INSTALL_CALIBRE\" 'INSTALL-CALIBRE'" "INSTALL-CALIBRE"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GCSTAR" #  
                     add_packagemanager "package_install \"$INSTALL_GCSTAR\" 'INSTALL-GCSTAR'" "INSTALL-GCSTAR"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_HOMEBANK" #  
                     add_packagemanager "package_install \"$INSTALL_HOMEBANK\" 'INSTALL-HOMEBANK'" "INSTALL-HOMEBANK"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_IMPRESSIVE" #  
                     add_packagemanager "package_install \"$INSTALL_IMPRESSIVE\" 'INSTALL-IMPRESSIVE'" "INSTALL-IMPRESSIVE"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_NITROTASKS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROTASKS\" 'AUR-INSTALL-NITROTASKS'" "AUR-INSTALL-NITROTASKS"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_OCRFEEDER" #  
                     add_packagemanager "package_install \"$INSTALL_OCRFEEDER\" 'INSTALL-OCRFEEDER'" "INSTALL-OCRFEEDER"
                     add_aur_package "$AUR_INSTALL_ASPELL_$LANGUAGE_AS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_$LANGUAGE_AS\" \"AUR-INSTALL-ASPELL-$LANGUAGE_AS\"" "AUR-INSTALL-ASPELL-$LANGUAGE_AS"
                     ;;
                 10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_XMIND" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_XMIND\" 'AUR-INSTALL-XMIND'" "AUR-INSTALL-XMIND"
                     ;;
                 11)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_ZATHURA" #  
                     add_packagemanager "package_install \"$INSTALL_ZATHURA\" 'INSTALL-ZATHURA'" "INSTALL-ZATHURA"
                     ;;
@@ -2724,7 +2727,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_system_apps()
 {
     # 5
@@ -2751,22 +2754,22 @@ install_system_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GPARTED" #  
                     add_packagemanager "package_install \"$INSTALL_GPARTED\" 'INSTALL-GPARTED'" "INSTALL-GPARTED"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GRSYNC" #  
                     add_packagemanager "package_install \"$INSTALL_GRSYNC\" 'INSTALL-GRSYNC'" "INSTALL-GRSYNC"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_HTOP" #  
                     add_packagemanager "package_install \"$INSTALL_HTOP\" 'INSTALL-HTOP'" "INSTALL-HTOP"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIRTUALBOX" #  
                     add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX"
                     add_aur_package "$AUR_INSTALL_VIRTUALBOX_EXT_ORACLE" # 
@@ -2776,13 +2779,13 @@ install_system_apps()
                     add_packagemanager "add_user_2_group 'vboxusers'" "GROUPADD-VBOXUSERS"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_WEBMIN" #  
                     add_packagemanager "package_install \"$INSTALL_WEBMIN\" 'INSTALL-WEBMIN'" "INSTALL-WEBMIN"
                     add_packagemanager "systemctl enable webmin.service" "SYSTEMD-ENABLE-WEBMIN"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_WINE" #  
                     add_packagemanager "package_install \"$INSTALL_WINE\" 'INSTALL-WINE'" "INSTALL-WINE"
                     if [[ "$ARCHI" == "x86_64" ]]; then
@@ -2829,7 +2832,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_de_extras()
 {
     # 11
@@ -2852,11 +2855,11 @@ install_de_extras()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_icons
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_gtk_themes
                     ;;
               "d")
@@ -2885,7 +2888,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_gtk_themes() 
 { 
     # 11 sub 2
@@ -2916,52 +2919,52 @@ install_gtk_themes()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_ADWAITA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ADWAITA\" 'AUR-INSTALL-GTK-THEMES-ADWAITA'" "AUR-INSTALL-GTK-THEMES-ADWAITA"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_BOOMERANG" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BOOMERANG\" 'AUR-INSTALL-GTK-THEMES-BOOMERANG'" "AUR-INSTALL-GTK-THEMES-BOOMERANG"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_BLACKBIRD" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLACKBIRD\" 'AUR-INSTALL-GTK-THEMES-BLACKBIRD'" "AUR-INSTALL-GTK-THEMES-BLACKBIRD"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_BLUEBIRD" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLUEBIRD\" 'AUR-INSTALL-GTK-THEMES-BLUEBIRD'" "AUR-INSTALL-GTK-THEMES-BLUEBIRD"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_EGTK" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_EGTK\" 'AUR-INSTALL-GTK-THEMES-EGTK'" "AUR-INSTALL-GTK-THEMES-EGTK"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD\" 'AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD'" "AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES\" 'AUR-INSTALL-GTK-THEMES-LIGHT-THEMES'" "AUR-INSTALL-GTK-THEMES-LIGHT-THEMES"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_ORION" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ORION\" 'AUR-INSTALL-GTK-THEMES-ORION'" "AUR-INSTALL-GTK-THEMES-ORION"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKINI" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKINI\" 'AUR-INSTALL-GTK-THEMES-ZUKINI'" "AUR-INSTALL-GTK-THEMES-ZUKINI"
                     ;;
                10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKITWO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKITWO\" 'AUR-INSTALL-GTK-THEMES-ZUKITWO'" "AUR-INSTALL-GTK-THEMES-ZUKITWO"
                     ;;
@@ -2991,8 +2994,8 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-localize_info "Install also the elementary XFCE icons" "Install also the elementary XFCE icons" 
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install also the elementary XFCE icons" "Install also the elementary XFCE icons" 
 install_icons() 
 { 
     # 11 sub 1
@@ -3021,14 +3024,14 @@ install_icons()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_ICONS_AWOKEN" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_AWOKEN\" 'AUR-INSTALL-GNOME-ICONS-AWOKEN'" "AUR-INSTALL-GNOME-ICONS-AWOKEN"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken" "RUN-GTK-ICONS-1"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken-Dark" "RUN-GTK-ICONS-2"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_ICONS_FAENZA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FAENZA\" 'AUR-INSTALL-GNOME-ICONS-FAENZA'" "AUR-INSTALL-GNOME-ICONS-FAENZA"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza" "RUN-GTK-ICONS-3"
@@ -3037,7 +3040,7 @@ install_icons()
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darkest" "RUN-GTK-ICONS-6"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_ICONS_FEANZA_CUPERTINO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FEANZA_CUPERTINO\" 'AUR-INSTALL-GNOME-ICONS-FEANZA-CUPERTINO'" "AUR-INSTALL-GNOME-ICONS-FEANZA-CUPERTINO"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino" "RUN-GTK-ICONS-7"
@@ -3046,7 +3049,7 @@ install_icons()
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darkest" "RUN-GTK-ICONS-10"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_ICONS_FAIENCE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FAIENCE\" 'AUR-INSTALL-GNOME-ICONS-FAIENCE'" "AUR-INSTALL-GNOME-ICONS-FAIENCE"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience" "RUN-GTK-ICONS-11"
@@ -3055,7 +3058,7 @@ install_icons()
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Ocre" "RUN-GTK-ICONS-14"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_ICONS_ELEMENTARY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_ELEMENTARY\" 'AUR-INSTALL-GNOME-ICONS-ELEMENTARY'" "AUR-INSTALL-GNOME-ICONS-ELEMENTARY"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK-ICONS-15"
@@ -3068,7 +3071,7 @@ install_icons()
                     fi
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_ICONS_NITRUX" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_NITRUX\" 'AUR-INSTALL-GNOME-ICONS-NITRUX'" "AUR-INSTALL-GNOME-ICONS-NITRUX"
                     add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX" "RUN-GTK-ICONS-18"
@@ -3105,7 +3108,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_games()
 {
     # 10
@@ -3140,61 +3143,61 @@ install_games()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_action_games
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_arade_games
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_dungon_games
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_emulator_games
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_fps_games
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_mmo_games
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_puzzle_games
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_rpg_games
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_racing_games
                     ;;
                 10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_simulation_games
                     ;;
                 11)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_strategy_games
                     ;;
                 12)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GNOME_GAMES" #  
                     add_packagemanager "package_install \"$INSTALL_GNOME_GAMES\" 'INSTALL-GNOME-GAMES'" "INSTALL-GNOME-GAMES"
                     ;;
                 13)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_KDE_GAMES" #  
                     add_packagemanager "package_install \"$INSTALL_KDE_GAMES\" 'INSTALL-KDE-GAMES'" "INSTALL-KDE-GAMES"
                     ;;
                 14)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_MISC_GAMES" #  
                     add_packagemanager "package_install \"$INSTALL_MISC_GAMES\" 'INSTALL-MISC-GAMES'" "INSTALL-MISC-GAMES"
                     ;;
@@ -3224,7 +3227,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_action_games()
 {
     local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3253,47 +3256,47 @@ install_action_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_ASTROMENANCE" #  
                     add_packagemanager "package_install \"$INSTALL_ASTROMENANCE\" 'INSTALL-ASTROMENANCE'" "INSTALL-ASTROMENANCE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_COUNTER_STRIKE_2D" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_COUNTER_STRIKE_2D\" 'AUR-INSTALL-COUNTER-STRIKE-2D'" "AUR-INSTALL-COUNTER-STRIKE-2D"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_DEAD_CYBORG_EP_1" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DEAD_CYBORG_EP_1\" 'AUR-INSTALL-DEAD-CYBORG-EP-1'" "AUR-INSTALL-DEAD-CYBORG-EP-1"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MARS_SHOOTER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MARS_SHOOTER\" 'AUR-INSTALL-MARS-SHOOTER'" "AUR-INSTALL-MARS-SHOOTER"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_NIKKI" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_NIKKI\" 'AUR-INSTALL-NIKKI'" "AUR-INSTALL-NIKKI"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_OPENTYRIAN" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENTYRIAN\" 'AUR-INSTALL-OPENTYRIAN'" "AUR-INSTALL-OPENTYRIAN"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SRB2" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SRB2\" 'AUR-INSTALL-SRB2" "AUR-INSTALL-SRB2"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_STEELSTORM" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_STEELSTORM\" 'AUR-INSTALL-STEELSTORM'" "AUR-INSTALL-STEELSTORM"
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_YOFRANKIE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_YOFRANKIE\" 'AUR-INSTALL-YOFRANKIE'" "AUR-INSTALL-YOFRANKIE"
                     ;;
@@ -3323,7 +3326,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_arade_games()
 {
     local -r menu_name="INSTALL-ARCADE-PLATFORMER-GAMES"  # You must define Menu Name here
@@ -3354,62 +3357,62 @@ install_arade_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_ABUSE" #  
                     add_packagemanager "package_install \"$INSTALL_ABUSE\" 'INSTALL-ABUSE'" "INSTALL-ABUSE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_BTANKS" #  
                     add_packagemanager "package_install \"$INSTALL_BTANKS\" 'INSTALL-BTANKS'" "INSTALL-BTANKS"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_BOMBERCLONE" #  
                     add_packagemanager "package_install \"$INSTALL_BOMBERCLONE\" 'INSTALL-BOMBERCLONE'" "INSTALL-BOMBERCLONE"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_FUNGULOIDS" # \"$AUR_INSTALL_FUNGULOIDS\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-FUNGULOIDS'" "AUR-INSTALL-FUNGULOIDS"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_FROGATTO" #  
                     add_packagemanager "package_install \"$INSTALL_FROGATTO\" 'INSTALL-FROGATTO'" "INSTALL-FROGATTO"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GOONIES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GOONIES\" 'AUR-INSTALL-GOONIES'" "AUR-INSTALL-GOONIES"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MARI0" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MARI0\" 'AUR-INSTALL-MARI0'" "AUR-INSTALL-MARI0"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_NEVERBALL" #  
                     add_packagemanager "package_install \"$INSTALL_NEVERBALL\" 'INSTALL-NEVERBALL'" "INSTALL-NEVERBALL"
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_OPENSONIC" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENSONIC\" 'AUR-INSTALL-OPENSONIC'" "AUR-INSTALL-OPENSONIC"
                     ;;
                10)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ROBOMBS_BIN" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ROBOMBS_BIN\" 'AUR-INSTALL-ROBOMBS-BIN'" "AUR-INSTALL-ROBOMBS-BIN"
                     ;;
                11)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_SMC" #  
                     add_packagemanager "package_install \"$INSTALL_SMC\" 'INSTALL-SMC'" "INSTALL-SMC"
                     ;;
                12)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_XMOTO" #  
                     add_packagemanager "package_install \"$INSTALL_XMOTO\" 'INSTALL-XMOTO'" "INSTALL-XMOTO"
                     ;;
@@ -3439,7 +3442,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_dungon_games()
 {
     local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3464,27 +3467,27 @@ install_dungon_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ADOM" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ADOM\" 'AUR-INSTALL-ADOM'" "AUR-INSTALL-ADOM"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_TOME4" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_TOME4\" 'AUR-INSTALL-TOME4'" "AUR-INSTALL-TOME4"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_LOST_LABYRINTH" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_LOST_LABYRINTH\" 'AUR-INSTALL-LOST-LABYRINTH'" "AUR-INSTALL-LOST-LABYRINTH"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SCOURGE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SCOURGE\" 'AUR-INSTALL-SCOURGE'" "AUR-INSTALL-SCOURGE"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_STONE_SOUP" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_STONE_SOUP\" 'AUR-INSTALL-STONE-SOUP'" "AUR-INSTALL-STONE-SOUP"
                     ;;
@@ -3514,7 +3517,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_emulator_games()
 {
     local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3542,42 +3545,42 @@ install_emulator_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_BSMES" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_BSMES\" 'AUR-INSTALL-BSMES'" "AUR-INSTALL-BSMES"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_DESMUME" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DESMUME\" 'AUR-INSTALL-DESMUME'" "AUR-INSTALL-DESMUME"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_DOLPHIN" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DOLPHIN\" 'AUR-INSTALL-DOLPHIN'" "AUR-INSTALL-DOLPHIN"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_EPSXE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EPSXE\" 'AUR-INSTALL-EPSXE'" "AUR-INSTALL-EPSXE"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_PROJECT_64" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_PROJECT_64\" 'AUR-INSTALL-PROJECT-64'" "AUR-INSTALL-PROJECT-64"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_VBA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_VBA\" 'AUR-INSTALL-VBA'" "AUR-INSTALL-VBA"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_WXMUPEN64PLUS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_WXMUPEN64PLUS\" 'AUR-INSTALL-WXMUPEN64PLUS'" "AUR-INSTALL-WXMUPEN64PLUS"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_ZSNES" #  
                     add_packagemanager "package_install \"$INSTALL_ZSNES\" 'INSTALL-ZSNES'" "INSTALL-ZSNES"
                     ;;
@@ -3607,7 +3610,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_fps_games()
 {
     local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3632,27 +3635,27 @@ install_fps_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_ALIENARENA" #  
                     add_packagemanager "package_install \"$INSTALL_ALIENARENA\" 'INSTALL-ALIENARENA'" "INSTALL-ALIENARENA"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_WARSOW" #  
                     add_packagemanager "package_install \"$INSTALL_WARSOW\" 'INSTALL-WARSOW'" "INSTALL-WARSOW"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ENEMY_TERRITORY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ENEMY_TERRITORY\" 'AUR-INSTALL-ENEMY-TERRITORY'" "AUR-INSTALL-ENEMY-TERRITORY"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_WORLD_OF_PADMAN" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLD_OF_PADMAN\" 'AUR-INSTALL-WORLD-OF-PADMAN'" "AUR-INSTALL-WORLD-OF-PADMAN"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_XONOTIC" #  
                     add_packagemanager "package_install \"$INSTALL_XONOTIC\" 'INSTALL-XONOTIC'" "INSTALL-XONOTIC"
                     ;;
@@ -3683,7 +3686,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_mmo_games()
 {
     local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3709,32 +3712,32 @@ install_mmo_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_HON" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_HON\" 'AUR-INSTALL-HON'" "AUR-INSTALL-HON"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MANAPLUS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MANAPLUS\" 'AUR-INSTALL-MANAPLUS'" "AUR-INSTALL-MANAPLUS"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_RUNESCAPE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_RUNESCAPE\" 'AUR-INSTALL-RUNESCAPE'" "AUR-INSTALL-RUNESCAPE"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SAVAGE_2" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SAVAGE_2\" 'AUR-INSTALL-SAVAGE-2'" "AUR-INSTALL-SAVAGE-2"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SPIRAL_KNIGHTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_\" 'AUR-INSTALL-SPIRAL-KNIGHTS'" "AUR-INSTALL-SPIRAL-KNIGHTS"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_WAKFU" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_WAKFU\" 'AUR-INSTALL-WAKFU'" "AUR-INSTALL-WAKFU"
                     ;;
@@ -3764,7 +3767,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_puzzle_games()
 {
     local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3786,12 +3789,12 @@ install_puzzle_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_FROZEN_BUBBLE" #  
                     add_packagemanager "package_install \"$INSTALL_FROZEN_BUBBLE\" 'INSTALL-FROZEN-BUBBLE'" "INSTALL-FROZEN-BUBBLE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_NUMPTYPHYSICS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_NUMPTYPHYSICS\" 'AUR-INSTALL-NUMPTYPHYSICS'" "AUR-INSTALL-NUMPTYPHYSICS"
                     ;;
@@ -3821,7 +3824,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_rpg_games()
 {
     local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3844,17 +3847,17 @@ install_rpg_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ARDENTRYST" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ARDENTRYST\" 'AUR-INSTALL-ARDENTRYST'" "AUR-INSTALL-ARDENTRYST"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_FLARE_RPG" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_FLARE_RPG\" 'AUR-INSTALL-FLARE-RPG'" "AUR-INSTALL-FLARE-RPG"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_FREEDROUDRPG" #  
                     add_packagemanager "package_install \"$INSTALL_FREEDROUDRPG\" 'INSTALL-FREEDROUDRPG'" "INSTALL-FREEDROUDRPG"
                     ;;
@@ -3884,7 +3887,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_racing_games()
 {
     local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3909,27 +3912,27 @@ install_racing_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MANIADRIVE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MANIADRIVE\" 'AUR-INSTALL-MANIADRIVE'" "AUR-INSTALL-MANIADRIVE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_DEATH_RALLY" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DEATH_RALLY\" 'AUR-INSTALL-DEATH-RALLY'" "AUR-INSTALL-DEATH-RALLY"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_STUNTRALLY" # \"$AUR_INSTALL_STUNTRALLY\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-STUNTRALLY'" "AUR-INSTALL-STUNTRALLY"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_SUPTERTUXKART" #  
                     add_packagemanager "package_install \"$INSTALL_SUPTERTUXKART\" 'INSTALL-SUPTERTUXKART'" "INSTALL-SUPTERTUXKART"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_SPEED_DREAMS" #  
                     add_packagemanager "package_install \"$INSTALL_SPEED_DREAMS\" 'INSTALL-SPEED-DREAMS'" "INSTALL-SPEED-DREAMS"
                     ;;
@@ -3959,7 +3962,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_simulation_games()
 {
     local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -3982,17 +3985,17 @@ install_simulation_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_SIMUTRANS" #  
                     add_packagemanager "package_install \"$INSTALL_SIMUTRANS\" 'INSTALL-SIMUTRANS'" "INSTALL-SIMUTRANS"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_CORSIX_TH" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_CORSIX_TH\" 'AUR-INSTALL-CORSIX-TH'" "AUR-INSTALL-CORSIX-TH"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_OPENTTD" #  
                     add_packagemanager "package_install \"$INSTALL_OPENTTD\" 'INSTALL-OPENTTD'" "INSTALL-OPENTTD"
                     ;;
@@ -4022,7 +4025,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_strategy_games()
 {
     local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -4049,37 +4052,37 @@ install_strategy_games()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_0AD" #  
                     add_packagemanager "package_install \"$INSTALL_0AD\" 'INSTALL-0AD'" "INSTALL-0AD"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_HEDGEWARS" #  
                     add_packagemanager "package_install \"$INSTALL_HEDGEWARS\" 'INSTALL-HEDGEWARS'" "INSTALL-HEDGEWARS"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_MEGAGLEST" #  
                     add_packagemanager "package_install \"$INSTALL_MEGAGLEST\" 'INSTALL-MEGAGLEST'" "INSTALL-MEGAGLEST"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_UNKNOW_HORIZONS" #  
                     add_packagemanager "package_install \"$INSTALL_UNKNOW_HORIZONS\" 'INSTALL-UNKNOW-HORIZONS'" "INSTALL-UNKNOW-HORIZONS"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_WARZONE2100" #  
                     add_packagemanager "package_install \"$INSTALL_WARZONE2100\" 'INSTALL-WARZONE2100'" "INSTALL-WARZONE2100"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_WESNOTH" # 
                     add_packagemanager "package_install \"$INSTALL_WESNOTH\"  'INSTALL-WESNOTH'" "INSTALL-WESNOTH"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_COMMANDER_ZOD" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_COMMANDER_ZOD\" 'AUR-INSTALL-COMMANDER-ZOD'" "AUR-INSTALL-COMMANDER-ZOD"
                     ;;
@@ -4109,7 +4112,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 create_sites_folder()
 {
     # copy_file "from" "to" "$(basename $BASH_SOURCE) : $LINENO"
@@ -4134,7 +4137,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_web_server()
 {
     # 11
@@ -4181,7 +4184,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_fonts()
 {
     # 12
@@ -4210,43 +4213,43 @@ install_fonts()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_TTF_DEJAVU" #  
                     add_packagemanager "package_install \"$INSTALL_TTF_DEJAVU\" 'INSTALL-TTF-DEJAVU'" "INSTALL-TTF-DEJAVU"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_packagemanager "package_remove 'ttf-droid ttf-roboto ttf-ubuntu-font-family'" "REMOVE-GOOGLE-WEBFONTS"
                     add_aur_package "$AUR_INSTALL_GOOGLE_WEBFONTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_WEBFONTS\" 'AUR-INSTALL-GOOGLE-WEBFONTS'" "AUR-INSTALL-GOOGLE-WEBFONTS"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_FUN_FONTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_FUN_FONTS\" 'AUR-INSTALL-FUN-FONTS'" "AUR-INSTALL-FUN-FONTS"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_KOCHI_FONTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_KOCHI_FONTS\" 'AUR-INSTALL-KOCHI-FONTS'" "AUR-INSTALL-KOCHI-FONTS"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_TTF_LIBERATION" #  
                     add_packagemanager "package_install \"$INSTALL_TTF_LIBERATION\" 'INSTALL-TTF-LIBERATION'" "INSTALL-TTF-LIBERATION"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MS_FONTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MS_FONTS\" 'AUR-INSTALL-MS-FONTS'" "AUR-INSTALL-MS-FONTS"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_VISTA_FONTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_VISTA_FONTS\" 'AUR-INSTALL-VISTA-FONTS'" "AUR-INSTALL-VISTA-FONTS"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_WQY_FONTS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_WQY_FONTS\" 'AUR-INSTALL-WQY-FONTS'" "AUR-INSTALL-WQY-FONTS"
                     ;;
@@ -4276,7 +4279,7 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 clean_orphan_packages()
 {
     # 14
@@ -4294,17 +4297,17 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "GET-NETWORK-MANAGER-USAGE" "get_network_manager"
-localize_info "GET-NETWORK-MANAGER-DESC"  "Get Network Manager"
-localize_info "GET-NETWORK-MANAGER-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-USAGE" "get_network_manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-DESC"  "Get Network Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-NOTES" "None."
 #
-localize_info "GET-NETWORK-MANAGER-TITLE"  "Network Manager"
-localize_info "GET-NETWORK-MANAGER-INFO-1" "NetworkManager is a program for providing detection and configuration for systems to automatically connect to network. NetworkManager's functionality can be useful for both wireless and wired networks."
-localize_info "GET-NETWORK-MANAGER-INFO-2" "WICD"
-localize_info "GET-NETWORK-MANAGER-INFO-3" "Wicd is a network connection manager that can manage wireless and wired interfaces, similar and an alternative to NetworkManager."
-localize_info "GET-NETWORK-MANAGER-SELECT" "Select a Newwork Manager:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-TITLE"  "Network Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-INFO-1" "NetworkManager is a program for providing detection and configuration for systems to automatically connect to network. NetworkManager's functionality can be useful for both wireless and wired networks."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-INFO-2" "WICD"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-INFO-3" "Wicd is a network connection manager that can manage wireless and wired interfaces, similar and an alternative to NetworkManager."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-SELECT" "Select a Newwork Manager:"
 # -------------------------------------
 get_network_manager()
 {
@@ -4315,7 +4318,7 @@ get_network_manager()
     print_this  "GET-NETWORK-MANAGER-INFO-3"
     SYSTEM_TYPES=("Networkmanager" "Wicd" "NONE");
     PS3="$prompt1"
-    echo -e "GET-NETWORK-MANAGER-SELECT"
+    print_this "GET-NETWORK-MANAGER-SELECT"
     select OPT in "${SYSTEM_TYPES[@]}"; do
         case "$REPLY" in
             1)
@@ -4347,11 +4350,11 @@ AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-NETWORK-MANAGER-USAGE" "install_network_manager"
-localize_info "INSTALL-NETWORK-MANAGER-DESC"  "Install Network Manager"
-localize_info "INSTALL-NETWORK-MANAGER-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NETWORK-MANAGER-USAGE" "install_network_manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NETWORK-MANAGER-DESC"  "Install Network Manager"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NETWORK-MANAGER-NOTES" "None."
 # -------------------------------------
 install_network_manager()
 {
@@ -4404,15 +4407,15 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-USB-3G-MODEM-USAGE"   "install_usb_modem 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-USB-3G-MODEM-DESC"    "Install USB Modem"
-localize_info "INSTALL-USB-3G-MODEM-NOTES"   "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-USAGE"   "install_usb_modem 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-DESC"    "Install USB Modem"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-NOTES"   "None."
 #
-localize_info "INSTALL-USB-3G-MODEM-SUPPORT" "Install usb 3G modem support" 
-localize_info "INSTALL-USB-3G-MODEM-TITLE"   "USB 3G MODEM" 
-localize_info "INSTALL-USB-3G-MODEM-INFO"    "A number of mobile telephone networks around the world offer mobile internet connections over UMTS (or EDGE or GSM) using a portable USB modem device." 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-SUPPORT" "Install usb 3G modem support" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-TITLE"   "USB 3G MODEM" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-INFO"    "A number of mobile telephone networks around the world offer mobile internet connections over UMTS (or EDGE or GSM) using a portable USB modem device." 
 # -------------------------------------
 install_usb_modem()
 {
@@ -4441,7 +4444,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_accessories_apps()
 {
     # 4
@@ -4477,32 +4480,32 @@ install_accessories_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_CAIRO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_CAIRO\" 'AUR-INSTALL-CAIRO'" "AUR-INSTALL-CAIRO"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_" # \"$AUR_INSTALL_\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-CONKY'" "AUR-INSTALL-CONKY"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_" # \"$AUR_INSTALL_\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-DEEPIN-SCROT'" "AUR-INSTALL-DEEPIN-SCROT"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_" # \"$AUR_INSTALL_\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-DOCKY'" "AUR-INSTALL-DOCKY"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_DOCKY" #  
                     add_packagemanager "package_install \"$INSTALL_DOCKY\" 'INSTALL-DOCKY'" "INSTALL-DOCKY"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
                             add_aur_package "$AUR_INSTALL_GALGULATOR" # 
@@ -4516,51 +4519,51 @@ install_accessories_apps()
                     fi
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GNOME_PIE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_PIE\" 'AUR-INSTALL-GNOME-PIE'" "AUR-INSTALL-GNOME-PIE"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GUAKE" #  
                     add_packagemanager "package_install \"$INSTALL_GUAKE\" 'INSTALL-GUAKE'" "INSTALL-GUAKE"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_KUPFER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_KUPFER\" 'AUR-INSTALL-KUPFER'" "AUR-INSTALL-KUPFER"
                     ;;
                 10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_PYRENAMER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_PYRENAMER\" 'AUR-INSTALL-PYRENAMER'" "AUR-INSTALL-PYRENAMER"
                     ;;
                 11)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SHUTTER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SHUTTER\" 'AUR-INSTALL-SHUTTER'" "AUR-INSTALL-SHUTTER"
                     ;;
                 12)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_ZEITGEIST" #  
                     add_packagemanager "package_install \"$INSTALL_ZEITGEIST\" 'INSTALL-ZEITGEIST'" "INSTALL-ZEITGEIST"
                     add_aur_package "$AUR_INSTALL_ZEITGEIST" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEITGEIST\" 'AUR-INSTALL-ZEITGEIST'" "AUR-INSTALL-ZEITGEIST"
                     ;;
                 13)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_TERMINATOR" #  
                     add_packagemanager "package_install \"$INSTALL_TERMINATOR\" 'INSTALL-TERMINATOR'" "INSTALL-TERMINATOR"
                     add_aur_package "$AUR_INSTALL_TERMINATOR" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_TERMINATOR\" 'AUR-INSTALL-TERMINATOR'" "AUR-INSTALL-TERMINATOR"
                     ;;
                 14)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_ZIM" #  
                     add_packagemanager "package_install \"$INSTALL_ZIM\" 'INSTALL-ZIM'" "INSTALL-ZIM"
                     ;;
                 15)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_REVELATION" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_REVELATION\" 'AUR-INSTALL-REVELATION'" "AUR-INSTALL-REVELATION"
                     add_packagemanager "make_dir '/etc/gconf/schemas/' \"$(basename $BASH_SOURCE) : $LINENO\";cd /etc/gconf/schemas/;ln -s /usr/share/gconf/schemas/revelation.schemas; cd \$(pwd)" "AUR-INSTALL-REVELATION-SETUP"
@@ -4591,7 +4594,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_development_apps()
 {
     # 3
@@ -4632,7 +4635,7 @@ install_development_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                  1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_QT" #  
                     add_packagemanager "package_install \"$INSTALL_QT\" 'INSTALL-QT'" "INSTALL-QT"
                     add_packagemanager "mkdir -p /home/\$USERNAME/.config/Nokia/qtcreator/styles" "RUN-QT-1"
@@ -4641,36 +4644,36 @@ install_development_apps()
                     add_packagemanager "chown -R \$USERNAME:\$USERNAME /home/\$USERNAME/.config" "RUN-QT-4"
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_WT" #  
                     add_packagemanager "package_install \"$INSTALL_WT\" 'INSTALL-WT'" "INSTALL-WT"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MYSQL_WORKBENCH" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MYSQL_WORKBENCH\" 'AUR-INSTALL-MYSQL-WORKBENCH'" "AUR-INSTALL-MYSQL-WORKBENCH"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_APTANA_STUDIO" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_APTANA_STUDIO\" 'AUR-INSTALL-APTANA-STUDIO'" "AUR-INSTALL-APTANA-STUDIO"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_BLUEFISH" #  
                     add_packagemanager "package_install \"$INSTALL_BLUEFISH\" 'INSTALL-BLUEFISH'" "INSTALL-BLUEFISH"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_eclipse_dev
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_EMACS" #  
                     add_packagemanager "package_install \"$INSTALL_EMACS\" 'INSTALL-EMACS'" "INSTALL-EMACS"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_packagemanager "package_remove 'vim'" "REMOVE-GVIM"
                     add_package "$INSTALL_VIM" #  
                     add_packagemanager "package_install \"$INSTALL_VIM\" 'INSTALL-VIM'" "INSTALL-VIM"
@@ -4678,48 +4681,48 @@ install_development_apps()
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DISCOUNT\" 'AUR-INSTALL-DISCOUNT'" "AUR-INSTALL-DISCOUNT"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GEANY" #  
                     add_packagemanager "package_install \"$INSTALL_GEANY\" 'INSTALL-GEANY'" "INSTALL-GEANY"
                     ;;
                10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_INTELLIJ" #  
                     add_packagemanager "package_install \"$INSTALL_INTELLIJ\" 'INSTALL-INTELLIJ'" "INSTALL-INTELLIJ"
                     ;;
                11)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_KDEVELOP" #  
                     add_packagemanager "package_install \"$INSTALL_KDEVELOP\" 'INSTALL-KDEVELOP'" "INSTALL-KDEVELOP"
                     ;;
                12)
-                    MenuChecks[$(($OPT - 1))]=1
+                    MenuChecks[$((OPT - 1))]=1
                     add_package "$INSTALL_NETBEANS" #  
                     add_packagemanager "package_install \"$INSTALL_NETBEANS\" 'INSTALL-NETBEANS'" "INSTALL-NETBEANS"
                     ;;
                13)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_packagemanager "package_remove 'jre7-openjdk jdk7-openjdk'" "REMOVE-JDK"
                     add_aur_package "$AUR_INSTALL_JDK" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_JDK\" 'AUR-INSTALL-JDK'" "AUR-INSTALL-JDK"
                     ;;
                14)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_SUBLIME" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SUBLIME\" 'AUR-INSTALL-SUBLIME'" "AUR-INSTALL-SUBLIME"
                     ;;
                15)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_DEBUGGER_TOOLS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DEBUGGER_TOOLS\" 'AUR-INSTALL-DEBUGGER-TOOLS'" "AUR-INSTALL-DEBUGGER-TOOLS"
                     ;;
                16)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_MELD" #  
                     add_packagemanager "package_install \"$INSTALL_MELD\" 'INSTALL-MELD'" "INSTALL-MELD"
                     ;;
                17)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_RABBITVCS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_RABBITVCS\" 'AUR-INSTALL-RABBITVCS'" "AUR-INSTALL-RABBITVCS"
                     # @FIX check what is to be installed
@@ -4735,17 +4738,17 @@ install_development_apps()
                     fi
                     ;;
                18)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_ASTYLE" # 
                     add_packagemanager "package_install \"$INSTALL_ASTYLE\"  'INSTALL-ASTYLE'" "INSTALL-ASTYLE"
                     ;;
                19)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_PUTTY" #  
                     add_packagemanager "package_install \"$INSTALL_PUTTY\" 'INSTALL-PUTTY'" "INSTALL-PUTTY"
                     ;;
                20)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_utilities
                     ;;
                 "d")
@@ -4774,7 +4777,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_eclipse_dev()
 {
     local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -4804,47 +4807,47 @@ install_eclipse_dev()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_ECLIPSE" #  
                     add_packagemanager "package_install \"$INSTALL_ECLIPSE\" 'INSTALL-ECLIPSE'" "INSTALL-ECLIPSE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_ECLIPSE_CDT" #  
                     add_packagemanager "package_install \"$INSTALL_ECLIPSE_CDT\" 'INSTALL-ECLIPSE-CDT'" "INSTALL-ECLIPSE-CDT"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_ANDROID" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_ANDROID\" 'AUR-INSTALL-ECLIPSE-ANDROID'" "AUR-INSTALL-ECLIPSE-ANDROID"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_WTP" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_WTP\" 'AUR-INSTALL-ECLIPSE-WTP'" "AUR-INSTALL-ECLIPSE-WTP"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_PDT" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PDT\" 'AUR-INSTALL-ECLIPSE-PDT'" "AUR-INSTALL-ECLIPSE-PDT"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_PYDEV" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PYDEV\" 'AUR-INSTALL-ECLIPSE-PYDEV'" "AUR-INSTALL-ECLIPSE-PYDEV"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_APTANA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_APTANA\" 'AUR-INSTALL-ECLIPSE-APTANA'" "AUR-INSTALL-ECLIPSE-APTANA"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_VRAPPER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_VRAPPER\" 'AUR-INSTALL-ECLIPSE-VRAPPER'" "AUR-INSTALL-ECLIPSE-VRAPPER"
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ECLIPSE_EGIT" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_EGIT\" 'AUR-INSTALL-ECLIPSE-EGIT'" "AUR-INSTALL-ECLIPSE-EGIT"
                     ;;
@@ -4874,8 +4877,8 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-localize_info "Install Utilities" "Install Utilities" 
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install Utilities" "Install Utilities" 
 install_utilities()
 {
     # 3 sub 20
@@ -4899,7 +4902,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_internet_apps()
 {
     # 7
@@ -4927,31 +4930,31 @@ install_internet_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_browsers
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_download_fileshare
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_email
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_im
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_irc
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_mapping
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_desktop_share
                     ;;
               "d")
@@ -4980,7 +4983,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_browsers()
 {
     local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5005,27 +5008,27 @@ install_browsers()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_FIREFOX" #  
                     add_packagemanager "package_install \"$INSTALL_FIREFOX\" 'INSTALL-FIREFOX'" "INSTALL-FIREFOX"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_CHROMIUM" #  
                     add_packagemanager "package_install \"$INSTALL_CHROMIUM\" 'INSTALL-CHROMIUM'" "INSTALL-CHROMIUM"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GOOGLE_CHROME" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_CHROME\" 'AUR-INSTALL-GOOGLE-CHROME'" "AUR-INSTALL-GOOGLE-CHROME"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_OPERA" #  
                     add_packagemanager "package_install \"$INSTALL_OPERA\" 'INSTALL-OPERA'" "INSTALL-OPERA"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         add_package "$INSTALL_REKONQ" #  
                         add_packagemanager "package_install \"$INSTALL_REKONQ\" 'INSTALL-REKONQ'" "INSTALL-REKONQ"
@@ -5060,7 +5063,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_download_fileshare()
 {
     local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5088,13 +5091,13 @@ install_download_fileshare()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_DELUGE" #  
                     add_packagemanager "package_install \"$INSTALL_DELUGE\" 'INSTALL-DELUGE'" "INSTALL-DELUGE"
                     ;;
                 2)
                     # @FIX
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_DROPBOX" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_DROPBOX\" 'AUR-INSTALL-DROPBOX'" "AUR-INSTALL-DROPBOX"
                     if check_package "nautilus" ; then
@@ -5112,32 +5115,32 @@ install_download_fileshare()
                     fi
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_INSYNC" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_INSYNC\" 'AUR-INSTALL-INSYNC'" "AUR-INSTALL-INSYNC"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_JDOWNLOADER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_JDOWNLOADER\" 'AUR-INSTALL-JDOWNLOADER'" "AUR-INSTALL-JDOWNLOADER"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_NITROSHARE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROSHARE\" 'AUR-INSTALL-NITROSHARE" "AUR-INSTALL-NITROSHARE"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_SPARKLESHARE" #  
                     add_packagemanager "package_install \"$INSTALL_SPARKLESHARE\" 'INSTALL-SPARKLESHARE'" "INSTALL-SPARKLESHARE"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_STEADYFLOW" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_STEADYFLOW\" 'AUR-INSTALL-STEADYFLOW'" "AUR-INSTALL-STEADYFLOW"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
                             add_package "$INSTALL_TRANSMISSION_GTK" #  
@@ -5176,7 +5179,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_email()
 {
     local -i total_menu_items=4    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5200,22 +5203,22 @@ install_email()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_EVOLUTION" #  
                     add_packagemanager "package_install \"$INSTALL_EVOLUTION\" 'INSTALL-EVOLUTION'" "INSTALL-EVOLUTION"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_THUNDERBIRD" #  
                     add_packagemanager "package_install \"$INSTALL_THUNDERBIRD\" 'INSTALL-THUNDERBIRD'" "INSTALL-THUNDERBIRD"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_LIFEREA" #  
                     add_packagemanager "package_install \"$INSTALL_LIFEREA\" 'INSTALL-LIFEREA'" "INSTALL-LIFEREA"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_LIGHTREAD" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTREAD\" 'AUR-INSTALL-LIGHTREAD'" "AUR-INSTALL-LIGHTREAD"
                     ;;
@@ -5245,7 +5248,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_im()
 {
     local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5270,28 +5273,28 @@ install_im()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_EMESENE" # 
                     add_packagemanager "package_install \"$INSTALL_EMESENE\"  'INSTALL-EMESENE'" "INSTALL-EMESENE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GOOGLE_TALKPLUGIN" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_TALKPLUGIN\" 'AUR-INSTALL-GOOGLE-TALKPLUGIN'" "AUR-INSTALL-GOOGLE-TALKPLUGIN"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_PIDGIN" #  
                     add_packagemanager "package_install \"$INSTALL_PIDGIN\" 'INSTALL-PIDGIN'" "INSTALL-PIDGIN"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_taskmanager "required_repo 'multilib'" "REQUIRED-REPO-MULTILIB"                    
                     add_package "$INSTALL_SKYPE" #  
                     add_packagemanager "package_install \"$INSTALL_SKYPE\" 'INSTALL-SKYPE'" "INSTALL-SKYPE"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_TEAMSPEAK3" # \"$AUR_INSTALL_TEAMSPEAK3\"
                     add_packagemanager "aur_package_install '' 'AUR-INSTALL-TEAMSPEAK3'" "AUR-INSTALL-TEAMSPEAK3"
                     ;;
@@ -5321,7 +5324,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_irc()
 {
     local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5343,12 +5346,12 @@ install_irc()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_IRSSI" #  
                     add_packagemanager "package_install \"$INSTALL_IRSSI\" 'INSTALL-IRSSI'" "INSTALL-IRSSI"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                             add_package "$INSTALL_XCHAT" #  
@@ -5387,7 +5390,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_mapping()
 {
     local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5409,7 +5412,7 @@ install_mapping()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_taskmanager "required_repo 'multilib'" "REQUIRED-REPO-MULTILIB"
                     add_package "$INSTALL_GOOGLE_EARTH" #  
                     add_packagemanager "package_install \"$INSTALL_GOOGLE_EARTH\" 'INSTALL-GOOGLE-EARTH'" "INSTALL-GOOGLE-EARTH"
@@ -5417,7 +5420,7 @@ install_mapping()
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_EARTH\" 'AUR-INSTALL-GOOGLE-EARTH'" "AUR-INSTALL-GOOGLE-EARTH"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_WORLDWIND" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLDWIND\" 'AUR-INSTALL-WORLDWIND'" "AUR-INSTALL-WORLDWIND"
                     ;;
@@ -5447,7 +5450,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_desktop_share()
 {
     local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5469,12 +5472,12 @@ install_desktop_share()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_REMMINA" # 
                     add_packagemanager "package_install \"$INSTALL_REMMINA\" 'INSTALL-REMMINA'" "INSTALL-REMMINA"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_TEAMVIEWER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMVIEWER\" 'AUR-INSTALL-TEAMVIEWER'" "AUR-INSTALL-TEAMVIEWER"
                     ;;
@@ -5504,7 +5507,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_graphics_apps()
 {
     # 6
@@ -5540,73 +5543,73 @@ install_graphics_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_av_studio
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_BLENDER" #  
                     add_packagemanager "package_install \"$INSTALL_BLENDER\" 'INSTALL-BLENDER'" "INSTALL-BLENDER"
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_HANDBRAKE" #  
                     add_packagemanager "package_install \"$INSTALL_HANDBRAKE\" 'INSTALL-HANDBRAKE'" "INSTALL-HANDBRAKE"
                     ;;
                 4)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_BRASERO" #  
                     add_packagemanager "package_install \"$INSTALL_BRASERO\" 'INSTALL-BRASERO'" "INSTALL-BRASERO"
                     ;;
                 5)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GIMP" # 
                     add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP"
                     ;;
                 6)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_GIMP_PLUGINS" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS"
                     ;;
                 7)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GTHUMB" #  
                     add_packagemanager "package_install \"$INSTALL_GTHUMB\" 'INSTALL-GTHUMB'" "INSTALL-GTHUMB"
                     ;;
                 8)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_INKSCAPE" #  
                     add_packagemanager "package_install \"$INSTALL_INKSCAPE\" 'INSTALL-INKSCAPE'" "INSTALL-INKSCAPE"
                     add_aur_package "$AUR_INSTALL_SOZI" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_SOZI\" 'AUR-INSTALL-SOZI'" "AUR-INSTALL-SOZI"
                     ;;
                 9)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_MCOMIX" #  
                     add_packagemanager "package_install \"$INSTALL_MCOMIX\" 'INSTALL-MCOMIX'" "INSTALL-MCOMIX"
                     ;;
                10)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_MYPAINT" # 
                     add_packagemanager "package_install \"$INSTALL_MYPAINT\"  'INSTALL-MYPAINT'" "INSTALL-MYPAINT"
                     ;;
                11)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCRIBUS" #  
                     add_packagemanager "package_install \"$INSTALL_SCRIBUS\" 'INSTALL-SCRIBUS'" "INSTALL-SCRIBUS"
                     ;;
                12)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SHOTWELL" #  
                     add_packagemanager "package_install \"$INSTALL_SHOTWELL\" 'INSTALL-SHOTWELL'" "INSTALL-SHOTWELL"
                     ;;
                13)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SIMPLE_SCAN" #  
                     add_packagemanager "package_install \"$INSTALL_SIMPLE_SCAN\" 'INSTALL-SIMPLE-SCAN'" "INSTALL-SIMPLE-SCAN"
                     ;;
                14)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_XNVIEWMP" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_XNVIEWMP\" 'AUR-INSTALL-XNVIEWMP'" "AUR-INSTALL-XNVIEWMP"
                     ;;
@@ -5636,7 +5639,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_av_studio()
 {
     # 6 sub 14
@@ -5660,7 +5663,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_video_apps()
 {
     # 9
@@ -5684,15 +5687,15 @@ install_video_apps()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_video_players
                     ;;
                 2)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     install_video_editors_tools
                     ;;
                 3)
-                    MenuChecks[$(($S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIDEO_CODECS" # 
                     add_packagemanager "package_install \"$INSTALL_VIDEO_CODECS\"  'INSTALL-VIDEO-CODECS'" "INSTALL-VIDEO-CODECS"
                     if [[ "$ARCHI" != "x86_64" ]]; then
@@ -5729,7 +5732,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_video_players()
 {
     local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5742,14 +5745,14 @@ install_video_players()
         local -a MenuItems=( "" ); local -a MenuInfo=( "" ) # Reset
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Audience-bzr"      "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Gnome-mplayer"     "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Parole"            "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Gnome-mplayer"     "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Parole"            "" ""     "" "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MiniTube"          "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Miro"              "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Rosa Media Player" "$AUR" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "SM Player" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "VLC" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "XBMC" "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Miro"              "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Rosa Media Player" "" "$AUR" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "SM Player"         "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "VLC"               "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "XBMC"              "" ""     "" "MenuTheme[@]"
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "B"
         #
@@ -5758,42 +5761,42 @@ install_video_players()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_AUDIENCE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_AUDIENCE\" 'AUR-INSTALL-AUDIENCE'" "AUR-INSTALL-AUDIENCE"
                     ;;
                 2)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_GNOME_MPLAYER" # 
                     add_packagemanager "package_install \"$INSTALL_GNOME_MPLAYER\"  'INSTALL-GNOME-MPLAYER'" "INSTALL-GNOME-MPLAYER"
                     ;;
                 3)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_PAROLE" #  
                     add_packagemanager "package_install \"$INSTALL_PAROLE\" 'INSTALL-PAROLE'" "INSTALL-PAROLE"
                     ;;
                 4)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_MINITUBE" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_MINITUBE\" 'AUR-INSTALL-MINITUBE'" "AUR-INSTALL-MINITUBE"
                     ;;
                 5)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_MIRO" #  
                     add_packagemanager "package_install \"$INSTALL_MIRO\" 'INSTALL-MIRO'" "INSTALL-MIRO"
                     ;;
                 6)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_aur_package "$AUR_INSTALL_ROSA_MEDIA_PLAYER" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_MEDIA_PLAYER\" 'AUR-INSTALL-ROSA-MEDIA-PLAYER'" "AUR-INSTALL-ROSA-MEDIA-PLAYER"
                     ;;
                 7)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_SMPLAYER" #  
                     add_packagemanager "package_install \"$INSTALL_SMPLAYER\" 'INSTALL-SMPLAYER'" "INSTALL-SMPLAYER"
                     ;;
                 8)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_VLC" #  
                     add_packagemanager "package_install \"$INSTALL_VLC\" 'INSTALL-VLC'" "INSTALL-VLC"
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
@@ -5802,7 +5805,7 @@ install_video_players()
                     fi
                     ;;
                 9)
-                    MenuChecks[$(($SS_OPT - 1))]=1
+                    MenuChecks[$((SS_OPT - 1))]=1
                     add_package "$INSTALL_XBNC" #  
                     add_packagemanager "package_install \"$INSTALL_XBNC\" 'INSTALL-XBNC'" "INSTALL-XBNC"
                     ;;
@@ -5832,11 +5835,11 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-VIDEO-EDITORS-TOOLS-DESC"  "Install Video Editors Tools"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-EDITORS-TOOLS-DESC"  "Install Video Editors Tools"
 #
-localize_info "INSTALL-VIDEO-EDITORS-TOOLS-TITLE" "VIDEO EDITORS|TOOLS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-EDITORS-TOOLS-TITLE" "VIDEO EDITORS|TOOLS"
 install_video_editors_tools()
 {
     local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
@@ -5862,32 +5865,32 @@ install_video_editors_tools()
         for SS_OPT in ${OPTIONS[@]}; do
            case "$SS_OPT" in
                1)
-                   MenuChecks[$(($SS_OPT - 1))]=1
+                   MenuChecks[$((SS_OPT - 1))]=1
                    add_package "$AUR_INSTALL_ARISTA_TRANSCODER" #  
                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ARISTA_TRANSCODER\" 'AUR-INSTALL-ARISTA-TRANSCODER'" "AUR-INSTALL-ARISTA-TRANSCODER"
                    ;;
                2)
-                   MenuChecks[$(($SS_OPT - 1))]=1
+                   MenuChecks[$((SS_OPT - 1))]=1
                    add_package "$INSTALL_TRAMSMAGEDDON" #  
                    add_packagemanager "package_install \"$INSTALL_TRAMSMAGEDDON\" 'INSTALL-TRAMSMAGEDDON'" "INSTALL-TRAMSMAGEDDON"
                    ;;
                3)
-                   MenuChecks[$(($SS_OPT - 1))]=1
+                   MenuChecks[$((SS_OPT - 1))]=1
                    add_package "$INSTALL_KDENLIVE" #  
                    add_packagemanager "package_install \"$INSTALL_KDENLIVE\" 'INSTALL-KDENLIVE'" "INSTALL-KDENLIVE"
                    ;;
                4)
-                   MenuChecks[$(($SS_OPT - 1))]=1
+                   MenuChecks[$((SS_OPT - 1))]=1
                    add_package "$INSTALL_OPENSHOT" #  
                    add_packagemanager "package_install \"$INSTALL_OPENSHOT\" 'INSTALL-OPENSHOT'" "INSTALL-OPENSHOT"
                    ;;
                5)
-                   MenuChecks[$(($SS_OPT - 1))]=1
+                   MenuChecks[$((SS_OPT - 1))]=1
                    add_package "$INSTALL_PITIVI" #  
                    add_packagemanager "package_install \"$INSTALL_PITIVI\" 'INSTALL-PITIVI'" "INSTALL-PITIVI"
                    ;;
                6)
-                   MenuChecks[$(($SS_OPT - 1))]=1
+                   MenuChecks[$((SS_OPT - 1))]=1
                    add_aur_package "$AUR_INSTALL_KAZAM_BZR" # 
                    add_packagemanager "aur_package_install \"$AUR_INSTALL_KAZAM_BZR\" 'AUR-INSTALL-KAZAM-BZR'" "AUR-INSTALL-KAZAM-BZR"
                    ;;
@@ -5917,7 +5920,7 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 install_science()
 {
     print_title "Science and Education"
@@ -5938,15 +5941,15 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-VIDEO-CARDS-USAGE" "install_video_cards 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-VIDEO-CARDS-DESC"  "Install Video Card"
-localize_info "INSTALL-VIDEO-CARDS-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-USAGE" "install_video_cards 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-DESC"  "Install Video Card"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-NOTES" "None."
 #
-localize_info "INSTALL-VIDEO-CARDS-TITLE"  "VIDEO CARD"
-localize_info "INSTALL-VIDEO-CARDS-INFO"   "NVIDIA"
-localize_info "INSTALL-VIDEO-CARDS-SELECT" "Select a Video Card:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-TITLE"  "VIDEO CARD"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-INFO"   "NVIDIA"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-SELECT" "Select a Video Card:"
 # -------------------------------------
 install_video_cards()
 {
@@ -6067,15 +6070,15 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-CUPS-USAGE" "install_cups 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-CUPS-DESC"  "Install Cups."
-localize_info "INSTALL-CUPS-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-USAGE" "install_cups 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-DESC"  "Install Cups."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-NOTES" "None."
 #
-localize_info "INSTALL-CUPS-YN" "Install CUPS - AKA Common Unix Printing System" 
-localize_info "INSTALL-CUPS-TITLE" "CUPS - AKA Common Unix Printing System" 
-localize_info "INSTALL-CUPS-INFO" "CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS® X and other UNIX®-like operating systems." 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-YN" "Install CUPS - AKA Common Unix Printing System" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-TITLE" "CUPS - AKA Common Unix Printing System" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-INFO" "CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS® X and other UNIX®-like operating systems." 
 install_cups()
 {
     if [[ "$1" -eq 2 ]]; then
@@ -6105,17 +6108,17 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-USAGE"   "install_additional_firmwares 1->[1=Install, 2=Remove]"
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-DESC"    "Install Addition Firmwares"
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-NOTES"   "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-USAGE"   "install_additional_firmwares 1->(1=Install, 2=Remove)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-DESC"    "Install Addition Firmwares"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-NOTES"   "None."
 #
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-TITLE"   "INSTALL ADDITIONAL FIRMWARES"
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO"    "alsa-firmware, ipw2100-fw, ipw2200-fw, b43-firmware, b43-firmware-legacy, broadcom-wl, zd1211-firmware, bluez-firmware, libffado, libraw1394, sane-gt68xx-firmware"
-localize_info "Install-firmwares"                   "Install additional firmwares [Audio,Bluetooth,Scanner,Wireless]" 
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-9"  "libffado: [Fireware Audio Devices]"
-localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-10" "libraw1394: [IEEE1394 Driver]"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-TITLE"   "INSTALL ADDITIONAL FIRMWARES"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO"    "alsa-firmware, ipw2100-fw, ipw2200-fw, b43-firmware, b43-firmware-legacy, broadcom-wl, zd1211-firmware, bluez-firmware, libffado, libraw1394, sane-gt68xx-firmware"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install-firmwares"                   "Install additional firmwares [Audio,Bluetooth,Scanner,Wireless]" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-9"  "libffado: [Fireware Audio Devices]"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-10" "libraw1394: [IEEE1394 Driver]"
 # -------------------------------------
 install_additional_firmwares()
 {
@@ -6153,11 +6156,11 @@ install_additional_firmwares()
                 case "$S_OPT" in
                     1)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_ALSA_FIRMWARE" #  
                             add_packagemanager "package_install \"$INSTALL_ALSA_FIRMWARE\" 'INSTALL-ALSA-FIRMWARE'" "INSTALL-ALSA-FIRMWARE"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$INSTALL_ALSA_FIRMWARE"
                             remove_packagemanager "INSTALL-ALSA_FIRMWARE"
                             return 0
@@ -6165,11 +6168,11 @@ install_additional_firmwares()
                         ;;
                     2)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_IPW2100_FW" #  
                             add_packagemanager "package_install \"$INSTALL_IPW2100_FW\" 'INSTALL-IPW2100-FW'" "INSTALL-IPW2100-FW"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$INSTALL_IPW2100_FW"
                             remove_packagemanager "INSTALL-IPW2100-FW"
                             return 0
@@ -6177,11 +6180,11 @@ install_additional_firmwares()
                         ;;
                     3)  
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_IPW2200_FW" #  
                             add_packagemanager "package_install \"$INSTALL_IPW2200_FW\" 'INSTALL-IPW2200-FW'" "INSTALL-IPW2200-FW"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$INSTALL_IPW2200_FW"
                             remove_packagemanager "INSTALL-IPW2200-FW"
                             return 0
@@ -6189,11 +6192,11 @@ install_additional_firmwares()
                         ;;
                     4)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_aur_package "$AUR_INSTALL_B43_FIRMWARE" # 
                             add_packagemanager "aur_package_install \"$AUR_INSTALL_B43_FIRMWARE\" 'AUR-INSTALL-B43-FIRMWARE'" "AUR-INSTALL-B43-FIRMWARE"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$AUR_INSTALL_B43_FIRMWARE"
                             remove_packagemanager "AUR-INSTALL-B43-FIRMWARE"
                             return 0
@@ -6201,11 +6204,11 @@ install_additional_firmwares()
                         ;;
                     5)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_aur_package "$AUR_INSTALL_B43_FIRMWARE_LEGACY" # 
                             add_packagemanager "aur_package_install \"$AUR_INSTALL_B43_FIRMWARE_LEGACY\" 'AUR-INSTALL-B43-FIRMWARE-LEGACY'" "AUR-INSTALL-B43-FIRMWARE-LEGACY"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$AUR_INSTALL_B43_FIRMWARE_LEGACY"
                             remove_packagemanager "AUR-INSTALL-B43-FIRMWARE-LEGACY"
                             return 0
@@ -6213,11 +6216,11 @@ install_additional_firmwares()
                         ;;
                     6)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_aur_package "$AUR_INSTALL_BROADCOM_WL" # 
                             add_packagemanager "aur_package_install \"$AUR_INSTALL_BROADCOM_WL\" 'AUR-INSTALL-BROADCOM-WL'" "AUR-INSTALL-BROADCOM-WL"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$AUR_INSTALL_BROADCOM_WL"
                             remove_packagemanager "AUR-INSTALL-BROADCOM-WL"
                             return 0
@@ -6225,23 +6228,23 @@ install_additional_firmwares()
                         ;;
                     7)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_ZD1211_FIRMWARE" #  
                             add_packagemanager "package_install \"$INSTALL_ZD1211_FIRMWARE\" 'INSTALL-ZD1211-FIRMWARE'" "INSTALL-ZD1211-FIRMWARE"
                         else
                             remove_package "$INSTALL_ZD1211_FIRMWARE"
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_packagemanager "INSTALL-ZD1211-FIRMWARE"
                             return 0
                         fi                    
                         ;;
                     8)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_BLUEZ_FIREWARE" #  
                             add_packagemanager "package_install \"$INSTALL_BLUEZ_FIREWARE\" 'INSTALL-BLUEZ-FIREWARE'" "INSTALL-BLUEZ-FIREWARE"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$INSTALL_BLUEZ_FIREWARE"
                             remove_packagemanager "INSTALL-BLUEZ-FIREWARE"
                             return 0
@@ -6249,23 +6252,23 @@ install_additional_firmwares()
                         ;;
                     9)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_LIBFFADO" #  
                             add_packagemanager "package_install \"$INSTALL_LIBFFADO\" 'INSTALL-LIBFFADO'" "INSTALL-LIBFFADO"
                         else
                             remove_package "$INSTALL_LIBFFADO"
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_packagemanager "INSTALL-LIBFFADO"
                             return 0
                         fi                    
                         ;;
                    10)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_LIBRAW1394" #  
                             add_packagemanager "package_install \"$INSTALL_LIBRAW1394\" 'INSTALL-LIBRAW1394'" "INSTALL-LIBRAW1394"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$INSTALL_LIBRAW1394"
                             remove_packagemanager "INSTALL-LIBRAW1394"
                             return 0
@@ -6273,11 +6276,11 @@ install_additional_firmwares()
                         ;;
                    11)
                         if [[ "$1" -eq 1 ]]; then
-                            MenuChecks[$(($S_OPT - 1))]=1
+                            MenuChecks[$((S_OPT - 1))]=1
                             add_package "$INSTALL_SANE_GT68XX_FIRMWARE" #  
                             add_packagemanager "package_install \"$INSTALL_SANE_GT68XX_FIRMWARE\" 'INSTALL-SANE-GT68XX-FIRMWARE'" "INSTALL-SANE-GT68XX-FIRMWARE"
                         else
-                            MenuChecks[$(($S_OPT - 1))]=0
+                            MenuChecks[$((S_OPT - 1))]=0
                             remove_package "$INSTALL_SANE_GT68XX_FIRMWARE"
                             remove_packagemanager "INSTALL-SANE-GT68XX-FIRMWARE"
                             return 0
@@ -6314,16 +6317,16 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "TEST-INSTALL-DESC"  "Test Install"
-localize_info "TEST-INSTALL-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-DESC"   "Test Install"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-NOTES"  "None."
 #
-localize_info "TEST-INSTALL-INFO" "Test Install"
-localize_info "TEST-INSTALL-INFO-1" "Testing Core Packages."
-localize_info "TEST-INSTALL-INFO-2" "Testing AUR Packages."
-localize_info "TEST-INSTALL-WARN-1" "pacman Did Not find Package:"
-localize_info "TEST-INSTALL-WARN-2" "pacman Did Not find AUR Package:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO"   "Test Install"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-1" "Testing Core Packages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-2" "Testing AUR Packages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-WARN-1" "pacman Did Not find Package:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-WARN-2" "pacman Did Not find AUR Package:"
 # -------------------------------------
 test_install()
 {
@@ -6333,15 +6336,15 @@ test_install()
     print_info "TEST-INSTALL-INFO-1"    
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
-        if ! check_package "${PACKAGE[$i]}" ; then
-            print_warning "TEST-INSTALL-WARN-1" "${PACKAGE[$i]}"
+        if ! check_package "${PACKAGES[$i]}" ; then
+            print_warning "TEST-INSTALL-WARN-1" "${PACKAGES[$i]}"
         fi
     done
     print_info "TEST-INSTALL-INFO-2"    
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
-        if ! check_package "${AUR_PACKAGE[$i]}" ; then
-            print_warning "TEST-INSTALL-WARN-2" "${AUR_PACKAGE[$i]}"
+        if ! check_package "${AUR_PACKAGES[$i]}" ; then
+            print_warning "TEST-INSTALL-WARN-2" "${AUR_PACKAGES[$i]}"
         fi
     done
     pause_function "test_install @ $(basename $BASH_SOURCE) : $LINENO"
@@ -6357,28 +6360,28 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-SOFTWARE-LIVE-DESC"  "Test functions out for Developers"
-localize_info "INSTALL-SOFTWARE-LIVE-NOTES" "Put what ever code in there you want to Test."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-DESC"  "Test functions out for Developers"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-NOTES" "Put what ever code in there you want to Test."
 #
-localize_info "INSTALL-SOFTWARE-LIVE-TITLE"  "Arch Linux Software Installation"
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-1" "Configure Pacman Package Signing..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-2" "System Upgrade..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-3" "Configure AUR Helper..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-4" "Set host name..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-5" "Hostname is set: "
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-6" "Hostname is not set!"
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-7" "Configure TOR..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-8" "Configure KDE..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-9" "Configure SSH..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-10" "Configure XORG..."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-11" "Fontconfig is a library designed to provide a list of available fonts to applications, and also for configuration for how fonts get rendered."
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-12" "Enter your new postgres account password:"
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-13" "Enter your postgres account password:"
-localize_info "INSTALL-SOFTWARE-LIVE-INFO-14" "Clean Orphan Packages..."
-localize_info "INSTALL-SOFTWARE-WARN"         "You must run this in Live Mode!"
-localize_info "INSTALL-SOFTWARE-WARN-2"       "Configuration did not get Loaded, make sure to run load_software or load_last_config"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-TITLE"  "Arch Linux Software Installation"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-1" "Configure Pacman Package Signing..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-2" "System Upgrade..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-3" "Configure AUR Helper..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-4" "Set host name..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-5" "Hostname is set: "
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-6" "Hostname is not set!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-7" "Configure TOR..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-8" "Configure KDE..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-9" "Configure SSH..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-10" "Configure XORG..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-11" "Fontconfig is a library designed to provide a list of available fonts to applications, and also for configuration for how fonts get rendered."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-12" "Enter your new postgres account password:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-13" "Enter your postgres account password:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-14" "Clean Orphan Packages..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-WARN"         "You must run this in Live Mode!"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-WARN-2"       "Configuration did not get Loaded, make sure to run load_software or load_last_config"
 # -------------------------------------
 install_software_live()
 {
@@ -6419,9 +6422,9 @@ install_software_live()
             # @FIX test return logic; 0 = success; 
             eval "${PACKMANAGER[$index]}"
             if [ "$?" -eq 0 ]; then
-                write_log "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" "$(basename $BASH_SOURCE) : $LINENO"
+                write_log   "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " @ $(basename $BASH_SOURCE) : $LINENO"
             else
-                write_error "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" "$(basename $BASH_SOURCE) : $LINENO"
+                write_error "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " @ $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: eval PACKMANAGER at line $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
             fi
         done
@@ -6566,7 +6569,7 @@ install_software_live()
         #ln -sv ../conf.avail/10-autohint.conf
         ln -sv ../conf.avail/11-lcdfilter-default.conf
         ln -s ../conf.avail/70-no-bitmaps.conf
-        cd "$SCRIPT_DIR"
+        cd "$FULL_SCRIPT_PATH"
         #
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_XORG @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
@@ -6664,17 +6667,17 @@ AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-localize_info "INSTALL-LOAD-SOFTWARE-DESC"  "Install loaded Software"
-localize_info "INSTALL-LOAD-SOFTWARE-NOTES" "None."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-DESC"  "Install loaded Software"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-NOTES" "None."
 #
-localize_info "INSTALL-LOAD-SOFTWARE-TITLE-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installatoin disk."
-localize_info "INSTALL-LOAD-SOFTWARE-INFO-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installatoin disk."
-localize_info "INSTALL-LOAD-SOFTWARE-INFO-2" "This option Assumes that you have a bootable OS and and have gone through the Application Software Menu and Saved it, now we are going to load it and install it."
-localize_info "INSTALL-LOAD-SOFTWARE-INFO-3" "Normally you will use the user name (&#36;USERNAME) in the file, but its possible that you may wish to use another User Name to install this with, make sure User Name Exist in this OS before doing this."
-localize_info "INSTALL-LOAD-SOFTWARE-INFO-4" "You will have to abort (Ctrl-C) if you wish to change Software Installation Setting, pick New Software Configuration."
-localize_info "INSTALL-LOAD-SOFTWARE-INFO-5" "Load Last Install."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-TITLE-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installation disk."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installation disk."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-2" "This option Assumes that you have a bootable OS and and have gone through the Application Software Menu and Saved it, now we are going to load it and install it."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-3" "Normally you will use the user name (&#36;USERNAME) in the file, but its possible that you may wish to use another User Name to install this with, make sure User Name Exist in this OS before doing this."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-4" "You will have to abort (Ctrl-C) if you wish to change Software Installation Setting, pick New Software Configuration."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-5" "Load Last Install."
 # -------------------------------------
 install_loaded_software()
 {
@@ -6699,7 +6702,7 @@ install_loaded_software()
     print_info "INSTALL-LOAD-SOFTWARE-INFO-3"
     print_info "INSTALL-LOAD-SOFTWARE-INFO-4"
     #echo "Copying over all Configuration files to Live OS."
-    #copy_dir "$SCRIPT_DIR/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
+    #copy_dir "$FULL_SCRIPT_PATH/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
     
     #print_info "Create Custom AUR Repository..."
     #create_custom_aur_repo # @FIX still can not get this to work
