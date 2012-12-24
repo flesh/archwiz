@@ -1,11 +1,12 @@
 #!/bin/bash
 #
-# LAST_UPDATE="17 Dec 2012 16:33"
+# LAST_UPDATE="22 Dec 2012 16:33"
 #
 # Software Packages:
 # If I declare them here, I can use them in menus
 # I could make this multi-distro by putting in if $DISTRO == Arch statements
 INSTALL_MATE="mate mate-session-manager mate-extras mate-screensaver gnome-icon-theme trayer gvfs-smb gvfs-afc"
+# @FIX something in this package has a dependancy on wicd
 AV_STUDIO="audacity ardour avidemux avidemux-cli avidemux-qt blender brasero cdrkit cheese devede dvd+rw-tools dvdauthor enca ffmpeg gaupol gimp gcolor2 gpicview gtk2 gthumb gtkmm handbrake handbrake-cli inkscape kdegraphics kdenlive kino libdvdread libxml++ mcomix mypaint mjpegtools mjpegtools mpgtx mencoder openshot python2-numpy python-lxml uniconvertor shotwell scribus simple-scan scons twolame"
 AV_STUDIO_AUR="gimp-paint-studio gimphelp-scriptfu gimp-resynth gimpfx-foundry gimp-plugin-pandora gimp-plugin-saveforweb xnviewmp"
 INSTALL_GIT_TOR="openbsd-netcat vidalia privoxy git tor"
