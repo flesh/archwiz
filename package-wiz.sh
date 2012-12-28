@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="22 Dec 2012 16:33"
+# LAST_UPDATE="24 Dec 2012 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -57,8 +57,8 @@
 # INSTALL MENU {{{
 NAME="install_menu"
 USAGE="install_menu"
-DESCRIPTION=$(localize "INSTALL-MENU-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-MENU-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -344,9 +344,9 @@ install_menu()
 # -----------------------------------------------------------------------------
 # INSTALL BASIC {{{
 NAME="install_basic"
-USAGE=$(localize "INSTALL-BASIC-USAGE")
-DESCRIPTION=$(localize "INSTALL-BASIC-DESC")
-NOTES=$(localize "INSTALL-BASIC-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-BASIC-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-BASIC-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-BASIC-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -381,9 +381,9 @@ install_basic()
 # -----------------------------------------------------------------------------
 # INSTALL GIT TOR {{{
 NAME="install_git_tor_pack"
-USAGE=$(localize "INSTALL-GIT-TOR-USAGE")
-DESCRIPTION=$(localize "INSTALL-GIT-TOR-DESC")
-NOTES=$(localize "INSTALL-GIT-TOR-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-GIT-TOR-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-GIT-TOR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-GIT-TOR-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -421,9 +421,9 @@ install_git_tor_pack()
 # -----------------------------------------------------------------------------
 # INSTALL BASIC SETUP {{{
 NAME="install_basic_setup"
-USAGE=$(localize "INSTALL-BASIC-SETUP-USAGE")
-DESCRIPTION=$(localize "INSTALL-BASIC-SETUP-DESC")
-NOTES=$(localize "INSTALL-BASIC-SETUP-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-BASIC-SETUP-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-BASIC-SETUP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-BASIC-SETUP-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -495,7 +495,10 @@ install_basic_setup()
     print_info  "INSTALL-BASIC-SETUP-INFO-SYSTEMD-1"
     add_package        "$INSTALL_SYSTEMD"
     add_packagemanager "package_install \"$INSTALL_SYSTEMD\" 'INSTALL-SYSTEMD'" "INSTALL-SYSTEMD"
-    add_packagemanager "systemctl enable syslog-ng.service cronie.service" "SYSTEMD-ENABLE-SYSTEMD"
+    add_aur_package    "$AUR_INSTALL_SYSTEMD"
+    add_packagemanager "aur_package_install \"$AUR_INSTALL_SYSTEMD\" 'AUR-INSTALL-SYSTEMD'" "AUR-INSTALL-SYSTEMD"
+    # syslog-ng
+    add_packagemanager "systemctl enable cronie.service" "SYSTEMD-ENABLE-SYSTEMD"
     # BASH-TOOLS
     print_info "INSTALL-BASIC-SETUP-INFO-BASH-TOOLS" " - https://wiki.archlinux.org/index.php/Bash"
     add_package        "$INSTALL_BASH_TOOLS"
@@ -545,9 +548,9 @@ install_basic_setup()
 # -----------------------------------------------------------------------------
 # INSTALL NFS {{{
 NAME="install_nfs_pack"
-USAGE=$(localize "INSTALL-NFS-USAGE")
-DESCRIPTION=$(localize "INSTALL-NFS-DESC")
-NOTES=$(localize "INSTALL-NFS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-NFS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-NFS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-NFS-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -583,9 +586,9 @@ install_nfs_pack()
 # -----------------------------------------------------------------------------
 # INSTALL SAMBA {{{
 NAME="install_samba_pack"
-USAGE=$(localize "INSTALL-SAMBA-USAGE")
-DESCRIPTION=$(localize "INSTALL-SAMBA-DESC")
-NOTES=$(localize "INSTALL-SAMBA-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-SAMBA-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-SAMBA-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-SAMBA-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -617,7 +620,7 @@ install_samba_pack()
         add_package "$INSTALL_SAMBA"
         add_packagemanager "package_install \"$INSTALL_SAMBA\" 'INSTALL-SAMBA'" "INSTALL-SAMBA"
         add_packagemanager "cp /etc/samba/smb.conf.default /etc/samba/smb.conf" "COPY-CONFIG-SAMBA"
-        add_packagemanager "systemctl enable smbd.service enable nmbd.service winbindd.service" "SYSTEMD-ENABLE-SAMBA"
+        add_packagemanager "systemctl enable smbd smbnetfs nmbd winbindd.service" "SYSTEMD-ENABLE-SAMBA"
         # installing samba will overwrite /etc/samba/smb.conf so copy it to temp 
         copy_file "/etc/samba/smb.conf" "${FULL_SCRIPT_PATH}/etc/samba/smb.conf" "$LINENO"
     fi
@@ -626,9 +629,9 @@ install_samba_pack()
 # -----------------------------------------------------------------------------
 # INSTALL PRELOAD {{{
 NAME="install_preload_pack"
-USAGE=$(localize "INSTALL-PRELOAD-USAGE")
-DESCRIPTION=$(localize "INSTALL-PRELOAD-DESC")
-NOTES=$(localize "INSTALL-PRELOAD-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-PRELOAD-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-PRELOAD-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-PRELOAD-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -664,9 +667,9 @@ install_preload_pack()
 # -----------------------------------------------------------------------------
 # INSTALL ZRAM {{{
 NAME="install_zram"
-USAGE=$(localize "INSTALL-ZRAM-USAGE")
-DESCRIPTION=$(localize "INSTALL-ZRAM-DESC")
-NOTES=$(localize "INSTALL-ZRAM-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-ZRAM-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-ZRAM-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-ZRAM-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -703,9 +706,9 @@ install_zram()
 # -----------------------------------------------------------------------------
 # INSTALL INSTALL LAPTOP MODE TOOLS {{{
 NAME="install_laptop_mode_tools_pack"
-USAGE=$(localize "INSTALL-LAPTOP-MODE-TOOLS-USAGE")
-DESCRIPTION=$(localize "INSTALL-LAPTOP-MODE-TOOLS-DESC")
-NOTES=$(localize "INSTALL-LAPTOP-MODE-TOOLS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-LAPTOP-MODE-TOOLS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-LAPTOP-MODE-TOOLS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-LAPTOP-MODE-TOOLS-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -742,9 +745,9 @@ install_laptop_mode_tools_pack()
 # -----------------------------------------------------------------------------
 # INSTALL XORG {{{
 NAME="install_xorg"
-USAGE=$(localize "INSTALL-XORG-USAGE")
-DESCRIPTION=$(localize "INSTALL-XORG-DESC")
-NOTES=$(localize "INSTALL-XORG-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-XORG-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-XORG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-XORG-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -790,7 +793,7 @@ install_xorg()
 NAME="install_desktop_environment"
 USAGE="install_desktop_environment"
 DESCRIPTION="Install Desktop Environment"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -892,7 +895,7 @@ install_desktop_environment()
 NAME="install_mate"
 USAGE="install_mate"
 DESCRIPTION="Installs Mate Desktop."
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -910,10 +913,12 @@ install_mate()
     add_packagemanager "package_remove 'zenity'" "REMOVE-MATE" # mate replacement
     add_package "$INSTALL_MATE"
     add_packagemanager "package_install \"$INSTALL_MATE\" 'INSTALL-MATE'" "INSTALL-MATE"
-    add_packagemanager "systemctl enable accounts-daemon.service polkitd.service upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-MATE"
+    add_packagemanager "systemctl enable accounts-daemon.service upower.service" "SYSTEMD-ENABLE-MATE"
+    # polkit.service
+    # systemd-logind replaced console-kit-daemon.service
     # pacstrap will overwrite pacman.conf so copy it to temp 
-    # copy_file ${MOUNTPOINT}/etc/pacman.conf "${FULL_SCRIPT_PATH}"/etc/pacman.conf "$(basename $BASH_SOURCE) : $LINENO"
-    pause_function "$(basename $BASH_SOURCE) : $LINENO"
+    # copy_file ${MOUNTPOINT}/etc/pacman.conf "${FULL_SCRIPT_PATH}"/etc/pacman.conf ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    pause_function ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -921,7 +926,7 @@ install_mate()
 NAME="install_kde"
 USAGE="install_kde"
 DESCRIPTION="Install KDE"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1021,15 +1026,17 @@ install_kde()
     # Application development toolkit for controlling system-wide privileges
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable kdm.service polkitd.service upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-KDE"
+    # polkit.service
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable kdm.service upower.service" "SYSTEMD-ENABLE-KDE"
     KDE_INSTALLED=1
 }
 # -----------------------------------------------------------------------------
 # INSTALL GNOME {{{
 NAME="install_gnome"
 USAGE="install_gnome"
-DESCRIPTION=$(localize "CONFIGURE-GNOME-DESC")
-NOTES=$(localize "CONFIGURE-GNOME-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-GNOME-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONFIGURE-GNOME-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1044,7 +1051,6 @@ REVISION="5 Dec 2012"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-2" "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-3" "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
 # -------------------------------------
-
 install_gnome()
 {
     # 9
@@ -1130,7 +1136,9 @@ install_gnome()
     #Application development toolkit for controlling system-wide privileges
     #Abstraction for enumerating power devices, listening to device events and querying history and statistics
     #A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable accounts-daemon.service polkitd.service upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-GNOME"
+    # polkit.service
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable accounts-daemon.service upower.service" "SYSTEMD-ENABLE-GNOME"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1138,7 +1146,7 @@ install_gnome()
 NAME="install_gnomeshell_extensions"
 USAGE="install_gnomeshell_extensions"
 DESCRIPTION="install_gnomeshell_extensions"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1237,7 +1245,7 @@ install_gnomeshell_extensions()
 NAME="install_gnomeshell_themes"
 USAGE="install_gnomeshell_themes"
 DESCRIPTION="Install Gnomeshell Themes"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1318,7 +1326,7 @@ install_gnomeshell_themes()
 NAME="install_awesome"
 USAGE="install_awesome"
 DESCRIPTION="Install Awesome"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1429,7 +1437,8 @@ install_awesome()
     done
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-AWESOME"
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-AWESOME"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1437,7 +1446,7 @@ install_awesome()
 NAME="install_cinnamon"
 USAGE="install_cinnamon"
 DESCRIPTION="Install Cinnamon"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1526,7 +1535,9 @@ install_cinnamon()
     # Application development toolkit for controlling system-wide privileges
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable accounts-daemon.service polkitd.service upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-CINNAMON"
+    # polkit.service
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable accounts-daemon.service upower.service" "SYSTEMD-ENABLE-CINNAMON"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1534,7 +1545,7 @@ install_cinnamon()
 NAME="install_e17"
 USAGE="install_e17"
 DESCRIPTION="Install E17"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1639,7 +1650,8 @@ install_e17()
     done
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-E17"
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-E17"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1647,7 +1659,7 @@ install_e17()
 NAME="install_lxde"
 USAGE="install_lxde"
 DESCRIPTION="Install LXDE"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1707,7 +1719,8 @@ install_lxde()
     done
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-LXDE"
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-LXDE"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1715,7 +1728,7 @@ install_lxde()
 NAME="install_openbox"
 USAGE="install_openbox"
 DESCRIPTION="Install Openbox"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1826,7 +1839,8 @@ install_openbox()
     done
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-OPENBOX"
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-OPENBOX"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1834,7 +1848,7 @@ install_openbox()
 NAME="install_xfce"
 USAGE="install_xfce"
 DESCRIPTION="Install XFCE"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1891,15 +1905,17 @@ install_xfce()
     # Application development toolkit for controlling system-wide privileges
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
-    add_packagemanager "systemctl enable polkitd.service upower.service console-kit-daemon.service" "SYSTEMD-ENABLE-XFCE"
+    # polkit.service
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-XFCE"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL UNITY {{{
 NAME="install_unity"
 USAGE="install_unity"
-DESCRIPTION=$(localize "INSTALL-UNITY-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-UNITY-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1930,9 +1946,11 @@ install_unity()
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
     # Network Management daemon
-    add_packagemanager "systemctl enable lightdm.service accounts-daemon.service polkitd.service upower.service console-kit-daemon.service NetworkManager.service" "SYSTEMD-ENABLE-UNITY"
+    # polkit.service
+    # systemd-logind replaced console-kit-daemon.service
+    add_packagemanager "systemctl enable lightdm.service accounts-daemon.service upower.service NetworkManager.service" "SYSTEMD-ENABLE-UNITY"
     # pacstrap will overwrite pacman.conf so copy it to temp 
-    copy_file $MOUNTPOINT"/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file $MOUNTPOINT"/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1940,7 +1958,7 @@ install_unity()
 NAME="install_display_manager"
 USAGE="install_display_manager"
 DESCRIPTION="Install Display Manager"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2000,8 +2018,22 @@ install_display_manager()
                     add_package "$INSTALL_KDM" #  
                     add_packagemanager "package_install \"$INSTALL_KDM\" 'INSTALL-KDM'" "INSTALL-KDM"
                     add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
-                    TEMP=$(config_xinitrc 'startkde')
-                    add_packagemanager "$TEMP" "CONFIG-XINITRC-KDE"
+                    if [[ "$GNOME_INSTALL" -eq 1 ]]; then
+                        add_packagemanager "add_option 'usr/share/config/kdm/kdmrc' 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-KDM'" "ADD-OPTION-KDM"
+                    fi
+                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
+                        TEMP=$(config_xinitrc 'startkde')
+                        add_packagemanager "$TEMP" "CONFIG-XINITRC-KDE"
+                    elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
+                        TEMP=$(config_xinitrc 'mate-session')
+                        add_packagemanager "$TEMP" "CONFIG-XINITRC-MATE"
+                    elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
+                        TEMP=$(config_xinitrc 'gnome-session-cinnamon')
+                        add_packagemanager "$TEMP" "CONFIG-XINITRC-CINNAMON"
+                    else
+                        TEMP=$(config_xinitrc 'gnome-session')
+                        add_packagemanager "$TEMP" "CONFIG-XINITRC-GNOME"
+                    fi
                     break
                     ;;
                 3)  # Elsa 
@@ -2075,7 +2107,7 @@ install_display_manager()
 NAME="install_extra"
 USAGE="install_extra"
 DESCRIPTION="Install Extra"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2138,7 +2170,7 @@ install_extra()
 NAME="install_extras"
 USAGE="install_extras"
 DESCRIPTION="Install Extras"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2311,7 +2343,7 @@ install_extras()
 NAME="install_audio_apps"
 USAGE="install_audio_apps"
 DESCRIPTION="Install Audio Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2374,7 +2406,7 @@ install_audio_apps()
 NAME="install_audio_editors"
 USAGE="install_audio_editors"
 DESCRIPTION="Install Audio Editors"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2451,7 +2483,7 @@ install_audio_editors()
 NAME="install_players"
 USAGE="install_players"
 DESCRIPTION="Install Players"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2576,7 +2608,7 @@ install_players()
 NAME="install_office_apps"
 USAGE="install_office_apps"
 DESCRIPTION="Install Office Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2722,7 +2754,7 @@ install_office_apps()
 NAME="install_system_apps"
 USAGE="install_system_apps"
 DESCRIPTION="Install System Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2827,7 +2859,7 @@ install_system_apps()
 NAME="install_de_extras"
 USAGE="install_system_apps"
 DESCRIPTION="Install DE Extras"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2883,7 +2915,7 @@ install_de_extras()
 NAME="install_gtk_themes"
 USAGE="install_gtk_themes"
 DESCRIPTION="Install GTK Themes"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2989,7 +3021,7 @@ install_gtk_themes()
 NAME="install_icons"
 USAGE="install_icons"
 DESCRIPTION="Install ICONS"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3103,7 +3135,7 @@ install_icons()
 NAME="install_games"
 USAGE="install_games"
 DESCRIPTION="Install Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3222,7 +3254,7 @@ install_games()
 NAME="install_action_games"
 USAGE="install_action_games"
 DESCRIPTION="Install Action/Adventure Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3321,7 +3353,7 @@ install_action_games()
 NAME="install_arade_games"
 USAGE="install_arade_games"
 DESCRIPTION="Install Arcade Plateformer Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3437,7 +3469,7 @@ install_arade_games()
 NAME="install_dungon_games"
 USAGE="install_dungon_games"
 DESCRIPTION="Install Dungon Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3512,7 +3544,7 @@ install_dungon_games()
 NAME="install_emulator_games"
 USAGE="install_emulator_games"
 DESCRIPTION="Install Emulator Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3605,7 +3637,7 @@ install_emulator_games()
 NAME="install_fps_games"
 USAGE="install_fps_games"
 DESCRIPTION="Install FPS Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3681,7 +3713,7 @@ install_fps_games()
 NAME="install_mmo_games"
 USAGE="install_mmo_games"
 DESCRIPTION="Install MMO Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3762,7 +3794,7 @@ install_mmo_games()
 NAME="install_puzzle_games"
 USAGE="install_puzzle_games"
 DESCRIPTION="Install Puzzle Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3819,7 +3851,7 @@ install_puzzle_games()
 NAME="install_rpg_games"
 USAGE="install_rpg_games"
 DESCRIPTION="Install RPG GAMES"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3882,7 +3914,7 @@ install_rpg_games()
 NAME="install_racing_games"
 USAGE="install_racing_games"
 DESCRIPTION="Install Racing Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3957,7 +3989,7 @@ install_racing_games()
 NAME="install_simulation_games"
 USAGE="install_simulation_games"
 DESCRIPTION="Install Simulation Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4020,7 +4052,7 @@ install_simulation_games()
 NAME="install_strategy_games"
 USAGE="install_strategy_games"
 DESCRIPTION="Install Strategy Games"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4107,7 +4139,7 @@ install_strategy_games()
 NAME="create_sites_folder"
 USAGE="create_sites_folder"
 DESCRIPTION="create sites folder"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4115,8 +4147,8 @@ REVISION="5 Dec 2012"
 [[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 create_sites_folder()
 {
-    # copy_file "from" "to" "$(basename $BASH_SOURCE) : $LINENO"
-    # copy_dir "from" "to" "$(basename $BASH_SOURCE) : $LINENO"
+    # copy_file "from" "to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    # copy_dir "from" "to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     [[ ! -f  /etc/httpd/conf/extra/httpd-userdir.conf.aui ]] && cp -v /etc/httpd/conf/extra/httpd-userdir.conf /etc/httpd/conf/extra/httpd-userdir.conf.aui
     sed -i 's/public_html/Sites/g' /etc/httpd/conf/extra/httpd-userdir.conf
     su - "$USERNAME" -c "mkdir -p ~/Sites"
@@ -4124,7 +4156,7 @@ create_sites_folder()
     print_line
     echo "The folder \"Sites\" has been created in your home"
     echo "You can access your projects at \"http://localhost/~username\""
-    pause_function "$(basename $BASH_SOURCE) : $LINENO"
+    pause_function ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4132,7 +4164,7 @@ create_sites_folder()
 NAME="install_web_server"
 USAGE="install_web_server"
 DESCRIPTION="Install Web Server"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4179,7 +4211,7 @@ install_web_server()
 NAME="install_fonts"
 USAGE="install_fonts"
 DESCRIPTION="Install Fonts"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4274,7 +4306,7 @@ install_fonts()
 NAME="clean_orphan_packages"
 USAGE="clean_orphan_packages"
 DESCRIPTION="Clean Orphan Packages"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4290,9 +4322,9 @@ clean_orphan_packages()
 # -----------------------------------------------------------------------------
 # GET NETWORK MANAGER {{{
 NAME="get_network_manager"
-USAGE=$(localize "GET-NETWORK-MANAGER-USAGE")
-DESCRIPTION=$(localize "GET-NETWORK-MANAGER-DESC")
-NOTES=$(localize "GET-NETWORK-MANAGER-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "GET-NETWORK-MANAGER-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-NETWORK-MANAGER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-NETWORK-MANAGER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4343,9 +4375,9 @@ get_network_manager()
 # -----------------------------------------------------------------------------
 # INSTALL NETWORK MANAGER {{{
 NAME="install_network_manager"
-USAGE=$(localize "INSTALL-NETWORK-MANAGER-USAGE")
-DESCRIPTION=$(localize "INSTALL-NETWORK-MANAGER-DESC")
-NOTES=$(localize "INSTALL-NETWORK-MANAGER-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-NETWORK-MANAGER-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-NETWORK-MANAGER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-NETWORK-MANAGER-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4378,7 +4410,8 @@ install_network_manager()
         add_user_group "networkmanager"
         # Network Management daemon
         # Application development toolkit for controlling system-wide privileges
-        add_packagemanager "systemctl enable NetworkManager.service polkitd.service" "SYSTEMD-ENABLE-NETWORKMANAGER"
+        # polkit.service
+        add_packagemanager "systemctl enable NetworkManager.service" "SYSTEMD-ENABLE-NETWORKMANAGER"
         add_packagemanager "add_user_2_group 'networkmanager'" "GROUPADD-NETWORKMANAGER"
     elif [[ "$NETWORK_MANAGER" == "wicd" ]]; then
         if [[ "$KDE_INSTALLED" -eq 1 ]]; then
@@ -4400,9 +4433,9 @@ install_network_manager()
 # -----------------------------------------------------------------------------
 # INSTALL USB 3G MODEM {{{
 NAME="install_usb_modem"
-USAGE=$(localize "INSTALL-USB-3G-MODEM-USAGE")
-DESCRIPTION=$(localize "INSTALL-USB-3G-MODEM-DESC")
-NOTES=$(localize "INSTALL-USB-3G-MODEM-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-USB-3G-MODEM-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-USB-3G-MODEM-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-USB-3G-MODEM-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4439,7 +4472,7 @@ install_usb_modem()
 NAME="install_accessories_apps"
 USAGE="install_accessories_apps"
 DESCRIPTION="Install Accessory Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4589,7 +4622,7 @@ install_accessories_apps()
 NAME="install_development_apps"
 USAGE="install_development_apps"
 DESCRIPTION="Install Development Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4772,7 +4805,7 @@ install_development_apps()
 NAME="install_eclipse_dev"
 USAGE="install_eclipse_dev"
 DESCRIPTION="Install Eclipse Dev"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4872,7 +4905,7 @@ install_eclipse_dev()
 NAME="install_utilities"
 USAGE="install_utilities"
 DESCRIPTION="Install Utilities"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4897,7 +4930,7 @@ install_utilities()
 NAME="install_internet_apps"
 USAGE="install_internet_apps"
 DESCRIPTION="Install Internet Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4978,7 +5011,7 @@ install_internet_apps()
 NAME="install_browsers"
 USAGE="install_internet_apps"
 DESCRIPTION="Install Internet Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5058,7 +5091,7 @@ install_browsers()
 NAME="install_download_fileshare"
 USAGE="install_download_fileshare"
 DESCRIPTION="Install Download / Fileshare"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5174,7 +5207,7 @@ install_download_fileshare()
 NAME="install_email"
 USAGE="install_email"
 DESCRIPTION="Install Email"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5243,7 +5276,7 @@ install_email()
 NAME="install_im"
 USAGE="install_im"
 DESCRIPTION="Install IM"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5319,7 +5352,7 @@ install_im()
 NAME="install_irc"
 USAGE="install_irc"
 DESCRIPTION="Install IRC"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5385,7 +5418,7 @@ install_irc()
 NAME="install_mapping"
 USAGE="install_mapping"
 DESCRIPTION="Install Mapping"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5445,7 +5478,7 @@ install_mapping()
 NAME="install_desktop_share"
 USAGE="install_desktop_share"
 DESCRIPTION="Install Desktop Share"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5501,13 +5534,20 @@ install_desktop_share()
 # INSTALL GRAPHICS APPS {{{
 NAME="install_graphics_apps"
 USAGE="install_graphics_apps"
-DESCRIPTION="Install Graphic Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-GRAPHICS-APPS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
 [[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-DESC"   "Install Graphic Apps"
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-TITLE"  "GRAPHICS APPS"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-INFO"   "AV Studio:"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-INFO-2" "and from AUR"
+# -------------------------------------
 install_graphics_apps()
 {
     # 6
@@ -5517,8 +5557,8 @@ install_graphics_apps()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     #
     while [[ 1 ]]; do
-        print_title "GRAPHICS APPS"
-        print_info "AV Studio: $AV_STUDIO and from AUR $AV_STUDIO_AUR"
+        print_title "INSTALL-GRAPHICS-APPS-TITLE"
+        print_info "INSTALL-GRAPHICS-APPS-INFO" " $AV_STUDIO $(localize "INSTALL-GRAPHICS-APPS-INFO-2") $AV_STUDIO_AUR"
         local -a MenuItems=( "" ); local -a MenuInfo=( "" ) # Reset
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "AV Studio"      "" "Some $AUR" "AV Studio: Installs all Below and more Audio and Video Apps" "MenuTheme[@]"
@@ -5633,24 +5673,44 @@ install_graphics_apps()
 # INSTALL AV STUDIO {{{
 NAME="install_av_studio"
 USAGE="install_av_studio"
-DESCRIPTION="Install AV Studio"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION="INSTALL-AV-STUDIO-DESC"
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
 [[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+# Help file Localization
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-AV-STUDIO-DESC"  "Install AV Studio"
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-AV-STUDIO-TITLE" "Audio Video Studeo"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-AV-STUDIO-INFO"  "Full List"
+
+# -------------------------------------
 install_av_studio()
 {
     # 6 sub 14
-    print_title "Audio Video Studeo"
-    print_info "Audacity, Ardour, Blender, Openshot, ffmpeg, mencoder, and more"
-    print_info "Full List: $AV_STUDIO" 
-    add_package "$AV_STUDIO" # 
+    print_title "INSTALL-AV-STUDIO-TITLE"
+    print_info "INSTALL-AV-STUDIO-INFO" ": $AV_STUDIO" 
+    #
+    add_package "$AV_STUDIO"
     add_packagemanager "package_install \"$AV_STUDIO\" 'INSTALL-AUDIO-VIDEO-STUDEO'" "INSTALL-AUDIO-VIDEO-STUDEO" 
-    add_aur_package "$AV_STUDIO_AUR" # 
+    if [[ "$GNOME_INSTALL" -eq 1 ]]; then
+        add_package "$AV_STUDIO_GTK"
+        add_packagemanager "package_install \"$AV_STUDIO_GTK\" 'INSTALL-AUDIO-VIDEO-STUDEO-GTK'" "INSTALL-AUDIO-VIDEO-STUDEO-GTK"
+    fi
+    #
+    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
+        add_package "$AV_STUDIO_KDE"
+        add_packagemanager "package_install \"$AV_STUDIO_KDE\" 'INSTALL-AUDIO-VIDEO-STUDEO-KDE'" "INSTALL-AUDIO-VIDEO-STUDEO-KDE"
+    else
+        add_package "$AV_STUDIO_KDEGRAPHICS"
+        add_packagemanager "package_install \"$AV_STUDIO_KDEGRAPHICS\" 'INSTALL-AUDIO-VIDEO-STUDEO-KDEGRAPHICS'" "INSTALL-AUDIO-VIDEO-STUDEO-KDEGRAPHICS"
+    fi
+    #
+    add_aur_package "$AV_STUDIO_AUR"
     add_packagemanager "aur_package_install \"$AV_STUDIO_AUR\" 'AUR-INSTALL-AUDIO-VIDEO-STUDEO'" "AUR-INSTALL-AUDIO-VIDEO-STUDEO"
-    pause_function "$(basename $BASH_SOURCE) : $LINENO"
+    pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5658,7 +5718,7 @@ install_av_studio()
 NAME="install_video_apps"
 USAGE="install_video_apps"
 DESCRIPTION="Install Video Apps"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5727,7 +5787,7 @@ install_video_apps()
 NAME="install_video_players"
 USAGE="install_video_players"
 DESCRIPTION="Install Video Players"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5829,8 +5889,8 @@ install_video_players()
 # INSTALL VIDEO EDITORS TOOLS {{{
 NAME="install_video_editors_tools"
 USAGE="install_video_editors_tools"
-DESCRIPTION=$(localize "INSTALL-VIDEO-EDITORS-TOOLS-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-VIDEO-EDITORS-TOOLS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5915,7 +5975,7 @@ install_video_editors_tools()
 NAME="install_science"
 USAGE="install_science"
 DESCRIPTION="Install Science"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5928,15 +5988,15 @@ install_science()
     print_info "Full List: $INSTALL_SCIENCE_EDUCATION" 
     add_package "$INSTALL_SCIENCE_EDUCATION" #  
     add_packagemanager "package_install \"$INSTALL_SCIENCE_EDUCATION\" 'INSTALL-SCIENCE'" "INSTALL-SCIENCE"
-    pause_function "$(basename $BASH_SOURCE) : $LINENO"
+    pause_function ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL VIDEO CARDS {{{
 NAME="install_video_cards"
-USAGE=$(localize "INSTALL-VIDEO-CARDS-USAGE")
-DESCRIPTION=$(localize "INSTALL-VIDEO-CARDS-DESC")
-NOTES=$(localize "INSTALL-VIDEO-CARDS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-VIDEO-CARDS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-VIDEO-CARDS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-VIDEO-CARDS-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -6063,9 +6123,9 @@ install_video_cards()
 # -----------------------------------------------------------------------------
 # INSTALL CUPS {{{
 NAME="install_cups"
-USAGE=$(localize "INSTALL-CUPS-USAGE")
-DESCRIPTION=$(localize "INSTALL-CUPS-DESC")
-NOTES=$(localize "INSTALL-CUPS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-CUPS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-CUPS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-CUPS-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -6103,7 +6163,7 @@ install_cups()
 NAME="install_additional_firmwares"
 USAGE="INSTALL-ADDITIONAL-FIRMWARE-USAGE"
 DESCRIPTION="INSTALL-ADDITIONAL-FIRMWARE-DESC"
-NOTES=$(localize "INSTALL-ADDITIONAL-FIRMWARE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-ADDITIONAL-FIRMWARE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -6311,8 +6371,8 @@ install_additional_firmwares()
 # TEST INSTALL {{{
 NAME="test_install"
 USAGE="test_install"
-DESCRIPTION=$(localize "TEST-INSTALL-DESC")
-NOTES=$(localize "TEST-INSTALL-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "TEST-INSTALL-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "TEST-INSTALL-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -6325,6 +6385,8 @@ REVISION="5 Dec 2012"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO"   "Test Install"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-1" "Testing Core Packages."
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-2" "Testing AUR Packages."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-3" "Package Installed"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-4" "AUR Package Installed"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-WARN-1" "pacman Did Not find Package:"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-WARN-2" "pacman Did Not find AUR Package:"
 # -------------------------------------
@@ -6333,21 +6395,31 @@ test_install()
     # @FIX how to test now?
     print_info "TEST-INSTALL-INFO"    
     #
+    make_dir "$LOG_PATH/ssp/"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    echo "# pacman Install Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "${LOG_PATH}/ssp/failures.txt" # Truncate file
+    echo "# *** Core ***" >> "${LOG_PATH}/ssp/failures.txt"
     print_info "TEST-INSTALL-INFO-1"    
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
-        if ! check_package "${PACKAGES[$i]}" ; then
-            print_warning "TEST-INSTALL-WARN-1" "${PACKAGES[$i]}"
+        if check_package "${PACKAGES[$i]}" ; then
+            print_info "TEST-INSTALL-INFO-3" ": ${PACKAGES[$i]}"
+        else
+            print_warning "TEST-INSTALL-WARN-1" ": ${PACKAGES[$i]}"
+            echo "${PACKAGES[$i]}" >> "${LOG_PATH}/ssp/failures.txt"
         fi
     done
     print_info "TEST-INSTALL-INFO-2"    
+    echo "# *** AUR ***" >> "${LOG_PATH}/ssp/failures.txt"
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if ! check_package "${AUR_PACKAGES[$i]}" ; then
-            print_warning "TEST-INSTALL-WARN-2" "${AUR_PACKAGES[$i]}"
+            print_info "TEST-INSTALL-INFO-4" ": ${AUR_PACKAGES[$i]}"
+        else
+            print_warning "TEST-INSTALL-WARN-2" ": ${AUR_PACKAGES[$i]}"
+            echo "${AUR_PACKAGES[$i]}" >> "${LOG_PATH}/ssp/failures.txt"
         fi
     done
-    pause_function "test_install @ $(basename $BASH_SOURCE) : $LINENO"
+    pause_function "test_install : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # *******************************************************************************************************************************
@@ -6355,7 +6427,7 @@ test_install()
 NAME="install_software_live"
 USAGE="install_software_live"
 DESCRIPTION="Install Software on Live OS"
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -6397,10 +6469,10 @@ install_software_live()
     print_title "INSTALL-SOFTWARE-LIVE-TITLE" ' - https://wiki.archlinux.org/index.php/Beginners%27_Guide#Boot_Arch_Linux_Installation_Media'
     print_info "INSTALL-SOFTWARE-LIVE-INFO-1"
     configure_pacman_package_signing
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: configure_pacman_package_signing @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_pacman_package_signing : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     print_info "INSTALL-SOFTWARE-LIVE-INFO-2"
     system_upgrade
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: system_upgrade @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "system_upgrade : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     print_info "INSTALL-SOFTWARE-LIVE-INFO-3"
     configure_aur_helper
     # MAKE SURE these are set: $CONFIG_HOSTNAME $USERNAME
@@ -6412,7 +6484,7 @@ install_software_live()
     else
         print_info "INSTALL-SOFTWARE-LIVE-INFO-6"
     fi
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_HOSTNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_HOSTNAME : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     #
     # Install PACKMANAGER
     if [[ "${#PACKMANAGER}" -ne 0 ]]; then
@@ -6422,19 +6494,19 @@ install_software_live()
             # @FIX test return logic; 0 = success; 
             eval "${PACKMANAGER[$index]}"
             if [ "$?" -eq 0 ]; then
-                write_log   "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " @ $(basename $BASH_SOURCE) : $LINENO"
+                write_log   "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             else
-                write_error "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " @ $(basename $BASH_SOURCE) : $LINENO"
-                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: eval PACKMANAGER at line $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
+                write_error "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "eval PACKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
             fi
         done
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: eval PACKMANAGER at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "eval PACKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     #
     # FLESH
     if [[ "$FLESH" -eq 1 ]]; then
         configure_user_account
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: configure_user_account @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_user_account : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     # TOR
     if [[ "$CONFIG_TOR" -eq 1 ]]; then
@@ -6449,7 +6521,7 @@ install_software_live()
         fi
         groupadd -g 42 privoxy
         useradd -u 42 -g privoxy -s /bin/false -d /etc/privoxy privoxy
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_TOR @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_TOR : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     # KDE
     if [[ "$CONFIG_KDE" -eq 1 ]]; then
@@ -6461,21 +6533,21 @@ install_software_live()
         tar zxvf Kawai.tar.gz
         rm Sweet.tar.gz
         rm Kawai.tar.gz
-        make_dir "/home/$USERNAME/.kde4/share/apps/color-schemes" "$(basename $BASH_SOURCE) : $LINENO"
+        make_dir "/home/$USERNAME/.kde4/share/apps/color-schemes" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         mv Sweet/Sweet.colors "/home/$USERNAME/.kde4/share/apps/color-schemes"
         mv Kawai/Kawai.colors "/home/$USERNAME/.kde4/share/apps/color-schemes"
-        make_dir "/home/$USERNAME/.kde4/share/apps/QtCurve" "$(basename $BASH_SOURCE) : $LINENO"
+        make_dir "/home/$USERNAME/.kde4/share/apps/QtCurve" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         mv Sweet/Sweet.qtcurve "/home/$USERNAME/.kde4/share/apps/QtCurve"
         mv Kawai/Kawai.qtcurve "/home/$USERNAME/.kde4/share/apps/QtCurve"
         chown -R "${USERNAME}:$USERNAME" "/home/$USERNAME/.kde4"
         rm -fr Kawai Sweet
         #
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_KDE @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_KDE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     # SSH
     if [[ "$CONFIG_SSH" -eq 1 ]]; then
         print_info "INSTALL-SOFTWARE-LIVE-INFO-9"
-        [[ ! -f /etc/ssh/sshd_config.aui ]] && copy_file "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.aui" "$(basename $BASH_SOURCE) : $LINENO";
+        [[ ! -f /etc/ssh/sshd_config.aui ]] && copy_file "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.aui" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO";
         sed -i '/Port 22/s/^#//' /etc/ssh/sshd_config
         sed -i '/Protocol 2/s/^#//' /etc/ssh/sshd_config
         sed -i '/HostKey \/etc\/ssh\/ssh_host_rsa_key/s/^#//' /etc/ssh/sshd_config
@@ -6507,14 +6579,15 @@ install_software_live()
         sed -i '/the setting of/s/^/#/' /etc/ssh/sshd_config
         sed -i '/RhostsRSAAuthentication and HostbasedAuthentication/s/^/#/' /etc/ssh/sshd_config
         #
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_SSH @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_SSH : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     #
     # Configure XORG
     if [[ "$CONFIG_XORG" -eq 1 ]]; then
         print_info "INSTALL-SOFTWARE-LIVE-INFO-10"
         if [[ "$LANGUAGE" == "de_DE" || "$LANGUAGE" == "es_ES" || "$LANGUAGE" == "es_CL" || "$LANGUAGE" == "it_IT" || "$LANGUAGE" == "fr_FR" || "$LANGUAGE" == "pt_BR" || "$LANGUAGE" == "pt_PT" ]]; then
-            [[ ! -f /etc/X11/xorg.conf.d/10-evdev.conf.aui ]] && copy_file "/etc/X11/xorg.conf.d/10-evdev.conf" "/etc/X11/xorg.conf.d/10-evdev.conf.aui" "$(basename $BASH_SOURCE) : $LINENO";
+            cd ..
+            [[ ! -f /etc/X11/xorg.conf.d/10-evdev.conf.aui ]] && copy_file "/etc/X11/xorg.conf.d/10-evdev.conf" "/etc/X11/xorg.conf.d/10-evdev.conf.aui" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO";
             # CONFIGURE QWERTY KEYBOARD IN XORG {{{
             file="/etc/X11/xorg.conf.d/10-evdev.conf"
             # get the line number that has "keyboard" in 10-evdev.conf
@@ -6571,7 +6644,7 @@ install_software_live()
         ln -s ../conf.avail/70-no-bitmaps.conf
         cd "$FULL_SCRIPT_PATH"
         #
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_XORG @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_XORG : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     # @FIX
     if [[ "$WEBSERVER" -eq 1 ]]; then    
@@ -6650,7 +6723,7 @@ install_software_live()
         #pacman -Sc --noconfirm
         pacman-optimize
         #
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_software_live: CONFIG_ORPHAN @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_ORPHAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     test_install
     #
@@ -6661,8 +6734,8 @@ install_software_live()
 # INSTALL LOAD SOFTWARE }}}
 NAME="install_loaded_software"
 USAGE="install_loaded_software"
-DESCRIPTION=$(localize "INSTALL-LOAD-SOFTWARE-DESC")
-NOTES=$(localize "INSTALL-LOAD-SOFTWARE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-LOAD-SOFTWARE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-LOAD-SOFTWARE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -6693,7 +6766,7 @@ install_loaded_software()
     #
     if [[ "$IS_SOFTWARE_CONFIG_LOADED" -eq 0 ]]; then            
         print_warning "No Software Configuration files found!, run option -i and Save Configuration."
-        pause_function "$(basename $BASH_SOURCE) : $LINENO"
+        pause_function ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         exit 0
     fi
     print_info "$TEXT_SCRIPT_ID"
@@ -6702,7 +6775,7 @@ install_loaded_software()
     print_info "INSTALL-LOAD-SOFTWARE-INFO-3"
     print_info "INSTALL-LOAD-SOFTWARE-INFO-4"
     #echo "Copying over all Configuration files to Live OS."
-    #copy_dir "$FULL_SCRIPT_PATH/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
+    #copy_dir "$FULL_SCRIPT_PATH/etc/" "/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     
     #print_info "Create Custom AUR Repository..."
     #create_custom_aur_repo # @FIX still can not get this to work
