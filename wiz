@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="22 Dec 2012 16:33"
+# LAST_UPDATE="27 Dec 2012 16:33"
 #
 ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
@@ -27,6 +27,7 @@ fi
 if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
     declare -i RUN_LOCALIZER=0
     declare -i RUN_HELP=0
+    declare -i RUN_TEST=0
     declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
     declare LOCALIZED_FILE="arch-wizard.sh"
     declare CONFIG_NAME="archwiz"
@@ -37,6 +38,7 @@ if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
     declare ACTIVITY_LOG="${LOG_PATH}/${CONFIG_NAME}-activity.log"
     declare SCRIPT_LOG="${LOG_PATH}/${CONFIG_NAME}-script.log"
     #. "${FULL_SCRIPT_PATH}/wizard.sh"
+    echo -ne " Loading wizard.sh "
     source "${FULL_SCRIPT_PATH}/wizard.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/wizard.sh"
@@ -44,7 +46,7 @@ else
 fi
 # Common Wizard
 if [ -f "${FULL_SCRIPT_PATH}/common-wiz.sh" ]; then
-    echo "Loading common-wiz.sh" 
+    echo -ne " Loading common-wiz.sh " 
     source "${FULL_SCRIPT_PATH}/common-wiz.sh"
 else
     echo "ERROR - ${FULL_SCRIPT_PATH}/common-wiz NOT FOUND"
@@ -52,7 +54,7 @@ else
 fi
 # Arch Wizard
 if [ -f "${FULL_SCRIPT_PATH}/arch-wiz.sh" ]; then
-    echo "Loading arch-wiz.sh" 
+    echo -ne " Loading arch-wiz.sh " 
     source "${FULL_SCRIPT_PATH}/arch-wiz.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/arch-wiz.sh"
@@ -60,7 +62,7 @@ else
 fi
 # Packages
 if [ -f "${FULL_SCRIPT_PATH}/packages.sh" ]; then
-    echo "Loading packages.sh" 
+    echo -ne " Loading packages.sh " 
     source "${FULL_SCRIPT_PATH}/packages.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/packages.sh"
@@ -68,7 +70,7 @@ else
 fi
 # Package Wizard
 if [ -f "${FULL_SCRIPT_PATH}/package-wiz.sh" ]; then
-    echo "Loading package-wiz.sh" 
+    echo -ne " Loading package-wiz.sh " 
     source "${FULL_SCRIPT_PATH}/package-wiz.sh"
 else
     echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/package-wiz.sh"
@@ -139,8 +141,9 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 test()
 {
+    test_install
     #
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Test @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -355,7 +358,7 @@ config_menu()
                 4)  # Restore Config
                     MenuChecks[$((M_OPT - 1))]=1
                     
-                    copy_dir "$FULL_SCRIPT_PATH/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
+                    copy_dir "$FULL_SCRIPT_PATH/etc/" "/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     
                     StatusBar=$(localize "CONFIG-MENU-SB-RESTORE") 
                     ;;
@@ -506,12 +509,11 @@ main_menu()
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         read_input_options
-        local M_OPT=""
         for M_OPT in ${OPTIONS[@]}; do
             case "$M_OPT" in
                 1)  # Install New Software
                     MenuChecks[$((M_OPT - 1))]=1
-                    set_debugging_mode "$DetectedMode" "$(basename $BASH_SOURCE) : $LINENO"
+                    set_debugging_mode "$DetectedMode" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     clear_software
                     verify_config "$DetectedMode"
                     StatusBar=$(localize "MAIN-MENU-SB-SOFTWARE")
@@ -519,7 +521,7 @@ main_menu()
                     ;;
                 2)  # Install OS
                     MenuChecks[$((M_OPT - 1))]=1
-                    set_debugging_mode "$DetectedMode" "$(basename $BASH_SOURCE) : $LINENO"
+                    set_debugging_mode "$DetectedMode" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     FAST_INSTALL=1
                     BOOT_MODE=1
                     # Assume Boot mode
@@ -531,7 +533,7 @@ main_menu()
                     ;;
                 3)  # Load Software
                     MenuChecks[$((M_OPT - 1))]=1
-                    set_debugging_mode "$DetectedMode" "$(basename $BASH_SOURCE) : $LINENO"
+                    set_debugging_mode "$DetectedMode" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     verify_config "$DetectedMode"
                     if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
                         echo "No Repository"
@@ -569,8 +571,12 @@ main_menu()
                     ;;
                 7)  # Test
                     MenuChecks[$((M_OPT - 1))]=1
+                    local -i OLD_DEBUGGING=DEBUGGING # Save setting
                     DEBUGGING=1
+                    verify_config "$DetectedMode" # That puts this in test mode also
                     test
+                    DEBUGGING=OLD_DEBUGGING # Restor Setting
+                    #
                     StatusBar=$(localize "MAIN-MENU-SB-TEST")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
@@ -581,6 +587,10 @@ main_menu()
                     ;;
                 9)  # Quit
                     MenuChecks[$((M_OPT - 1))]=1
+                    chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
+                    chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
+                    chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
+                    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
                     M_OPT="$BreakableKey"
                     break
                     ;;
@@ -588,6 +598,10 @@ main_menu()
                     if [[ "$M_OPT" == $(to_lower_case "$BreakableKey") ]]; then
                         break;
                     fi
+                    chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
+                    chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
+                    chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
+                    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
                     invalid_option "$M_OPT"
                     StatusBar=$(localize "INVALID_OPTION")
                     StatusBar2=""
