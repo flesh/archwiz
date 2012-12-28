@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="22 Dec 2012 16:33"
+# LAST_UPDATE="24 Dec 2012 16:33"
 # SCRIPT_VERSION="1.0"
 #
 # VARIABLES {{{
@@ -74,6 +74,7 @@ declare -a VIDEO_CARDS=( "nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "S
 NETWORK_MANAGER="networkmanager" # or wicd
 #
 declare -a PACKAGE_CHECK_FAILURES=( "mate" "mate-extras" "base-devel" )
+declare -a PACKAGE_FAILURES_CHECK=( "mate/libmate" "mate/mate-media" "core/gcc" )
 #
 declare -a PACKAGES=( "" )
 declare -a AUR_PACKAGES=( "" )
@@ -160,9 +161,9 @@ declare -a EDITORS=("nano" "emacs" "vi" "vim" "joe");
 # -----------------------------------------------------------------------------
 # INSTALLED CORE {{{
 NAME="installed_core"
-USAGE=$(localize "INSTALLED-CORE-USAGE")
-DESCRIPTION=$(localize "INSTALLED-CORE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALLED-CORE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALLED-CORE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -184,9 +185,9 @@ installed_core()
 # -----------------------------------------------------------------------------
 # FAILED INSTALL CORE {{{
 NAME="failed_install_core"
-USAGE=$(localize "FAILED-INSTALL-CORE-USAGE")
-DESCRIPTION=$(localize "FAILED-INSTALL-CORE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "FAILED-INSTALL-CORE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "FAILED-INSTALL-CORE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -208,9 +209,9 @@ failed_install_core()
 # -----------------------------------------------------------------------------
 # INSTALLED AUR {{{
 NAME="installed_aur"
-USAGE=$(localize "INSTALLED-AUR-USAGE")
-DESCRIPTION=$(localize "INSTALLED-AUR-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALLED-AUR-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALLED-AUR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -232,9 +233,9 @@ installed_aur()
 # -----------------------------------------------------------------------------
 # FAILED INSTALL AUR {{{
 NAME="failed_install_aur"
-USAGE=$(localize "FAILED-INSTALL-AUR-USAGE")
-DESCRIPTION=$(localize "FAILED-INSTALL-AUR-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "FAILED-INSTALL-AUR-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "FAILED-INSTALL-AUR-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -256,9 +257,9 @@ failed_install_aur()
 # -----------------------------------------------------------------------------
 # CHECK PACKAGE {{{
 NAME="check_package"
-USAGE=$(localize "CHECK-PACKAGE-USAGE")
-DESCRIPTION=$(localize "CHECK-PACKAGE-DESC")
-NOTES=$(localize "CHECK-PACKAGE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "CHECK-PACKAGE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CHECK-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CHECK-PACKAGE-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -268,16 +269,39 @@ REVISION="5 Dec 2012"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-USAGE" "check_package 1->(Single-Package-to-Check Or Multiple Packages)"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-DESC"  "checks package(s) to see if they are installed in pacman."
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-NOTES" "I have seen this fail for one or more packages that were already install: mate; so I added -Qm for this reason."
+#
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-NFCD" "Not Found in Core Database"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CHECK-PACKAGE-FSSP" "Found in pacman -Ssp"
 # -------------------------------------
 check_package()
 {
     refresh_pacman
     # @FIX direct error to null &>
-    if ! pacman -Q "$1" ; then        # check if a package is already installed from Core
-        if ! pacman -Qm "$1" ; then   # check if a package is already installed from Outside Repository
-            return 1
+    if ! pacman -Q "$1" &> /dev/null ; then        # check if a package is already installed from Core
+        print_warning "CHECK-PACKAGE-NFCD" ": $1"
+        if pacman -Ssp "$1" &> /dev/null ; then   # check if a package is already installed from Outside Repository
+            pacman -Ssp "$1" > "${LOG_PATH}/ssp/${1}-ssp.log"
+            ## The files created need to be hand made, two elements per line; element 0 is package name, second element is a path to look for, if it exist; program should be installed
+            local -i isFound=0
+            local -i index=0
+            local -i total="${#PACKAGE_CHECK_FAILURES[*]}"
+            for (( index=0; index<${total}; index++ )); do
+                if [[ "${PACKAGE_CHECK_FAILURES[$((index))]}" == "$1" ]]; then
+                    #echo "total=$total - ${PACKAGE_CHECK_FAILURES[@]} and ${PACKAGE_FAILURES_CHECK[@]}"
+                    if is_string_in_file "${LOG_PATH}/ssp/${1}-ssp.log" "${PACKAGE_FAILURES_CHECK[$index]}" ; then
+                        isFound=1
+                        print_warning "CHECK-PACKAGE-FSSP" ": $1"
+                        break
+                    fi
+                fi
+            done
+            if [[ "$isFound" -eq 1 ]]; then
+                return 0
+            else
+                return 1
+            fi
         else
-            return 0
+            return 1
         fi
     else
         return 0
@@ -288,8 +312,8 @@ check_package()
 # SET LANGUAGE {{{
 NAME="set_language"
 USAGE="set_language"
-DESCRIPTION=$(localize "SET-LANGUAGE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SET-LANGUAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 # af ak ar as ast be bg bn-bd bn-in br bs ca cs csb cy da de el en-gb en-us en-za eo es-ar es-cl es-es es-mx et eu fa ff fi fr fy-nl ga-ie gd gl gu-in he hi-in hr hu hy-am id is it ja kk km kn ko ku lg lij lt lv mai mk ml mr nb-no nl nn-no nso or pa-in pl pt-br pt-pt rm ro ru si sk sl son sq sr sv-se ta ta-lk te th tr uk vi zh-cn zh-tw zu"
 AUTHOR="Flesher"
 VERSION="1.0"
@@ -346,8 +370,8 @@ set_language()
 # REFRESH PACMAN {{{
 NAME="refresh_pacman"
 USAGE="refresh_pacman"
-DESCRIPTION=$(localize "REFRESH-PACMAN-DESC")
-NOTES=$(localize "NONE") 
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REFRESH-PACMAN-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE") 
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -371,8 +395,8 @@ refresh_pacman()
 # SYSTEM UPDATE {{{
 NAME="system_upgrade"
 USAGE="system_upgrade"
-DESCRIPTION=$(localize "SYSTEM-UPDATE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SYSTEM-UPDATE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -390,7 +414,7 @@ system_upgrade()
         if [[ "$USE_PACMAN" -eq 1 ]]; then
             pacman -Syy --noconfirm
             pacman -Su --noconfirm
-            pacman -Sc && pacman-optimize
+            #pacman -Sc && pacman-optimize
         else
             # pplsyu
             aria2_args=( "--metalink-file=-" "--conf-path=/etc/ppl.conf" ) # Arguments for aria2c.
@@ -420,8 +444,8 @@ system_upgrade()
 # UPDATE SYSTEM {{{
 NAME="update_system"
 USAGE="update_system"
-DESCRIPTION=$(localize "UPDATE-SYSTEM-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "UPDATE-SYSTEM-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -447,8 +471,8 @@ update_system()
 # DOWNLOAD AUR REPO PACKAGES {{{
 NAME="download_aur_repo_packages"
 USAGE="download_aur_repo_packages"
-DESCRIPTION=$(localize "DOWNLOAD-AUR-REPO-PACKAGES-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "DOWNLOAD-AUR-REPO-PACKAGES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -475,7 +499,7 @@ download_aur_repo_packages()
             all_packages="$all_packages ${AUR_PACKAGES[$i]}"
         done
     else
-        print_warning "DOWNLOAD-AUR-REPO-PACKAGES-NO-PACKAGES" " - $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "DOWNLOAD-AUR-REPO-PACKAGES-NO-PACKAGES" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
     print_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING" ": $all_packages"
@@ -485,16 +509,16 @@ download_aur_repo_packages()
         for PACKAGE in $all_packages; do
             print_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING-PACKAGE" ": [${PACKAGE}] -> [${AUR_CUSTOM_PACKAGES}]"
             if ! aur_download_packages "$PACKAGE" ; then
-                write_error   "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
-                print_warning "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
-                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_aur_repo_packages DO_SINGLES @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                write_error   "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "DO_SINGLES : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             fi
         done        
     else
         if ! aur_download_packages "$all_packages" ; then
-            write_error   "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $all_packages - $(basename $BASH_SOURCE) : $LINENO"
-            print_warning "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $all_packages - $(basename $BASH_SOURCE) : $LINENO"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_aur_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            write_error   "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $all_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_warning "DOWNLOAD-AUR-REPO-PACKAGES-PACKAGE-FAIL" ": $all_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi
     fi
     #    
@@ -502,24 +526,24 @@ download_aur_repo_packages()
         # set before getting here: AUR_REPO_NAME="${MOUNTPOINT}$AUR_REPO_NAME" # /mnt/home/${USERNAME}/aur-packages/
         if [[ "$RUNTIME_MODE" -eq 1 ]]; then
             # AUR_CUSTOM_PACKAGES = Boot Mode /root/usb/AUR-Packages
-            copy_files "$AUR_CUSTOM_PACKAGES" " " "${MOUNTPOINT}${MOUNTPOINT}/${AUR_REPO_NAME}" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_files "$AUR_CUSTOM_PACKAGES" " " "${MOUNTPOINT}${MOUNTPOINT}/${AUR_REPO_NAME}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         else
             # AUR_CUSTOM_PACKAGES = Live Mode /mnt/AUR-Packages
-            copy_files "$AUR_CUSTOM_PACKAGES" " " "/mnt/${AUR_REPO_NAME}" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_files "$AUR_CUSTOM_PACKAGES" " " "/mnt/${AUR_REPO_NAME}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
     #
     print_info "DOWNLOAD-AUR-REPO-PACKAGES-COMPLETED"
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_aur_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     return 0
 }
 #}}}
 # -----------------------------------------------------------------------------
 # COPY CUSTOM REPO {{{
 NAME="copy_custom_repo"
-USAGE=$(localize "COPY-CUSTOM-REPO-USAGE")
-DESCRIPTION=$(localize "COPY-CUSTOM-REPO-DESC")
-NOTES=$(localize "NONE") 
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "COPY-CUSTOM-REPO-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "COPY-CUSTOM-REPO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE") 
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -533,20 +557,20 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 copy_custom_repo()
 {
-    check_arg "copy_custom_repo" "3" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "copy_custom_repo" "3" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     print_info ""COPY-CUSTOM-REPO-INFO""
-    copy_file  "${1}/${2}.db.tar.gz" "$3"          "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file  "${1}/${2}.db.tar.gz" "${3}${2}.db" "$(basename $BASH_SOURCE) : $LINENO" # rename it to db
-    copy_files "${1}/"               "xz" "$3"     "$(basename $BASH_SOURCE) : $LINENO"
-    #copy_files "/var/lib/pacman/sync/" "db" "${MOUNTPOINT}/var/lib/pacman/sync/" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file  "${1}/${2}.db.tar.gz" "$3"          ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file  "${1}/${2}.db.tar.gz" "${3}${2}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # rename it to db
+    copy_files "${1}/"               "xz" "$3"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_files "/var/lib/pacman/sync/" "db" "${MOUNTPOINT}/var/lib/pacman/sync/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # DOWNLOAD REPO PACKAGES {{{
 NAME="download_repo_packages"
 USAGE="download_repo_packages"
-DESCRIPTION=$(localize "DOWNLOAD-REPO-PACKAGES-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "DOWNLOAD-REPO-PACKAGES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -573,8 +597,8 @@ download_repo_packages()
             all_packages="$all_packages ${PACKAGES[$i]}"
         done
     else
-        print_warning "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages - $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages - $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
     print_info "DOWNLOAD-REPO-PACKAGES-CREATING" ": ${all_packages}"
@@ -588,17 +612,17 @@ download_repo_packages()
         for PACKAGE in $all_packages; do
             print_info "DOWNLOAD-REPO-PACKAGES-DOWNLOADING" ": [${PACKAGE}] -> [${CUSTOM_PACKAGES}]"
             if ! pacman -Sw "$PACKAGE" --noconfirm --cachedir "${CUSTOM_PACKAGES}/" ; then
-                print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
-                write_error   "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error   "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
         done        
     else
         if ! pacman -Sw "$all_packages" --noconfirm --cachedir "${CUSTOM_PACKAGES}/" ; then
-            print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $all_packages - $(basename $BASH_SOURCE) : $LINENO"
-            write_error   "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
+            print_warning "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $all_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error   "DOWNLOAD-REPO-PACKAGES-DOWNLOAD-FAIL" ": $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages: pacman downloaded @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "pacman downloaded : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     if is_wildcard_file "${CUSTOM_PACKAGES}/" "pkg.tar.xz" ; then # " " | "ext" 
         #print_info "ls [${CUSTOM_PACKAGES}/*]"
         #ls "${CUSTOM_PACKAGES}"/*
@@ -609,30 +633,30 @@ download_repo_packages()
         fi
         repo-add "${CUSTOM_PACKAGES}/${CUSTOM_REPO_NAME}.db.tar.gz" "${CUSTOM_PACKAGES}"/*.pkg.tar.xz # /root/usb/Packages/
         if [[ "$?" -ne 0 ]]; then
-            print_warning "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz - $(basename $BASH_SOURCE) : $LINENO"
-            write_error   "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz - $(basename $BASH_SOURCE) : $LINENO"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages: repo-add @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            print_warning "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error   "DOWNLOAD-REPO-PACKAGES-REPO-ADD-FAIL" ": ${CUSTOM_PACKAGES}/*.pkg.tar.xz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "repo-add : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             #cd "$FULL_SCRIPT_PATH"
             return 1
         fi
     else
         print_warning "DOWNLOAD-REPO-PACKAGES-NOT-FOUND" ": [${CUSTOM_PACKAGES}/*.pkg.tar.xz]"
         ls "${CUSTOM_PACKAGES}"/*.pkg.tar.xz
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         #cd "$FULL_SCRIPT_PATH"
         return 1
     fi
     print_info "DOWNLOAD-REPO-PACKAGES-COMPLETED"
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     return 0
 }
 #}}}
 # -----------------------------------------------------------------------------
 # CREATE CUSTOM AUR REPO {{{
 NAME="create_custom_aur_repo"
-USAGE=$(localize "CREATE-CUSTOM-AUR-REPO-USAGE")
-DESCRIPTION=$(localize "CREATE-CUSTOM-AUR-REPO-DESC")
-NOTES=$(localize "CREATE-CUSTOM-AUR-REPO-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "CREATE-CUSTOM-AUR-REPO-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CREATE-CUSTOM-AUR-REPO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CREATE-CUSTOM-AUR-REPO-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="1 OCT 2012"
@@ -655,9 +679,9 @@ create_custom_aur_repo()
     fi
     # Download Repo packages, check files copied above
     if ! download_aur_repo_packages ; then
-        print_warning "CREATE-CUSTOM-AUR-REPO-ERROR" ": ${CUSTOM_PACKAGES} - $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "CREATE-CUSTOM-AUR-REPO-ERROR" ": ${CUSTOM_PACKAGES} - $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_custom_aur_repo: download_aur_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        print_warning "CREATE-CUSTOM-AUR-REPO-ERROR" ": ${CUSTOM_PACKAGES} : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "CREATE-CUSTOM-AUR-REPO-ERROR" ": ${CUSTOM_PACKAGES} : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_aur_repo_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
 }
@@ -665,9 +689,9 @@ create_custom_aur_repo()
 # -----------------------------------------------------------------------------
 # CREATE CUSTOM REPO {{{
 NAME="create_custom_repo"
-USAGE=$(localize "CREATE-CUSTOM-REPO-USAGE")
-DESCRIPTION=$(localize "CREATE-CUSTOM-REPO-DESC")
-NOTES=$(localize "CREATE-CUSTOM-REPO-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "CREATE-CUSTOM-REPO-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CREATE-CUSTOM-REPO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CREATE-CUSTOM-REPO-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="1 OCT 2012"
@@ -695,21 +719,21 @@ create_custom_repo()
         myMOUNTPOINT="/mnt" # I could just set this, but where is the fun in that
     fi
     #
-    make_dir "${CUSTOM_PACKAGES}/" "$(basename $BASH_SOURCE) : $LINENO" # First time [${FULL_SCRIPT_PATH}/${CUSTOM_PACKAGES_NAME}] folder will not exist
+    make_dir "${CUSTOM_PACKAGES}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # First time [${FULL_SCRIPT_PATH}/${CUSTOM_PACKAGES_NAME}] folder will not exist
     # Download Repo packages, check files copied above
     if ! download_repo_packages ; then
-        print_warning "CREATE-CUSTOM-REPO-ERROR-DOWNLOAD-REPO" ": ${CUSTOM_PACKAGES} - $(basename $BASH_SOURCE) : $LINENO"
-        write_error "CREATE-CUSTOM-REPO-ERROR-DOWNLOAD-REPO"   ": ${CUSTOM_PACKAGES} - $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_custom_repo: download_repo_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        print_warning "CREATE-CUSTOM-REPO-ERROR-DOWNLOAD-REPO" ": ${CUSTOM_PACKAGES} : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "CREATE-CUSTOM-REPO-ERROR-DOWNLOAD-REPO"   ": ${CUSTOM_PACKAGES} : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "download_repo_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
     # Copy Sync db to Flash Drive
-    copy_files "/var/lib/pacman/sync/" "db" "${FULL_SCRIPT_PATH}/Sync/" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_files "/var/lib/pacman/sync/" "db" "${FULL_SCRIPT_PATH}/Sync/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # Copy Repo from Flash Drive to Disk
     if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
         print_info "CREATE-CUSTOM-REPO-COPYING-REPO-LOCAL-CACHE"
-        copy_files "${CUSTOM_PACKAGES}/" "xz" "${PACMAN_CACHE}/" "$(basename $BASH_SOURCE) : $LINENO"
-        #copy_files "/var/lib/pacman/sync/" "db" "${myMOUNTPOINT}/var/lib/pacman/sync/" "$(basename $BASH_SOURCE) : $LINENO"
+        copy_files "${CUSTOM_PACKAGES}/" "xz" "${PACMAN_CACHE}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        #copy_files "/var/lib/pacman/sync/" "db" "${myMOUNTPOINT}/var/lib/pacman/sync/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     elif [[ "$PACMAN_REPO_TYPE" -eq 1 ]]; then # 1=Server
         print_info "CREATE-CUSTOM-REPO-COPYING-REPO-SHARE-CACHE"
         #
@@ -719,10 +743,10 @@ create_custom_repo()
             copy_custom_repo "${CUSTOM_PACKAGES}" "${CUSTOM_REPO_NAME}" "${myMOUNTPOINT}/${CUSTOM_PACKAGES_NAME}/"
         fi
         #
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_custom_repo: Server Copy at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Server Copy at line : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     elif [[ "$PACMAN_REPO_TYPE" -eq 2 ]]; then # 2=Client
         print_info "CREATE-CUSTOM-REPO-CLIENT-REPO"
-        copy_files "${CUSTOM_PACKAGES}/" "xz" "${PACMAN_CACHE}/" "$(basename $BASH_SOURCE) : $LINENO"
+        copy_files "${CUSTOM_PACKAGES}/" "xz" "${PACMAN_CACHE}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     #
     if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
@@ -737,7 +761,7 @@ create_custom_repo()
             # Note: if this text 'uncommented to enable the repo.' in pacman.conf changes, this will not work
             sed -i "/# uncommented to enable the repo./a #\n${FILE_SIGNATURE}\n# Commented below lines to disable the Custom Repository.\n[${CUSTOM_REPO_NAME}]\nSigLevel = Optional TrustedOnly\nServer = file://${myMOUNTPOINT}/${CUSTOM_PACKAGES_NAME}/" "/etc/pacman.conf"
             sed -i '/\[options\]/a CleanMethod = KeepCurrent' "/etc/pacman.conf"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_custom_repo: pacman.conf edit at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "pacman.conf : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi
     elif [[ "$PACMAN_REPO_TYPE" -eq 2 ]]; then # 2=Client
         print_info "CREATE-CUSTOM-REPO-CLIENT-REPO"
@@ -747,20 +771,20 @@ create_custom_repo()
         print_info "mount /var/lib/pacman/sync/"
         print_info "mount /var/cache/pacman/pkg"
     fi
-    copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf"       "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-    copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf"       ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
     #
     print_info "CREATE-CUSTOM-REPO-COMPLETE"
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_custom_repo completed at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     return 0
 }
 #}}}
 # -----------------------------------------------------------------------------
 # ADD REPO {{{
 NAME="add_repo"
-USAGE=$(localize "ADD-REPO-USAGE")
-DESCRIPTION=$(localize "ADD-REPO-DESC")
-NOTES=$(localize "ADD-REPO-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ADD-REPO-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-REPO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-REPO-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -773,7 +797,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 add_repo()
 {
-    check_arg "add_repo" "4" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "add_repo" "4" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if ! is_string_in_file "/etc/pacman.conf" "$1" ; then
         sed -i '$ a #'               "/etc/pacman.conf"
         sed -i "$ a [${1}]"          "/etc/pacman.conf"
@@ -784,9 +808,9 @@ add_repo()
             sed -i "$ a Server = ${2}"       "/etc/pacman.conf"
         fi
         if [[ "$RUNTIME_MODE" -eq 1 ]]; then # Boot
-            copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+            copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
         fi
-        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
+        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
     fi
 }
 #}}}
@@ -794,8 +818,8 @@ add_repo()
 # REQUIRED REPO {{{
 NAME="required_repo"
 USAGE="required_repo 1->(repo)"
-DESCRIPTION=$(localize "REQUIRED-REPO-DESC")
-NOTES=$(localize "REQUIRED-REPO-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REQUIRED-REPO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REQUIRED-REPO-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -820,8 +844,8 @@ required_repo()
                 sed -i "${multilib}s/^#//" "/etc/pacman.conf"
             fi
         fi
-        copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
+        copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf        
     fi
 }
 #}}}
@@ -829,12 +853,12 @@ required_repo()
 # OPTIMIZE PACMAN {{{
 NAME="optimize_pacman"
 USAGE="optimize_pacman"
-DESCRIPTION=$(localize "OPTIMIZE-PACMAN-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "OPTIMIZE-PACMAN-DESC")
 # https://wiki.archlinux.org/index.php/Aria2
 # http://xyne.archlinux.ca/scripts/pacman/#parisync
 # http://xyne.archlinux.ca/projects/reflector/
 # http://xyne.archlinux.ca/projects/pm2ml/
-NOTES=$(localize "OPTIMIZE-PACMAN-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "OPTIMIZE-PACMAN-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -887,8 +911,8 @@ optimize_pacman()
                         get_root_format # We may not have used the config file to format this drive
                     fi
                     sed -i '/\[options\]/a XferCommand = exec /usr/bin/pacget %u %o' "/etc/pacman.conf"
-                    copy_file "${FULL_SCRIPT_PATH}/pacget"      "/usr/bin/pacget"  "$(basename $BASH_SOURCE) : $LINENO"
-                    copy_file "${FULL_SCRIPT_PATH}/pacget.conf" "/etc/pacget.conf" "$(basename $BASH_SOURCE) : $LINENO"
+                    copy_file "${FULL_SCRIPT_PATH}/pacget"      "/usr/bin/pacget"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    copy_file "${FULL_SCRIPT_PATH}/pacget.conf" "/etc/pacget.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     if [[ "$ROOT_FORMAT" == "ext4" ]]; then
                         sed -i 's/file-allocation=none/file-allocation=falloc/g' "/etc/pacget.conf"
                     fi
@@ -896,18 +920,18 @@ optimize_pacman()
                 USE_PACMAN=0
             fi
         fi
-        print_info "OPTIMIZE-PACMAN-COMPLETED" " - $(basename $BASH_SOURCE) : $LINENO"
-        write_log  "OPTIMIZE-PACMAN-COMPLETED" " - $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "optimize_pacman @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        print_info "OPTIMIZE-PACMAN-COMPLETED" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_log  "OPTIMIZE-PACMAN-COMPLETED" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     else
-        write_error   "OPTIMIZE-PACMAN-FAILED" " - $(basename $BASH_SOURCE) : $LINENO"
-        print_warning "OPTIMIZE-PACMAN-FAILED" " - $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "optimize_pacman @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        write_error   "OPTIMIZE-PACMAN-FAILED" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "OPTIMIZE-PACMAN-FAILED" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
     # Copy all files that can be changed by optimize_pacman
-    copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-    copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+    copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
     #
     #reflector -p rsync --sort rate -c "$COUNTRY" --save /etc/pacman.d/mirrorlist.rsync
     return 0
@@ -917,9 +941,9 @@ optimize_pacman()
 # -----------------------------------------------------------------------------
 # INSTALL PACKAGE {{{
 NAME="install_package"
-USAGE=$(localize "INSTALL-PACKAGE-USAGE")
-DESCRIPTION=$(localize "INSTALL-PACKAGE-DESC")
-NOTES=$(localize "INSTALL-PACKAGE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-PACKAGE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-PACKAGE-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -942,9 +966,9 @@ install_package()
         print_info "INSTALL-PACKAGE-INSTALLING" ": $2"
         if ! package_install "$1" "$2" ; then
             IS_ERROR=1
-            write_error   "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 - $(basename $BASH_SOURCE) : $LINENO"
-            print_warning "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 - $(basename $BASH_SOURCE) : $LINENO"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_package @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            write_error   "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_warning "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi
         # pacman -S --noconfirm --needed "$1"
     else
@@ -965,13 +989,13 @@ install_package()
     for PACKAGE in $1; do
         if ! check_package "$PACKAGE" ; then
             IS_ERROR=1
-            write_error   "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 - $(basename $BASH_SOURCE) : $LINENO"
-            print_warning "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 - $(basename $BASH_SOURCE) : $LINENO"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_package @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            write_error   "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_warning "INSTALL-PACKAGE-ERROR" ": [$1] $(localize "INSTALL-PACKAGE-ERROR-2") $2 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi        
     done    
     if [[ "$IS_ERROR" -eq 1 ]]; then
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "install_package @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
     return 0
@@ -980,9 +1004,9 @@ install_package()
 # -----------------------------------------------------------------------------
 # PACKAGE INSTALL {{{
 NAME="package_install"
-USAGE=$(localize "PACKAGE-INSTALL-USAGE")
-DESCRIPTION=$(localize "PACKAGE-INSTALL-DESC")
-NOTES=$(localize "PACKAGE-INSTALL-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "PACKAGE-INSTALL-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PACKAGE-INSTALL-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "PACKAGE-INSTALL-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1020,9 +1044,9 @@ package_install()
                     sleep 13
                     if ! is_internet ; then
                         failed_install_core "$PACKAGE"
-                        write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                        print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                        write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                         # @FIX what to do now: restart network adapter
                         abort_install
                     else
@@ -1034,9 +1058,9 @@ package_install()
             print_this " " "${BRed} $(localize "PACKAGE-INSTALL-RETRY") ${BWhite}  $(localize "PACKAGE-INSTALL-PACKAGE") $PACKAGE $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 $(localize "PACKAGE-INSTALL-MANUAL")"
             if ! install_package "$1" "$2" "PACKAGE-INSTALL-$2" ; then
                 failed_install_core "$PACKAGE"
-                write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                 return 1           
             fi            
         fi
@@ -1063,9 +1087,9 @@ package_install()
                 if ! check_package "$PACKAGE" ; then
                     if is_in_array "PACKAGE_CHECK_FAILURES[@]" "$PACKAGE" ; then
                         failed_install_core "$PACKAGE"
-                        write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                        print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                        write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                     else
                         if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
                             if ! is_internet ; then
@@ -1073,9 +1097,9 @@ package_install()
                                 sleep 13
                                 if ! is_internet ; then
                                     failed_install_core "$PACKAGE"
-                                    write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                                    print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                                    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                                    write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                    print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                                     # @FIX what to do now: restart network adapter
                                     abort_install
                                 else
@@ -1089,9 +1113,9 @@ package_install()
                         # Last try     
                         if ! check_package "$PACKAGE" ; then
                             failed_install_core "$PACKAGE"
-                            write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                            print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN - $(basename $BASH_SOURCE) : $LINENO"
-                            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                            write_error   "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                            print_warning "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                         else
                             installed_core "$PACKAGE"
                             ((number_installed++))
@@ -1114,9 +1138,9 @@ package_install()
     if [[ "$number_installed" -eq "$total_packages" ]]; then
         return 0
     else
-        print_warning "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") - $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") - $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        print_warning "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "PACKAGE-INSTALL-FAILURES" ": $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES"), $number_failed $(localize "PACKAGE-INSTALL-FAILED"), $number_installed $(localize "PACKAGE-INSTALL-INSTALLED") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
 } 
@@ -1125,8 +1149,8 @@ package_install()
 # PACKAGE REMOVE {{{
 NAME="package_remove"
 USAGE="PACKAGE-REMOVE-USAGE"
-DESCRIPTION=$(localize "PACKAGE-REMOVE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PACKAGE-REMOVE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1154,8 +1178,8 @@ package_remove()
 # AUR DOWNLOAD {{{
 NAME="aur_download"
 USAGE="aur_download 1->(Package Name)"
-DESCRIPTION=$(localize "AUR-DOWNLOAD-DESC")
-NOTES=$(localize "AUR-DOWNLOAD-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "AUR-DOWNLOAD-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "AUR-DOWNLOAD-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1205,19 +1229,19 @@ aur_download()
                 cd "${1}"
                 return 0
             else
-                write_error "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
+                write_error "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then 
-                    print_this     "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
+                    print_this     "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     pause_function "aur_download ${1} $(basename $BASH_SOURCE) : $LINENO"
                 fi
                 return 1
             fi
         fi           
     else
-        write_error "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
+        write_error "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then 
-            print_this     "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz - $(basename $BASH_SOURCE) : $LINENO"
-            pause_function "aur_download ${1} - $(basename $BASH_SOURCE) : $LINENO"
+            print_this     "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            pause_function "aur_download ${1} : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         return 1
     fi
@@ -1228,8 +1252,8 @@ aur_download()
 # GET AUR PACKAGES {{{
 NAME="get_aur_packages"
 USAGE="get_aur_packages 1->(package-name) 2->(&#36;DEBUGGING) 3->(&#36;AUR_REPO)"
-DESCRIPTION=$(localize "GET-AUR-PACKAGES-DESC")
-NOTES=$(localize "GET-AUR-PACKAGES-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-AUR-PACKAGES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-AUR-PACKAGES-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1297,8 +1321,8 @@ export -f get_aur_packages # need to export so if we are running as user it will
 # AUR DOWNLOAD PACKAGES {{{
 NAME="aur_download_packages"
 USAGE="aur_download_packages 1->(Package Names Space Delimited)"
-DESCRIPTION=$(localize "AUR-DOWNLOAD-PACKAGES-DESC")
-NOTES=$(localize "AUR-DOWNLOAD-PACKAGES-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "AUR-DOWNLOAD-PACKAGES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "AUR-DOWNLOAD-PACKAGES-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1323,7 +1347,7 @@ aur_download_packages()
     local -i retries=0
     for PACKAGE in $1; do
         if [ ! -d "$AUR_CUSTOM_PACKAGES/" ]; then
-            if ! make_dir "$AUR_CUSTOM_PACKAGES/" "$(basename $BASH_SOURCE) : $LINENO" ; then
+            if ! make_dir "$AUR_CUSTOM_PACKAGES/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" ; then
                 print_warning  "AUR-DOWNLOAD-PACKAGES-WARN-CREATE-FOLDER" "$AUR_CUSTOM_PACKAGES"
                 pause_function "aur_download_packages $(basename $BASH_SOURCE) : $LINENO"
                 cd "$FULL_SCRIPT_PATH"
@@ -1347,13 +1371,13 @@ aur_download_packages()
             fi
             if [[ "$retries" -gt 3 ]]; then
                 YN_OPTION=1
-                write_error   "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
-                print_warning "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE - $(basename $BASH_SOURCE) : $LINENO"
-                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "aur_download_packages @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                write_error   "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" " $PACKAGE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             fi
             ((retries++))
             #
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "aur_download_packages $PACKAGE $(localize "AUR-DOWNLOAD-PACKAGES-RETRIES") = $retries @ $(basename $BASH_SOURCE) : $LINENO"; fi            
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$PACKAGE $(localize "AUR-DOWNLOAD-PACKAGES-RETRIES") = $retries : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi            
         done
         #
     done
@@ -1364,9 +1388,9 @@ aur_download_packages()
 # -----------------------------------------------------------------------------
 # INSTALL DOWNLOAD {{{
 NAME="install_download"
-USAGE=$(localize "INSTALL-DOWNLOAD-USAGE")
-DESCRIPTION=$(localize "INSTALL-DOWNLOAD-DESC")
-NOTES=$(localize "INSTALL-DOWNLOAD-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-DOWNLOAD-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-DOWNLOAD-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-DOWNLOAD-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1390,9 +1414,9 @@ install_download()
 # -----------------------------------------------------------------------------
 # AUR PACKAGE INSTALL {{{
 NAME="aur_package_install"
-USAGE=$(localize "AUR-PACKAGE-INSTALL-USAGE")
-DESCRIPTION=$(localize "AUR-PACKAGE-INSTALL-DESC")
-NOTES=$(localize "AUR-PACKAGE-INSTALL-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "AUR-PACKAGE-INSTALL-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "AUR-PACKAGE-INSTALL-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "AUR-PACKAGE-INSTALL-NOTES")
 #            : --needed --recursive --force --upgrades
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
@@ -1457,9 +1481,9 @@ aur_package_install()
                                    sleep 13
                                    if ! is_internet ; then
                                        failed_install_core "$PACKAGE"
-                                       write_error   "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") - $(basename $BASH_SOURCE) : $LINENO"
-                                       print_warning "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") - $(basename $BASH_SOURCE) : $LINENO"
-                                       if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "aur_package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                                       write_error   "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                       print_warning "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                       if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                                        # @FIX what to do now
                                        abort_install
                                    fi
@@ -1471,7 +1495,7 @@ aur_package_install()
                            install_download "${PACKAGE}" "$AUR_CONFIRM --force"
                            if ! check_package "$PACKAGE" ; then
                                print_info "AUR-PACKAGE-INSTALL-NOT-INSTALLED" ": $PACKAGE -> $2"
-                               if [[ "$retry_times" -ge 1 ]]; then
+                               if [[ "$retry_timesecho" -ge 1 ]]; then
                                    read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 0
                                else
                                    read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 1
@@ -1499,7 +1523,7 @@ aur_package_install()
                     ((retry_times++))
                     #sleep 30
                     #if [[ "$((retry_times))" -gt 3 ]]; then
-                    #    write_error "$AUR_HELPER did not install package $PACKAGE" "$(basename $BASH_SOURCE) : $LINENO"
+                    #    write_error "$AUR_HELPER did not install package $PACKAGE" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     #    print_warning "$AUR_HELPER did not install package $PACKAGE; Retrying $retry_times of 3 times."
                     #    YN_OPTION=0
                     #fi
@@ -1514,13 +1538,13 @@ aur_package_install()
             ((number_installed++)) # increment number installed
         fi
     done
-    echo "AUR-PACKAGE-INSTALL-COMPLETE" ": $2"
+    print_this "AUR-PACKAGE-INSTALL-COMPLETE" ": $2"
     if [[ "$number_installed" -eq "$total_packages" ]]; then
         return 0
     else
-        print_warning "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed @ $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "aur_package_install @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        print_warning "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
 } 
@@ -1529,8 +1553,8 @@ aur_package_install()
 # PACKMAN PACKAGE SIGNING {{{
 NAME="configure_pacman_package_signing"
 USAGE="configure_pacman_package_signing"
-DESCRIPTION=$(localize "PACKMAN-PACKAGE-SIGNING-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "PACKMAN-PACKAGE-SIGNING-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1559,32 +1583,50 @@ configure_pacman_package_signing()
 #}}}
 # -----------------------------------------------------------------------------
 # CONFIG XINITRC {{{
-NAME="config_xinitrc"
-USAGE="config_xinitrc 1->(module name)"
-DESCRIPTION=$(localize "CONFIG-XINITRC-DESC")
-NOTES=$(localize "CONFIG-XINITRC-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="config_xinitrc"
+    USAGE=$(localize "CONFIG-XINITRC-USAGE")
+    DESCRIPTION=$(localize "CONFIG-XINITRC-DESC")
+    NOTES=$(localize "CONFIG-XINITRC-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
 # Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-XINITRC-DESC"  "Edit .xinitrc file for manual start of Desktop"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIG-XINITRC-NOTES" "Info: https://wiki.archlinux.org/index.php/Xinitrc"
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "CONFIG-XINITRC-USAGE" "config_xinitrc 1->(module name)"
+    localize_info "CONFIG-XINITRC-DESC"  "Edit .xinitrc file for manual start of Desktop"
+    localize_info "CONFIG-XINITRC-NOTES" "Info: https://wiki.archlinux.org/index.php/Xinitrc"
+fi
 # -------------------------------------
 config_xinitrc()
 { 
     # create a xinitrc file in home user directory
     # exec gnome-session-cinnamon
-    echo $("echo -e \"exec ck-launch-session $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc")
+    if [[ "$1" == "mate-session" ]]; then
+        echo $("echo -e \"exec $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc")
+    else
+        echo $("echo -e \"exec ck-launch-session $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc")
+    fi
 } 
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    TEMP=$(config_xinitrc 'mate-session')
+    if [[ "$TEMP" == "echo -e \"exec mate-session\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" ]]; then
+        print_info "TEST-FUNCTION-PASSED" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    else
+        print_warning "TEST-FUNCTION-FAILED" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi  
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # CHOOSE AUR HELPER {{{
 NAME="choose_aurhelper"
 USAGE="choose_aurhelper"
-DESCRIPTION=$(localize "CHOOSE-AUR-HELPER-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CHOOSE-AUR-HELPER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1642,8 +1684,8 @@ choose_aurhelper()
 # LOAD CUSTOM SOFTWARE {{{
 NAME="load_custom_software"
 USAGE="load_custom_software"
-DESCRIPTION=$(localize "LOAD-CUSTOM-SOFTWARE-DESC")
-NOTES=$(localize "LOAD-CUSTOM-SOFTWARE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "LOAD-CUSTOM-SOFTWARE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "LOAD-CUSTOM-SOFTWARE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1669,7 +1711,7 @@ load_custom_software()
             add_packagemanager "package_install '$line" "NAME" # @FIX
         done < "${CONFIG_PATH}/custom-software-list.txt"
     else
-        echo "No ${CONFIG_PATH}/custom-software-list.txt file found!"
+        print_this "No ${CONFIG_PATH}/custom-software-list.txt file found!"
         pause_function "load_custom_software $(basename $BASH_SOURCE) : $LINENO"
     fi
 }
@@ -1677,9 +1719,9 @@ load_custom_software()
 # -----------------------------------------------------------------------------
 # GET MIRRORLIST {{{
 NAME="get_mirrorlist"
-USAGE=$(localize "GET-MIRRORLIST-USAGE")
-DESCRIPTION=$(localize "GET-MIRRORLIST-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "GET-MIRRORLIST-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-MIRRORLIST-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1694,7 +1736,7 @@ REVISION="5 Dec 2012"
 get_mirrorlist() 
 {
     if [[ "$CUSTOM_MIRRORLIST" -eq 1 && -f "${FULL_SCRIPT_PATH}/mirrorlist" ]]; then
-        copy_file "${FULL_SCRIPT_PATH}/mirrorlist" "/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
+        copy_file "${FULL_SCRIPT_PATH}/mirrorlist" "/etc/pacman.d/mirrorlist" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
         url="https://www.archlinux.org/mirrorlist/?country=${1}&protocol=http&ip_version=4&use_mirror_status=on"
         print_info "GET-MIRRORLIST-DOWNLOADING" " ${url}..."
@@ -1710,8 +1752,8 @@ get_mirrorlist()
 # CONFIGURE MIRRORLIST {{{
 NAME="configure_mirrorlist"
 USAGE="configure_mirrorlist"
-DESCRIPTION=$(localize "CONFIGURE-MIRRORLIST-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-MIRRORLIST-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1746,16 +1788,16 @@ configure_mirrorlist()
     fi
     # Lets copy all config files to Device where this script ran from
     # pacstrap will overwrite mirror list so create temp files on media script ran from
-    make_dir "${FULL_SCRIPT_PATH}/etc/pacman.d" "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/pacman.d/mirrorlist" "${FULL_SCRIPT_PATH}/etc/pacman.d/mirrorlist" "$(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${FULL_SCRIPT_PATH}/etc/pacman.d" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/pacman.d/mirrorlist" "${FULL_SCRIPT_PATH}/etc/pacman.d/mirrorlist" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # READ NAMESERVERS {{{
 NAME="read_nameserver"
 USAGE="read_nameserver"
-DESCRIPTION=$(localize "READ-NAMESERVERS-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "READ-NAMESERVERS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1790,8 +1832,8 @@ read_nameserver()
             N=$(( N + 1 ))
         done < "${FULL_SCRIPT_PATH}/nameservers.txt"
     else
-        write_error   "READ-NAMESERVERS-ERROR" " nameservers.txt - $(basename $BASH_SOURCE) : $LINENO"
-        print_warning "READ-NAMESERVERS-ERROR" " nameservers.txt - $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "READ-NAMESERVERS-ERROR" " nameservers.txt : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "READ-NAMESERVERS-ERROR" " nameservers.txt : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         CUSTOM_NS1=" "
         CUSTOM_NS2=" "
         CUSTOM_NS_SEARCH=" "
@@ -1802,8 +1844,8 @@ read_nameserver()
 # CUSTOM NAMESERVERS {{{
 NAME="custom_nameservers"
 USAGE="custom_nameservers"
-DESCRIPTION=$(localize "CUSTOM-NAMESERVERS-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CUSTOM-NAMESERVERS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1888,7 +1930,7 @@ custom_nameservers()
             fi
         else
             if [[ "$RUNTIME_MODE" -eq 1 ]]; then
-                copy_file "/etc/resolv.conf" ${MOUNTPOINT}/etc/resolv.conf "$(basename $BASH_SOURCE) : $LINENO"
+                copy_file "/etc/resolv.conf" ${MOUNTPOINT}/etc/resolv.conf ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
             break
         fi
@@ -1899,8 +1941,8 @@ custom_nameservers()
 # GET FLESH {{{
 NAME="get_flesh"
 USAGE="get_flesh"
-DESCRIPTION=$(localize "GET-FLESH-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-FLESH-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1929,8 +1971,8 @@ get_flesh()
 # CUSTOM REPOSITORIES {{{
 NAME="add_custom_repositories"
 USAGE="add_custom_repositories"
-DESCRIPTION=$(localize "CUSTOM-REPOSITORIES-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CUSTOM-REPOSITORIES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -1986,7 +2028,7 @@ add_custom_repositories()
                     read_input_yn "CUSTOM-REPOSITORIES-APPEND-ARCH" "" 1
                     local -a trust_levels=( "Optional TrustAll" "PackageRequired" "Never")
                     PS3="$prompt1"
-                    echo "CUSTOM-REPOSITORIES-TRUST-LEVEL"
+                    print_this "CUSTOM-REPOSITORIES-TRUST-LEVEL"
                     select trust_level in "${trust_levels[@]}"; do
                         if contains_element "$trust_level" "${trust_levels[@]}"; then
                           break
@@ -2007,15 +2049,15 @@ add_custom_repositories()
         done
     fi
     # pacstrap will overwrite pacman.conf so copy it to temp 
-    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
 # BACKUP FILES {{{
 NAME="backup_files"
 USAGE="backup_files"
-DESCRIPTION=$(localize "BACKUP-FILES-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "BACKUP-FILES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2027,7 +2069,7 @@ REVISION="5 Dec 2012"
 backup_files()
 {
     # backup old configs
-    [[ ! -f /etc/pacman.conf.aui ]] && copy_file "/etc/pacman.conf" "/etc/pacman.conf.aui" "$(basename $BASH_SOURCE) : $LINENO" || echo "/etc/pacman.conf.aui";
+    [[ ! -f /etc/pacman.conf.aui ]] && copy_file "/etc/pacman.conf" "/etc/pacman.conf.aui" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" || echo "/etc/pacman.conf.aui";
     [[ -f /etc/ssh/sshd_config.aui ]] && echo "/etc/ssh/sshd_conf.aui";
     [[ -f /etc/X11/xorg.conf.d/10-evdev.conf.aui ]] && echo "/etc/X11/xorg.conf.d/10-evdev.conf.aui";
 }
@@ -2036,8 +2078,8 @@ backup_files()
 # CREATE CONFIG {{{
 NAME="create_config"
 USAGE="create_config"
-DESCRIPTION=$(localize "CREATE-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CREATE-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2049,29 +2091,29 @@ REVISION="5 Dec 2012"
 create_config()
 {
     get_hostname              # $CONFIG_HOSTNAME
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_hostname @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_hostname : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_user_name             # $USERNAME
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_user_name @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_user_name : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_editor                # $EDITOR
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_editor @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_editor : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     configure_keymap          # $KEYMAP
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config configure_keymap  @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_keymap  : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_keyboard_layout       # $KEYBOARD
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_keyboard_layout @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_keyboard_layout : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_country_code          # $COUNTRY_CODE and $COUNTRY
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_country_code @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_country_code : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     configure_timezone        # $ZONE and $SUBZONE
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config configure_timezone @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_timezone : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_locale                # $LOCALE
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_locale @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_locale : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     choose_aurhelper          # $AUR_HELPER
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config choose_aurhelper @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "choose_aurhelper : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     custom_nameservers        # $IS_CUSTOM_NAMESERVER
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config custom_nameservers @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "custom_nameservers : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_flesh                 # $FLESH
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_flesh @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_flesh : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_aur_package_folder    # $AUR_REPO_NAME and $AUR_REPO
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "create_config get_aur_package_folder @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_aur_package_folder : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     save_last_config
 }
 #}}}
@@ -2079,8 +2121,8 @@ create_config()
 # CHANGE USER {{{
 NAME="change_user"
 USAGE="change_user"
-DESCRIPTION=$(localize "CHANGE-USER-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CHANGE-USER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2102,8 +2144,8 @@ change_user()
 # EDIT DISK {{{
 NAME="edit_disk"
 USAGE="edit_disk"
-DESCRIPTION=$(localize "EDIT-DISK-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "EDIT-DISK-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2149,8 +2191,8 @@ edit_disk()
 # SHOW PACKMANAGER {{{
 NAME="show_packmanager"
 USAGE="show_packmanager"
-DESCRIPTION=$(localize "SHOW-PACKMANAGER-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SHOW-PACKMANAGER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2172,8 +2214,8 @@ show_packmanager()
 # SHOW SOFTWARE {{{
 NAME="show_software"
 USAGE="show_software"
-DESCRIPTION=$(localize "SHOW-SOFTWARE-DESC")
-NOTES=$(localize "SHOW-SOFTWARE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SHOW-SOFTWARE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SHOW-SOFTWARE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2204,7 +2246,7 @@ show_software()
     if [[ "YN_OPTION" -eq 1 ]]; then
         load_software
         if [[ "$IS_SOFTWARE_CONFIG_LOADED" -eq 0 ]]; then
-            print_warning "SHOW-SOFTWARE-INFO-ERROR" " @ $(basename $BASH_SOURCE) : $LINENO"
+            print_warning "SHOW-SOFTWARE-INFO-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             abort_install
         fi
         print_title "SHOW-SOFTWARE-INFO-VAR"
@@ -2254,8 +2296,8 @@ show_software()
 # SHOW LOADED {{{
 NAME="show_last_config"
 USAGE="show_last_config"
-DESCRIPTION=$(localize "SHOW-LOADED-DESC")
-NOTES=$(localize "SHOW-LOADED-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SHOW-LOADED-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SHOW-LOADED-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2280,7 +2322,7 @@ show_last_config()
     if [[ "YN_OPTION" -eq 1 ]]; then
         load_last_config
         if [[ "$IS_LAST_CONFIG_LOADED" -eq 0 ]]; then
-            print_warning "Last-Config-Failed" "$(basename $BASH_SOURCE) : $LINENO"
+            print_warning "Last-Config-Failed" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             create_config
         fi
         echo -e " "
@@ -2336,8 +2378,8 @@ show_last_config()
 # SHOW DISK PROFILE {{{
 NAME="show_disk_profile"
 USAGE="show_disk_profile"
-DESCRIPTION=$(localize "SHOW-DISK-PROFILE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SHOW-DISK-PROFILE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2391,8 +2433,8 @@ show_disk_profile()
 # GET INSTALL MODE {{{
 NAME="get_install_mode"
 USAGE="get_install_mode 1->(1=Install OS, 2=Install Software)"
-DESCRIPTION=$(localize "GET-INSTALL-MODE-DESC")
-NOTES=$(localize "Localized.")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-INSTALL-MODE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "Localized.")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2437,8 +2479,8 @@ get_install_mode()
 # VERIFY CONFIG {{{
 NAME="verify_config"
 USAGE="verify_config $(localize "VERIFY-CONFIG-USAGE")"
-DESCRIPTION=$(localize "VERIFY-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "VERIFY-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2453,7 +2495,7 @@ REVISION="5 Dec 2012"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Disk-Profile"                        "Do you wish change Disk Profile" 
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "KEEP-Disk-Profile"                   "Do you wish to continue with this Disk Profile" 
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-Import-User-Folder-settings" "Import User Folder settings" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "COPY-FOLDER"                         "Do you wish to Copy saved Flash Folder /etc/ to /" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-COPY-FOLDER"           "Do you wish to Copy saved Flash Folder: /etc/ to /" 
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-PACMAN-OPTIMIZATION"   "pacman Optimization will configure system to use aria2 reflector and pm2ml; it will also configure a local repository which can be share across a local Network; this will help download files faster."
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-CHECKING-OPTIMIZE"      "Checking for pacman Optimization"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "VERIFY-CONFIG-NO-OPTIMIZE"           "No Optimized pacman!"
@@ -2467,6 +2509,7 @@ REVISION="5 Dec 2012"
 verify_config()
 {
     if [[ "$CONFIG_VERIFIED" -eq 1 ]]; then return 0; fi
+    [[ ! -d "$LOG_PATH/ssp" ]] && (mkdir -pv "$LOG_PATH/ssp") # Make sure you create all the folders you need before using them.
     CONFIG_VERIFIED=1
     get_install_mode "$1"
     if [[ "$RUNTIME_MODE" -eq 2 ]]; then
@@ -2476,7 +2519,7 @@ verify_config()
         if [[ "$YN_OPTION" -eq 1 ]]; then
             print_info "VERIFY-CONFIG-CHECKING-OPTIMIZE"
             if check_package "pm2ml" ; then
-                echo "VERIFY-CONFIG-NO-OPTIMIZE"
+                print_this "VERIFY-CONFIG-NO-OPTIMIZE"
                 USE_PACMAN=0
             else
                 PACMAN_OPTIMIZER=1
@@ -2532,12 +2575,12 @@ verify_config()
         print_info "VERIFY-CONFIG-USER-FOLDER-SETTINGS"
         read_input_yn "VERIFY-CONFIG-Import-User-Folder-settings" " " 1
         if [[ "$YN_OPTION" -eq 1 ]]; then
-            copy_files "${USER_FOLDER}/" " " "/home/${USERNAME}/" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_files "${USER_FOLDER}/" " " "/home/${USERNAME}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     else
         if [[ "$RUNTIME_MODE" -eq 1 ]]; then
             USER_FOLDER="${FULL_SCRIPT_PATH}/USER"
-            make_dir "${USER_FOLDER}/" "$(basename $BASH_SOURCE) : $LINENO"
+            make_dir "${USER_FOLDER}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         else
             USER_FOLDER="/home/${USERNAME}"
         fi
@@ -2552,20 +2595,20 @@ verify_config()
                 echo "fi"                                          >> "${USER_FOLDER}/.xinitrc"
                 echo " "                                           >> "${USER_FOLDER}/.xinitrc"
             else
-                copy_file "/etc/skel/.xinitrc" "${USER_FOLDER}/" "$(basename $BASH_SOURCE) : $LINENO"
+                copy_file "/etc/skel/.xinitrc" "${USER_FOLDER}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
         fi
         if  [[ ! -f "/home/${USERNAME}/.xinitrc" && "$RUNTIME_MODE" -eq 2  ]]; then
-            copy_files "${USER_FOLDER}/" " " "/home/${USERNAME}/" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_files "${USER_FOLDER}/" " " "/home/${USERNAME}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
-    if [[ "$1" -eq 2 ]]; then
+    if [[ "$1" -eq 2 ]]; then # Live Mode
         if [ -d "${FULL_SCRIPT_PATH}/etc/" ]; then
             print_info "VERIFY-CONFIG-FOLDER-ETC-HOLDS"
-            read_input_yn "COPY-FOLDER" " " 0
-            if [[ "$YN_OPTION" -eq 0 ]]; then
-                 # copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO" # runs out of space
-                 copy_dir "${FULL_SCRIPT_PATH}/etc/" "${MOUNTPOINT}/" "$(basename $BASH_SOURCE) : $LINENO"
+            read_input_yn "VERIFY-CONFIG-COPY-FOLDER" " " 1
+            if [[ "$YN_OPTION" -eq 1 ]]; then
+                 copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # runs out of space
+                 #copy_dir "${FULL_SCRIPT_PATH}/etc/" "${MOUNTPOINT}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
         fi
     fi
@@ -2578,8 +2621,8 @@ verify_config()
 # CLEAR SOFTWARE {{{
 NAME="clear_software"
 USAGE="clear_software"
-DESCRIPTION=$(localize "CLEAR-SOFTWARE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CLEAR-SOFTWARE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2627,37 +2670,37 @@ clear_software()
     CINNAMON_INSTALLED=0
     UNITY_INSTALLED=0
     #
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"         "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db"    "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"      "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"            "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"        "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"         "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-install.db"  "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db"      "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db"       "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-install.db" "$(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"     "$(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"            ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-install.db"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db"       ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-install.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     if is_wildcard_file "${MENU_PATH}/" "db" ; then # " " | "ext" 
         rm -r "${MENU_PATH}"/*.db
-        print_warning "CLEAR-SOFTWARE-INFO" "$(basename $BASH_SOURCE) : $LINENO"
-        write_log     "CLEAR-SOFTWARE-INFO" "$(basename $BASH_SOURCE) : $LINENO"
+        print_warning "CLEAR-SOFTWARE-INFO" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_log     "CLEAR-SOFTWARE-INFO" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_this  "CLEAR-SOFTWARE-ERROR" ": ${MENU_PATH}/*.db - $(basename $BASH_SOURCE) : $LINENO"
-        write_error "CLEAR-SOFTWARE-ERROR" ": ${MENU_PATH}/*.db - $(basename $BASH_SOURCE) : $LINENO"
+        print_this  "CLEAR-SOFTWARE-ERROR" ": ${MENU_PATH}/*.db : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "CLEAR-SOFTWARE-ERROR" ": ${MENU_PATH}/*.db : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     print_warning "CLEAR-SOFTWARE-COMPLETE"
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "clear_software at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
 #}}}
 # -----------------------------------------------------------------------------
 # SAVE INSTALL {{{
 NAME="save_install"
 USAGE="save_install"
-DESCRIPTION=$(localize "SAVE-INSTALL-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SAVE-INSTALL-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2671,7 +2714,7 @@ save_install()
     # CORE_INSTALL
     if [[ "${#CORE_INSTALL}" -ne 0 ]]; then
         if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-core-installed-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-core-installed-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         total="${#CORE_INSTALL[@]}"
         for (( i=0; i<${total}; i++ )); do
@@ -2685,7 +2728,7 @@ save_install()
     # AUR_INSTALL
     if [[ "${#AUR_INSTALL}" -ne 0 ]]; then
         if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-aur-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         total="${#AUR_INSTALL[@]}"
         for (( i=0; i<${total}; i++ )); do
@@ -2699,7 +2742,7 @@ save_install()
     # FAILED_CORE_INSTALL
     if [[ "${#FAILED_CORE_INSTALL}" -ne 0 ]]; then
         if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         total="${#FAILED_CORE_INSTALL[@]}"
         for (( i=0; i<${total}; i++ )); do
@@ -2713,7 +2756,7 @@ save_install()
     # FAILED_AUR_INSTALL
     if [[ "${#FAILED_AUR_INSTALL}" -ne 0 ]]; then
         if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-installed-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-installed-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         total="${#FAILED_AUR_INSTALL[@]}"
         for (( i=0; i<${total}; i++ )); do
@@ -2731,13 +2774,13 @@ save_install()
 # SAVE SOFTWARE {{{
 NAME="save_software"
 USAGE="save_software"
-DESCRIPTION=$(localize "SAVE-SOFTWARE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SAVE-SOFTWARE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" " @ $(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "SAVE-SOFTWARE-DESC"  "Save Software Configuration: All variables that effect PACKMANAGER"
 # -------------------------------------
@@ -2746,7 +2789,7 @@ save_software()
     # 
     # add_packagemanager TASKMANAGER TASKMANAGER_NAME
     # TASKMANAGER_NAME
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#TASKMANAGER_NAME[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2756,7 +2799,7 @@ save_software()
         fi
     done
     # TASKMANAGER
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#TASKMANAGER[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2768,7 +2811,7 @@ save_software()
     #    
     # add_packagemanager PACKMANAGER PACKMANAGER_NAME
     # PACKMANAGER_NAME
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#PACKMANAGER_NAME[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2778,7 +2821,7 @@ save_software()
         fi
     done
     # PACKMANAGER
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#PACKMANAGER[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2789,7 +2832,7 @@ save_software()
     done
     #
     # PACKAGES
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-packages-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-packages-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2800,7 +2843,7 @@ save_software()
     done
     #
     # AUR_PACKAGES
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2810,7 +2853,7 @@ save_software()
         fi
     done
     # USER_GROUPS
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db" "${CONFIG_PATH}/${CONFIG_NAME}-user-groups-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db" "${CONFIG_PATH}/${CONFIG_NAME}-user-groups-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     total="${#USER_GROUPS[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
@@ -2819,7 +2862,7 @@ save_software()
             echo "${USER_GROUPS[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"         # add_user_group      - array
         fi
     done
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-software-config-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-software-config-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # WEBSERVER
     echo "?WEBSERVER"           > "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
     echo "$WEBSERVER"          >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
@@ -2882,8 +2925,8 @@ save_software()
 # SAVE LAST CONFIG {{{
 NAME="save_last_config"
 USAGE="save_last_config"
-DESCRIPTION=$(localize "SAVE-LAST-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SAVE-LAST-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2899,7 +2942,7 @@ save_last_config()
         abort_install
     fi
     # 
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-last-config-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-last-config-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # CONFIG_HOSTNAME
     echo "?CONFIG_HOSTNAME"      >  "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
     echo "$CONFIG_HOSTNAME"      >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
@@ -2964,7 +3007,7 @@ save_last_config()
     echo "?SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
     echo "$SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
     # LOCALE_ARRAY
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-locale.db" "${CONFIG_PATH}/${CONFIG_NAME}-locale-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-locale.db" "${CONFIG_PATH}/${CONFIG_NAME}-locale-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # ${#LOCALE_ARRAY[*]}
     total="${#LOCALE_ARRAY[@]}"
     for (( i=0; i<${total}; i++ )); do
@@ -2982,8 +3025,8 @@ save_last_config()
 # SAVE DISK CONFIG {{{
 NAME="save_disk_config"
 USAGE="save_disk_config"
-DESCRIPTION=$(localize "SAVE-DISK-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SAVE-DISK-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -2994,7 +3037,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 save_disk_config()
 {
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-disk-config-old.db" "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-disk-config-old.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # 
     # UEFI
     echo "?UEFI"              >  "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" # Clear File
@@ -3071,8 +3114,8 @@ save_disk_config()
 # IS SOFTWARE FILES {{{
 NAME="is_software_files"
 USAGE="is_software_files"
-DESCRIPTION=$(localize "IS-SOFTWARE-FILES-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-SOFTWARE-FILES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3083,13 +3126,13 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 is_software_files()
 {
-    declare -a test_file_names=( "packagemanager-name.db" "packagemanager.db" "packages.db" "aur-packages.db" "user-groups.db" "software-config.db" )
-    declare -i test_passed=1
+    local -a test_file_names=( "packagemanager-name.db" "packagemanager.db" "packages.db" "aur-packages.db" "user-groups.db" "software-config.db" )
+    local -i test_passed=1
     total="${#test_file_names[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [ ! -f "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]}" ]; then
             print_warning "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]} File Missing! Will create new one."
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "is_software_files @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             test_passed=0
             break;
         fi
@@ -3105,8 +3148,8 @@ is_software_files()
 # LOAD SOFTWARE {{{
 NAME="load_software"
 USAGE="load_software"
-DESCRIPTION=$(localize "LOAD-SOFTWARE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "LOAD-SOFTWARE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3117,6 +3160,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 load_software()
 {
+    IFS=$' '
     # Test each file
     local -i TEST_1=0
     local -i TEST_2=0
@@ -3291,8 +3335,8 @@ load_software()
 # IS LAST CONFIG FILES {{{
 NAME="is_last_config_files"
 USAGE="is_last_config_files"
-DESCRIPTION=$(localize "IS-LAST-CONFIG-FILES-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-LAST-CONFIG-FILES-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3303,13 +3347,13 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 is_last_config_files()
 {
-    declare -a test_file_names=( "last-config.db" "locale.db" )
-    declare -i test_passed=1
+    local -a test_file_names=( "last-config.db" "locale.db" )
+    local -i test_passed=1
     total="${#test_file_names[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [ ! -f "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]}" ]; then
             print_warning "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]} File Missing! Will create new one."
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "is_last_config_files @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             test_passed=0
             break;
         fi
@@ -3325,8 +3369,8 @@ is_last_config_files()
 # LOAD LAST CONFIG {{{
 NAME="load_last_config"
 USAGE="load_last_config"
-DESCRIPTION=$(localize "LOAD-LAST-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "LOAD-LAST-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3337,6 +3381,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 load_last_config()
 {
+    IFS=$' '
     # CONFIG_HOSTNAME USERNAME KEYBOARD
     # 
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db" ]]; then
@@ -3414,22 +3459,40 @@ load_last_config()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
         IS_LAST_CONFIG_LOADED=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
         pause_function "load_last_config $(basename $BASH_SOURCE) : $LINENO"
     fi
     if [[ "$IS_CUSTOM_NAMESERVER" -eq 1 ]]; then
         read_nameserver
     fi
     # LOCALE_ARRAY
-    declare -i i=0
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-locale.db" ]]; then
+        local -i i=0
         while read line; do 
             LOCALE_ARRAY[$((i++))]="$line"
         done < "${CONFIG_PATH}/${CONFIG_NAME}-locale.db"
     else
         IS_LAST_CONFIG_LOADED=0
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-locale.db"
-        pause_function "load_last_config $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-locale.db"
+        pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    # PACKAGE_CHECK_FAILURES
+    PACKAGE_CHECK_FAILURES=()
+    PACKAGE_FAILURES_CHECK=()
+    if [[ -f "${CONFIG_PATH}/package-failure-list.db" ]]; then
+        local -i i=0
+        local lines=()
+        local line=""
+        while read line; do 
+            lines=($line) # Stored Data - Do not quote
+            PACKAGE_CHECK_FAILURES[$i]="${lines[0]}"
+            PACKAGE_FAILURES_CHECK[$((i++))]="${lines[1]}"
+        done < "${CONFIG_PATH}/package-failure-list.db"
+    else
+        IS_LAST_CONFIG_LOADED=0
+        print_warning "No" ": ${CONFIG_PATH}/package-failure-list.db"
+        pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 }
 #}}}
@@ -3437,8 +3500,8 @@ load_last_config()
 # LOAD DISK CONFIG {{{
 NAME="load_disk_config"
 USAGE="load_disk_config"
-DESCRIPTION=$(localize "LOAD-DISK-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "LOAD-DISK-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3449,6 +3512,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 load_disk_config()
 {
+    IFS=$' '
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" ]]; then
         while read line; do 
             if [[ "${line:0:1}" == "?" ]]; then
@@ -3537,9 +3601,9 @@ load_disk_config()
 # -----------------------------------------------------------------------------
 # ADD PACKAGEMANAGER {{{
 NAME="add_packagemanager"
-USAGE=$(localize "ADD-PACKAGEMANAGER-USAGE")
-DESCRIPTION=$(localize "ADD-PACKAGEMANAGER-DESC")
-NOTES=$(localize "ADD-PACKAGEMANAGER-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ADD-PACKAGEMANAGER-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-PACKAGEMANAGER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-PACKAGEMANAGER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3554,7 +3618,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 add_packagemanager()
 {
-    check_arg "add_packagemanager" "2" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "add_packagemanager" "2" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -z "$2" ]; then
         print_warning "ADD-PACKAGEMANAGER-ERROR"
         abort_install
@@ -3582,9 +3646,9 @@ add_packagemanager()
 # -----------------------------------------------------------------------------
 # REMOVE PACKAGEMANAGER {{{
 NAME="remove_packagemanager"
-USAGE=$(localize "REMOVE-PACKAGEMANAGER-USAGE")
-DESCRIPTION=$(localize "REMOVE-PACKAGEMANAGER-DESC")
-NOTES=$(localize "REMOVE-PACKAGEMANAGER-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "REMOVE-PACKAGEMANAGER-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-PACKAGEMANAGER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-PACKAGEMANAGER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3609,9 +3673,9 @@ remove_packagemanager()
 # -----------------------------------------------------------------------------
 # ADD TASKMANAGER {{{
 NAME="add_taskmanager"
-USAGE=$(localize "ADD-TASKMANAGER-USAGE")
-DESCRIPTION=$(localize "ADD-TASKMANAGER-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ADD-TASKMANAGER-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-TASKMANAGER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3625,7 +3689,7 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 add_taskmanager()
 {
-    check_arg "add_taskmanager" "2" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "add_taskmanager" "2" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -z "$2" ]; then
         print_warning "ADD-TASKMANAGER-ERROR"
         abort_install
@@ -3655,8 +3719,8 @@ add_taskmanager()
 # ADD PACKAGE {{{
 NAME="add_package"
 USAGE="ADD-PACKAGE-USAGE"
-DESCRIPTION=$(localize "ADD-PACKAGE-DESC")
-NOTES=$(localize "ADD-PACKAGE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-PACKAGE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3671,9 +3735,9 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 add_package()
 { 
-    check_arg "add_package" "1" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "add_package" "1" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -z "$1" ]; then
-        print_warning "ADD-PACKAGE-ERROR" " @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "ADD-PACKAGE-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
     CMD="$(rtrim $1)"
@@ -3697,8 +3761,8 @@ add_package()
 # REMOVE PACKAGE {{{
 NAME="remove_package"
 USAGE="REMOVE-PACKAGE-USAGE"
-DESCRIPTION=$(localize "REMOVE-PACKAGE-DESC")
-NOTES=$(localize "REMOVE-PACKAGE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-PACKAGE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3713,9 +3777,9 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 remove_package()
 { 
-    check_arg "remove_package" "1" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "remove_package" "1" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -z "$1" ]; then
-        print_warning "REMOVE-PACKAGE-ERROR" " @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "REMOVE-PACKAGE-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
     CMD="$(rtrim $1)"
@@ -3734,9 +3798,9 @@ remove_package()
 # 
 # ADD AUR PACKAGE {{{
 NAME="add_aur_package"
-USAGE=$(localize "ADD-AUR-PACKAGE-USAGE")
-DESCRIPTION=$(localize "ADD-AUR-PACKAGE-DESC")
-NOTES=$(localize "ADD-AUR-PACKAGE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ADD-AUR-PACKAGE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-AUR-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-AUR-PACKAGE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3751,9 +3815,9 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 add_aur_package()
 { 
-    check_arg "add_aur_package" "1" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "add_aur_package" "1" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -z "$1" ]; then
-        print_warning "ADD-AUR-PACKAGE-ERROR" " add_aur_package @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "ADD-AUR-PACKAGE-ERROR" " add_aur_package : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
     CMD="$(rtrim $1)"
@@ -3776,9 +3840,9 @@ add_aur_package()
 # 
 # REMOVE AUR PACKAGE {{{
 NAME="remove_aur_package"
-USAGE=$(localize "REMOVE-AUR-PACKAGE-USAGE")
-DESCRIPTION=$(localize "REMOVE-AUR-PACKAGE-DESC")
-NOTES=$(localize "REMOVE-AUR-PACKAGE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "REMOVE-AUR-PACKAGE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-AUR-PACKAGE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-AUR-PACKAGE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3793,9 +3857,9 @@ REVISION="5 Dec 2012"
 # -------------------------------------
 remove_aur_package()
 { 
-    check_arg "remove_aur_package" "1" "${#@}" "$(basename $BASH_SOURCE) : $LINENO"
+    check_arg "remove_aur_package" "1" "${#@}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -z "$1" ]; then
-        print_warning "REMOVE-AUR-PACKAGE-ERROR" " @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "REMOVE-AUR-PACKAGE-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
     CMD="$(rtrim $1)"
@@ -3814,9 +3878,9 @@ remove_aur_package()
 # 
 # ADD MODULE {{{
 NAME="add_module"
-USAGE=$(localize "ADD-MODULE-USAGE")
-DESCRIPTION=$(localize "ADD-MODULE-DESC")
-NOTES=$(localize "ADD-MODULE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ADD-MODULE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ADD-MODULE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ADD-MODULE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3836,9 +3900,9 @@ add_module()
 # 
 # REMOVE MODULE {{{
 NAME="remove_module"
-USAGE=$(localize "REMOVE-MODULE-USAGE")
-DESCRIPTION=$(localize "REMOVE-MODULE-DESC")
-NOTES=$(localize "REMOVE-MODULE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "REMOVE-MODULE-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "REMOVE-MODULE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "REMOVE-MODULE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3857,9 +3921,9 @@ remove_module()
 # -----------------------------------------------------------------------------
 # USER CONFIG {{{
 NAME="user_config"
-USAGE=$(localize "USER-CONFIG-USAGE")
-DESCRIPTION=$(localize "USER-CONFIG-DESC")
-NOTES=$(localize "USER-CONFIG-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "USER-CONFIG-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "USER-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "USER-CONFIG-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3913,8 +3977,8 @@ export -f user_config # need to export so if we are running as user it will find
 # CONFIGURE USER ACCOUNT {{{
 NAME="configure_user_account"
 USAGE="configure_user_account"
-DESCRIPTION=$(localize "CONFIGURE-USER-ACCOUNT-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-USER-ACCOUNT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -3938,12 +4002,12 @@ configure_user_account()
     print_info "CONFIGURE-USER-ACCOUNT-TITLE" " ${USERNAME}..."
     print_info "CONFIGURE-USER-ACCOUNT-INFO" " - https://wiki.archlinux.org/index.php/Bashrc"
     #
-    make_dir "/home/${USERNAME}/.config"  "$(basename $BASH_SOURCE) : $LINENO"   # Just checking
+    make_dir "/home/${USERNAME}/.config"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"   # Just checking
     chown "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.config"
     chmod 755 /home/${USERNAME}/.config
-    make_dir "/home/${USERNAME}/.cache"   "$(basename $BASH_SOURCE) : $LINENO"   # Just checking
+    make_dir "/home/${USERNAME}/.cache"   ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"   # Just checking
     chmod 755 "/home/${USERNAME}/.cache"
-    make_dir "/home/${USERNAME}/.config/fontconfig" "$(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/.config/fontconfig" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     # @FIX helmuthdu replace with custom repo
     #
@@ -3953,7 +4017,7 @@ configure_user_account()
         if [ ! -d "/home/${USERNAME}/vim" ]; then
             print_warning "CONFIGURE-USER-ACCOUNT-ERROR-1" " @ ($(basename $BASH_SOURCE) : $LINENO)"
             write_error   "CONFIGURE-USER-ACCOUNT-ERROR-1" " @ ($(basename $BASH_SOURCE) : $LINENO)"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_user_account @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         else
             mv vim "/home/${USERNAME}/.vim"
             ln -sf "/home/${USERNAME}/.vim/vimrc" "/home/${USERNAME}/.vimrc"
@@ -3962,7 +4026,7 @@ configure_user_account()
         if [ ! -d "/home/${USERNAME}/pentadactyl" ]; then
             print_warning "CONFIGURE-USER-ACCOUNT-ERROR-2" " @ ($(basename $BASH_SOURCE) : $LINENO)"
             write_error   "CONFIGURE-USER-ACCOUNT-ERROR-2" " @ ($(basename $BASH_SOURCE) : $LINENO)"
-            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_user_account @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         else
             # PENTADACTYL [FIREFOX]
             mv "/home/${USERNAME}/pentadactyl" "/home/${USERNAME}/.pentadactyl"
@@ -3975,7 +4039,7 @@ configure_user_account()
     if [ ! -d "/home/${USERNAME}/dotfiles" ]; then
         print_warning "CONFIGURE-USER-ACCOUNT-ERROR-3" ": git clone https://github.com/helmuthdu/dotfiles /home/${USERNAME} @ ($(basename $BASH_SOURCE) : $LINENO)"
         write_error   "CONFIGURE-USER-ACCOUNT-ERROR-3" ": git clone https://github.com/helmuthdu/dotfiles /home/${USERNAME} @ ($(basename $BASH_SOURCE) : $LINENO)"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_user_account @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     else
         cp -f "/home/${USERNAME}/dotfiles/.bashrc" "/home/${USERNAME}/dotfiles/.dircolors" "/home/${USERNAME}/dotfiles/.dircolors_256" "/home/${USERNAME}/dotfiles/.nanorc" ~/  # should be root
         cp -f "/home/${USERNAME}/dotfiles/.bashrc" "/home/${USERNAME}/dotfiles/.dircolors" "/home/${USERNAME}/dotfiles/.dircolors_256" "/home/${USERNAME}/dotfiles/.nanorc" "/home/${USERNAME}/"   # USERNAME
@@ -4007,18 +4071,18 @@ configure_user_account()
         sed -i '/VISUAL/s/vim/emacs\ -nw/' ~/.bashrc
     fi
     #    
-    make_dir "/home/${USERNAME}/Downloads" "$(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Documents" "$(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Pictures"  "$(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Videos"    "$(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Music"     "$(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Downloads" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Documents" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Pictures"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Videos"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Music"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
-    copy_file "/etc/skel/.bash_logout"  "/home/${USERNAME}/.bash_logout"  "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/skel/.bash_profile" "/home/${USERNAME}/.bash_profile" "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/skel/.bashrc"       "/home/${USERNAME}/.bashrc"       "$(basename $BASH_SOURCE) : $LINENO"
-    #copy_file "/etc/skel/.zshrc"        "/home/${USERNAME}/.zshrc"      "$(basename $BASH_SOURCE) : $LINENO"
-    #copy_file "/etc/skel/.xinitrc"      "/home/${USERNAME}/.xinitrc"      "$(basename $BASH_SOURCE) : $LINENO"
-    #copy_file "/etc/skel/.xsession"     "/home/${USERNAME}/.xsession"     "$(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/skel/.bash_logout"  "/home/${USERNAME}/.bash_logout"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/skel/.bash_profile" "/home/${USERNAME}/.bash_profile" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/skel/.bashrc"       "/home/${USERNAME}/.bashrc"       ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_file "/etc/skel/.zshrc"        "/home/${USERNAME}/.zshrc"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_file "/etc/skel/.xinitrc"      "/home/${USERNAME}/.xinitrc"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_file "/etc/skel/.xsession"     "/home/${USERNAME}/.xsession"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # @FIX add all others
     if [[ "$MATE_INSTALLED" -eq 1 ]]; then
         touch "/home/${USERNAME}/.dmrc"
@@ -4048,9 +4112,9 @@ configure_user_account()
     cd "/home/${USERNAME}/"
     su "${USERNAME}" -c "user_config \"${USERNAME}\"" # Must run as User
     if [ "$?" -eq 0 ]; then
-        write_error   "CONFIGURE-USER-ACCOUNT-ERROR-4" ": ${USERNAME} function: user_config - $(basename $BASH_SOURCE) : $LINENO"
-        print_warning "CONFIGURE-USER-ACCOUNT-ERROR-4" ": ${USERNAME} function: user_config - $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Failed for XAUTHORITY at line @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        write_error   "CONFIGURE-USER-ACCOUNT-ERROR-4" ": ${USERNAME} function: user_config : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "CONFIGURE-USER-ACCOUNT-ERROR-4" ": ${USERNAME} function: user_config : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Failed for XAUTHORITY : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     cd /"$FULL_SCRIPT_PATH" # Is this required, if cd from within a su, it shouldn't leave the pwd there, it should revert back, as if it never happened.
     chmod 600 "/home/${USERNAME}/.Xauthority" # User=RW, Group and Others=None
@@ -4063,8 +4127,8 @@ configure_user_account()
 # GET AUR PACKAGE FOLDER {{{
 NAME="get_aur_package_folder"
 USAGE="get_aur_package_folder"
-DESCRIPTION=$(localize "GET-AUR-PACKAGE-FOLDER-DESC")
-NOTES=$(localize "GET-AUR-PACKAGE-FOLDER-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-AUR-PACKAGE-FOLDER-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-AUR-PACKAGE-FOLDER-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4104,8 +4168,8 @@ get_aur_package_folder()
 # GET FSTAB CONFIG  {{{
 NAME="get_fstab_config"
 USAGE="get_fstab_config"
-DESCRIPTION=$(localize "GET-FSTAB-CONFIG-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-FSTAB-CONFIG-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4123,11 +4187,11 @@ REVISION="5 Dec 2012"
 get_fstab_config()
 {
     print_title "GET-FSTAB-CONFIG-TITLE" " - https://wiki.archlinux.org/index.php/Fstab"
-    print_info "GET-FSTAB-CONFIG-INFO"
-    print_info "GET-FSTAB-CONFIG-RECOMMEND"
+    print_info  "GET-FSTAB-CONFIG-INFO"
+    print_info  "GET-FSTAB-CONFIG-RECOMMEND"
     PS3="$prompt1"
     print_this "GET-FSTAB-CONFIG-CONFIGURE"
-    select OPT in "${FSTAB[@]}"; do
+    select OPT in "${FSTAB[@]}"; do # ("UUID" "DEV" "LABEL");
         case "$REPLY" in
             1)
                 FSTAB_CONFIG=1
@@ -4156,8 +4220,8 @@ get_fstab_config()
 # CONFIGURE FSTAB {{{
 NAME="configure_fstab"
 USAGE="configure_fstab"
-DESCRIPTION=$(localize "CONFIGURE-FSTAB-DESC")
-NOTES=$(localize "CONFIGURE-FSTAB-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-FSTAB-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONFIGURE-FSTAB-NOTES")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4167,16 +4231,16 @@ REVISION="5 Dec 2012"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-DESC"  "Configure fstab"
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-NOTES" "Localized."
 #
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Configuring-fstab" "Configuring fstab..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Edit-fstab" "The /etc/fstab file contains static filesystem information. It defines how storage devices and partitions are to be mounted and integrated into the overall system. It is read by the mount command to determine which options to use when mounting a specific device or partition."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Review-fstab" "Review your fstab."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "fstab-complete" "fstab configuration complete."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-INFO" "Configuring fstab..."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-EDIT" "The /etc/fstab file contains static filesystem information. It defines how storage devices and partitions are to be mounted and integrated into the overall system. It is read by the mount command to determine which options to use when mounting a specific device or partition."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-REVIEW" "Review your fstab."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-FSTAB-COMPLETE" "fstab configuration complete."
 # -------------------------------------
 configure_fstab()
 {
-    print_info "Configuring-fstab"
+    print_info "CONFIGURE-FSTAB-INFO"
     if [[ ! -f ${MOUNTPOINT}/etc/fstab.aui && -f ${MOUNTPOINT}/etc/fstab ]]; then
-        copy_file ${MOUNTPOINT}/etc/fstab ${MOUNTPOINT}/etc/fstab.aui "$(basename $BASH_SOURCE) : $LINENO"
+        copy_file ${MOUNTPOINT}/etc/fstab ${MOUNTPOINT}/etc/fstab.aui ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     if [[ "$FSTAB_CONFIG" -eq 1 ]]; then                        # UUIDs
         genfstab -U "${MOUNTPOINT}" > ${MOUNTPOINT}/etc/fstab 
@@ -4195,25 +4259,25 @@ configure_fstab()
     fi
     echo "# You might want to add this to home to have it automount by systemd, delay for fsck: noauto,x-systemd.automount" >> ${MOUNTPOINT}/etc/fstab
     if [[ "$FSTAB_EDIT" -eq 1 ]]; then
-        print_title "FSTAB - https://wiki.archlinux.org/index.php/Fstab"
-        print_info "Edit-fstab"
+        print_title "CONFIGURE-FSTAB-DESC" "FSTAB - https://wiki.archlinux.org/index.php/Fstab"
+        print_info "CONFIGURE-FSTAB-EDIT"
         #
-        echo "Review-fstab"
+        print_this "CONFIGURE-FSTAB-REVIEW"
         pause_function "configure_fstab $(basename $BASH_SOURCE) : $LINENO"
         $EDITOR ${MOUNTPOINT}/etc/fstab
     fi
     # pacstrap will overwrite fstab so copy it to temp 
-    copy_file ${MOUNTPOINT}/etc/fstab "${FULL_SCRIPT_PATH}/etc/fstab" "$(basename $BASH_SOURCE) : $LINENO"
-    echo "fstab-complete"
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_fstab @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    copy_file ${MOUNTPOINT}/etc/fstab "${FULL_SCRIPT_PATH}/etc/fstab" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    print_this "CONFIGURE-FSTAB-COMPLETE"
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
 #}}}
 # -----------------------------------------------------------------------------
 # CONFIGURE HOSTNAME {{{
 NAME="configure_hostname"
 USAGE="configure_hostname"
-DESCRIPTION=$(localize "CONFIGURE-HOSTNAME-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-HOSTNAME-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4238,18 +4302,18 @@ configure_hostname()
     echo "# End of file" >> ${MOUNTPOINT}/etc/hosts
     # 
     # pacstrap will overwrite hosts so copy it to temp 
-    copy_file ${MOUNTPOINT}/etc/hostname "${FULL_SCRIPT_PATH}/etc/hostname" "$(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/hosts    "${FULL_SCRIPT_PATH}/etc/hosts"    "$(basename $BASH_SOURCE) : $LINENO"
-    echo "CONFIGURE-HOSTNAME-COMPLETE"
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_hostname @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    copy_file ${MOUNTPOINT}/etc/hostname "${FULL_SCRIPT_PATH}/etc/hostname" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hosts    "${FULL_SCRIPT_PATH}/etc/hosts"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    print_this "CONFIGURE-HOSTNAME-COMPLETE"
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
 #}}}
 # -----------------------------------------------------------------------------
 # GET HOSTNAME {{{
 NAME="get_hostname"
 USAGE="get_hostname"
-DESCRIPTION=$(localize "GET-HOSTNAME-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-HOSTNAME-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="helmuthdu and Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4280,9 +4344,9 @@ get_hostname()
 # -----------------------------------------------------------------------------
 # ABORT INSTALL {{{
 NAME="abort_install"
-USAGE=$(localize "ABORT-INSTALL-USAGE")
-DESCRIPTION=$(localize "ABORT-INSTALL-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ABORT-INSTALL-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ABORT-INSTALL-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4290,7 +4354,7 @@ REVISION="5 Dec 2012"
 [[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-USAGE" "abort_install 1->(1=Boot OS Install, 2=Install Software)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-DESC"  "Finish with script; clean up and do backups"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-DESC"  "Abort Install for Errors"
 #
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-INFO-1"  "I made a back copy of the profile in /root; you can delete these files."
 [[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "ABORT-INSTALL-ERROR"   "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
@@ -4305,10 +4369,10 @@ abort_install()
     if [[ "$1" -eq 1 ]]; then
         print_info    "ABORT-INSTALL-INFO-1"
         print_warning "ABORT-INSTALL-ERROR"
-        copy_dir   "$FULL_SCRIPT_PATH/etc/"        ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/root/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/root/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh" ${MOUNTPOINT}/root/        "$(basename $BASH_SOURCE) : $LINENO"
+        copy_dir   "$FULL_SCRIPT_PATH/etc/"        ${MOUNTPOINT}/root/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/root/CONFIG/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/root/LOG/    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh" ${MOUNTPOINT}/root/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_info "ABORT-INSTALL-INFO-2"
     fi
@@ -4323,26 +4387,28 @@ abort_install()
 # -----------------------------------------------------------------------------
 # FINISH {{{
 NAME="finish"
-USAGE=$(localize "FINISH-USAGE")
-DESCRIPTION=$(localize "FINISH-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "FINISH-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "FINISH-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
 REVISION="5 Dec 2012"
 [[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 # Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-USAGE"   "finish 1->(1=Boot OS Install, 2=Install Software)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-DESC"    "Finish with script; clean up and do backups"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-USAGE"     "finish 1->(1=Boot OS Install, 2=Install Software)"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-DESC"      "Finish with script; clean up and do backups"
 #
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-TITLE"   "Finish"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-1"  "INSTALL COMPLETED"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-2"  "If all went right you should be able to reboot into a fully functioning Desktop."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-3"  "Make sure to check the root for install files like install_scripts, install_scripts_root_secrets, install_scripts_user_secrets, you can also delete /boot/grub_uefi.log."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-4"  "I made a back copy of the profile in /root; you can delete these files."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-ERROR"   "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-5"  "You should now have a full system install, just reboot and you are ready to go."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-REBOOT"  "Reboot system" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-TITLE"     "Finish"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-1"    "INSTALL COMPLETED"
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-2"    "If all went right you should be able to reboot into a fully functioning Desktop."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-3"    "Make sure to check the root for install files like install_scripts, install_scripts_root_secrets, install_scripts_user_secrets, you can also delete /boot/grub_uefi.log."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-4"    "I made a back copy of the profile in /root; you can delete these files."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-ERROR"     "Drive is now ready to install Software, reboot, and remount Flash Drive with Script, cd /Path2Profile, load saved profile, or create a new one."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-INFO-5"    "You should now have a full system install, just reboot and you are ready to go."
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-REBOOT"    "Reboot system" 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-SUDO-ERR1" "Error in sudorers, string not found." 
+[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "FINISH-SUDO-ERR2" "Error in sudorers, failed to remove comment." 
 # -------------------------------------
 finish()
 {
@@ -4352,25 +4418,40 @@ finish()
     print_info  "FINISH-INFO-2"
     print_info  "FINISH-INFO-3" " - ${SCRIPT_LOG}"
     # COPY SCRIPT TO ROOT FOLDER IN THE NEW SYSTEM
-    if [[ "$1" -eq 1 ]]; then
+    if [[ "$1" -eq 1 ]]; then # Boot Mode
         print_info    "FINISH-INFO-4"
         print_warning "FINISH-ERROR"
-        copy_dir   "$FULL_SCRIPT_PATH/etc/"        ${MOUNTPOINT}/${USERNAME}/        "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/${USERNAME}/CONFIG/ "$(basename $BASH_SOURCE) : $LINENO"
-        copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/${USERNAME}/LOG/    "$(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        "$(basename $BASH_SOURCE) : $LINENO"
-    else
+        copy_dir   "$FULL_SCRIPT_PATH/etc/"           ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files "${CONFIG_PATH}/" "db"             ${MOUNTPOINT}/${USERNAME}/CONFIG/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files "$LOG_PATH/"      "log"            ${MOUNTPOINT}/${USERNAME}/LOG/    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/wiz"            ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/wizard.sh"      ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh"    ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/common-wiz.sh"  ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/package-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "$FULL_SCRIPT_PATH/packages.sh"    ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    else # Live Mode
         print_info "FINISH-INFO-5"
-        if is_string_in_file "${MOUNTPOINT}/etc/sudoers" "$FILE_SIGNATURE COMMENT-OUT" ; then # Only make changes once
-            comment_file "Defaults:${USERNAME}   !authenticate" "${MOUNTPOINT}/etc/sudoers"
-            cat "${MOUNTPOINT}/etc/sudoers"
+        if is_string_in_file "/etc/sudoers" "$FILE_SIGNATURE COMMENT-OUT" ; then # Only make changes once
+            if ! comment_file "Defaults:${USERNAME}" "/etc/sudoers" ; then #    !authenticate
+                print_warning "FINISH-SUDO-ERR2" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error   "FINISH-SUDO-ERR2" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+            else
+                cat "${MOUNTPOINT}/etc/sudoers"
+                copy_file "/etc/sudoers" "$FULL_SCRIPT_PATH/etc/sudoers"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            fi            
+        else
+            print_warning "FINISH-SUDO-ERR1" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error   "FINISH-SUDO-ERR1" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi
     fi
     # @FIX, where to save it to
     chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
     chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
-    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
     chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
     #
     read_input_yn "FINISH-REBOOT" " " 1
     if [[ "$YN_OPTION" -eq 1 ]]; then
@@ -4383,8 +4464,8 @@ finish()
 # IS UEFI MODE {{{
 NAME="is_uefi_mode"
 USAGE="is_uefi_mode"
-DESCRIPTION=$(localize "IS-UEFI-MODE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "IS-UEFI-MODE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4419,8 +4500,8 @@ is_uefi_mode()
 # SET LOG DRIVE {{{
 NAME="set_log_drive"
 USAGE="set_log_drive"
-DESCRIPTION=$(localize "SET-LOG-DRIVE-DESC")
-NOTES=$(localize "SET-LOG-DRIVE-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "SET-LOG-DRIVE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "SET-LOG-DRIVE-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4445,8 +4526,8 @@ set_log_drive()
         SCRIPT_DEVICE="$OPTION"
     fi
     if [[ -b "/dev/$SCRIPT_DEVICE" ]]; then
-        print_info "Copying-Device" "/dev/$SCRIPT_DEVICE @ $(basename $BASH_SOURCE) : $LINENO"
-        write_log  "Copying-Device" "/dev/$SCRIPT_DEVICE @ $(basename $BASH_SOURCE) : $LINENO"
+        print_info "Copying-Device" "/dev/$SCRIPT_DEVICE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_log  "Copying-Device" "/dev/$SCRIPT_DEVICE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_warning "Device-does-not-exist" "/dev/$SCRIPT_DEVICE"
         lsblk
@@ -4459,8 +4540,8 @@ set_log_drive()
 # FIX REPO {{{
 NAME="fix_repo"
 USAGE="fix_repo"
-DESCRIPTION=$(localize "FIX-REPO-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "FIX-REPO-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4495,7 +4576,7 @@ fix_repo()
                 break
                 ;;
             3)
-                copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$(basename $BASH_SOURCE) : $LINENO"
+                copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "fix_repo $(basename $BASH_SOURCE) : $LINENO"
                 break
                 ;;
@@ -4513,8 +4594,8 @@ fix_repo()
 # GET FORMAT TYPE {{{
 NAME="get_format_type"
 USAGE="get_format_type"
-DESCRIPTION=$(localize "GET-FORMAT-TYPE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-FORMAT-TYPE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4547,7 +4628,7 @@ get_format_type()
            OPTION="0700"
            ;;
        *)
-           echo "GET-FORMAT-TYPE-ERROR"
+           print_warning "GET-FORMAT-TYPE-ERROR"
            OPTION="8300"
            ;;
    esac 
@@ -4557,8 +4638,8 @@ get_format_type()
 # GET FORMAT SYSTEM {{{
 NAME="get_format_system"
 USAGE="get_format_system"
-DESCRIPTION=$(localize "GET-FORMAT-SYSTEM-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-FORMAT-SYSTEM-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4612,8 +4693,8 @@ get_format_system()
     print_info "GET-FORMAT-SYSTEM-INFO-18"
     echo ""
     PS3="$prompt1"
-    echo "GET-FORMAT-SYSTEM-SELECT"
-    declare -a FILE_SYSTEMS=("ext4" "ext3" "ext2" "btrfs" "vfat" "ntfs");
+    print_this "GET-FORMAT-SYSTEM-SELECT"
+    local -a FILE_SYSTEMS=("ext4" "ext3" "ext2" "btrfs" "vfat" "ntfs");
     select FILE_SYSTEM in "${FILE_SYSTEMS[@]}"; do
         if contains_element "$FILE_SYSTEM" ${FILE_SYSTEMS[@]}; then
             OPTION="$FILE_SYSTEM"
@@ -4628,8 +4709,8 @@ get_format_system()
 # GET BOOT TYPE {{{
 NAME="get_boot_type"
 USAGE="get_boot_type"
-DESCRIPTION=$(localize "GET-BOOT-TYPE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-BOOT-TYPE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4784,8 +4865,8 @@ get_boot_type()
 # GET BOOT PARTITION {{{
 NAME="get_boot_partition"
 USAGE="get_boot_partition"
-DESCRIPTION=$(localize "GET-BOOT-PARTITION-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-BOOT-PARTITION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4829,8 +4910,8 @@ get_boot_partition()
 # GET SWAP PARTITION {{{ 
 NAME="get_swap_partition"
 USAGE="get_swap_partition"
-DESCRIPTION=$(localize "GET-SWAP-PARTITION-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-SWAP-PARTITION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4906,8 +4987,8 @@ get_swap_partition()
 # GET HOME PARTITION {{{
 NAME="get_home_partition"
 USAGE="get_home_partition"
-DESCRIPTION=$(localize "GET-HOME-PARTITION-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-HOME-PARTITION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -4964,8 +5045,8 @@ get_home_partition()
 # GET VAR PARTITION {{{
 NAME="get_var_partition"
 USAGE="get_var_partition"
-DESCRIPTION=$(localize "GET-VAR-PARTITION-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-VAR-PARTITION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5022,8 +5103,8 @@ get_var_partition()
 # GET TMP PARTITION {{{
 NAME="get_tmp_partition"
 USAGE="get_tmp_partition"
-DESCRIPTION=$(localize "GET-TMP-PARTITION-DESC")
-NOTES=$(localize "GET-TMP-PARTITION-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-TMP-PARTITION-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-TMP-PARTITION-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5119,8 +5200,8 @@ get_tmp_partition()
 # GET ROOT SIZE {{{
 NAME="get_root_size"
 USAGE="get_root_size"
-DESCRIPTION=$(localize "GET-ROOT-SIZE-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-ROOT-SIZE-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5161,8 +5242,8 @@ get_root_size()
 # GET ROOT FORMAT {{{
 NAME="get_root_format"
 USAGE="get_root_format"
-DESCRIPTION=$(localize "GET-ROOT-FORMAT-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-ROOT-FORMAT-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5197,8 +5278,8 @@ get_root_format()
 # STATIC IP {{{
 NAME="static_ip"
 USAGE="static_ip"
-DESCRIPTION=$(localize "STATIC-IP-DESC")
-NOTES=$(localize "STATIC-IP-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "STATIC-IP-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "STATIC-IP-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5244,8 +5325,8 @@ static_ip()
 # ESCAPE SED {{{
 NAME="escape_sed"
 USAGE="escape_sed"
-DESCRIPTION=$(localize "ESCAPE-SED-DESC")
-NOTES=$(localize "NONE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ESCAPE-SED-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
@@ -5261,9 +5342,9 @@ escape_sed()
 # -----------------------------------------------------------------------------
 # ESCAPE SPECIAL CHARACTERS  {{{
 NAME="escape_special_characters"
-USAGE=$(localize "ESCAPE-SPECIAL-CHARACTERS-USAGE")
-DESCRIPTION=$(localize "ESCAPE-SPECIAL-CHARACTERS-DESC")
-NOTES=$(localize "ESCAPE-SPECIAL-CHARACTERS-NOTES")
+[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "ESCAPE-SPECIAL-CHARACTERS-USAGE")
+[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "ESCAPE-SPECIAL-CHARACTERS-DESC")
+[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "ESCAPE-SPECIAL-CHARACTERS-NOTES")
 AUTHOR="Flesher"
 VERSION="1.0"
 CREATED="11 SEP 2012"
