@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="22 Dec 2012 16:33"
+# LAST_UPDATE="30 Dec 2012 16:33"
 #
 # Software Packages:
 # If I declare them here, I can use them in menus
@@ -28,7 +28,7 @@ INSTALL_LAPTOP_MODE_TOOLS="laptop-mode-tools"
 INSTALL_XORG="xorg-server xorg-xinit xorg-xkill xorg-setxkbmap xf86-input-synaptics xf86-input-mouse xf86-input-keyboard mesa gamin"
 INSTALL_SCIENCE_EDUCATION="stellarium celestia"
 INSTALL_UTILITES="faac gpac espeak faac antiword unrtf odt2txt txt2tags nrg2iso bchunk gnome-disk-utility"
-INSTALL_KDE="kde-meta kde-l10n-$LANGUAGE_KDE kipi-plugins kdeadmin-system-config-printer-kde xdg-user-dirs phonon-vlc"
+INSTALL_KDE="kde-meta kde-l10n-$LANGUAGE_KDE kipi-plugins kdeadmin-system-config-printer-kde xdg-user-dirs phonon-vlc kdelibs"
 INSTALL_APPER="apper"
 INSTALL_CHOQOK="choqok"
 INSTALL_DIGIKAM="digikam"
@@ -233,7 +233,7 @@ AUR_INSTALL_ARCHIVE_TOOLS="rar"
 AUR_INSTALL_SSH="rssh"
 AUR_INSTALL_ARISTA_TRANSCODER="arista-transcoder"
 AUR_INSTALL_ZRAM="zramswap"
-AUR_INSTALL_KDE="kde-gtk-config-git oxygen-gtk2 oxygen-gtk3 qtcurve-gtk2 qtcurve-kde4 bespin-svn"
+AUR_INSTALL_KDE="kde-gtk-config oxygen-gtk2 oxygen-gtk3 qtcurve-gtk2 qtcurve-kde4 bespin-svn"
 AUR_INSTALL_BANGARANG="bangarang"
 AUR_INSTALL_ROSA_ICONS="rosa-icons"
 AUR_INSTALL_PLASMA_THEMES="caledonia-bundle plasma-theme-rosa plasma-theme-produkt ronak-plasmatheme"
