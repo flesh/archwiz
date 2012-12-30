@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="24 Dec 2012 16:33"
+# LAST_UPDATE="30 Dec 2012 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -55,76 +55,82 @@
 # *****************************************************************************
 # -----------------------------------------------------------------------------
 # INSTALL MENU {{{
-NAME="install_menu"
-USAGE="install_menu"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-MENU-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-DESC"  "Install Menu"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Save-Software-Configuration" "Save Software Configuration for later use" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-1"  "Basic Setup"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-2"  "Desktop Environment"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-3"  "Display Manager"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-4"  "Accessories Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-5"  "Development Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-6"  "Office Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-7"  "System Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-8"  "Graphics Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-9"  "Internet Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-10" "Audio Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-11" "Video Apps"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-12" "Games"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-13" "Science"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-14" "Web server"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-15" "Fonts"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-16" "Extra"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-17" "Kernel"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-18" "Clean Orphan Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-19" "Edit Configuration"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-20" "Load Custom Software"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-21" "Load Software"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-22" "Save Software"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-ITEM-23" "Quit"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-1"  "Basic Setup: Required: SYSTEMD, Video Card, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-2"  "Desktop Environment: Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and Unity."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-3"  "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-4"  "Accessories Apps: cairo-dock-bzr, Conky, deepin-scrot, dockbarx, speedcrunch, galculator, gnome-pie, guake, kupfer, pyrenamer, shutter, synapse, terminator, zim, Revelation."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-5"  "Development Apps: aptana-studio, bluefish, eclipse, emacs, gvim, geany, IntelliJ IDEA, kdevelop, Oracle Java, Qt and Creator, Sublime Text 2, Debugger Tools, MySQL Workbench, meld, RabbitVCS, Wt, astyle and putty."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-6"  "Office Apps: Libre Office, Caligra or Abiword + Gnumeric, latex, calibre, gcstar, homebank, impressive, nitrotasks, ocrfeeder, xmind and zathura."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-7"  "System Apps:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-8"  "Graphics Apps:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-9"  "Internet Apps:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-10" "Audio Apps:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-11" "Video Apps:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-12" "Games:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-13" "Science and Education: ${INSTALL_SCIENCE_EDUCATION}."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-14" "Web server:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-15" "Fonts:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-16" "Extra:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-17" "Install optional Kernals: "
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-18" "Clean Orphan Packages:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-19" "Edit Configuration: Loads Saved Software."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-20" "Load Custom Software; Not yet written."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-21" "Allows you to review and edit configuration variables before installing software."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-22" "Save Software: Saves and Installs list and configurations creates with this menu."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INFO-23" "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-COMPLETED" "Completed"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-INSTALLED" "Installed"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-MENU-REMOVED"   "Removed"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_menu"
+    USAGE="install_menu"
+    DESCRIPTION=$(localize "INSTALL-MENU-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-MENU-DESC"  "Install Menu"
+    localize_info "INSTALL-MENU-NOTES" "NONE"
+    #
+    localize_info "Save-Software-Configuration" "Save Software Configuration for later use" 
+    localize_info "INSTALL-MENU-ITEM-1"  "Basic Setup"
+    localize_info "INSTALL-MENU-ITEM-2"  "Desktop Environment"
+    localize_info "INSTALL-MENU-ITEM-3"  "Display Manager"
+    localize_info "INSTALL-MENU-ITEM-4"  "Accessories Apps"
+    localize_info "INSTALL-MENU-ITEM-5"  "Development Apps"
+    localize_info "INSTALL-MENU-ITEM-6"  "Office Apps"
+    localize_info "INSTALL-MENU-ITEM-7"  "System Apps"
+    localize_info "INSTALL-MENU-ITEM-8"  "Graphics Apps"
+    localize_info "INSTALL-MENU-ITEM-9"  "Internet Apps"
+    localize_info "INSTALL-MENU-ITEM-10" "Audio Apps"
+    localize_info "INSTALL-MENU-ITEM-11" "Video Apps"
+    localize_info "INSTALL-MENU-ITEM-12" "Games"
+    localize_info "INSTALL-MENU-ITEM-13" "Science"
+    localize_info "INSTALL-MENU-ITEM-14" "Web server"
+    localize_info "INSTALL-MENU-ITEM-15" "Fonts"
+    localize_info "INSTALL-MENU-ITEM-16" "Extra"
+    localize_info "INSTALL-MENU-ITEM-17" "Kernel"
+    localize_info "INSTALL-MENU-ITEM-18" "Clean Orphan Packages"
+    localize_info "INSTALL-MENU-ITEM-19" "Edit Configuration"
+    localize_info "INSTALL-MENU-ITEM-20" "Load Custom Software"
+    localize_info "INSTALL-MENU-ITEM-21" "Load Software"
+    localize_info "INSTALL-MENU-ITEM-22" "Save Software"
+    localize_info "INSTALL-MENU-ITEM-23" "Quit"
+    localize_info "INSTALL-MENU-INFO-1"  "Basic Setup: Required: SYSTEMD, Video Card, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
+    localize_info "INSTALL-MENU-INFO-2"  "Desktop Environment: Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and Unity."
+    localize_info "INSTALL-MENU-INFO-3"  "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
+    localize_info "INSTALL-MENU-INFO-4"  "Accessories Apps: cairo-dock-bzr, Conky, deepin-scrot, dockbarx, speedcrunch, galculator, gnome-pie, guake, kupfer, pyrenamer, shutter, synapse, terminator, zim, Revelation."
+    localize_info "INSTALL-MENU-INFO-5"  "Development Apps: aptana-studio, bluefish, eclipse, emacs, gvim, geany, IntelliJ IDEA, kdevelop, Oracle Java, Qt and Creator, Sublime Text 2, Debugger Tools, MySQL Workbench, meld, RabbitVCS, Wt, astyle and putty."
+    localize_info "INSTALL-MENU-INFO-6"  "Office Apps: Libre Office, Caligra or Abiword + Gnumeric, latex, calibre, gcstar, homebank, impressive, nitrotasks, ocrfeeder, xmind and zathura."
+    localize_info "INSTALL-MENU-INFO-7"  "System Apps:"
+    localize_info "INSTALL-MENU-INFO-8"  "Graphics Apps:"
+    localize_info "INSTALL-MENU-INFO-9"  "Internet Apps:"
+    localize_info "INSTALL-MENU-INFO-10" "Audio Apps:"
+    localize_info "INSTALL-MENU-INFO-11" "Video Apps:"
+    localize_info "INSTALL-MENU-INFO-12" "Games:"
+    localize_info "INSTALL-MENU-INFO-13" "Science and Education: ${INSTALL_SCIENCE_EDUCATION}."
+    localize_info "INSTALL-MENU-INFO-14" "Web server:"
+    localize_info "INSTALL-MENU-INFO-15" "Fonts:"
+    localize_info "INSTALL-MENU-INFO-16" "Extra:"
+    localize_info "INSTALL-MENU-INFO-17" "Install optional Kernals: "
+    localize_info "INSTALL-MENU-INFO-18" "Clean Orphan Packages:"
+    localize_info "INSTALL-MENU-INFO-19" "Edit Configuration: Loads Saved Software."
+    localize_info "INSTALL-MENU-INFO-20" "Load Custom Software; Not yet written."
+    localize_info "INSTALL-MENU-INFO-21" "Allows you to review and edit configuration variables before installing software."
+    localize_info "INSTALL-MENU-INFO-22" "Save Software: Saves and Installs list and configurations creates with this menu."
+    localize_info "INSTALL-MENU-INFO-23" "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
+    localize_info "INSTALL-MENU-COMPLETED" "Completed"
+    localize_info "INSTALL-MENU-INSTALLED" "Installed"
+    localize_info "INSTALL-MENU-REMOVED"   "Removed"
+fi
 # -------------------------------------
 install_menu()
 {
     local -r menu_name="Install-Menu"  # You must define Menu Name here
     local BreakableKey="Q"
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "ARCHLINUX ULTIMATE INSTALL (AUI) Main Menu - https://github.com/helmuthdu/aui"
@@ -343,19 +349,22 @@ install_menu()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL BASIC {{{
-NAME="install_basic"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-BASIC-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-BASIC-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-BASIC-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-USAGE" "install_basic 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-DESC"  "Install Basic Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-NOTES" "NONE"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_basic"
+    USAGE=$(localize "INSTALL-BASIC-USAGE")
+    DESCRIPTION=$(localize "INSTALL-BASIC-DESC")
+    NOTES=$(localize "INSTALL-BASIC-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-BASIC-USAGE" "install_basic 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-BASIC-DESC"  "Install Basic Packages"
+    localize_info "INSTALL-BASIC-NOTES" "NONE"
+fi
 # -------------------------------------
 install_basic()
 {
@@ -380,23 +389,26 @@ install_basic()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL GIT TOR {{{
-NAME="install_git_tor_pack"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-GIT-TOR-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-GIT-TOR-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-GIT-TOR-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-USAGE" "install_git_tor_pack 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-DESC"  "Install GIT TOR Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-TITLE" "GIT-TOR"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-INFO"  "Tor is an open source implementation of 2nd generation onion routing that provides free access to an anonymous proxy network. Its primary goal is to enable online anonymity by protecting against traffic analysis attacks."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GIT-TOR-YN"    "Ensuring access to GIT through a firewall (bypass college/work firewall)"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_git_tor_pack"
+    USAGE=$(localize "INSTALL-GIT-TOR-USAGE")
+    DESCRIPTION=$(localize "INSTALL-GIT-TOR-DESC")
+    NOTES=$(localize "INSTALL-GIT-TOR-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-GIT-TOR-USAGE" "install_git_tor_pack 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-GIT-TOR-DESC"  "Install GIT TOR Packages"
+    localize_info "INSTALL-GIT-TOR-NOTES" "NONE"
+    #
+    localize_info "INSTALL-GIT-TOR-TITLE" "GIT-TOR"
+    localize_info "INSTALL-GIT-TOR-INFO"  "Tor is an open source implementation of 2nd generation onion routing that provides free access to an anonymous proxy network. Its primary goal is to enable online anonymity by protecting against traffic analysis attacks."
+    localize_info "INSTALL-GIT-TOR-YN"    "Ensuring access to GIT through a firewall (bypass college/work firewall)"
+fi
 # -------------------------------------
 install_git_tor_pack()
 {
@@ -420,35 +432,38 @@ install_git_tor_pack()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL BASIC SETUP {{{
-NAME="install_basic_setup"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-BASIC-SETUP-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-BASIC-SETUP-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-BASIC-SETUP-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-USAGE" "install_basic_setup 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-DESC"  "Install Basic Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-TITLE"           "The Following will be installed by Default."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD"    "SYSTEMD"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD-1"  "systemd is a replacement for the init daemon for Linux (either System V or BSD-style). It is intended to provide a better framework for expressing services' dependencies, allow more work to be done in parallel at system startup, and to reduce shell overhead."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-BASH-TOOLS" "BASH TOOLS"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ARCHIVE-TOOLS"   "(UN)COMPRESS TOOLS - https://wiki.archlinux.org/index.php/P7zip"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI"      "AVAHI"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI-1"    "Avahi is a free Zero Configuration Networking (Zeroconf) implementation, including a system for multicast DNS/DNS-SD service discovery. It allows programs to publish and discover services and hosts running on a local network with no specific configuration."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-INFO-ACPI"       "ACPI"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ACPI-1"          "acpid is a flexible and extensible daemon for delivering ACPI events."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ALSA"            "ALSA"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-ALSA-1"          "The Advanced Linux Sound Architecture (ALSA) is a Linux kernel component intended to replace the original Open Sound System (OSSv3) for providing device drivers for sound cards."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-NTFS-1"          "NTFS/FAT/exFAT"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-NTFS-2"          "A file system (or filesystem) is a means to organize data expected to be retained after a program terminates by providing procedures to store, retrieve and update data, as well as manage the available space on the device(s) which contain it. A file system organizes data in an efficient manner and is tuned to the specific characteristics of the device."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-SSH-1"           "SSH"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-BASIC-SETUP-SSH-2"           "Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers."
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_basic_setup"
+    USAGE=$(localize "INSTALL-BASIC-SETUP-USAGE")
+    DESCRIPTION=$(localize "INSTALL-BASIC-SETUP-DESC")
+    NOTES=$(localize "INSTALL-BASIC-SETUP-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-BASIC-SETUP-USAGE" "install_basic_setup 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-BASIC-SETUP-DESC"  "Install Basic Packages"
+    localize_info "INSTALL-BASIC-SETUP-NOTES" "NONE"
+    #
+    localize_info "INSTALL-BASIC-SETUP-TITLE"           "The Following will be installed by Default."
+    localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD"    "SYSTEMD"
+    localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD-1"  "systemd is a replacement for the init daemon for Linux (either System V or BSD-style). It is intended to provide a better framework for expressing services' dependencies, allow more work to be done in parallel at system startup, and to reduce shell overhead."
+    localize_info "INSTALL-BASIC-SETUP-INFO-BASH-TOOLS" "BASH TOOLS"
+    localize_info "INSTALL-BASIC-SETUP-ARCHIVE-TOOLS"   "(UN)COMPRESS TOOLS - https://wiki.archlinux.org/index.php/P7zip"
+    localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI"      "AVAHI"
+    localize_info "INSTALL-BASIC-SETUP-INFO-AVAHI-1"    "Avahi is a free Zero Configuration Networking (Zeroconf) implementation, including a system for multicast DNS/DNS-SD service discovery. It allows programs to publish and discover services and hosts running on a local network with no specific configuration."
+    localize_info "INSTALL-BASIC-SETUP-INFO-ACPI"       "ACPI"
+    localize_info "INSTALL-BASIC-SETUP-ACPI-1"          "acpid is a flexible and extensible daemon for delivering ACPI events."
+    localize_info "INSTALL-BASIC-SETUP-ALSA"            "ALSA"
+    localize_info "INSTALL-BASIC-SETUP-ALSA-1"          "The Advanced Linux Sound Architecture (ALSA) is a Linux kernel component intended to replace the original Open Sound System (OSSv3) for providing device drivers for sound cards."
+    localize_info "INSTALL-BASIC-SETUP-NTFS-1"          "NTFS/FAT/exFAT"
+    localize_info "INSTALL-BASIC-SETUP-NTFS-2"          "A file system (or filesystem) is a means to organize data expected to be retained after a program terminates by providing procedures to store, retrieve and update data, as well as manage the available space on the device(s) which contain it. A file system organizes data in an efficient manner and is tuned to the specific characteristics of the device."
+    localize_info "INSTALL-BASIC-SETUP-SSH-1"           "SSH"
+    localize_info "INSTALL-BASIC-SETUP-SSH-2"           "Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers."
+fi
 # -------------------------------------
 install_basic_setup()
 {
@@ -547,23 +562,26 @@ install_basic_setup()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL NFS {{{
-NAME="install_nfs_pack"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-NFS-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-NFS-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-NFS-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-USAGE" "install_nfs_pack 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-DESC"  "Install NFS Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-TITLE" "NFS"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-INFO"  "NFS allowing a user on a client computer to access files over a network in a manner similar to how local storage is accessed."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NFS-YN"    "Install NFS"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_nfs_pack"
+    USAGE=$(localize "INSTALL-NFS-USAGE")
+    DESCRIPTION=$(localize "INSTALL-NFS-DESC")
+    NOTES=$(localize "INSTALL-NFS-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-NFS-USAGE" "install_nfs_pack 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-NFS-DESC"  "Install NFS Packages"
+    localize_info "INSTALL-NFS-NOTES" "NONE"
+    #
+    localize_info "INSTALL-NFS-TITLE" "NFS"
+    localize_info "INSTALL-NFS-INFO"  "NFS allowing a user on a client computer to access files over a network in a manner similar to how local storage is accessed."
+    localize_info "INSTALL-NFS-YN"    "Install NFS"
+fi
 # -------------------------------------
 install_nfs_pack()
 {
@@ -585,23 +603,26 @@ install_nfs_pack()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL SAMBA {{{
-NAME="install_samba_pack"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-SAMBA-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-SAMBA-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-SAMBA-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-USAGE" "install_samba_pack 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-DESC"  "Install samba Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-TITLE" "SAMBA"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-INFO"  "Samba is a re-implementation of the SMB/CIFS networking protocol, it facilitates file and printer sharing among Linux and Windows systems as an alternative to NFS."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SAMBA-YN"    "Install Samba"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_samba_pack"
+    USAGE=$(localize "INSTALL-SAMBA-USAGE")
+    DESCRIPTION=$(localize "INSTALL-SAMBA-DESC")
+    NOTES=$(localize "INSTALL-SAMBA-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-SAMBA-USAGE" "install_samba_pack 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-SAMBA-DESC"  "Install samba Packages"
+    localize_info "INSTALL-SAMBA-NOTES" "NONE"
+    #
+    localize_info "INSTALL-SAMBA-TITLE" "SAMBA"
+    localize_info "INSTALL-SAMBA-INFO"  "Samba is a re-implementation of the SMB/CIFS networking protocol, it facilitates file and printer sharing among Linux and Windows systems as an alternative to NFS."
+    localize_info "INSTALL-SAMBA-YN"    "Install Samba"
+fi
 # -------------------------------------
 install_samba_pack()
 {
@@ -628,23 +649,26 @@ install_samba_pack()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL PRELOAD {{{
-NAME="install_preload_pack"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-PRELOAD-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-PRELOAD-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-PRELOAD-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-USAGE" "install_preload_pack 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-DESC"  "Install preload Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-TITLE" "PRELOAD"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-INFO"  "Preload is a program which runs as a daemon and records statistics about usage of programs using Markov chains; files of more frequently-used programs are, during a computer's spare time, loaded into memory. This results in faster startup times as less data needs to be fetched from disk. preload is often paired with prelink."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-PRELOAD-YN"    "Install Preload"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_preload_pack"
+    USAGE=$(localize "INSTALL-PRELOAD-USAGE")
+    DESCRIPTION=$(localize "INSTALL-PRELOAD-DESC")
+    NOTES=$(localize "INSTALL-PRELOAD-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-PRELOAD-USAGE" "install_preload_pack 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-PRELOAD-DESC"  "Install preload Packages"
+    localize_info "INSTALL-PRELOAD-NOTES" "NONE"
+    #
+    localize_info "INSTALL-PRELOAD-TITLE" "PRELOAD"
+    localize_info "INSTALL-PRELOAD-INFO"  "Preload is a program which runs as a daemon and records statistics about usage of programs using Markov chains; files of more frequently-used programs are, during a computer's spare time, loaded into memory. This results in faster startup times as less data needs to be fetched from disk. preload is often paired with prelink."
+    localize_info "INSTALL-PRELOAD-YN"    "Install Preload"
+fi
 # -------------------------------------
 install_preload_pack()
 {
@@ -666,23 +690,26 @@ install_preload_pack()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ZRAM {{{
-NAME="install_zram"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-ZRAM-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-ZRAM-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-ZRAM-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-USAGE" "install_zram 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-DESC"  "Install zram Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-TITLE" "ZRAM"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-INFO"  "Zram creates a device in RAM and compresses it. If you use for swap means that part of the RAM can hold much more information but uses more CPU. Still, it is much quicker than swapping to a hard drive. If a system often falls back to swap, this could improve responsiveness. Zram is in mainline staging (therefore its not stable yet, use with caution)."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ZRAM-YN"    "Install Zram"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_zram"
+    USAGE=$(localize "INSTALL-ZRAM-USAGE")
+    DESCRIPTION=$(localize "INSTALL-ZRAM-DESC")
+    NOTES=$(localize "INSTALL-ZRAM-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-ZRAM-USAGE" "install_zram 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-ZRAM-DESC"  "Install zram Packages"
+    localize_info "INSTALL-ZRAM-NOTES" "NONE"
+    #
+    localize_info "INSTALL-ZRAM-TITLE" "ZRAM"
+    localize_info "INSTALL-ZRAM-INFO"  "Zram creates a device in RAM and compresses it. If you use for swap means that part of the RAM can hold much more information but uses more CPU. Still, it is much quicker than swapping to a hard drive. If a system often falls back to swap, this could improve responsiveness. Zram is in mainline staging (therefore its not stable yet, use with caution)."
+    localize_info "INSTALL-ZRAM-YN"    "Install Zram"
+fi
 # -------------------------------------
 install_zram()
 {
@@ -705,23 +732,26 @@ install_zram()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL INSTALL LAPTOP MODE TOOLS {{{
-NAME="install_laptop_mode_tools_pack"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-LAPTOP-MODE-TOOLS-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-LAPTOP-MODE-TOOLS-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-LAPTOP-MODE-TOOLS-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-USAGE" "install_laptop_mode_tools_pack 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-DESC"  "Install LAPTOP-MODE-TOOLS Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-TITLE" "LAPTOP MODE TOOLS"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-INFO"  "Laptop Mode Tools is a laptop power saving package for Linux systems. It is the primary way to enable the Laptop Mode feature of the Linux kernel, which lets your hard drive spin down. In addition, it allows you to tweak a number of other power-related settings using a simple configuration file."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LAPTOP-MODE-TOOLS-YN"    "Install Laptop Mode Tools"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_laptop_mode_tools_pack"
+    USAGE=$(localize "INSTALL-LAPTOP-MODE-TOOLS-USAGE")
+    DESCRIPTION=$(localize "INSTALL-LAPTOP-MODE-TOOLS-DESC")
+    NOTES=$(localize "INSTALL-LAPTOP-MODE-TOOLS-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-LAPTOP-MODE-TOOLS-USAGE" "install_laptop_mode_tools_pack 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-LAPTOP-MODE-TOOLS-DESC"  "Install LAPTOP-MODE-TOOLS Packages"
+    localize_info "INSTALL-LAPTOP-MODE-TOOLS-NOTES" "NONE"
+    #
+    localize_info "INSTALL-LAPTOP-MODE-TOOLS-TITLE" "LAPTOP MODE TOOLS"
+    localize_info "INSTALL-LAPTOP-MODE-TOOLS-INFO"  "Laptop Mode Tools is a laptop power saving package for Linux systems. It is the primary way to enable the Laptop Mode feature of the Linux kernel, which lets your hard drive spin down. In addition, it allows you to tweak a number of other power-related settings using a simple configuration file."
+    localize_info "INSTALL-LAPTOP-MODE-TOOLS-YN"    "Install Laptop Mode Tools"
+fi
 # -------------------------------------
 install_laptop_mode_tools_pack()
 {
@@ -744,24 +774,27 @@ install_laptop_mode_tools_pack()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL XORG {{{
-NAME="install_xorg"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-XORG-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-XORG-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-XORG-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-USAGE" "install_xorg 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-DESC"  "Install Basic Packages"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-NOTES" "NONE"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-TITLE"   "XORG"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-INFO-1"  "Xorg is the public, open-source implementation of the X window system version 11."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-INFO-2"  "Installing X-Server (req. for Desktopenvironment, GPU Drivers, Keyboardlayout,...)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-XORG-SELECT"  "Select keyboard layout:"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_xorg"
+    USAGE=$(localize "INSTALL-XORG-USAGE")
+    DESCRIPTION=$(localize "INSTALL-XORG-DESC")
+    NOTES=$(localize "INSTALL-XORG-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-XORG-USAGE" "install_xorg 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-XORG-DESC"  "Install Basic Packages"
+    localize_info "INSTALL-XORG-NOTES" "NONE"
+    #
+    localize_info "INSTALL-XORG-TITLE"   "XORG"
+    localize_info "INSTALL-XORG-INFO-1"  "Xorg is the public, open-source implementation of the X window system version 11."
+    localize_info "INSTALL-XORG-INFO-2"  "Installing X-Server (req. for Desktopenvironment, GPU Drivers, Keyboardlayout,...)"
+    localize_info "INSTALL-XORG-SELECT"  "Select keyboard layout:"
+fi
 # -------------------------------------
 install_xorg()
 {
@@ -790,21 +823,27 @@ install_xorg()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DESKTOP ENVIRONMENT {{{
-NAME="install_desktop_environment"
-USAGE="install_desktop_environment"
-DESCRIPTION="Install Desktop Environment"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_desktop_environment"
+    USAGE="install_desktop_environment"
+    DESCRIPTION="Install Desktop Environment"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_desktop_environment() 
 { 
     # 2
     local -r menu_name="DESKTOP-ENVIRONMENT"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "DESKTOP ENVIRONMENT - https://wiki.archlinux.org/index.php/Desktop_Environment"
@@ -813,8 +852,8 @@ install_desktop_environment()
         local -a MenuItems=( "" ); local -a MenuInfo=( "" ) # Reset
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Mate"      "The Way Gnome should be..." "Installs from repo.mate-desktop.org" "Mate: Fork of Gnome 2.x" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "KDE"       "" ""      "KDE:" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "XFCE"      "" ""      "XFCE:" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "KDE"       "" ""      "KDE:"     "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "XFCE"      "" ""      "XFCE:"    "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Awesome"   "" ""      "Awesome:" "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Cinnamon"  "" "$AUR"  "Cinnamon" "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "E17"       "" ""      "E17"              "MenuTheme[@]"
@@ -892,15 +931,18 @@ install_desktop_environment()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL MATE {{{
-NAME="install_mate"
-USAGE="install_mate"
-DESCRIPTION="Installs Mate Desktop."
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_mate"
+    USAGE="install_mate"
+    DESCRIPTION="Installs Mate Desktop."
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_mate()
 {
     # 1
@@ -923,28 +965,33 @@ install_mate()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL KDE {{{
-NAME="install_kde"
-USAGE="install_kde"
-DESCRIPTION="Install KDE"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_kde"
+    USAGE="install_kde"
+    DESCRIPTION="Install KDE"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_kde()
 {
     # 2
-    local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-KDE"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     print_title "KDE - https://wiki.archlinux.org/index.php/KDE"
     print_info "KDE is an international free software community producing an integrated set of cross-platform applications designed to run on Linux, FreeBSD, Microsoft Windows, Solaris and Mac OS X systems. It is known for its Plasma Desktop, a desktop environment provided as the default working environment on many Linux distributions."
     add_package "$INSTALL_KDE"
     add_packagemanager "package_install \"$INSTALL_KDE\" 'INSTALL-KDE'" "INSTALL-KDE" # "kde-telepathy telepathy"
-    add_packagemanager "package_remove 'kdemultimedia-kscd kdemultimedia-juk'" "REMOVE-KDE"
+    #add_packagemanager "package_remove 'kdemultimedia-kscd kdemultimedia-juk'" "REMOVE-KDE"
     add_aur_package "$AUR_INSTALL_KDE" # 
     add_packagemanager "aur_package_install \"$AUR_INSTALL_KDE\" 'AUR-INSTALL-KDE'" "AUR-INSTALL-KDE"
     CONFIG_KDE=1
@@ -1028,38 +1075,42 @@ install_kde()
     # A framework for defining and tracking users, login sessions, and seats
     # polkit.service
     # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable kdm.service upower.service" "SYSTEMD-ENABLE-KDE"
     KDE_INSTALLED=1
 }
 # -----------------------------------------------------------------------------
 # INSTALL GNOME {{{
-NAME="install_gnome"
-USAGE="install_gnome"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "CONFIGURE-GNOME-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "CONFIGURE-GNOME-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-DESC"    "Install Gnome"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-NOTES"   "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-TITLE" "GNOME"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-1" "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-2" "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "CONFIGURE-GNOME-INFO-3" "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_gnome"
+    USAGE="install_gnome"
+    DESCRIPTION=$(localize "CONFIGURE-GNOME-DESC")
+    NOTES=$(localize "CONFIGURE-GNOME-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "CONFIGURE-GNOME-DESC"    "Install Gnome"
+    localize_info "CONFIGURE-GNOME-NOTES"   "None."
+    #
+    localize_info "CONFIGURE-GNOME-TITLE" "GNOME"
+    localize_info "CONFIGURE-GNOME-INFO-1" "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
+    localize_info "CONFIGURE-GNOME-INFO-2" "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
+    localize_info "CONFIGURE-GNOME-INFO-3" "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
+fi
 # -------------------------------------
 install_gnome()
 {
     # 9
     GNOME_INSTALLED=1
     CONFIG_GNOME=1
-    local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-GNOME"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     print_title "CONFIGURE-GNOME-TITLE" " - https://wiki.archlinux.org/index.php/GNOME"
     print_info  "CONFIGURE-GNOME-INFO-1"
@@ -1143,21 +1194,26 @@ install_gnome()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL GNOMESHELL EXTENSIONS  {{{
-NAME="install_gnomeshell_extensions"
-USAGE="install_gnomeshell_extensions"
-DESCRIPTION="install_gnomeshell_extensions"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_gnomeshell_extensions"
+    USAGE="install_gnomeshell_extensions"
+    DESCRIPTION="install_gnomeshell_extensions"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_gnomeshell_extensions()
 {
-    local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-GNOMESHELL-EXTENSIONS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "GNOMESHELL EXTENSIONS"
@@ -1242,21 +1298,26 @@ install_gnomeshell_extensions()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL GNOMESHELL THEMES {{{
-NAME="install_gnomeshell_themes"
-USAGE="install_gnomeshell_themes"
-DESCRIPTION="Install Gnomeshell Themes"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_gnomeshell_themes"
+    USAGE="install_gnomeshell_themes"
+    DESCRIPTION="Install Gnomeshell Themes"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_gnomeshell_themes()
 {
-    local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-GNOMESHELL-THEMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "GNOMESHELL THEMES"
@@ -1323,30 +1384,33 @@ install_gnomeshell_themes()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL AWESOME {{{
-NAME="install_awesome"
-USAGE="install_awesome"
-DESCRIPTION="Install Awesome"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_awesome"
+    USAGE="install_awesome"
+    DESCRIPTION="Install Awesome"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_awesome()
 {
     # 4
-    local -i total_menu_items=10    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-AWESOME"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     AWESOME_INSTALLED=1
     add_package "$INSTALL_AWESOME" #  
     add_packagemanager "package_install \"$INSTALL_AWESOME\" 'INSTALL-AWESOME'" "INSTALL-AWESOME"
     add_aur_package "$AUR_INSTALL_AWESOME" # 
     add_packagemanager "aur_package_install \"$AUR_INSTALL_AWESOME\" 'AUR-INSTALL-AWESOME'" "AUR-INSTALL-AWESOME"
-    TEMP=$(config_xinitrc 'awesome')
-    add_packagemanager "$TEMP" "CONFIG-XINITRC-AWESOME"
     add_packagemanager "make_dir \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/awesome/rc.lua' \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
     while [[ 1 ]];  do
         print_title "AWESOME - https://wiki.archlinux.org/index.php/Awesome"
@@ -1443,22 +1507,27 @@ install_awesome()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL CINNAMON {{{
-NAME="install_cinnamon"
-USAGE="install_cinnamon"
-DESCRIPTION="Install Cinnamon"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_cinnamon"
+    USAGE="install_cinnamon"
+    DESCRIPTION="Install Cinnamon"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_cinnamon()
 {
     # 5
-    local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-CINNAMON"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     CINNAMON_INSTALLED=1
     add_package "$INSTALL_CINNAMON" #  
@@ -1467,8 +1536,6 @@ install_cinnamon()
     add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON\" 'AUR-INSTALL-CINNAMON'" "AUR-INSTALL-CINNAMON"
     # @FIX gnome-extra gnome-extra-meta telepathy
     # 
-    TEMP=$(config_xinitrc 'gnome-session-cinnamon')
-    add_packagemanager "$TEMP" "CONFIG-XINITRC-CINNAMON"
     # not sure how to run these commands; seems like they need to run after GUI is up and running; so adding them as a start up script may be what is needed
     # add_packagemanager "cinnamon-settings; cinnamon-settings panel; cinnamon-settings calendar; cinnamon-settings themes; cinnamon-settings applets; cinnamon-settings windows; cinnamon-settings fonts; cinnamon-settings hotcorner" "AUR-INSTALL-CINNAMON-SETTINGS"
     while [[ 1 ]]; do
@@ -1542,30 +1609,33 @@ install_cinnamon()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL E17 {{{
-NAME="install_e17"
-USAGE="install_e17"
-DESCRIPTION="Install E17"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_e17"
+    USAGE="install_e17"
+    DESCRIPTION="Install E17"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_e17()
 {
     # 6
-    local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-E17"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     E17_INSTALLED=1
     add_package "$INSTALL_E17" #  
     add_packagemanager "package_install \"$INSTALL_E17\" 'INSTALL-E17'" "INSTALL-E17"
     add_aur_package "$AUR_INSTALL_E17" # 
     add_packagemanager "aur_package_install \"$AUR_INSTALL_E17\" 'AUR-INSTALL-E17'" "AUR-INSTALL-E17"
-    TEMP=$(config_xinitrc 'enlightenment_start')
-    add_packagemanager "$TEMP" "CONFIG-XINITRC-E17"
     add_packagemanager "chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-XFCE"
     while [[ 1 ]]; do
         print_title "E17 - https://wiki.archlinux.org/index.php/E17"
@@ -1573,15 +1643,15 @@ install_e17()
         print_info "E17 CUSTOMIZATION"
         local -a MenuItems=( "" ); local -a MenuInfo=( "" ) # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "e17-icons" "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "e17-themes" "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rxvt-unicode" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot" "" "" "scrot: Print Screen" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar" "" "" "thunar: File Browser" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn" "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "e17-icons"    "" "$AUR" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "e17-themes"   "" "$AUR" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior"     "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun"        "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM"      "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rxvt-unicode" "" ""     "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot"        "" ""     "scrot: Print Screen" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar"       "" ""     "thunar: File Browser" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn"       "" ""     "" "MenuTheme[@]"
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "D"
         #
@@ -1656,22 +1726,27 @@ install_e17()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL LXDE {{{
-NAME="install_lxde"
-USAGE="install_lxde"
-DESCRIPTION="Install LXDE"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_lxde"
+    USAGE="install_lxde"
+    DESCRIPTION="Install LXDE"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_lxde()
 {
     # 7
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-LXDE"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     LXDE_INSTALLED=1
     add_package "$INSTALL_LXDE" #  
@@ -1725,30 +1800,33 @@ install_lxde()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL OPENBOX {{{
-NAME="install_openbox"
-USAGE="install_openbox"
-DESCRIPTION="Install Openbox"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_openbox"
+    USAGE="install_openbox"
+    DESCRIPTION="Install Openbox"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_openbox() 
 { 
     # 8
-    local -i total_menu_items=10    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-OPENBOX"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     OPENBOX_INSTALLED=1
     add_package "$INSTALL_OPENBOX" #  
     add_packagemanager "package_install \"$INSTALL_OPENBOX\" 'INSTALL-OPENBOX'" "INSTALL-OPENBOX"
     add_aur_package "$AUR_INSTALL_OPENBOX" # 
     add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENBOX\" 'AUR-INSTALL-OPENBOX'" "AUR-INSTALL-OPENBOX"
-    TEMP=$(config_xinitrc 'openbox-session')
-    add_packagemanager "$TEMP" "CONFIG-XINITRC-OPENBOX"
     add_packagemanager "make_dir \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/rc.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/menu.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/autostart' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-OPENBOX"  
     while [[ 1 ]]; do
         print_title "OPENBOX - https://wiki.archlinux.org/index.php/Openbox"
@@ -1756,16 +1834,16 @@ install_openbox()
         print_info "OPENBOX CUSTOMIZATION"
         local -a MenuItems=( "" ); local -a MenuInfo=( "" ) # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xcompmgr" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM" "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xcompmgr"     "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior"     "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun"        "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM"      "" "" "" "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rxvt-unicode" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot" "" "" "scrot: Print Screen" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar" "" "" "thunar: File Browser" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "tint2" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "volwheel" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn" "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot"        "" "" "scrot: Print Screen" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar"       "" "" "thunar: File Browser" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "tint2"        "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "volwheel"     "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn"       "" "" "" "MenuTheme[@]"
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "D"
         #
@@ -1845,26 +1923,29 @@ install_openbox()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL XFCE {{{
-NAME="install_xfce"
-USAGE="install_xfce"
-DESCRIPTION="Install XFCE"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_xfce"
+    USAGE="install_xfce"
+    DESCRIPTION="Install XFCE"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_xfce() 
 { 
     # 3
-    local -i total_menu_items=1    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-XFCE"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     XFCE_INSTALLED=1
-    TEMP=$(config_xinitrc 'startxfce4')
-    add_packagemanager "$TEMP" "CONFIG-XINITRC-XFCE"
     print_title "XFCE - https://wiki.archlinux.org/index.php/Xfce"
     print_info "Xfce is a free software desktop environment for Unix and Unix-like platforms, such as Linux, Solaris, and BSD. It aims to be fast and lightweight, while still being visually appealing and easy to use."
     add_package "$INSTALL_XFCE" #  
@@ -1912,19 +1993,23 @@ install_xfce()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL UNITY {{{
-NAME="install_unity"
-USAGE="install_unity"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-UNITY-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-UNITY-DESC"  "Install Unity"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-UNITY-CONTINUE" "Are you sure you wish to continue" 
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_unity"
+    USAGE="install_unity"
+    DESCRIPTION=$(localize "INSTALL-UNITY-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-UNITY-DESC"  "Install Unity"
+    #
+    localize_info "INSTALL-UNITY-CONTINUE" "Are you sure you wish to continue" 
+fi
+# -------------------------------------
 install_unity() 
 { 
     # 10
@@ -1955,22 +2040,27 @@ install_unity()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DISPLAY MANAGER {{{
-NAME="install_display_manager"
-USAGE="install_display_manager"
-DESCRIPTION="Install Display Manager"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_display_manager"
+    USAGE="install_display_manager"
+    DESCRIPTION="Install Display Manager"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_display_manager() 
 {
     # 3
-    local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="DISPLAY_MANAGER"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     while [[ 1 ]];  do
         print_title "DISPLAY MANAGER - https://wiki.archlinux.org/index.php/Display_Manager"
         print_info "A display manager, or login manager, is a graphical interface screen that is displayed at the end of the boot process in place of the default shell."
@@ -1992,57 +2082,77 @@ install_display_manager()
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # GDM
+                    DE_MANAGER=1
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GDM" #  
                     add_packagemanager "package_install \"$INSTALL_GDM\" 'INSTALL-GDM'" "INSTALL-GDM"
                     # dbus-launch
-                    add_package "$INSTALL_GDM_CONTROL" #  
+                    #add_package "$INSTALL_GDM_CONTROL" 
                     #add_packagemanager "package_install \"$INSTALL_GDM_CONTROL\" 'INSTALL-GDM-CONTROL'" "INSTALL-GDM-CONTROL" # One only
+                    #
                     #add_aur_package "$AUR_INSTALL_GDM" # \"$AUR_INSTALL_GDM\"
                     #add_packagemanager "aur_package_install '' 'AUR-INSTALL-GDM'" "AUR-INSTALL-GDM"
                     add_packagemanager "systemctl enable gdm.service" "SYSTEMD-ENABLE-GDM"
                     if [[ "$MATE_INSTALLED" -eq 1 ]]; then
-                        TEMP=$(config_xinitrc 'mate-session')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-MATE"
+                        add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
+                    elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
                     elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
-                        TEMP=$(config_xinitrc 'gnome-session-cinnamon')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-CINNAMON"
+                        add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
+                    elif [[ "$E17_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
+                    elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
+                    elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
                     else
-                        TEMP=$(config_xinitrc 'gnome-session')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-GNOME"
+                        add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
                     fi
                     break
                     ;;
                 2)  # KDM
+                    DE_MANAGER=2
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_KDM" #  
+                    add_package "$INSTALL_KDM"
                     add_packagemanager "package_install \"$INSTALL_KDM\" 'INSTALL-KDM'" "INSTALL-KDM"
-                    add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
                     if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                        add_packagemanager "add_option 'usr/share/config/kdm/kdmrc' 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-KDM'" "ADD-OPTION-KDM"
+                        add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-1-KDM'" "ADD-OPTION-1-KDM"
+                        # SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions to SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions,/usr/share/xsessions
+                        add_packagemanager "replace_option '/usr/share/config/kdm/kdmrc' 'AllowClose=' 'true' 'ADD-OPTION-2-KDM'" "ADD-OPTION-2-KDM"
+                        # AllowClose=false to AllowClose=true
+                        add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'Session=' '.custom' 'ADD-OPTION-3-KDM'" "ADD-OPTION-3-KDM"
+                        # Session=/usr/share/config/kdm/Xsession to Session=/usr/share/config/kdm/Xsession.custom
+                        add_packagemanager "copy_file '/usr/share/config/kdm/Xsession' '/usr/share/config/kdm/Xsession.custom' \"$(basename $BASH_SOURCE) : $LINENO\"" "COPY-KDM"
                     fi
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        TEMP=$(config_xinitrc 'startkde')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-KDE"
+                        add_packagemanager "$(config_xinitrc 'startkde')" "CONFIG-XINITRC-KDE"
+                        add_packagemanager "systemctl enable kdm.service upower.service" "SYSTEMD-ENABLE-KDE"
                     elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
-                        TEMP=$(config_xinitrc 'mate-session')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-MATE"
+                        add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
                     elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
-                        TEMP=$(config_xinitrc 'gnome-session-cinnamon')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-CINNAMON"
+                        add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
+                    elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
+                    elif [[ "$E17_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
+                    elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
+                    elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
+                        add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
                     else
-                        TEMP=$(config_xinitrc 'gnome-session')
-                        add_packagemanager "$TEMP" "CONFIG-XINITRC-GNOME"
+                        add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
                     fi
                     break
                     ;;
                 3)  # Elsa 
+                    DE_MANAGER=3
                     add_aur_package "$AUR_INSTALL_ELSA" # 
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_ELSA\" 'AUR-INSTALL-ELSA'" "AUR-INSTALL-ELSA"
                     add_packagemanager "systemctl enable elsa.service" "SYSTEMD-ENABLE-ELSA"
                     break
                     ;;
                 4)  # LightDM
+                    DE_MANAGER=4
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_LIGHTDM" #  
                     add_packagemanager "package_install \"$INSTALL_LIGHTDM\" 'INSTALL-LIGHTDM'" "INSTALL-LIGHTDM"
@@ -2057,15 +2167,16 @@ install_display_manager()
                     break
                     ;;
                 5)  # LXDM
+                    DE_MANAGER=5
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_LXDM" #  
                     add_packagemanager "package_install \"$INSTALL_LXDM\" 'INSTALL-LXDM'" "INSTALL-LXDM"
                     add_packagemanager "systemctl enable lxdm.service" "SYSTEMD-ENABLE-LXDM"
-                    TEMP=$(config_xinitrc 'startlxde')
-                    add_packagemanager "$TEMP" "CONFIG-XINITRC-GNOME"
+                    add_packagemanager "$(config_xinitrc 'startlxde')" "CONFIG-XINITRC-GNOME"
                     break
                     ;;
                 6)  # Slim
+                    DE_MANAGER=6
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SLIM" #  
                     add_packagemanager "package_install \"$INSTALL_SLIM\" 'INSTALL-SLIM'" "INSTALL-SLIM"
@@ -2073,6 +2184,7 @@ install_display_manager()
                     break
                     ;;
                 7)  # Qingy
+                    DE_MANAGER=7
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_QINGY" #  
                     add_packagemanager "package_install \"$INSTALL_QINGY\" 'INSTALL-QINGY'" "INSTALL-QINGY"
@@ -2080,6 +2192,7 @@ install_display_manager()
                     break
                     ;;
                 8)  # XDM
+                    DE_MANAGER=8
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XDM" #  
                     add_packagemanager "package_install \"$INSTALL_XDM\" 'INSTALL-XDM'" "INSTALL-XDM"
@@ -2104,22 +2217,27 @@ install_display_manager()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL EXTRA {{{
-NAME="install_extra"
-USAGE="install_extra"
-DESCRIPTION="Install Extra"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_extra"
+    USAGE="install_extra"
+    DESCRIPTION="Install Extra"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_extra()
 {
     # 13
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-EXTRA"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "EXTRAs"
@@ -2167,21 +2285,26 @@ install_extra()
 #}}}
 # -----------------------------------------------------------------------------
 # ELEMENTARY PROJECT {{{
-NAME="install_extras"
-USAGE="install_extras"
-DESCRIPTION="Install Extras"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_extras"
+    USAGE="install_extras"
+    DESCRIPTION="Install Extras"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_extras()
 {
-    local -i total_menu_items=21    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="ELEMENTARY-PROJECT"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "ELEMENTARY PROJECT"
@@ -2340,22 +2463,27 @@ install_extras()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL AUDIO APPS {{{
-NAME="install_audio_apps"
-USAGE="install_audio_apps"
-DESCRIPTION="Install Audio Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_audio_apps"
+    USAGE="install_audio_apps"
+    DESCRIPTION="Install Audio Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_audio_apps()
 {
     # 8
-    local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="AUDIO-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "AUDIO APPS"
@@ -2403,21 +2531,26 @@ install_audio_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL AUDIO EDITORS {{{
-NAME="install_audio_editors"
-USAGE="install_audio_editors"
-DESCRIPTION="Install Audio Editors"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_audio_editors"
+    USAGE="install_audio_editors"
+    DESCRIPTION="Install Audio Editors"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_audio_editors()
 {
-    local -i total_menu_items=4    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-AUDIO-EDITORS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         local -a MenuItems=( "" ); local -a MenuInfo=( "" ) # Reset
@@ -2480,21 +2613,26 @@ install_audio_editors()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL PLAYERS {{{
-NAME="install_players"
-USAGE="install_players"
-DESCRIPTION="Install Players"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_players"
+    USAGE="install_players"
+    DESCRIPTION="Install Players"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_players()
 {
-    local -i total_menu_items=13    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-PLAYERS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         #
@@ -2605,21 +2743,27 @@ install_players()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL OFFICE APPS {{{
-NAME="install_office_apps"
-USAGE="install_office_apps"
-DESCRIPTION="Install Office Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_office_apps"
+    USAGE="install_office_apps"
+    DESCRIPTION="Install Office Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_office_apps()
 {
     # 4
     local -r menu_name="OFFICE-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "OFFICE APPS"
@@ -2751,22 +2895,27 @@ install_office_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # SYSTEM TOOLS APPS {{{
-NAME="install_system_apps"
-USAGE="install_system_apps"
-DESCRIPTION="Install System Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_system_apps"
+    USAGE="install_system_apps"
+    DESCRIPTION="Install System Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_system_apps()
 {
     # 5
-    local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="SYSTEM-TOOLS-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "SYSTEM TOOLS APPS"
@@ -2856,22 +3005,27 @@ install_system_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DE EXTRAS {{{
-NAME="install_de_extras"
-USAGE="install_system_apps"
-DESCRIPTION="Install DE Extras"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_de_extras"
+    USAGE="install_system_apps"
+    DESCRIPTION="Install DE Extras"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_de_extras()
 {
     # 11
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-DE-EXTRAS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "Desktop Environments Extras"
@@ -2912,22 +3066,27 @@ install_de_extras()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL GTK THEMES {{{
-NAME="install_gtk_themes"
-USAGE="install_gtk_themes"
-DESCRIPTION="Install GTK Themes"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_gtk_themes"
+    USAGE="install_gtk_themes"
+    DESCRIPTION="Install GTK Themes"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_gtk_themes() 
 { 
     # 11 sub 2
-    local -i total_menu_items=10   # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-GTK-THEMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "GTK2/GTK3 THEMES"
@@ -3018,23 +3177,30 @@ install_gtk_themes()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ICONS {{{
-NAME="install_icons"
-USAGE="install_icons"
-DESCRIPTION="Install ICONS"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install also the elementary XFCE icons" "Install also the elementary XFCE icons" 
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_icons"
+    USAGE="install_icons"
+    DESCRIPTION="Install ICONS"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "Install also the elementary XFCE icons" "Install also the elementary XFCE icons" 
+fi
+# -------------------------------------
 install_icons() 
 { 
     # 11 sub 1
-    local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-ICONS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     add_package "$INSTALL_GTK_ICONS" #  
     add_packagemanager "package_install \"$INSTALL_GTK_ICONS\" 'INSTALL-GTK-ICONS'" "INSTALL-GTK-ICONS"
@@ -3132,22 +3298,27 @@ install_icons()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL GAMES {{{
-NAME="install_games"
-USAGE="install_games"
-DESCRIPTION="Install Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_games"
+    USAGE="install_games"
+    DESCRIPTION="Install Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_games()
 {
     # 10
-    local -i total_menu_items=14    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "GAMES - https://wiki.archlinux.org/index.php/Games"
@@ -3251,21 +3422,26 @@ install_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ACTION/ADVENTURE GAMES {{{
-NAME="install_action_games"
-USAGE="install_action_games"
-DESCRIPTION="Install Action/Adventure Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_action_games"
+    USAGE="install_action_games"
+    DESCRIPTION="Install Action/Adventure Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_action_games()
 {
-    local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="ACTION-ADVENTURE-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "ACTION AND ADVENTURE"
@@ -3350,20 +3526,26 @@ install_action_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ARCADE/PLATFORMER GAMES {{{
-NAME="install_arade_games"
-USAGE="install_arade_games"
-DESCRIPTION="Install Arcade Plateformer Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_arade_games"
+    USAGE="install_arade_games"
+    DESCRIPTION="Install Arcade Plateformer Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_arade_games()
 {
     local -r menu_name="INSTALL-ARCADE-PLATFORMER-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "ARCADE AND PLATFORMER"
@@ -3466,21 +3648,26 @@ install_arade_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DUNGEON GAMES {{{
-NAME="install_dungon_games"
-USAGE="install_dungon_games"
-DESCRIPTION="Install Dungon Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_dungon_games"
+    USAGE="install_dungon_games"
+    DESCRIPTION="Install Dungon Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_dungon_games()
 {
-    local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-DUNGEON-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "DUNGEON"
@@ -3541,21 +3728,26 @@ install_dungon_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL EMULATORS GAMES {{{
-NAME="install_emulator_games"
-USAGE="install_emulator_games"
-DESCRIPTION="Install Emulator Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_emulator_games"
+    USAGE="install_emulator_games"
+    DESCRIPTION="Install Emulator Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_emulator_games()
 {
-    local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-EMULATORS-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "EMULATORS"
@@ -3634,21 +3826,26 @@ install_emulator_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL FPS GAMES {{{
-NAME="install_fps_games"
-USAGE="install_fps_games"
-DESCRIPTION="Install FPS Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_fps_games"
+    USAGE="install_fps_games"
+    DESCRIPTION="Install FPS Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_fps_games()
 {
-    local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-FPS-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "FPS Games"
@@ -3710,21 +3907,26 @@ install_fps_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL MMO GAMES {{{
-NAME="install_mmo_games"
-USAGE="install_mmo_games"
-DESCRIPTION="Install MMO Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_mmo_games"
+    USAGE="install_mmo_games"
+    DESCRIPTION="Install MMO Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_mmo_games()
 {
-    local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-MMO-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "MMO"
@@ -3791,21 +3993,26 @@ install_mmo_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL PUZZLE GAMES {{{
-NAME="install_puzzle_games"
-USAGE="install_puzzle_games"
-DESCRIPTION="Install Puzzle Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_puzzle_games"
+    USAGE="install_puzzle_games"
+    DESCRIPTION="Install Puzzle Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_puzzle_games()
 {
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-PUZZLE-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     print_title "PUZZLE"
     while [[ 1 ]]; do
@@ -3848,21 +4055,26 @@ install_puzzle_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL RPG GAMES {{{
-NAME="install_rpg_games"
-USAGE="install_rpg_games"
-DESCRIPTION="Install RPG GAMES"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_rpg_games"
+    USAGE="install_rpg_games"
+    DESCRIPTION="Install RPG GAMES"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_rpg_games()
 {
-    local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-RPG-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "RPG"
@@ -3911,21 +4123,26 @@ install_rpg_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL RACING GAMES {{{
-NAME="install_racing_games"
-USAGE="install_racing_games"
-DESCRIPTION="Install Racing Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_racing_games"
+    USAGE="install_racing_games"
+    DESCRIPTION="Install Racing Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_racing_games()
 {
-    local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-RACING-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "RACING"
@@ -3986,21 +4203,26 @@ install_racing_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL SIMULATION GAMES {{{
-NAME="install_simulation_games"
-USAGE="install_simulation_games"
-DESCRIPTION="Install Simulation Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_simulation_games"
+    USAGE="install_simulation_games"
+    DESCRIPTION="Install Simulation Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_simulation_games()
 {
-    local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-SIMULATION-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "SIMULATION"
@@ -4049,21 +4271,26 @@ install_simulation_games()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL STRATEGY GAMES {{{
-NAME="install_strategy_games"
-USAGE="install_strategy_games"
-DESCRIPTION="Install Strategy Games"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_strategy_games"
+    USAGE="install_strategy_games"
+    DESCRIPTION="Install Strategy Games"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_strategy_games()
 {
-    local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-STRATEGY-GAMES"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "STRATEGY"
@@ -4136,15 +4363,17 @@ install_strategy_games()
 #}}}
 # -----------------------------------------------------------------------------
 # CREATE SITES FOLDER {{{
-NAME="create_sites_folder"
-USAGE="create_sites_folder"
-DESCRIPTION="create sites folder"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="create_sites_folder"
+    USAGE="create_sites_folder"
+    DESCRIPTION="create sites folder"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
 create_sites_folder()
 {
     # copy_file "from" "to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -4161,15 +4390,18 @@ create_sites_folder()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL WEB SERVER {{{
-NAME="install_web_server"
-USAGE="install_web_server"
-DESCRIPTION="Install Web Server"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_web_server"
+    USAGE="install_web_server"
+    DESCRIPTION="Install Web Server"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_web_server()
 {
     # 11
@@ -4208,22 +4440,27 @@ install_web_server()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL FONTS {{{
-NAME="install_fonts"
-USAGE="install_fonts"
-DESCRIPTION="Install Fonts"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_fonts"
+    USAGE="install_fonts"
+    DESCRIPTION="Install Fonts"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_fonts()
 {
     # 12
-    local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-FONTS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "FONTS - https://wiki.archlinux.org/index.php/Fonts"
@@ -4303,15 +4540,17 @@ install_fonts()
 #}}}
 # -----------------------------------------------------------------------------
 # CLEAN ORPHAN PACKAGES {{{
-NAME="clean_orphan_packages"
-USAGE="clean_orphan_packages"
-DESCRIPTION="Clean Orphan Packages"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="clean_orphan_packages"
+    USAGE="clean_orphan_packages"
+    DESCRIPTION="Clean Orphan Packages"
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
 clean_orphan_packages()
 {
     # 14
@@ -4321,25 +4560,28 @@ clean_orphan_packages()
 #}}}
 # -----------------------------------------------------------------------------
 # GET NETWORK MANAGER {{{
-NAME="get_network_manager"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "GET-NETWORK-MANAGER-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "GET-NETWORK-MANAGER-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "GET-NETWORK-MANAGER-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-USAGE" "get_network_manager"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-DESC"  "Get Network Manager"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-NOTES" "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-TITLE"  "Network Manager"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-INFO-1" "NetworkManager is a program for providing detection and configuration for systems to automatically connect to network. NetworkManager's functionality can be useful for both wireless and wired networks."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-INFO-2" "WICD"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-INFO-3" "Wicd is a network connection manager that can manage wireless and wired interfaces, similar and an alternative to NetworkManager."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "GET-NETWORK-MANAGER-SELECT" "Select a Newwork Manager:"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="get_network_manager"
+    USAGE=$(localize "GET-NETWORK-MANAGER-USAGE")
+    DESCRIPTION=$(localize "GET-NETWORK-MANAGER-DESC")
+    NOTES=$(localize "GET-NETWORK-MANAGER-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "GET-NETWORK-MANAGER-USAGE" "get_network_manager"
+    localize_info "GET-NETWORK-MANAGER-DESC"  "Get Network Manager"
+    localize_info "GET-NETWORK-MANAGER-NOTES" "None."
+    #
+    localize_info "GET-NETWORK-MANAGER-TITLE"  "Network Manager"
+    localize_info "GET-NETWORK-MANAGER-INFO-1" "NetworkManager is a program for providing detection and configuration for systems to automatically connect to network. NetworkManager's functionality can be useful for both wireless and wired networks."
+    localize_info "GET-NETWORK-MANAGER-INFO-2" "WICD"
+    localize_info "GET-NETWORK-MANAGER-INFO-3" "Wicd is a network connection manager that can manage wireless and wired interfaces, similar and an alternative to NetworkManager."
+    localize_info "GET-NETWORK-MANAGER-SELECT" "Select a Newwork Manager:"
+fi
 # -------------------------------------
 get_network_manager()
 {
@@ -4374,19 +4616,22 @@ get_network_manager()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL NETWORK MANAGER {{{
-NAME="install_network_manager"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-NETWORK-MANAGER-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-NETWORK-MANAGER-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-NETWORK-MANAGER-NOTES")
-AUTHOR="helmuthdu and Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NETWORK-MANAGER-USAGE" "install_network_manager"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NETWORK-MANAGER-DESC"  "Install Network Manager"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-NETWORK-MANAGER-NOTES" "None."
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_network_manager"
+    USAGE=$(localize "INSTALL-NETWORK-MANAGER-USAGE")
+    DESCRIPTION=$(localize "INSTALL-NETWORK-MANAGER-DESC")
+    NOTES=$(localize "INSTALL-NETWORK-MANAGER-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-NETWORK-MANAGER-USAGE" "install_network_manager"
+    localize_info "INSTALL-NETWORK-MANAGER-DESC"  "Install Network Manager"
+    localize_info "INSTALL-NETWORK-MANAGER-NOTES" "None."
+fi
 # -------------------------------------
 install_network_manager()
 {
@@ -4432,23 +4677,26 @@ install_network_manager()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL USB 3G MODEM {{{
-NAME="install_usb_modem"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-USB-3G-MODEM-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-USB-3G-MODEM-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-USB-3G-MODEM-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-USAGE"   "install_usb_modem 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-DESC"    "Install USB Modem"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-NOTES"   "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-SUPPORT" "Install usb 3G modem support" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-TITLE"   "USB 3G MODEM" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-USB-3G-MODEM-INFO"    "A number of mobile telephone networks around the world offer mobile internet connections over UMTS (or EDGE or GSM) using a portable USB modem device." 
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_usb_modem"
+    USAGE=$(localize "INSTALL-USB-3G-MODEM-USAGE")
+    DESCRIPTION=$(localize "INSTALL-USB-3G-MODEM-DESC")
+    NOTES=$(localize "INSTALL-USB-3G-MODEM-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-USB-3G-MODEM-USAGE"   "install_usb_modem 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-USB-3G-MODEM-DESC"    "Install USB Modem"
+    localize_info "INSTALL-USB-3G-MODEM-NOTES"   "None."
+    #
+    localize_info "INSTALL-USB-3G-MODEM-SUPPORT" "Install usb 3G modem support" 
+    localize_info "INSTALL-USB-3G-MODEM-TITLE"   "USB 3G MODEM" 
+    localize_info "INSTALL-USB-3G-MODEM-INFO"    "A number of mobile telephone networks around the world offer mobile internet connections over UMTS (or EDGE or GSM) using a portable USB modem device." 
+fi
 # -------------------------------------
 install_usb_modem()
 {
@@ -4469,22 +4717,27 @@ install_usb_modem()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ACCESSORIES APPS {{{
-NAME="install_accessories_apps"
-USAGE="install_accessories_apps"
-DESCRIPTION="Install Accessory Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_accessories_apps"
+    USAGE="install_accessories_apps"
+    DESCRIPTION="Install Accessory Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_accessories_apps()
 {
     # 4
-    local -i total_menu_items=15    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="ACCESSORIES-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "ACCESSORIES APPS"
@@ -4619,22 +4872,27 @@ install_accessories_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DEVELOPEMENT APPS {{{
-NAME="install_development_apps"
-USAGE="install_development_apps"
-DESCRIPTION="Install Development Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_development_apps"
+    USAGE="install_development_apps"
+    DESCRIPTION="Install Development Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_development_apps()
 {
     # 3
-    local -i total_menu_items=20    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="DEVELOPMENT-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "DEVELOPMENT APPS"
@@ -4802,21 +5060,26 @@ install_development_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ECLIPSE DEV {{{
-NAME="install_eclipse_dev"
-USAGE="install_eclipse_dev"
-DESCRIPTION="Install Eclipse Dev"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_eclipse_dev"
+    USAGE="install_eclipse_dev"
+    DESCRIPTION="Install Eclipse Dev"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_eclipse_dev()
 {
-    local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-ECLIPSE-DEV"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "ECLIPSE - https://wiki.archlinux.org/index.php/Eclipse"
@@ -4902,16 +5165,21 @@ install_eclipse_dev()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL UTILITES {{{
-NAME="install_utilities"
-USAGE="install_utilities"
-DESCRIPTION="Install Utilities"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install Utilities" "Install Utilities" 
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_utilities"
+    USAGE="install_utilities"
+    DESCRIPTION="Install Utilities"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "Install Utilities" "Install Utilities" 
+fi
+# -------------------------------------
 install_utilities()
 {
     # 3 sub 20
@@ -4927,22 +5195,27 @@ install_utilities()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL INTERNET APPS {{{
-NAME="install_internet_apps"
-USAGE="install_internet_apps"
-DESCRIPTION="Install Internet Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_internet_apps"
+    USAGE="install_internet_apps"
+    DESCRIPTION="Install Internet Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_internet_apps()
 {
     # 7
-    local -i total_menu_items=7    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INTERNET-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "INTERNET APPS"
@@ -5008,21 +5281,26 @@ install_internet_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL BROWSER APPS {{{
-NAME="install_browsers"
-USAGE="install_internet_apps"
-DESCRIPTION="Install Internet Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_browsers"
+    USAGE="install_internet_apps"
+    DESCRIPTION="Install Internet Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_browsers()
 {
-    local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-BROWSER-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "BROWSER"
@@ -5088,21 +5366,26 @@ install_browsers()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DOWNLOAD FILESHARE {{{
-NAME="install_download_fileshare"
-USAGE="install_download_fileshare"
-DESCRIPTION="Install Download / Fileshare"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_download_fileshare"
+    USAGE="install_download_fileshare"
+    DESCRIPTION="Install Download / Fileshare"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_download_fileshare()
 {
-    local -i total_menu_items=8    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-DOWNLOAD-FILESHARE"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     # 
     while [[ 1 ]]; do
         print_title "DOWNLOAD|FILESHARE"
@@ -5204,21 +5487,26 @@ install_download_fileshare()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL EMAIL {{{
-NAME="install_email"
-USAGE="install_email"
-DESCRIPTION="Install Email"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_email"
+    USAGE="install_email"
+    DESCRIPTION="Install Email"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_email()
 {
-    local -i total_menu_items=4    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-EMAIL"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "EMAIL|RSS"
@@ -5273,21 +5561,26 @@ install_email()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL IM {{{
-NAME="install_im"
-USAGE="install_im"
-DESCRIPTION="Install IM"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_im"
+    USAGE="install_im"
+    DESCRIPTION="Install IM"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_im()
 {
-    local -i total_menu_items=5    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-IM"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "IM - INSTANT MESSAGING"
@@ -5349,21 +5642,26 @@ install_im()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL IRC {{{
-NAME="install_irc"
-USAGE="install_irc"
-DESCRIPTION="Install IRC"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_irc"
+    USAGE="install_irc"
+    DESCRIPTION="Install IRC"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_irc()
 {
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-IRC"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "IRC"
@@ -5415,21 +5713,26 @@ install_irc()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL MAPPING {{{
-NAME="install_mapping"
-USAGE="install_mapping"
-DESCRIPTION="Install Mapping"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_mapping"
+    USAGE="install_mapping"
+    DESCRIPTION="Install Mapping"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_mapping()
 {
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-MAPPING"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #                    
     while [[ 1 ]];  do
         print_title "MAPPING TOOLS"
@@ -5475,21 +5778,26 @@ install_mapping()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL DESKTOP SHARE {{{
-NAME="install_desktop_share"
-USAGE="install_desktop_share"
-DESCRIPTION="Install Desktop Share"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_desktop_share"
+    USAGE="install_desktop_share"
+    DESCRIPTION="Install Desktop Share"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_desktop_share()
 {
-    local -i total_menu_items=2    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-DESKTOP-SHARE"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "DESKTOP SHARE"
@@ -5532,29 +5840,34 @@ install_desktop_share()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL GRAPHICS APPS {{{
-NAME="install_graphics_apps"
-USAGE="install_graphics_apps"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-GRAPHICS-APPS-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-DESC"   "Install Graphic Apps"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-TITLE"  "GRAPHICS APPS"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-INFO"   "AV Studio:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-GRAPHICS-APPS-INFO-2" "and from AUR"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_graphics_apps"
+    USAGE="install_graphics_apps"
+    DESCRIPTION=$(localize "INSTALL-GRAPHICS-APPS-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-GRAPHICS-APPS-DESC"   "Install Graphic Apps"
+    #
+    localize_info "INSTALL-GRAPHICS-APPS-TITLE"  "GRAPHICS APPS"
+    localize_info "INSTALL-GRAPHICS-APPS-INFO"   "AV Studio:"
+    localize_info "INSTALL-GRAPHICS-APPS-INFO-2" "and from AUR"
+fi
 # -------------------------------------
 install_graphics_apps()
 {
     # 6
-    local -i total_menu_items=14    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-GRAPHICS-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-GRAPHICS-APPS-TITLE"
@@ -5671,21 +5984,23 @@ install_graphics_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL AV STUDIO {{{
-NAME="install_av_studio"
-USAGE="install_av_studio"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION="INSTALL-AV-STUDIO-DESC"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-AV-STUDIO-DESC"  "Install AV Studio"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-AV-STUDIO-TITLE" "Audio Video Studeo"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-AV-STUDIO-INFO"  "Full List"
-
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_av_studio"
+    USAGE="install_av_studio"
+    DESCRIPTION="INSTALL-AV-STUDIO-DESC"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-AV-STUDIO-DESC"  "Install AV Studio"
+    #
+    localize_info "INSTALL-AV-STUDIO-TITLE" "Audio Video Studeo"
+    localize_info "INSTALL-AV-STUDIO-INFO"  "Full List"
+fi
 # -------------------------------------
 install_av_studio()
 {
@@ -5715,22 +6030,27 @@ install_av_studio()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL VIDEO APPS {{{
-NAME="install_video_apps"
-USAGE="install_video_apps"
-DESCRIPTION="Install Video Apps"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_video_apps"
+    USAGE="install_video_apps"
+    DESCRIPTION="Install Video Apps"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_video_apps()
 {
     # 9
-    local -i total_menu_items=3    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-VIDEO-APPS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "VIDEO APPS"
@@ -5784,21 +6104,26 @@ install_video_apps()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL VIDEO PLAYERS {{{
-NAME="install_video_players"
-USAGE="install_video_players"
-DESCRIPTION="Install Video Players"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_video_players"
+    USAGE="install_video_players"
+    DESCRIPTION="Install Video Players"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_video_players()
 {
-    local -i total_menu_items=9    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-VIDEO-PLAYERS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "VIDEO PLAYERS"
@@ -5887,25 +6212,31 @@ install_video_players()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL VIDEO EDITORS TOOLS {{{
-NAME="install_video_editors_tools"
-USAGE="install_video_editors_tools"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-VIDEO-EDITORS-TOOLS-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-EDITORS-TOOLS-DESC"  "Install Video Editors Tools"
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-EDITORS-TOOLS-TITLE" "VIDEO EDITORS|TOOLS"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_video_editors_tools"
+    USAGE="install_video_editors_tools"
+    DESCRIPTION=$(localize "INSTALL-VIDEO-EDITORS-TOOLS-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-DESC"  "Install Video Editors Tools"
+    #
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-TITLE" "VIDEO EDITORS|TOOLS"
+fi
+# -------------------------------------
 install_video_editors_tools()
 {
-    local -i total_menu_items=6    # You must define this first; since first run array doesn't exist, so its built using this number.
     local -r menu_name="INSTALL-VIDEO-EDITORS-TOOLS"  # You must define Menu Name here
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-VIDEO-EDITORS-TOOLS-TITLE"
@@ -5972,15 +6303,18 @@ install_video_editors_tools()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL SCIENCE {{{
-NAME="install_science"
-USAGE="install_science"
-DESCRIPTION="Install Science"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_science"
+    USAGE="install_science"
+    DESCRIPTION="Install Science"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
 install_science()
 {
     print_title "Science and Education"
@@ -5993,23 +6327,26 @@ install_science()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL VIDEO CARDS {{{
-NAME="install_video_cards"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-VIDEO-CARDS-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-VIDEO-CARDS-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-VIDEO-CARDS-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-USAGE" "install_video_cards 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-DESC"  "Install Video Card"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-NOTES" "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-TITLE"  "VIDEO CARD"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-INFO"   "NVIDIA"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-VIDEO-CARDS-SELECT" "Select a Video Card:"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_video_cards"
+    USAGE=$(localize "INSTALL-VIDEO-CARDS-USAGE")
+    DESCRIPTION=$(localize "INSTALL-VIDEO-CARDS-DESC")
+    NOTES=$(localize "INSTALL-VIDEO-CARDS-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-VIDEO-CARDS-USAGE" "install_video_cards 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-VIDEO-CARDS-DESC"  "Install Video Card"
+    localize_info "INSTALL-VIDEO-CARDS-NOTES" "None."
+    #
+    localize_info "INSTALL-VIDEO-CARDS-TITLE"  "VIDEO CARD"
+    localize_info "INSTALL-VIDEO-CARDS-INFO"   "NVIDIA"
+    localize_info "INSTALL-VIDEO-CARDS-SELECT" "Select a Video Card:"
+fi
 # -------------------------------------
 install_video_cards()
 {
@@ -6122,23 +6459,27 @@ install_video_cards()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL CUPS {{{
-NAME="install_cups"
-[[ "$RUN_HELP" -eq 1 ]] && USAGE=$(localize "INSTALL-CUPS-USAGE")
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-CUPS-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-CUPS-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-USAGE" "install_cups 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-DESC"  "Install Cups."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-NOTES" "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-YN" "Install CUPS - AKA Common Unix Printing System" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-TITLE" "CUPS - AKA Common Unix Printing System" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-CUPS-INFO" "CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS® X and other UNIX®-like operating systems." 
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_cups"
+    USAGE=$(localize "INSTALL-CUPS-USAGE")
+    DESCRIPTION=$(localize "INSTALL-CUPS-DESC")
+    NOTES=$(localize "INSTALL-CUPS-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-CUPS-USAGE" "install_cups 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-CUPS-DESC"  "Install Cups."
+    localize_info "INSTALL-CUPS-NOTES" "None."
+    #
+    localize_info "INSTALL-CUPS-YN" "Install CUPS - AKA Common Unix Printing System" 
+    localize_info "INSTALL-CUPS-TITLE" "CUPS - AKA Common Unix Printing System" 
+    localize_info "INSTALL-CUPS-INFO" "CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS® X and other UNIX®-like operating systems." 
+fi
+# -------------------------------------
 install_cups()
 {
     if [[ "$1" -eq 2 ]]; then
@@ -6160,25 +6501,28 @@ install_cups()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL ADDITIONAL FIRMWARE {{{
-NAME="install_additional_firmwares"
-USAGE="INSTALL-ADDITIONAL-FIRMWARE-USAGE"
-DESCRIPTION="INSTALL-ADDITIONAL-FIRMWARE-DESC"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-ADDITIONAL-FIRMWARE-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-USAGE"   "install_additional_firmwares 1->(1=Install, 2=Remove)"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-DESC"    "Install Addition Firmwares"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-NOTES"   "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-TITLE"   "INSTALL ADDITIONAL FIRMWARES"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO"    "alsa-firmware, ipw2100-fw, ipw2200-fw, b43-firmware, b43-firmware-legacy, broadcom-wl, zd1211-firmware, bluez-firmware, libffado, libraw1394, sane-gt68xx-firmware"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "Install-firmwares"                   "Install additional firmwares [Audio,Bluetooth,Scanner,Wireless]" 
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-9"  "libffado: [Fireware Audio Devices]"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-10" "libraw1394: [IEEE1394 Driver]"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_additional_firmwares"
+    USAGE="INSTALL-ADDITIONAL-FIRMWARE-USAGE"
+    DESCRIPTION="INSTALL-ADDITIONAL-FIRMWARE-DESC"
+    NOTES=$(localize "INSTALL-ADDITIONAL-FIRMWARE-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-USAGE"   "install_additional_firmwares 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-DESC"    "Install Addition Firmwares"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-NOTES"   "None."
+    #
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-TITLE"   "INSTALL ADDITIONAL FIRMWARES"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO"    "alsa-firmware, ipw2100-fw, ipw2200-fw, b43-firmware, b43-firmware-legacy, broadcom-wl, zd1211-firmware, bluez-firmware, libffado, libraw1394, sane-gt68xx-firmware"
+    localize_info "Install-firmwares"                   "Install additional firmwares [Audio,Bluetooth,Scanner,Wireless]" 
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-9"  "libffado: [Fireware Audio Devices]"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-10" "libraw1394: [IEEE1394 Driver]"
+fi
 # -------------------------------------
 install_additional_firmwares()
 {
@@ -6186,7 +6530,10 @@ install_additional_firmwares()
     local -r menu_name="INSTALL-ADDITIONAL-FIRMWARE"  # You must define Menu Name here
     local BreakableKey="D" 
     #
+    OLD_IFS="$IFS"
+    IFS=$'\n\t' # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$OLD_IFS"
     #
     print_title "INSTALL-ADDITIONAL-FIRMWARE-TITLE"
     print_info  "INSTALL-ADDITIONAL-FIRMWARE-INFO"
@@ -6369,26 +6716,29 @@ install_additional_firmwares()
 #}}}
 # -----------------------------------------------------------------------------
 # TEST INSTALL {{{
-NAME="test_install"
-USAGE="test_install"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "TEST-INSTALL-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "TEST-INSTALL-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-DESC"   "Test Install"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-NOTES"  "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO"   "Test Install"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-1" "Testing Core Packages."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-2" "Testing AUR Packages."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-3" "Package Installed"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-INFO-4" "AUR Package Installed"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-WARN-1" "pacman Did Not find Package:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "TEST-INSTALL-WARN-2" "pacman Did Not find AUR Package:"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="test_install"
+    USAGE="test_install"
+    DESCRIPTION=$(localize "TEST-INSTALL-DESC")
+    NOTES=$(localize "TEST-INSTALL-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "TEST-INSTALL-DESC"   "Test Install"
+    localize_info "TEST-INSTALL-NOTES"  "None."
+    #
+    localize_info "TEST-INSTALL-INFO"   "Test Install"
+    localize_info "TEST-INSTALL-INFO-1" "Testing Core Packages."
+    localize_info "TEST-INSTALL-INFO-2" "Testing AUR Packages."
+    localize_info "TEST-INSTALL-INFO-3" "Package Installed"
+    localize_info "TEST-INSTALL-INFO-4" "AUR Package Installed"
+    localize_info "TEST-INSTALL-WARN-1" "pacman Did Not find Package:"
+    localize_info "TEST-INSTALL-WARN-2" "pacman Did Not find AUR Package:"
+fi
 # -------------------------------------
 test_install()
 {
@@ -6396,8 +6746,8 @@ test_install()
     print_info "TEST-INSTALL-INFO"    
     #
     make_dir "$LOG_PATH/ssp/"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    echo "# pacman Install Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "${LOG_PATH}/ssp/failures.txt" # Truncate file
-    echo "# *** Core ***" >> "${LOG_PATH}/ssp/failures.txt"
+    echo "# pacman Install Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "${LOG_PATH}/ssp/0-failures.txt" # Truncate file
+    echo "# *** Core ***" >> "${LOG_PATH}/ssp/0-failures.txt"
     print_info "TEST-INSTALL-INFO-1"    
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
@@ -6405,18 +6755,18 @@ test_install()
             print_info "TEST-INSTALL-INFO-3" ": ${PACKAGES[$i]}"
         else
             print_warning "TEST-INSTALL-WARN-1" ": ${PACKAGES[$i]}"
-            echo "${PACKAGES[$i]}" >> "${LOG_PATH}/ssp/failures.txt"
+            echo "${PACKAGES[$i]}" >> "${LOG_PATH}/ssp/0-failures.txt"
         fi
     done
     print_info "TEST-INSTALL-INFO-2"    
-    echo "# *** AUR ***" >> "${LOG_PATH}/ssp/failures.txt"
+    echo "# *** AUR ***" >> "${LOG_PATH}/ssp/0-failures.txt"
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
-        if ! check_package "${AUR_PACKAGES[$i]}" ; then
+        if check_package "${AUR_PACKAGES[$i]}" ; then
             print_info "TEST-INSTALL-INFO-4" ": ${AUR_PACKAGES[$i]}"
         else
             print_warning "TEST-INSTALL-WARN-2" ": ${AUR_PACKAGES[$i]}"
-            echo "${AUR_PACKAGES[$i]}" >> "${LOG_PATH}/ssp/failures.txt"
+            echo "${AUR_PACKAGES[$i]}" >> "${LOG_PATH}/ssp/0-failures.txt"
         fi
     done
     pause_function "test_install : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -6424,36 +6774,39 @@ test_install()
 #}}}
 # *******************************************************************************************************************************
 # INSTALL SOFTWARE LIVE }}}
-NAME="install_software_live"
-USAGE="install_software_live"
-DESCRIPTION="Install Software on Live OS"
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "NONE")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-DESC"  "Test functions out for Developers"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-NOTES" "Put what ever code in there you want to Test."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-TITLE"  "Arch Linux Software Installation"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-1" "Configure Pacman Package Signing..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-2" "System Upgrade..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-3" "Configure AUR Helper..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-4" "Set host name..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-5" "Hostname is set: "
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-6" "Hostname is not set!"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-7" "Configure TOR..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-8" "Configure KDE..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-9" "Configure SSH..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-10" "Configure XORG..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-11" "Fontconfig is a library designed to provide a list of available fonts to applications, and also for configuration for how fonts get rendered."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-12" "Enter your new postgres account password:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-13" "Enter your postgres account password:"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-LIVE-INFO-14" "Clean Orphan Packages..."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-WARN"         "You must run this in Live Mode!"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-SOFTWARE-WARN-2"       "Configuration did not get Loaded, make sure to run load_software or load_last_config"
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_software_live"
+    USAGE="install_software_live"
+    DESCRIPTION="Install Software on Live OS"
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-SOFTWARE-LIVE-DESC"  "Test functions out for Developers"
+    localize_info "INSTALL-SOFTWARE-LIVE-NOTES" "Put what ever code in there you want to Test."
+    #
+    localize_info "INSTALL-SOFTWARE-LIVE-TITLE"  "Arch Linux Software Installation"
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-1" "Configure Pacman Package Signing..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-2" "System Upgrade..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-3" "Configure AUR Helper..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-4" "Set host name..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-5" "Hostname is set: "
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-6" "Hostname is not set!"
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-7" "Configure TOR..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-8" "Configure KDE..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-9" "Configure SSH..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-10" "Configure XORG..."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-11" "Fontconfig is a library designed to provide a list of available fonts to applications, and also for configuration for how fonts get rendered."
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-12" "Enter your new postgres account password:"
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-13" "Enter your postgres account password:"
+    localize_info "INSTALL-SOFTWARE-LIVE-INFO-14" "Clean Orphan Packages..."
+    localize_info "INSTALL-SOFTWARE-WARN"         "You must run this in Live Mode!"
+    localize_info "INSTALL-SOFTWARE-WARN-2"       "Configuration did not get Loaded, make sure to run load_software or load_last_config"
+fi
 # -------------------------------------
 install_software_live()
 {
@@ -6732,25 +7085,28 @@ install_software_live()
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALL LOAD SOFTWARE }}}
-NAME="install_loaded_software"
-USAGE="install_loaded_software"
-[[ "$RUN_HELP" -eq 1 ]] && DESCRIPTION=$(localize "INSTALL-LOAD-SOFTWARE-DESC")
-[[ "$RUN_HELP" -eq 1 ]] && NOTES=$(localize "INSTALL-LOAD-SOFTWARE-NOTES")
-AUTHOR="Flesher"
-VERSION="1.0"
-CREATED="11 SEP 2012"
-REVISION="5 Dec 2012"
-[[ "$RUN_HELP" -eq 1 ]] && create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-# Help file Localization
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-DESC"  "Install loaded Software"
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-NOTES" "None."
-#
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-TITLE-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installation disk."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installation disk."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-2" "This option Assumes that you have a bootable OS and and have gone through the Application Software Menu and Saved it, now we are going to load it and install it."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-3" "Normally you will use the user name (&#36;USERNAME) in the file, but its possible that you may wish to use another User Name to install this with, make sure User Name Exist in this OS before doing this."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-4" "You will have to abort (Ctrl-C) if you wish to change Software Installation Setting, pick New Software Configuration."
-[[ "$RUN_LOCALIZER" -eq 1 ]] && localize_info "INSTALL-LOAD-SOFTWARE-INFO-5" "Load Last Install."
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_loaded_software"
+    USAGE="install_loaded_software"
+    DESCRIPTION=$(localize "INSTALL-LOAD-SOFTWARE-DESC")
+    NOTES=$(localize "INSTALL-LOAD-SOFTWARE-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-LOAD-SOFTWARE-DESC"  "Install loaded Software"
+    localize_info "INSTALL-LOAD-SOFTWARE-NOTES" "None."
+    #
+    localize_info "INSTALL-LOAD-SOFTWARE-TITLE-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installation disk."
+    localize_info "INSTALL-LOAD-SOFTWARE-INFO-1" "Install Software from Configuration files, Assumes you are in Live Mode, meaning you booted into your Live OS, not an installation disk."
+    localize_info "INSTALL-LOAD-SOFTWARE-INFO-2" "This option Assumes that you have a bootable OS and and have gone through the Application Software Menu and Saved it, now we are going to load it and install it."
+    localize_info "INSTALL-LOAD-SOFTWARE-INFO-3" "Normally you will use the user name (&#36;USERNAME) in the file, but its possible that you may wish to use another User Name to install this with, make sure User Name Exist in this OS before doing this."
+    localize_info "INSTALL-LOAD-SOFTWARE-INFO-4" "You will have to abort (Ctrl-C) if you wish to change Software Installation Setting, pick New Software Configuration."
+    localize_info "INSTALL-LOAD-SOFTWARE-INFO-5" "Load Last Install."
+fi
 # -------------------------------------
 install_loaded_software()
 {
