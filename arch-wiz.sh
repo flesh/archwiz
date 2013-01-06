@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="30 Dec 2012 16:33"
+# LAST_UPDATE="4 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -70,19 +70,22 @@ fi
 # -------------------------------------
 backup()
 {
-    copy_file ${MOUNTPOINT}/etc/pacman.conf         "${FULL_SCRIPT_PATH}/etc/pacman.conf"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/pacman.d/mirrorlist "${FULL_SCRIPT_PATH}/etc/pacman.d/mirrorlist" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/fstab               "${FULL_SCRIPT_PATH}/etc/fstab"               ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/hosts               "${FULL_SCRIPT_PATH}/etc/hosts"               ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/hostname            "${FULL_SCRIPT_PATH}/etc/hostname"            ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/resolv.conf         "${FULL_SCRIPT_PATH}/etc/resolv.conf"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/locale.conf         "${FULL_SCRIPT_PATH}/etc/locale.conf"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/locale.gen          "${FULL_SCRIPT_PATH}/etc/locale.gen"          ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/sudoers             "${FULL_SCRIPT_PATH}/etc/sudoers"             ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/vconsole.conf       "${FULL_SCRIPT_PATH}/etc/vconsole.conf"       ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/conf.d/dhcpd        "${FULL_SCRIPT_PATH}/etc/conf.d/dhcpd"        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file ${MOUNTPOINT}/etc/dhcpcd.conf         "${FULL_SCRIPT_PATH}/etc/dhcpcd.conf"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #copy_file ${MOUNTPOINT}/etc/ssh/sshd_config     "${FULL_SCRIPT_PATH}/etc/ssh/sshd_config"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/pacman.conf         "${FULL_SCRIPT_PATH}/etc/pacman.conf"         "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/pacman.d/mirrorlist "${FULL_SCRIPT_PATH}/etc/pacman.d/mirrorlist" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/fstab               "${FULL_SCRIPT_PATH}/etc/fstab"               "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hosts               "${FULL_SCRIPT_PATH}/etc/hosts"               "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/hostname            "${FULL_SCRIPT_PATH}/etc/hostname"            "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/resolv.conf         "${FULL_SCRIPT_PATH}/etc/resolv.conf"         "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/locale.conf         "${FULL_SCRIPT_PATH}/etc/locale.conf"         "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/locale.gen          "${FULL_SCRIPT_PATH}/etc/locale.gen"          "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/sudoers             "${FULL_SCRIPT_PATH}/etc/sudoers"             "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/vconsole.conf       "${FULL_SCRIPT_PATH}/etc/vconsole.conf"       "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/conf.d/dhcpd        "${FULL_SCRIPT_PATH}/etc/conf.d/dhcpd"        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/dhcpcd.conf         "${FULL_SCRIPT_PATH}/etc/dhcpcd.conf"         "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/ld.so.conf          "${FULL_SCRIPT_PATH}/etc/ld.so.conf"          "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_dir  ${MOUNTPOINT}/etc/ld.so.conf.d/       "${FULL_SCRIPT_PATH}/etc/"                    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+
+    #copy_file ${MOUNTPOINT}/etc/ssh/sshd_config     "${FULL_SCRIPT_PATH}/etc/ssh/sshd_config"     "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -226,7 +229,7 @@ configure_aur_helper()
     # base-devel installed with pacstrap
     if [[ "$AUR_HELPER" == 'yaourt' ]]; then
         if ! check_package "yaourt" ; then
-            print_info "CONFIGURE-AUR-HELPER-CONFIG-HELP" " $AUR_HELPER"
+            print_info "CONFIGURE-AUR-HELPER-CONFIG-HELP" ": $AUR_HELPER"
             package_install "yajl namcap" "INSTALL-AUR-HELPER-$AUR_HELPER"
             pacman -D --asdeps yajl namcap
             if ! aur_download_packages "package-query yaourt" ; then
@@ -283,10 +286,20 @@ configure_aur_helper()
             fi
         fi
     fi
-    $AUR_HELPER -S python3-aur
+    if [[ "$IS_PHTHON3_AUR" -eq 1 ]]; then
+        $AUR_HELPER -S python3-aur
+    fi
     # $AUR_HELPER -Syua --devel --noconfirm # Do I need to do this?
     return 0
 }
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 2 ]]; then
+    if aur_download_packages "package-query yaourt" ; then
+        print_info "TEST-FUNCTION-PASSED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
+    else
+        print_warning "TEST-FUNCTION-FAILED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
+    fi  
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # CONFIGURE SUDO {{{
@@ -344,7 +357,7 @@ configure_sudo()
             chown -c root:root ${MOUNTPOINT}/etc/sudoers
             chmod -c 0440 ${MOUNTPOINT}/etc/sudoers
         fi
-        copy_file "${MOUNTPOINT}/etc/sudoers" "${FULL_SCRIPT_PATH}/etc/sudoers" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file "${MOUNTPOINT}/etc/sudoers" "${FULL_SCRIPT_PATH}/etc/sudoers" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     print_this "CONFIGURE-SUDO-COMPLETE"
 }
@@ -1081,7 +1094,7 @@ run_install_scripts()
     copy_file  ${MOUNTPOINT}/install_scripts     ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     rm ${MOUNTPOINT}"/install_scripts"
     # Overwrite all Config files 
-    # copy_dir "$FULL_SCRIPT_PATH/etc/" ${MOUNTPOINT}/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    # copy_dir "${FULL_SCRIPT_PATH}/etc/" ${MOUNTPOINT}/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # copy_file "${FULL_SCRIPT_PATH}"/etc/hosts "/etc/hosts" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # Make sure to delete these files, they have passwords in them
     delete_secret 'user_user'
