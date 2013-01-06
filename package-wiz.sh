@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="30 Dec 2012 16:33"
+# LAST_UPDATE="4 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -94,6 +94,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-MENU-ITEM-21" "Load Software"
     localize_info "INSTALL-MENU-ITEM-22" "Save Software"
     localize_info "INSTALL-MENU-ITEM-23" "Quit"
+    localize_info "INSTALL-MENU-ITEM-23-L" "Save and Install Software"
     localize_info "INSTALL-MENU-INFO-1"  "Basic Setup: Required: SYSTEMD, Video Card, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
     localize_info "INSTALL-MENU-INFO-2"  "Desktop Environment: Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and Unity."
     localize_info "INSTALL-MENU-INFO-3"  "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
@@ -117,6 +118,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-MENU-INFO-21" "Allows you to review and edit configuration variables before installing software."
     localize_info "INSTALL-MENU-INFO-22" "Save Software: Saves and Installs list and configurations creates with this menu."
     localize_info "INSTALL-MENU-INFO-23" "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
+    localize_info "INSTALL-MENU-INFO-23-L" "Save and Install Software."
     localize_info "INSTALL-MENU-COMPLETED" "Completed"
     localize_info "INSTALL-MENU-INSTALLED" "Installed"
     localize_info "INSTALL-MENU-REMOVED"   "Removed"
@@ -159,7 +161,11 @@ install_menu()
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-20" "" "" "INSTALL-MENU-INFO-20" "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-21" "" "" "INSTALL-MENU-INFO-21" "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-22" "" "" "INSTALL-MENU-INFO-22" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-23" "" "" "INSTALL-MENU-INFO-23" "MenuTheme[@]"
+        if [[ "$MOUNTPOINT" == " " ]]; then
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-23-L" "" "" "INSTALL-MENU-INFO-23-L" "MenuTheme[@]"
+        else
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-23" "" "" "INSTALL-MENU-INFO-23" "MenuTheme[@]"
+        fi
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -310,31 +316,29 @@ install_menu()
                     StatusBar="INSTALL-MENU-ITEM-22"
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
-               23)  # Install Software
+               23)  # Quit or Save and Install Software
                     MenuChecks[$((OPT - 1))]=1
+                    OPT="q"
+                    if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
+                        SAVED_MAIN_MENU=1
+                    fi
                     save_software
                     SAVED_SOFTWARE=1
                     if [[ "$MOUNTPOINT" == " " ]]; then
                         install_software_live
                     fi
-                    OPT="q"
-                    if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
-                        SAVED_MAIN_MENU=1
-                    fi
-                    break;
                     StatusBar="INSTALL-MENU-ITEM-23"
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    break;
                     ;;
               "q")
-                    if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
-                        SAVED_MAIN_MENU=1
-                    fi
-                    if [[ "$SAVED_SOFTWARE" -eq 0 ]]; then
-                        read_input_yn "Save-Software-Configuration" " " 1
-                        if [[ "$YN_OPTION" -eq 1 ]]; then
-                            save_software
-                            SAVED_SOFTWARE=1
+                    read_input_yn "Save-Software-Configuration" " " 1
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
+                            SAVED_MAIN_MENU=1
                         fi
+                        save_software
+                        SAVED_SOFTWARE=1
                     fi
                     break
                     ;;
@@ -640,7 +644,7 @@ install_samba_pack()
     if [[ $YN_OPTION -eq 1 ]]; then
         add_package "$INSTALL_SAMBA"
         add_packagemanager "package_install \"$INSTALL_SAMBA\" 'INSTALL-SAMBA'" "INSTALL-SAMBA"
-        add_packagemanager "cp /etc/samba/smb.conf.default /etc/samba/smb.conf" "COPY-CONFIG-SAMBA"
+        add_packagemanager "copy_file '/etc/samba/smb.conf.default' '/etc/samba/smb.conf' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"" "COPY-CONFIG-SAMBA"
         add_packagemanager "systemctl enable smbd smbnetfs nmbd winbindd.service" "SYSTEMD-ENABLE-SAMBA"
         # installing samba will overwrite /etc/samba/smb.conf so copy it to temp 
         copy_file "/etc/samba/smb.conf" "${FULL_SCRIPT_PATH}/etc/samba/smb.conf" "$LINENO"
@@ -955,7 +959,8 @@ install_mate()
     add_packagemanager "package_remove 'zenity'" "REMOVE-MATE" # mate replacement
     add_package "$INSTALL_MATE"
     add_packagemanager "package_install \"$INSTALL_MATE\" 'INSTALL-MATE'" "INSTALL-MATE"
-    add_packagemanager "systemctl enable accounts-daemon.service upower.service" "SYSTEMD-ENABLE-MATE"
+    add_packagemanager "systemctl enable accounts-daemon.service" "SYSTEMD-ENABLE-MATE-1"
+    add_packagemanager "systemctl enable upower.service"          "SYSTEMD-ENABLE-MATE-2"
     # polkit.service
     # systemd-logind replaced console-kit-daemon.service
     # pacstrap will overwrite pacman.conf so copy it to temp 
@@ -991,6 +996,13 @@ install_kde()
     print_info "KDE is an international free software community producing an integrated set of cross-platform applications designed to run on Linux, FreeBSD, Microsoft Windows, Solaris and Mac OS X systems. It is known for its Plasma Desktop, a desktop environment provided as the default working environment on many Linux distributions."
     add_package "$INSTALL_KDE"
     add_packagemanager "package_install \"$INSTALL_KDE\" 'INSTALL-KDE'" "INSTALL-KDE" # "kde-telepathy telepathy"
+    if [[ "$PHONON" -eq 0 ]]; then
+        add_package "$INSTALL_PHONON"
+        add_packagemanager "package_install \"$INSTALL_PHONON\" 'INSTALL-PHONON'" "INSTALL-PHONON" 
+    else
+        add_package "$INSTALL_PHONON_VLC"
+        add_packagemanager "package_install \"$INSTALL_PHONON_VLC\" 'INSTALL-PHONON_VLC'" "INSTALL-PHONON_VLC" 
+    fi
     #add_packagemanager "package_remove 'kdemultimedia-kscd kdemultimedia-juk'" "REMOVE-KDE"
     add_aur_package "$AUR_INSTALL_KDE" # 
     add_packagemanager "aur_package_install \"$AUR_INSTALL_KDE\" 'AUR-INSTALL-KDE'" "AUR-INSTALL-KDE"
@@ -1530,10 +1542,10 @@ install_cinnamon()
     IFS="$OLD_IFS"
     #
     CINNAMON_INSTALLED=1
-    add_package "$INSTALL_CINNAMON" #  
-    add_packagemanager "package_install \"$INSTALL_CINNAMON\" 'INSTALL-CINNAMON'" "INSTALL-CINNAMON"
-    add_aur_package "$AUR_INSTALL_CINNAMON" # 
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON\" 'AUR-INSTALL-CINNAMON'" "AUR-INSTALL-CINNAMON"
+    add_package "$INSTALL_CINNAMON_PACKAGE" #  
+    add_packagemanager "package_install \"$INSTALL_CINNAMON_PACKAGE\" 'INSTALL-CINNAMON'" "INSTALL-CINNAMON"
+    add_aur_package "$AUR_INSTALL_CINNAMON_PACKAGE" # 
+    add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_PACKAGE\" 'AUR-INSTALL-CINNAMON'" "AUR-INSTALL-CINNAMON"
     # @FIX gnome-extra gnome-extra-meta telepathy
     # 
     # not sure how to run these commands; seems like they need to run after GUI is up and running; so adding them as a start up script may be what is needed
@@ -2115,6 +2127,7 @@ install_display_manager()
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_KDM"
                     add_packagemanager "package_install \"$INSTALL_KDM\" 'INSTALL-KDM'" "INSTALL-KDM"
+                    add_packagemanager "[[ -f \"\${FULL_SCRIPT_PATH}/etc/kdmrc\" ]] && copy_file \"\${FULL_SCRIPT_PATH}/etc/kdmrc\" '/usr/share/config/kdm/kdmrc' \"\$FUNCNAME @ \$(basename \$BASH_SOURCE) : \$LINENO\"" "COPY-KDM"
                     if [[ "$GNOME_INSTALL" -eq 1 ]]; then
                         add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-1-KDM'" "ADD-OPTION-1-KDM"
                         # SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions to SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions,/usr/share/xsessions
@@ -2122,11 +2135,12 @@ install_display_manager()
                         # AllowClose=false to AllowClose=true
                         add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'Session=' '.custom' 'ADD-OPTION-3-KDM'" "ADD-OPTION-3-KDM"
                         # Session=/usr/share/config/kdm/Xsession to Session=/usr/share/config/kdm/Xsession.custom
-                        add_packagemanager "copy_file '/usr/share/config/kdm/Xsession' '/usr/share/config/kdm/Xsession.custom' \"$(basename $BASH_SOURCE) : $LINENO\"" "COPY-KDM"
+                        add_packagemanager "copy_file '/usr/share/config/kdm/Xsession' '/usr/share/config/kdm/Xsession.custom' \"$(basename $BASH_SOURCE) : $LINENO\"" "COPY-2-KDM"
                     fi
                     if [[ "$KDE_INSTALLED" -eq 1 ]]; then
                         add_packagemanager "$(config_xinitrc 'startkde')" "CONFIG-XINITRC-KDE"
-                        add_packagemanager "systemctl enable kdm.service upower.service" "SYSTEMD-ENABLE-KDE"
+                        add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
+                        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-KDM-UPOWER"
                     elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
                         add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
                     elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
@@ -4378,7 +4392,7 @@ create_sites_folder()
 {
     # copy_file "from" "to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # copy_dir "from" "to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    [[ ! -f  /etc/httpd/conf/extra/httpd-userdir.conf.aui ]] && cp -v /etc/httpd/conf/extra/httpd-userdir.conf /etc/httpd/conf/extra/httpd-userdir.conf.aui
+    [[ ! -f  /etc/httpd/conf/extra/httpd-userdir.conf.aui ]] && copy_file '/etc/httpd/conf/extra/httpd-userdir.conf' '/etc/httpd/conf/extra/httpd-userdir.conf.aui' "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     sed -i 's/public_html/Sites/g' /etc/httpd/conf/extra/httpd-userdir.conf
     su - "$USERNAME" -c "mkdir -p ~/Sites"
     su - "$USERNAME" -c "chmod o+x ~/ && chmod -R o+x ~/Sites"
@@ -6728,16 +6742,16 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "TEST-INSTALL-DESC"   "Test Install"
-    localize_info "TEST-INSTALL-NOTES"  "None."
+    localize_info "TEST-INSTALL-DESC"           "Test Install"
+    localize_info "TEST-INSTALL-NOTES"          "None."
     #
-    localize_info "TEST-INSTALL-INFO"   "Test Install"
-    localize_info "TEST-INSTALL-INFO-1" "Testing Core Packages."
-    localize_info "TEST-INSTALL-INFO-2" "Testing AUR Packages."
-    localize_info "TEST-INSTALL-INFO-3" "Package Installed"
-    localize_info "TEST-INSTALL-INFO-4" "AUR Package Installed"
-    localize_info "TEST-INSTALL-WARN-1" "pacman Did Not find Package:"
-    localize_info "TEST-INSTALL-WARN-2" "pacman Did Not find AUR Package:"
+    localize_info "TEST-INSTALL-INFO"           "Test Install"
+    localize_info "TEST-INSTALL-CORE"           "Testing Core Packages."
+    localize_info "TEST-INSTALL-AUR"            "Testing AUR Packages."
+    localize_info "TEST-INSTALL-CORE-INSTALLED" "Core Package Installed"
+    localize_info "TEST-INSTALL-AUR-INSTALLED"  "AUR Package Installed"
+    localize_info "TEST-INSTALL-CORE-WARN"      "pacman Did Not find Core Package:"
+    localize_info "TEST-INSTALL-AUR-WARN"       "pacman Did Not find AUR Package:"
 fi
 # -------------------------------------
 test_install()
@@ -6748,28 +6762,82 @@ test_install()
     make_dir "$LOG_PATH/ssp/"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     echo "# pacman Install Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "${LOG_PATH}/ssp/0-failures.txt" # Truncate file
     echo "# *** Core ***" >> "${LOG_PATH}/ssp/0-failures.txt"
-    print_info "TEST-INSTALL-INFO-1"    
+    print_info "TEST-INSTALL-CORE"    
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if check_package "${PACKAGES[$i]}" ; then
-            print_info "TEST-INSTALL-INFO-3" ": ${PACKAGES[$i]}"
+            print_info "TEST-INSTALL-CORE-INSTALLED" ": ${PACKAGES[$i]}"
         else
-            print_warning "TEST-INSTALL-WARN-1" ": ${PACKAGES[$i]}"
+            print_warning "TEST-INSTALL-CORE-WARN" ": ${PACKAGES[$i]}"
             echo "${PACKAGES[$i]}" >> "${LOG_PATH}/ssp/0-failures.txt"
         fi
     done
-    print_info "TEST-INSTALL-INFO-2"    
+    print_info "TEST-INSTALL-AUR"    
     echo "# *** AUR ***" >> "${LOG_PATH}/ssp/0-failures.txt"
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if check_package "${AUR_PACKAGES[$i]}" ; then
-            print_info "TEST-INSTALL-INFO-4" ": ${AUR_PACKAGES[$i]}"
+            print_info "TEST-INSTALL-AUR-INSTALLED" ": ${AUR_PACKAGES[$i]}"
         else
-            print_warning "TEST-INSTALL-WARN-2" ": ${AUR_PACKAGES[$i]}"
+            print_warning "TEST-INSTALL-AUR-WARN" ": ${AUR_PACKAGES[$i]}"
             echo "${AUR_PACKAGES[$i]}" >> "${LOG_PATH}/ssp/0-failures.txt"
         fi
     done
     pause_function "test_install : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+}
+#}}}
+# -----------------------------------------------------------------------------
+# REINSTALL {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="reinstall"
+    USAGE="reinstall"
+    DESCRIPTION=$(localize "REINSTALL-DESC")
+    NOTES=$(localize "REINSTALL-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "REINSTALL-DESC"           "Re-Install all Packages"
+    localize_info "REINSTALL-NOTES"          "None."
+    #
+    localize_info "REINSTALL-INFO"           "Reinstall"
+    localize_info "REINSTALL-CORE"           "Retry Core Packages."
+    localize_info "REINSTALL-AUR"            "Retry AUR Packages."
+    localize_info "REINSTALL-CORE-INSTALLED" "Core Package Installed"
+    localize_info "REINSTALL-AUR-INSTALLED"  "AUR Package Installed"
+    localize_info "REINSTALL-CORE-WARN"      "pacman Did Not find Core Package:"
+    localize_info "REINSTALL-AUR-WARN"       "pacman Did Not find AUR Package:"
+fi
+# -------------------------------------
+reinstall()
+{
+    # @FIX how to test now?
+    print_info "REINSTALL-INFO"    
+    #
+    print_info "REINSTALL-CORE"    
+    local -i total="${#PACKAGES[@]}"
+    for (( i=0; i<${total}; i++ )); do
+        if check_package "${PACKAGES[$i]}" ; then
+            print_info "REINSTALL-CORE-INSTALLED" ": ${PACKAGES[$i]}"
+        else
+            print_warning "REINSTALL-CORE-WARN" ": ${PACKAGES[$i]}"
+            install_package "${PACKAGES[$i]}" "REINSTALL-CORE-PACKAGE-$i"
+        fi
+    done
+    print_info "REINSTALL-AUR"    
+    local -i total="${#AUR_PACKAGES[@]}"
+    for (( i=0; i<${total}; i++ )); do
+        if check_package "${AUR_PACKAGES[$i]}" ; then
+            print_info "REINSTALL-AUR-INSTALLED" ": ${AUR_PACKAGES[$i]}"
+        else
+            print_warning "REINSTALL-AUR-WARN" ": ${AUR_PACKAGES[$i]}"
+            aur_package_install "${AUR_PACKAGES[$i]}" "REINSTALL-AUR-PACKAGE-$i"
+        fi
+    done
+    pause_function "reinstall : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # *******************************************************************************************************************************
@@ -6806,6 +6874,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-SOFTWARE-LIVE-INFO-14" "Clean Orphan Packages..."
     localize_info "INSTALL-SOFTWARE-WARN"         "You must run this in Live Mode!"
     localize_info "INSTALL-SOFTWARE-WARN-2"       "Configuration did not get Loaded, make sure to run load_software or load_last_config"
+    localize_info "INSTALL-SOFTWARE-FAIL-1"       "Failed to Execute"
+    localize_info "INSTALL-SOFTWARE-PASSED"       "Executed Successfully"
 fi
 # -------------------------------------
 install_software_live()
@@ -6847,10 +6917,11 @@ install_software_live()
             # @FIX test return logic; 0 = success; 
             eval "${PACKMANAGER[$index]}"
             if [ "$?" -eq 0 ]; then
-                write_log   "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_log   "INSTALL-SOFTWARE-PASSED" "${PACKMANAGER_NAME[$index]} : ${PACKMANAGER[$index]} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             else
-                write_error "${PACKMANAGER_NAME[$index]} - ${PACKMANAGER[$index]}" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "eval PACKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
+                write_error   "INSTALL-SOFTWARE-FAIL-1" ": ${PACKMANAGER_NAME[$index]} : ${PACKMANAGER[$index]} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_warning "INSTALL-SOFTWARE-FAIL-1" ": ${PACKMANAGER_NAME[$index]} : ${PACKMANAGER[$index]} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                if [[ "$DEBUGGING" -eq 1 || "$DEBUGGING" -eq 2 ]]; then pause_function "eval PACKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
             fi
         done
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "eval PACKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -6886,13 +6957,13 @@ install_software_live()
         tar zxvf Kawai.tar.gz
         rm Sweet.tar.gz
         rm Kawai.tar.gz
-        make_dir "/home/$USERNAME/.kde4/share/apps/color-schemes" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        mv Sweet/Sweet.colors "/home/$USERNAME/.kde4/share/apps/color-schemes"
-        mv Kawai/Kawai.colors "/home/$USERNAME/.kde4/share/apps/color-schemes"
-        make_dir "/home/$USERNAME/.kde4/share/apps/QtCurve" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        mv Sweet/Sweet.qtcurve "/home/$USERNAME/.kde4/share/apps/QtCurve"
-        mv Kawai/Kawai.qtcurve "/home/$USERNAME/.kde4/share/apps/QtCurve"
-        chown -R "${USERNAME}:$USERNAME" "/home/$USERNAME/.kde4"
+        make_dir "/home/${USERNAME}/.kde4/share/apps/color-schemes" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        mv Sweet/Sweet.colors "/home/${USERNAME}/.kde4/share/apps/color-schemes"
+        mv Kawai/Kawai.colors "/home/${USERNAME}/.kde4/share/apps/color-schemes"
+        make_dir "/home/${USERNAME}/.kde4/share/apps/QtCurve" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        mv Sweet/Sweet.qtcurve "/home/${USERNAME}/.kde4/share/apps/QtCurve"
+        mv Kawai/Kawai.qtcurve "/home/${USERNAME}/.kde4/share/apps/QtCurve"
+        chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.kde4"
         rm -fr Kawai Sweet
         #
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_KDE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -6940,7 +7011,7 @@ install_software_live()
         print_info "INSTALL-SOFTWARE-LIVE-INFO-10"
         if [[ "$LANGUAGE" == "de_DE" || "$LANGUAGE" == "es_ES" || "$LANGUAGE" == "es_CL" || "$LANGUAGE" == "it_IT" || "$LANGUAGE" == "fr_FR" || "$LANGUAGE" == "pt_BR" || "$LANGUAGE" == "pt_PT" ]]; then
             cd ..
-            [[ ! -f /etc/X11/xorg.conf.d/10-evdev.conf.aui ]] && copy_file "/etc/X11/xorg.conf.d/10-evdev.conf" "/etc/X11/xorg.conf.d/10-evdev.conf.aui" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO";
+            [[ ! -f /etc/X11/xorg.conf.d/10-evdev.conf.aui ]] && copy_file "/etc/X11/xorg.conf.d/10-evdev.conf" "/etc/X11/xorg.conf.d/10-evdev.conf.aui" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO";
             # CONFIGURE QWERTY KEYBOARD IN XORG {{{
             file="/etc/X11/xorg.conf.d/10-evdev.conf"
             # get the line number that has "keyboard" in 10-evdev.conf
@@ -7006,7 +7077,7 @@ install_software_live()
         /usr/bin/mysql_secure_installation
         # CONFIGURE HTTPD.CONF {{{
         if [ ! -f  /etc/httpd/conf/httpd.conf.aui ]; then
-            cp -v /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.aui
+            copy_file '/etc/httpd/conf/httpd.conf' '/etc/httpd/conf/httpd.conf.aui' "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             echo -e '\n# adminer configuration\nInclude conf/extra/httpd-adminer.conf' >> /etc/httpd/conf/httpd.conf
             echo -e 'application/x-httpd-php5		php php5' >> /etc/httpd/conf/mime.types
             sed -i '/LoadModule dir_module modules\/mod_dir.so/a\LoadModule php5_module modules\/libphp5.so' /etc/httpd/conf/httpd.conf
@@ -7045,7 +7116,7 @@ install_software_live()
         add_packagemanager "systemctl start postgresql.service" "SYSTEMD-START-POSTGRESQL"
         # CONFIGURE HTTPD.CONF {{{
         if [ ! -f  /etc/httpd/conf/httpd.conf.aui ]; then
-            cp -v /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.aui
+            copy_file '/etc/httpd/conf/httpd.conf' '/etc/httpd/conf/httpd.conf.aui' "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             echo -e '\n# adminer configuration\nInclude conf/extra/httpd-adminer.conf' >> /etc/httpd/conf/httpd.conf
             echo -e 'application/x-httpd-php5		php php5' >> /etc/httpd/conf/mime.types
             sed -i '/LoadModule dir_module modules\/mod_dir.so/a\LoadModule php5_module modules\/libphp5.so' /etc/httpd/conf/httpd.conf
@@ -7078,6 +7149,9 @@ install_software_live()
         #
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_ORPHAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
+    #
+    reinstall
+    #
     test_install
     #
     finish 2
@@ -7131,7 +7205,7 @@ install_loaded_software()
     print_info "INSTALL-LOAD-SOFTWARE-INFO-3"
     print_info "INSTALL-LOAD-SOFTWARE-INFO-4"
     #echo "Copying over all Configuration files to Live OS."
-    #copy_dir "$FULL_SCRIPT_PATH/etc/" "/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     
     #print_info "Create Custom AUR Repository..."
     #create_custom_aur_repo # @FIX still can not get this to work
