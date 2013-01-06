@@ -1,8 +1,11 @@
 #!/bin/bash
 #
-LAST_UPDATE="30 Dec 2012 16:33"
-SCRIPT_VERSION="1.0"
-SCRIPT_NAME="ArchLinux Installation Wizard"
+declare LAST_UPDATE="4 Jan 2013 16:33"
+declare SCRIPT_VERSION="1.0"
+declare SCRIPT_NAME="ArchLinux Installation Wizard"
+#
+# Things to Fix
+# Check for USERNAME in all Log functions and replace it with $USERNAME
 #
 shopt -s expand_aliases
 alias cls='printf "\033c"'
@@ -12,8 +15,8 @@ declare SCRIPT_DEVICE=""
 if [[ "$EUID" -eq 0 ]]; then
     SCRIPT_DEVICE=`df | grep -w "$FULL_SCRIPT_PATH" | awk {'print \$1'}`
 fi
-SCRIPT_DEVICE="${SCRIPT_DEVICE:5:4}"
-MENU_PATH="${FULL_SCRIPT_PATH}/MENU"
+declare SCRIPT_DEVICE="${SCRIPT_DEVICE:5:4}"
+declare MENU_PATH="${FULL_SCRIPT_PATH}/MENU"
 # Debugging
 declare -i DEBUGGING=0
 declare -i SET_DEBUGGING=0 # Used in set_debugging_mode
@@ -34,58 +37,60 @@ declare -i ETH0_ACTIVE=0
 declare -i ETH1_ACTIVE=0
 declare -i ETH2_ACTIVE=0
 #
-USERNAME=$(whoami)
-USERPASSWD='archlinux'
-ROOTPASSWD='archlinux'
+declare USERNAME=$(whoami)
+declare USERPASSWD='archlinux'
+declare ROOTPASSWD='archlinux'
 # 
 declare -a USER_GROUPS=() 
 # 
-DATE_TIME=`date +"%d-%M-%y @ %r" `
+declare DATE_TIME=`date +"%d-%b-%Y @ %r"`
+#
+declare EXCLUDE_FILE_WARN=( "${CONFIG_NAME}-1-taskmanager-name.db" "${CONFIG_NAME}-1-taskmanager.db" "${CONFIG_NAME}-0-packagemanager-name.db" "${CONFIG_NAME}-0-packagemanager.db" "${CONFIG_NAME}-2-packages.db" "${CONFIG_NAME}-2-aur-packages.db" "${CONFIG_NAME}-3-user-groups.db" "${CONFIG_NAME}-4-software-config.db" )
 # Network
-check_eth0=" "
-check_eth1=" "
-check_eth2=" "
-SPACE='\x20'
+declare check_eth0=" "
+declare check_eth1=" "
+declare check_eth2=" "
+declare SPACE='\x20'
+declare HELP_TAB="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
 # COLORS {{{
 # Text color variables
-txtund=$(tput sgr 0 1)          # Underline
-txtbld=$(tput bold)             # Bold
-bldred=${txtbld}$(tput setaf 1) #  red
-bldblu=${txtbld}$(tput setaf 4) #  blue
-bldwht=${txtbld}$(tput setaf 7) #  white
-txtrst=$(tput sgr0)             # Reset
-info=${bldwht}*${txtrst}        # Feedback
-pass=${bldblu}*${txtrst}
-warn=${bldred}*${txtrst}
-ques=${bldblu}?${txtrst}
+declare txtund=$(tput sgr 0 1)          # Underline
+declare txtbld=$(tput bold)             # Bold
+declare bldred=${txtbld}$(tput setaf 1) #  red
+declare bldblu=${txtbld}$(tput setaf 4) #  blue
+declare bldwht=${txtbld}$(tput setaf 7) #  white
+declare txtrst=$(tput sgr0)             # Reset
+declare info=${bldwht}*${txtrst}        # Feedback
+declare pass=${bldblu}*${txtrst}
+declare warn=${bldred}*${txtrst}
+declare ques=${bldblu}?${txtrst}
 # Regular Colors
-Black='\e[0;30m'        # Black
-Blue='\e[0;34m'         # Blue
-Cyan='\e[0;36m'         # Cyan
-Green='\e[0;32m'        # Green
-Purple='\e[0;35m'       # Purple
-Red='\e[0;31m'          # Red
-White='\e[0;37m'        # White
-Yellow='\e[0;33m'       # Yellow
+declare Black='\e[0;30m'        # Black
+declare Blue='\e[0;34m'         # Blue
+declare Cyan='\e[0;36m'         # Cyan
+declare Green='\e[0;32m'        # Green
+declare Purple='\e[0;35m'       # Purple
+declare Red='\e[0;31m'          # Red
+declare White='\e[0;37m'        # White
+declare Yellow='\e[0;33m'       # Yellow
 # Bold
-BBlack='\e[1;30m'       # Black
-BBlue='\e[1;34m'        # Blue
-BCyan='\e[1;36m'        # Cyan
-BGreen='\e[1;32m'       # Green
-BPurple='\e[1;35m'      # Purple
-BRed='\e[1;31m'         # Red
-BWhite='\e[1;37m'       # White
-BYellow='\e[1;33m'      # Yellow
+declare BBlack='\e[1;30m'       # Black
+declare BBlue='\e[1;34m'        # Blue
+declare BCyan='\e[1;36m'        # Cyan
+declare BGreen='\e[1;32m'       # Green
+declare BPurple='\e[1;35m'      # Purple
+declare BRed='\e[1;31m'         # Red
+declare BWhite='\e[1;37m'       # White
+declare BYellow='\e[1;33m'      # Yellow
 # Background
-BgBlack='\e[0;40m'        # Black
-BgBlue='\e[0;44m'         # Blue
-BgCyan='\e[0;46m'         # Cyan
-BgGreen='\e[0;42m'        # Green
-BgPurple='\e[0;45m'       # Purple
-BgRed='\e[0;41m'          # Red
-BgWhite='\e[0;47m'        # White
-BgYellow='\e[0;43m'       # Yellow
-
+declare BgBlack='\e[0;40m'        # Black
+declare BgBlue='\e[0;44m'         # Blue
+declare BgCyan='\e[0;46m'         # Cyan
+declare BgGreen='\e[0;42m'        # Green
+declare BgPurple='\e[0;45m'       # Purple
+declare BgRed='\e[0;41m'          # Red
+declare BgWhite='\e[0;47m'        # White
+declare BgYellow='\e[0;43m'       # Yellow
 #}}}
 # Menu Theme
 declare -a MenuTheme=( "${BYellow}" "${White}" ")" )
@@ -139,12 +144,12 @@ print_help()
     echo "<!DOCTYPE html>" > "${FULL_SCRIPT_PATH}/help.html"
     echo "<html>" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "<body>" >> "${FULL_SCRIPT_PATH}/help.html"
-    echo "Arch Wizard Help File Generated on: $DATE_TIME" >> "${FULL_SCRIPT_PATH}/help.html"
+    echo "$(gettext -s "PRINT-HELP-TITLE"): $DATE_TIME" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "<hr />" >> "${FULL_SCRIPT_PATH}/help.html"
     if [[ "${#HELP_ARRAY}" -ne 0 ]]; then
         total="${#HELP_ARRAY[@]}"
         for (( i=0; i<${total}; i++ )); do
-            echo "Function #$i" >> "${FULL_SCRIPT_PATH}/help.html"
+            echo "$(gettext -s "PRINT-HELP-FUNCT") #$i" >> "${FULL_SCRIPT_PATH}/help.html"
             echo "${HELP_ARRAY[$i]}" >> "${FULL_SCRIPT_PATH}/help.html"
             echo "<hr />" >> "${FULL_SCRIPT_PATH}/help.html"
         done
@@ -364,21 +369,14 @@ fi
 # IS STRING IN FILE {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="is_string_in_file"
-    USAGE=$(localize "IS-STRING-IN-FILE-USAGE")
-    DESCRIPTION=$(localize "IS-STRING-IN-FILE-DESC")
-    NOTES=$(localize "IS-STRING-IN-FILE-NOTES")
+    USAGE=$(gettext -s "IS-STRING-IN-FILE-USAGE")
+    DESCRIPTION=$(gettext -s "IS-STRING-IN-FILE-DESC")
+    NOTES=$(gettext -s "IS-STRING-IN-FILE-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
     REVISION="5 Dec 2012"
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "IS-STRING-IN-FILE-USAGE" "is_string_in_file 1->(/full-path/file) 2->(search for string)"
-    localize_info "IS-STRING-IN-FILE-DESC"  "Return true if string is in file."
-    localize_info "IS-STRING-IN-FILE-NOTES" "Used to test files for Updates."
-    #
-    localize_info "IS-STRING-IN-FILE-FNF" "File Not Found"
 fi
 # -------------------------------------
 is_string_in_file()
@@ -389,8 +387,8 @@ is_string_in_file()
         count=`egrep -ic "$2" "$1"`
         [[ "$count" -gt 0 ]] &&	return 0
     else
-        write_error "IS-STRING-IN-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        echo -e "\t${BRed}$(gettext -s "IS-STRING-IN-FILE-FNF")  is_string_in_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        write_error "IS-STRING-IN-FILE-FNF" "($1) - ($2) -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        echo -e "\t${BRed}$(gettext -s "IS-STRING-IN-FILE-FNF")  is_string_in_file ($1) - ($2) @ $(basename $BASH_SOURCE) : $LINENO${White}"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi            
     fi
     return 1
@@ -639,6 +637,59 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
 fi
 #}}}
 # ----------------------------------------------------------------------------- 
+# CLEAN LOGS {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="clean_logs"
+    USAGE=$(localize "CLEAN-LOGS-USAGE")
+    DESCRIPTION=$(localize "CLEAN-LOGS-DESC")
+    NOTES=$(localize "CLEAN-LOGS-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "CLEAN-LOGS-USAGE" "clean_logs 1->(Log-Entry)"
+    localize_info "CLEAN-LOGS-DESC"  "Clean Log Entry of UserName and Passwords."
+    localize_info "CLEAN-LOGS-NOTES" "None."
+    #
+    localize_info "CLEAN-LOGS-ARG"   "Wrong Number of Arguments passed to clean_logs!"
+    localize_info "CLEAN-LOGS-TEST"  "Test Log file with username"
+fi
+# -------------------------------------
+clean_logs()
+{
+    [[ "$#" -ne "1" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    local LogString="$1"
+    local ReplaceWith='$USERNAME'
+    #
+    if [[ "$LogString" == *"$USERNAME"* ]]; then
+        LogString=${LogString/$USERNAME/$ReplaceWith}
+    fi
+    #
+    if [[ "$LogString" == *"$USERPASSWD"* ]]; then
+        ReplaceWith='$USERPASSWD'
+        LogString=${LogString/$USERPASSWD/$ReplaceWith}
+    fi
+    #
+    if [[ "$LogString" == *"$ROOTPASSWD"* ]]; then
+        ReplaceWith='$ROOTPASSWD'
+        LogString=${LogString/$ROOTPASSWD/$ReplaceWith}
+    fi
+    echo "$LogString"
+}
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    
+    if [[ $(clean_logs "$(gettext -s "WRITE-LOG-TEST") $USERNAME $USERPASSWD $ROOTPASSWD MY-TEST -> write_log @ $(basename $BASH_SOURCE) : $LINENO")  != *"$USERNAME"* ]]; then
+        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+fi
+#}}}
+# ----------------------------------------------------------------------------- 
 # WRITE LOG {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="write_log"
@@ -657,6 +708,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "WRITE-LOG-NOTES" "Localized."
     #
     localize_info "WRITE-LOG-ARG"   "Wrong Number of Arguments passed to write_log!"
+    localize_info "WRITE-LOG-TEST"  "Test Log file with username"
 fi
 # -------------------------------------
 write_log()
@@ -666,12 +718,12 @@ write_log()
         [[ ! -d "$LOG_PATH" ]] && (mkdir -pv "$LOG_PATH")
         touch "$ACTIVITY_LOG"
     fi
-    echo "$(localize "$1") ($2)"  >> "$ACTIVITY_LOG"
+    echo $(clean_logs "$(gettext -s "$1") ${2}")  >> "$ACTIVITY_LOG"
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    write_log "MY-LOG-WRITE-LOG" "write_log @ $(basename $BASH_SOURCE) : $LINENO"
-    if is_string_in_file "${ACTIVITY_LOG}" "MY-LOG-WRITE-LOG" ; then
+    write_log "WRITE-LOG-TEST" "MY-TEST $USERNAME $USERPASSWD $ROOTPASSWD -> write_log @ $(basename $BASH_SOURCE) : $LINENO"
+    if is_string_in_file "${ACTIVITY_LOG}" "MY-TEST" ; then
         echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
@@ -1026,9 +1078,11 @@ invalid_options()
 # -----------------------------------------------------------------------------
 # Troubleshooting Functions
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "TEST-FUNCTION-PASSED"   "Test Passed"
-    localize_info "TEST-FUNCTION-FAILED"   "Test Failed"
-    localize_info "TEST-FUNCTION-RUN"      "Running Test"
+    localize_info "TEST-FUNCTION-PASSED"      "Test Passed"
+    localize_info "TEST-FUNCTION-FAILED"      "Test Failed"
+    localize_info "TEST-FUNCTION-RUN"         "Running Test"
+    localize_info "TEST-FUNCTION-FNF"         "File Not Found"
+    localize_info "WRONG-NUMBER-OF-ARGUMENTS" "Wrong Number of Arguments"
 fi
 # -----------------------------------------------------------------------------
 # PAUSE FUNCTION {{{
@@ -1094,12 +1148,12 @@ assert()                  #  If condition false,
 } 
 #}}}
 # -----------------------------------------------------------------------------
-# DEBUGGING {{{
+# DEBUGGER {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="debugging"
-    USAGE=$(localize "DEBUGGING-USAGE")
-    DESCRIPTION=$(localize "DEBUGGING-DESC")
-    NOTES=$(localize "DEBUGGING-NOTES")
+    NAME="debugger"
+    USAGE=$(localize "DEBUGGER-USAGE")
+    DESCRIPTION=$(localize "DEBUGGER-DESC")
+    NOTES=$(localize "DEBUGGER-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
@@ -1107,12 +1161,12 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "DEBUGGING-USAGE" "debugging 1->(1=On, x=Off)"
-    localize_info "DEBUGGING-DESC"  "Add Option: Ran from Task Manager."
-    localize_info "DEBUGGING-NOTES" "None."
+    localize_info "DEBUGGER-USAGE" "debugger 1->(1=On, x=Off)"
+    localize_info "DEBUGGER-DESC"  "Add Option: Ran from Task Manager."
+    localize_info "DEBUGGER-NOTES" "None."
 fi
 # -------------------------------------
-debugging()
+debugger()
 {
     if [[ "$1" -eq 1 ]]; then
         set -v
@@ -1331,33 +1385,6 @@ device_list()
         fi
     done    
     IFS="$old_IFS"
-}
-#}}}
-# -----------------------------------------------------------------------------
-# RESTART INTERNET {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="restart_internet"
-    USAGE="restart_internet"
-    DESCRIPTION=$(localize "RESTART-INTERNET-DESC")
-    NOTES=$(localize "RESTART-INTERNET-NOTES")
-    AUTHOR="Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "RESTART-INTERNET-DESC"  "Restart Internet."
-    localize_info "RESTART-INTERNET-NOTES" "Assumes system.d."
-fi
-# -------------------------------------
-restart_internet()
-{
-    if [[ "$NETWORK_MANAGER" == "networkmanager" ]]; then
-        systemctl restart NetworkManager.service
-    elif [[ "$NETWORK_MANAGER" == "wicd" ]]; then
-        systemctl restart wicd.service
-    fi
 }
 #}}}
 # -----------------------------------------------------------------------------    
@@ -1839,7 +1866,18 @@ is_wildcard_file()
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    print_info "TEST-FUNCTION-RUN"
+    if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/gtranslate-cc.db" ]; then
+        if is_wildcard_file "${FULL_SCRIPT_PATH}/Test/Target/Source/" "db" ; then # " " | "ext" 
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
+        if is_wildcard_file "${FULL_SCRIPT_PATH}/Test/Target/Source/" " " ; then # " " | "ext" 
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
+    fi
 fi
 #}}}
 # -----------------------------------------------------------------------------
@@ -1897,7 +1935,7 @@ fi
 # COPY DIRECTORY {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="copy_dir"
-    USAGE=$(localize "copy_dir 1->(/full-path/) 2->(/full-path/to_must_end_with_a_slash/) 3->(&#36;LINENO)")
+    USAGE=$(localize "COPY-DIRECTORY-USAGE")
     DESCRIPTION=$(localize "COPY-DIRECTORY-DESC")
     NOTES=$(localize "COPY-DIRECTORY-NOTES")
     AUTHOR="Flesher"
@@ -1907,6 +1945,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "COPY-DIRECTORY-USAGE" "copy_dir 1->(/full-path/) 2->(/full-path/to_must_end_with_a_slash/) 3->(&#36;LINENO)"
     localize_info "COPY-DIRECTORY-DESC"  "Copy Directory."
     localize_info "COPY-DIRECTORY-NOTES" "None."
     #
@@ -2035,8 +2074,10 @@ copy_file()
     [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     # 
     if [ ! -f "$1" ]; then
-        write_error "File Not Found! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "File Not Found! $1 to $2 from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
+        if [[ "${EXCLUDE_FILE_WARN[@]}" != *"$1"* ]]; then
+            write_error "File Not Found! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "File Not Found! $1 to $2 from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
+        fi
         return 1
     fi
     if [ -z "$2" ]; then # Check for Empty
@@ -2089,7 +2130,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "COPY-FILES-USAGE" "copy_files 1->(/full-path/) 2->(ext) 3->(/full-path/to_must_end_with_a_slash/) 4->(&#36;LINENO)<br />copy_files 1->(/full-path/) 2->( ) 3->(/full-path/to_must_end_with_a_slash/) 4->(&#36;LINENO)"
+    localize_info "COPY-FILES-USAGE" "copy_files 1->(/full-path/) 2->(ext) 3->(/full-path/to_must_end_with_a_slash/) 4->(&#36;LINENO)<br />${HELP_TAB}copy_files 1->(/full-path/) 2->( ) 3->(/full-path/to_must_end_with_a_slash/) 4->(&#36;LINENO)"
     localize_info "COPY-FILES-DESC"  "Creates Destination Folder if not exist. LINENO is for Logging and Debugging."
     localize_info "COPY-FILES-NOTES" "If looking for a '/path/.hidden' file, a /path/&lowast; fails, so use no wild card, i.e. /path/"
 fi
@@ -2150,6 +2191,12 @@ copy_files()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     copy_files "${FULL_SCRIPT_PATH}/Test/Extras/" "log" "${FULL_SCRIPT_PATH}/Test/Target/Source/Extras/" "copy_files @ $(basename $BASH_SOURCE) : $LINENO"
+    if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" ]; then # Only make changes once
+        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+    copy_files "${FULL_SCRIPT_PATH}/Test/Extras/" " " "${FULL_SCRIPT_PATH}/Test/Target/Source/Extras/" "copy_files @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" ]; then # Only make changes once
         echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
@@ -2346,11 +2393,11 @@ replace_option()
     if [ -f "$1" ]; then
         if is_string_in_file "$1" "$2" ; then
             if ! is_string_in_file "$1" "${2}$3" ; then
-                #debugging 1
+                #debugger 1
                 sed -i 's/^'${2}'.*$/'${2}${3}'/' ${1}
-                return "$?"
                 #echo "sed returned: $?"
-                #debugging 0
+                #debugger 0
+                return "$?"
             else
                 print_warning "REPLACE-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 write_error   "REPLACE-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -2391,6 +2438,8 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
     localize_info "MAKE-FILE-DESC"  "Make file."
     localize_info "MAKE-FILE-NOTES" "None."
+    localize_info "MAKE-FILE-PASSED" "Make File created"
+    localize_info "MAKE-FILE-FAILED" "Failed to create File"
 fi
 # -------------------------------------
 make_file()
@@ -2399,15 +2448,15 @@ make_file()
     if [[ -n "$1" && -n "$2" ]]; then # Check for Empty
         [[ ! -f "$1" ]] && touch "$1"    
         if [ -f "$1" ]; then
-            write_log "make_file $1 from $2 at $DATE_TIME" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_log "MAKE-FILE-PASSED" ": $1 # $2 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             return 0
         else
-            write_error "make_file $1 failed to create file at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "MAKE-FILE-FAILED" ": $1 # $2 : -f : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             return 1
         fi
     else
-        write_error "Empty: make_file [$1] failed to create file at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "MAKE-FILE-FAILED" "$1 # $2 : -n : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Empty: [$1] at $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -2757,6 +2806,12 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
         echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fix_network
+        if is_internet ; then
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
     fi
 fi
 #}}}
@@ -3781,6 +3836,33 @@ select_create_user()
 }
 #}}}
 # -----------------------------------------------------------------------------
+# RESTART INTERNET {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="restart_internet"
+    USAGE="restart_internet"
+    DESCRIPTION=$(localize "RESTART-INTERNET-DESC")
+    NOTES=$(localize "RESTART-INTERNET-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "RESTART-INTERNET-DESC"  "Restart Internet."
+    localize_info "RESTART-INTERNET-NOTES" "Assumes system.d."
+fi
+# -------------------------------------
+restart_internet()
+{
+    if [[ "$NETWORK_MANAGER" == "networkmanager" ]]; then
+        systemctl restart NetworkManager.service
+    elif [[ "$NETWORK_MANAGER" == "wicd" ]]; then
+        systemctl restart wicd.service
+    fi
+}
+#}}}
+# -----------------------------------------------------------------------------
 # FIX NETWORK {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="fix_network"
@@ -4182,11 +4264,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GET-EDITOR-DESC"  "This gets called from Boot mode and Live mode; it does not add software, only ask if you wish to change the default editor, called from the create_config function."
     localize_info "GET-EDITOR-NOTES" "None."
     #
-    localize_info "Default-Editor"       "Do you wish to change the Default Editor of "
+    localize_info "GET-EDITOR-DEFAULT"   "Do you wish to change the Default Editor of "
     localize_info "GET-EDITOR-TITLE"     "DEFAULT EDITOR"
     localize_info "GET-EDITOR-INSTALLED" "Installed Editor(s): "
     localize_info "GET-EDITOR-EDITORS"   "Editors"
-    localize_info "GET-EDITOR-DEFAULT"   "Default-Editor"
     localize_info "GET-EDITOR-SELECT"    "Select default editor:"
 fi
 # -------------------------------------
@@ -4356,12 +4437,14 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     # Help file Localization
     localize_info "CREATE-HELP-USAGE"   "create_help 1->(NAME of Function.) 2->(USAGE) 3->(DESCRIPTION) 4->(NOTES) 5->(AUTHOR) 6->(VERSION) 7->(CREATED) 8->(REVISION) 9->(Source File and LINENO)"
     localize_info "CREATE-HELP-DESC"    "Create an HTML Help File on the Fly"
-    localize_info "CREATE-HELP-NOTES"   "This Allows easy reading and Look up of all Functions in Program. This Function must be first Function all scripts see."
+    localize_info "CREATE-HELP-NOTES"   "This Allows easy reading and Look up of all Functions in Program.<br />${HELP_TAB}This Function must be first Function all scripts see, so put it at the top of file.<br />${HELP_TAB}You can get as elborate with help files as you want."
     localize_info "CREATE-HELP-WORKING" "Create Help Working"
     localize_info "PRINT-HELP-ERROR"    "Help Array Empty!"
     # Help file Localization
     localize_info "PRINT-HELP-DESC"  "Print an HTML Help File on the Fly"
     localize_info "PRINT-HELP-NOTES" "This Allows easy reading and Look up of all Functions in Program."
+    localize_info "PRINT-HELP-TITLE" "Arch Wizard Help File Generated on"
+    localize_info "PRINT-HELP-FUNCT" "Function"
     # Help file Localization
     localize_info "CHECK-ARG-USAGE"     "check_arg 1->(Function Name) 2->(Number of Arguments) 3->(Total Arguments) 3->(&#36;LINENO)"
     localize_info "CHECK-ARG-DESC"      "check arguments for correct number passed into function"
@@ -4372,9 +4455,9 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CHECK-ARG-FOUND"     "found"
     # Help file Localization
     localize_info "TRIM-DESC"   "Remove space on Right and Left of string"
-    localize_info "TRIM-NOTES"  "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(trim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(trim &#34;&#36;MY_SPACE&#34;)|&#34;"
-    localize_info "LTRIM-NOTES" "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(ltrim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(ltrim &#34;&#36;MY_SPACE&#34;)|&#34;"
-    localize_info "RTRIM-NOTES" "MY_SPACE=' Left and Right '<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MY_SPACE=&#36;(rtrim &#34;&#36;MY_SPACE&#34;)<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo &#34;|&#36;(rtrim &#34;&#36;MY_SPACE&#34;)|&#34;"
+    localize_info "TRIM-NOTES"  "MY_SPACE=' Left and Right '<br />${HELP_TAB}MY_SPACE=&#36;(trim &#34;&#36;MY_SPACE&#34;)<br />${HELP_TAB}echo &#34;|&#36;(trim &#34;&#36;MY_SPACE&#34;)|&#34;"
+    localize_info "LTRIM-NOTES" "MY_SPACE=' Left and Right '<br />${HELP_TAB}MY_SPACE=&#36;(ltrim &#34;&#36;MY_SPACE&#34;)<br />${HELP_TAB}echo &#34;|&#36;(ltrim &#34;&#36;MY_SPACE&#34;)|&#34;"
+    localize_info "RTRIM-NOTES" "MY_SPACE=' Left and Right '<br />${HELP_TAB}MY_SPACE=&#36;(rtrim &#34;&#36;MY_SPACE&#34;)<br />${HELP_TAB}echo &#34;|&#36;(rtrim &#34;&#36;MY_SPACE&#34;)|&#34;"
     # Help file Localization
     localize_info "LEFT-TRIM-DESC"  "Remove space on Left of string"
     # Help file Localization
@@ -4398,6 +4481,12 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CREATE-LOCALIZER-WORKING" "Create Localizer Working..."
     #
     localize_info "WRONG-NUMBER-ARGUMENTS-PASSED-TO" "Wrong Number of Arguments passed to "
+    #
+    localize_info "IS-STRING-IN-FILE-USAGE" "is_string_in_file 1->(/full-path/file) 2->(search for string)"
+    localize_info "IS-STRING-IN-FILE-DESC"  "Return true if string is in file."
+    localize_info "IS-STRING-IN-FILE-NOTES" "Used to test files for Updates."
+    #
+    localize_info "IS-STRING-IN-FILE-FNF" "File Not Found"
 fi
 declare TEXT_SCRIPT_ID="$(localize "SCRIPT-ID1"): $SCRIPT_NAME $(localize "SCRIPT-ID2"): $SCRIPT_VERSION $(localize "SCRIPT-ID3"): $LAST_UPDATE"
 declare prompt1=$(localize "ENTER-OPTION")
