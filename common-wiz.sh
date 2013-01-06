@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="30 Dec 2012 16:33"
+# LAST_UPDATE="4 Jan 2013 16:33"
 # SCRIPT_VERSION="1.0"
 #
 # VARIABLES {{{
@@ -23,6 +23,7 @@ declare -i PACMAN_REPO_TYPE=1 # 0=None, 1=Server, 2=Client
 declare -i INSTALL_NO_INTERNET=0
 declare -i USE_PACMAN=1
 declare -i AUR_REPO=0
+declare -i IS_PHTHON3_AUR=0 # install python3-aur
 declare PACMAN_OPTIMIZE_PACKAGES="rsync"
 #
 declare -i MATE_INSTALLED=0
@@ -38,6 +39,7 @@ declare -i CINNAMON_INSTALLED=0
 declare -i UNITY_INSTALLED=0
 declare -i DE_MANAGER=0 # GDM KDE Elsa LightDM LXDM Slim Qingy XDM
 declare -a DE_MANAGERS=( "GDM" "KDE" "Elsa" "LightDM" "LXDM" "Slim" "Qingy" "XDM" )
+declare -i PHONON=0 # 0=phonon-gstreamer, 1=phonon-vlc
 #
 declare -i IS_INSTALL_SOFTWARE=0
 declare -i IS_LAST_CONFIG_LOADED=0
@@ -84,9 +86,9 @@ declare -a TASKMANAGER_NAME=( "" )
 declare PACSTRAP_PACKAGES=" "
 #
 declare -a CORE_INSTALL=()
-declare -a AUR_INSTALL=( "" )
 declare -a FAILED_CORE_INSTALL=()
-declare -a FAILED_AUR_INSTALL=( "" )
+declare -a AUR_INSTALL=()
+declare -a FAILED_AUR_INSTALL=()
 declare -i E_BADARGS=65
 #
 declare CONFIG_HOSTNAME="archlinux"
@@ -146,6 +148,7 @@ declare KEYBOARD="us" # used to drill down into more specific layouts for some; 
 declare KEYMAP="us"
 declare ZONE="America"
 declare SUBZONE="Los_Angeles"
+declare LOG_DATE_TIME=$(date2stamp `date`)    
 #}}}
 # ARCH {{{
 declare ARCHI=`uname -m`
@@ -286,6 +289,11 @@ installed_core()
 {
     CORE_INSTALL[$[${#CORE_INSTALL[@]}]]="$1"
 }
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    installed_core "core-foo"
+    installed_core "core-bar"
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # FAILED INSTALL CORE {{{
@@ -309,6 +317,11 @@ failed_install_core()
 {
     FAILED_CORE_INSTALL[$[${#FAILED_CORE_INSTALL[@]}]]="$1"
 }
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    failed_install_core "core-food"
+    failed_install_core "core-bard"
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # INSTALLED AUR {{{
@@ -330,12 +343,13 @@ fi
 # -------------------------------------
 installed_aur()
 {
-    if [[ "${#AUR_INSTALL}" -ne 0 ]]; then
-        AUR_INSTALL[0]="$1" # Accessing below first will give unbound variable error
-    else
-        AUR_INSTALL[$[${#AUR_INSTALL[@]}]]="$1"
-    fi    
+    AUR_INSTALL[$[${#AUR_INSTALL[@]}]]="$1"
 }
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    installed_aur "aur-foo"
+    installed_aur "aur-bar"
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # FAILED INSTALL AUR {{{
@@ -357,12 +371,13 @@ fi
 # -------------------------------------
 failed_install_aur()
 {
-    if [[ "${#FAILED_AUR_INSTALL}" -ne 0 ]]; then
-        FAILED_AUR_INSTALL[0]="$1" # Accessing below first will give unbound variable error
-    else
-        FAILED_AUR_INSTALL[$[${#FAILED_AUR_INSTALL[@]}]]="$1"
-    fi    
+    FAILED_AUR_INSTALL[$[${#FAILED_AUR_INSTALL[@]}]]="$1"
 }
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    failed_install_aur "aur-food"
+    failed_install_aur "aur-bard"
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # CHECK PACKAGE {{{
@@ -382,7 +397,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CHECK-PACKAGE-DESC"  "checks package(s) to see if they are installed in pacman."
     localize_info "CHECK-PACKAGE-NOTES" "I have seen this fail for one or more packages that were already install: mate; so I added -Qm for this reason."
     #
-    localize_info "CHECK-PACKAGE-NFCD" "Not Found in Core Database"
+    localize_info "CHECK-PACKAGE-NFCD" "Not Found in pacman Database"
     localize_info "CHECK-PACKAGE-FSSP" "Found in pacman -Ssp"
     localize_info "CHECK-PACKAGE-FFP"  "Failed to find package"
 fi
@@ -425,11 +440,11 @@ check_package()
     fi
 } 
 # -------------------------------------
-if [[ "$RUN_TEST" -eq 1 ]]; then
+if [[ "$RUN_TEST" -eq 2 ]]; then
     if check_package "mate" ; then
         echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-FAILED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
 fi
 #}}}
@@ -1209,7 +1224,7 @@ package_install()
 # PACKAGE REMOVE {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="package_remove"
-    USAGE="PACKAGE-REMOVE-USAGE"
+    USAGE=$(localize "PACKAGE-REMOVE-USAGE")
     DESCRIPTION=$(localize "PACKAGE-REMOVE-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
@@ -1238,6 +1253,78 @@ package_remove()
 } 
 #}}}
 # -----------------------------------------------------------------------------
+# DO CURL {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="do_curl"
+    USAGE=$(localize "DO-CURL-USAGE")
+    DESCRIPTION=$(localize "DO-CURL-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "DO-CURL-USAGE"         "do_curl 1->(name of AUR Package)"
+    localize_info "DO-CURL-DESC"          "Download AUR Package file via curl."
+    #
+    localize_info "DO-CURL-DOWNLOADED"    "Downloaded AUR Package"
+    localize_info "DO-CURL-FAILED"        "Failed to Downloaded AUR Package"
+    localize_info "DO-CURL-PASSED"        "Downloaded AUR Package"
+    localize_info "DO-CURL-DOWNLOADING"   "Downloading:"
+    localize_info "DO-CURL-ONLINE-FAILED" "Failed to ping https://aur.archlinux.org"
+fi
+# -------------------------------------
+do_curl()
+{
+    #
+    curl_this()
+    {
+        if curl -o "${1}.tar.gz" "https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz" ; then
+            write_log "DO-CURL-DOWNLOADED" ": ${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            return 0
+        else
+            return 1
+        fi
+    }
+    #
+    local -i DOWNLOADED=0
+    if curl_this "${1}" ; then
+        DOWNLOADED=1
+    else    
+        local -i RETRIES=0
+        while [  $RETRIES -lt 3 ]; do
+            print_this "DO-CURL-DOWNLOADING" " $1.tar.gz -> https://aur.archlinux.org/packages/${1:0:2}/$1/$1.tar.gz :) RETRIES=$RETRIES"
+            if curl_this "$1" ; then
+                DOWNLOADED=1
+                break
+            else
+                if ! is_online "aur.archlinux.org" ; then
+                    if ! is_internet ; then
+                        restart_internet
+                    else
+                        write_error "DO-CURL-ONLINE-FAILED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        if [[ "$DEBUGGING" -eq 1 ]]; then 
+                            print_this     "DO-CURL-ONLINE-FAILED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                            pause_function "${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        fi
+                    fi
+                fi
+                sleep 60 # the Ultimate wait a minute
+            fi
+            ((RETRIES++))
+        done
+    fi
+    if [[ "$DOWNLOADED" -eq 1 ]]; then
+        return 0
+    else
+        write_error "DO-CURL-FAILED" ": ${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        return 1
+    fi
+} 
+#}}}
+# -----------------------------------------------------------------------------
 # AUR DOWNLOAD {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="aur_download"
@@ -1256,10 +1343,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     #
     localize_info "AUR-DOWNLOAD-DOWNLOADING-AUR-PACKAGE" "Downloading AUR Package"
     localize_info "AUR-DOWNLOAD-FILE-EXIST"              "File Exist, check date of file"
-    localize_info "AUR-DOWNLOAD-DOWNLOADING"             "Downloading:"
     localize_info "AUR-DOWNLOAD-PACKAGE-UP2DATE"         "Up to date Package"
     localize_info "AUR-DOWNLOAD-FILE-CORRUPTED"          "File Corrupted:"
     localize_info "AUR-DOWNLOAD-FILE-NOT-FOUND"          "File Not Found"
+    localize_info "AUR-DOWNLOAD-CURL-FAILED"             "Failed to Downloaded AUR Package"
 fi
 # -------------------------------------
 aur_download()
@@ -1268,23 +1355,42 @@ aur_download()
     print_info "AUR-DOWNLOAD-DOWNLOADING-AUR-PACKAGE" " $1"
     cd "$AUR_CUSTOM_PACKAGES/"
     if [ -f "${1}.tar.gz" ]; then
-        print_this "AUR-DOWNLOAD-FILE-EXIST" " ${1}" # @FIX check date
+        print_this "AUR-DOWNLOAD-FILE-EXIST" " ${1}" # @FIX check date, if it needs to be updated, download it again
         IsFileNew=0
         # curl -z 21-Dec-11 http://www.example.com/yy.html        
         # -z "$(date —rfc-2822 -d @$(<index.html.timestamp))"
         # @FIX will it rename on download, since file exist
         # curl -z "${1}.tar.gz" -o "${1}.tar.gz" "https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz"
     else
-        print_this "AUR-DOWNLOAD-DOWNLOADING" " $1.tar.gz from https://aur.archlinux.org/packages/${1:0:2}/$1/$1.tar.gz"
-        curl -o "${1}.tar.gz" "https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz"
+        if ! do_curl "$1" ; then
+            write_error "AUR-DOWNLOAD-CURL-FAILED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then 
+                print_this     "AUR-DOWNLOAD-CURL-FAILED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                pause_function "${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            fi
+            return 1
+        fi
         IsFileNew=1
     fi
     #
     if [ -f "${1}.tar.gz" ]; then
         if [[ -d "$1" && IsFileNew -eq 0 ]]; then
-            print_this "AUR-DOWNLOAD-PACKAGE-UP2DATE" " $1"
+            print_this "AUR-DOWNLOAD-PACKAGE-UP2DATE" ": $1"
+            if [ ! -d "${1}" ]; then
+                if ! tar zxvf "$1.tar.gz" ; then
+                    write_error "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    if [[ "$DEBUGGING" -eq 1 ]]; then 
+                        print_this     "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                        pause_function "${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    fi
+                    return 1
+                fi            
+            fi            
+            chown -R "${USERNAME}:${USERNAME}" "$AUR_CUSTOM_PACKAGES/${1}" 
+            chmod -R 775 "$AUR_CUSTOM_PACKAGES/${1}"
+            cd "${1}"
             # @FIX check for compliled code
-            return 2
+            return 0
         else
             if tar zxvf "$1.tar.gz" ; then
                 if [[ "$AUR_REPO" -ne 1 ]]; then # AUR Repo 
@@ -1298,7 +1404,7 @@ aur_download()
                 write_error "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then 
                     print_this     "AUR-DOWNLOAD-FILE-CORRUPTED" " curl -o ${1}.tar.gz https://aur.archlinux.org/1/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                    pause_function "aur_download ${1} $(basename $BASH_SOURCE) : $LINENO"
+                    pause_function "${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 fi
                 return 1
             fi
@@ -1307,7 +1413,7 @@ aur_download()
         write_error "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then 
             print_this     "AUR-DOWNLOAD-FILE-NOT-FOUND" " curl -o ${1}.tar.gz https://aur.archlinux.org/packages/${1:0:2}/${1}/${1}.tar.gz : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            pause_function "aur_download ${1} : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            pause_function "${1} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         return 1
     fi
@@ -1331,13 +1437,13 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GET-AUR-PACKAGES-DESC"  "Get AUR packages"
     localize_info "GET-AUR-PACKAGES-NOTES" "Called from export under user, so script functions not available, cd folder before calling"
     #
-    localize_info "WRONG-NUMBER-OF-ARGUMENTS" "Wrong Number of Arguments"
     localize_info "GET-AUR-PACKAGES-COMPILING"        "Compiling Package"
     localize_info "GET-AUR-PACKAGES-FAILED-COMPILING" "Failed to compile"
 fi
 # -------------------------------------
 get_aur_packages()
 { 
+    # Ran from User Not root; so its running in a emtpy sandbox, so export all functions you need
     local White='\e[0;37m'  # White
     local BWhite='\e[1;37m' # Bold White
     local BRed='\e[1;31m'   # Red
@@ -1345,9 +1451,9 @@ get_aur_packages()
     if [ "$#" -ne "3" ]; then echo -e "${BRed} get_aur_packages $(gettext -s "WRONG-NUMBER-OF-ARGUMENTS") ${White}"; fi
     local parms="-s"
     if [[ "$3" -eq 1 ]]; then # AUR Repo 
-        parms="-s"
+        parms="-fs"
     else                      # No Repo
-        parms="-si"           # Install
+        parms="-fsi"          # Install
     fi
     echo -e "${BWhite}\t $(gettext -s "GET-AUR-PACKAGES-COMPILING") ${1} makepkg ${parms} --noconfirm in function: get_aur_packages at line: $(basename $BASH_SOURCE) : $LINENO ${White}"
     cd "${1}"
@@ -1403,11 +1509,11 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "AUR-DOWNLOAD-PACKAGES-DESC"  "AUR Download Packages"
     localize_info "AUR-DOWNLOAD-PACKAGES-NOTES" "AUR_CUSTOM_PACKAGES: if Boot Mode /root/usb/AUR-Packages, if Live Mode /mnt/AUR-Packages"
     #
-    localize_info "AUR-DOWNLOAD-PACKAGES-TITLE" "AUR Package Downloader."
+    localize_info "AUR-DOWNLOAD-PACKAGES-TITLE"              "AUR Package Downloader."
     localize_info "AUR-DOWNLOAD-PACKAGES-WARN-CREATE-FOLDER" "Could not create folder "
-    localize_info "AUR-DOWNLOAD-PACKAGES-WORKING-ON" "Working on Package "
-    localize_info "AUR-DOWNLOAD-PACKAGES-RETRIES" "retries"
-    localize_info "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD" "Failed Downloading AUR Package"
+    localize_info "AUR-DOWNLOAD-PACKAGES-WORKING-ON"         "Working on Package "
+    localize_info "AUR-DOWNLOAD-PACKAGES-RETRIES"            "retries"
+    localize_info "AUR-DOWNLOAD-PACKAGES-FAILED-DOWNLOAD"    "Failed Downloading AUR Package"
 fi
 # -------------------------------------
 aur_download_packages()
@@ -1419,9 +1525,9 @@ aur_download_packages()
     local -i retries=0
     for PACKAGE in $1; do
         if [ ! -d "$AUR_CUSTOM_PACKAGES/" ]; then
-            if ! make_dir "$AUR_CUSTOM_PACKAGES/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" ; then
+            if ! make_dir "$AUR_CUSTOM_PACKAGES/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" ; then
                 print_warning  "AUR-DOWNLOAD-PACKAGES-WARN-CREATE-FOLDER" "$AUR_CUSTOM_PACKAGES"
-                pause_function "aur_download_packages $(basename $BASH_SOURCE) : $LINENO"
+                pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 cd "$FULL_SCRIPT_PATH"
                 return 1
             fi
@@ -1432,13 +1538,13 @@ aur_download_packages()
         while [[ "$YN_OPTION" -ne 1 ]]; do
             print_info "AUR-DOWNLOAD-PACKAGES-WORKING-ON" "$PACKAGE $(localize "AUR-DOWNLOAD-PACKAGES-RETRIES") = $retries"
             aur_download "$PACKAGE"
-            FUN_RETURN="$?"
+            FUN_RETURN="$?" # Always call this frist thing after a function return to capture it.
             if [[ "$FUN_RETURN" == 0 ]]; then
                 cd "$AUR_CUSTOM_PACKAGES/"
                 chown -R "${USERNAME}:${USERNAME}" "$AUR_CUSTOM_PACKAGES/" 
                 # exec command as user instead of root
                 su "${USERNAME}" -c "get_aur_packages \"$PACKAGE\" \"$DEBUGGING\" \"$AUR_REPO\"" # Run as User
-                FUN_RETURN="$?"
+                FUN_RETURN="$?" # Always call this frist thing after a function return to capture it.
                 YN_OPTION=1
             fi
             if [[ "$retries" -gt 3 ]]; then
@@ -1506,6 +1612,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "AUR-PACKAGE-INSTALL-NOTES" "Called from add_packagemanager, run in Live Mode: Install one at a time, check to see if its already installed, if fail, try again with confirm."
     #
     localize_info "AUR-PACKAGE-INSTALL-WORKING-ON"     "AUR Package Install"
+    localize_info "AUR-PACKAGE-INSTALL-TOTAL-INSTALL"  "Total and number for installed is not equal"
     localize_info "AUR-PACKAGE-INSTALL-CURRENTLY"      "currently Working on"
     localize_info "AUR-PACKAGE-INSTALL-OF"             "of"
     localize_info "AUR-PACKAGE-INSTALL-PACKAGES"       "packages"
@@ -1621,8 +1728,8 @@ aur_package_install()
     if [[ "$number_installed" -eq "$total_packages" ]]; then
         return 0
     else
-        print_warning "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "AUR-PACKAGE-INSTALL-WORKING-ON" " - $AUR_HELPER - $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_warning "AUR-PACKAGE-INSTALL-TOTAL-INSTALL" " $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error   "AUR-PACKAGE-INSTALL-TOTAL-INSTALL" " $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -1664,6 +1771,53 @@ configure_pacman_package_signing()
 }
 #}}}
 # -----------------------------------------------------------------------------
+# CREATE CONFIG SKEL {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="create_config_skel"
+    USAGE=$(localize "CREATE-CONFIG-SKEL-USAGE")
+    DESCRIPTION=$(localize "CREATE-CONFIG-SKEL-DESC")
+    NOTES=$(localize "CREATE-CONFIG-SKEL-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "CREATE-CONFIG-SKEL-USAGE" "create_config_skel 1->(config name) 2->(/Full/Path/) 3->(FileName.ext)"
+    localize_info "CREATE-CONFIG-SKEL-DESC"  "Create a Configuration File Skeliton."
+    localize_info "CREATE-CONFIG-SKEL-NOTES" "None."
+fi
+# -------------------------------------
+create_config_skel()
+{ 
+    make_dir "$2" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    touch "$2$3"
+    if [[ "$1" == "xinitrc" ]]; then
+        echo '#!/bin/sh' > "$2$3"
+        echo 'if [ -d /etc/X11/xinit/xinitrc.d ]; then' >> "$2$3"
+        echo '  for f in /etc/X11/xinit/xinitrc.d/*; do' >> "$2$3"
+        echo '    [ -x "$f" ] && . "$f"' >> "$2$3"
+        echo '  done' >> "$2$3"
+        echo '  unset f' >> "$2$3"
+        echo 'fi' >> "$2$3"
+        echo '#' >> "$2$3"
+    fi
+}
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    if [ -f "${FULL_SCRIPT_PATH}/Test/.xinitrc" ]; then
+        rm -f "${FULL_SCRIPT_PATH}/Test/.xinitrc"
+    fi
+    create_config_skel 'xinitrc' "${FULL_SCRIPT_PATH}/Test/" '.xinitrc'
+    if [ -f "${FULL_SCRIPT_PATH}/Test/.xinitrc" ]; then
+        print_info "TEST-FUNCTION-PASSED" "create_config_skel @ $(basename $BASH_SOURCE) : $LINENO"
+    else
+        print_warning "TEST-FUNCTION-FAILED" "create_config_skel @ $(basename $BASH_SOURCE) : $LINENO"
+    fi  
+fi
+#}}}
+# -----------------------------------------------------------------------------
 # CONFIG XINITRC {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="config_xinitrc"
@@ -1685,22 +1839,48 @@ fi
 config_xinitrc()
 { 
     # create a xinitrc file in home user directory
+    # ck-launch-session is owned by consolekit, which is replaced by systemd
     if [[ "$1" == "mate-session" || "$1" == "gnome-session-cinnamon" ]]; then
         if [[ "$DE_MANAGER" -eq 2 ]]; then # GDM KDE Elsa LightDM LXDM Slim Qingy XDM
             # exec ck-launch-session dbus-launch
-            echo "echo -e \"exec ck-launch-session $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc"
+            echo "create_config_skel 'xinitrc' '/home/\${USERNAME}/' '.xinitrc'; echo -e \"exec $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" # ck-launch-session
         else
-            echo "echo -e \"exec $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc"
+            echo "create_config_skel 'xinitrc' '/home/\${USERNAME}/' '.xinitrc'; echo -e \"exec $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" # ck-launch-session
         fi
     else
-        echo "echo -e \"exec ck-launch-session $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc"
+        echo "create_config_skel 'xinitrc' '/home/\${USERNAME}/' '.xinitrc'; echo -e \"exec $1\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" # ck-launch-session
     fi
 } 
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    print_info "TEST-FUNCTION-RUN"
-    TEMP=$(config_xinitrc 'mate-session')
-    if [[ "$TEMP" == "echo -e \"exec mate-session\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db" ]]; then
+        while read line; do 
+            if [[ "${line:0:1}" == "?" ]]; then
+                THE_VAR="${line:1}"
+            else
+                case "$THE_VAR" in
+                    "USERNAME")
+                        USERNAME="$line"
+                        ;;
+                esac
+            fi
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    else
+        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+        pause_function "load_last_config $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    TEMP="$(config_xinitrc 'mate-session')"
+    echo -e "$TEMP"
+    eval "$TEMP"
+    make_dir "/home/${USERNAME}/" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
+    if [ -f "/home/${USERNAME}/.xinitrc" ]; then
+        print_info "TEST-FUNCTION-PASSED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
+    else
+        print_warning "TEST-FUNCTION-FAILED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
+    fi  
+    #    
+    if [[ "$(config_xinitrc 'mate-session')" == "echo -e \"exec mate-session\" >> /home/\${USERNAME}/.xinitrc; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" ]]; then
         print_info "TEST-FUNCTION-PASSED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_warning "TEST-FUNCTION-FAILED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
@@ -1731,7 +1911,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CHOOSE-AUR-HELPER-INFO-5"  "List of AUR Helpers: yaourt, packer and pacaur."
     localize_info "CHOOSE-AUR-HELPER-INFO-6"  "None of these tools are officially supported by Arch devs."
     localize_info "CHOOSE-AUR-HELPER-SELECT"  "Choose your default AUR helper to install"
-    localize_info "Change-AUR-Helper"         "Do you wish to change the Default Editor" 
+    localize_info "CHOOSE-AUR-HELPER-CHANGE"  "Do you wish to change the Default AUR Helper" 
 fi
 # -------------------------------------
 choose_aurhelper()
@@ -1743,7 +1923,7 @@ choose_aurhelper()
     print_info    "CHOOSE-AUR-HELPER-INFO-4"
     print_info    "CHOOSE-AUR-HELPER-INFO-5"
     print_warning "CHOOSE-AUR-HELPER-INFO-6"
-    read_input_yn "Change-AUR-Helper" "$AUR_HELPER" 0
+    read_input_yn "CHOOSE-AUR-HELPER-CHANGE" "$AUR_HELPER" 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
         print_info "CHOOSE-AUR-HELPER-SELECT"
@@ -1912,7 +2092,7 @@ fi
 read_nameserver()
 {
     CUSTOM_NS1=" "; CUSTOM_NS2=" "; CUSTOM_NS_SEARCH=" "
-    if [[ -f "$FULL_SCRIPT_PATH/nameservers.txt" ]]; then
+    if [[ -f "${FULL_SCRIPT_PATH}/nameservers.txt" ]]; then
         N=1
         while read line; do 
             case "$N" in
@@ -1957,8 +2137,8 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CUSTOM-NAMESERVERS-DESC"       "Custom Nameservers"
     #
-    localize_info "Use-custom-nameserers"         "Use custom nameserers" 
-    localize_info "CORRECT" "Is this correct"
+    localize_info "CUSTOM-NAMESERVERS-CORRECT"    "Is this correct"
+    localize_info "CUSTOM-NAMESERVERS-USE"        "Use custom nameserers" 
     localize_info "CUSTOM-NAMESERVERS-INFO-1"     "The resolver is a set of routines in the C library that provide access to the Internet Domain Name System (DNS)."
     localize_info "CUSTOM-NAMESERVERS-INFO-2"     "The resolver configuration file contains information that is read by the resolver routines the first time they are invoked by a process."
     localize_info "CUSTOM-NAMESERVERS-INFO-3"     "The file is designed to be human readable and contains a list of keywords with values that provide various types of resolver information."
@@ -1969,7 +2149,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CUSTOM-NAMESERVERS-INFO-8"     "Or use the ones form your Local ISP, or own DNS Servers."
     localize_info "CUSTOM-NAMESERVERS-WARN-1"     "You must enter two nameservers correctly, no validation is done!"
     localize_info "CUSTOM-NAMESERVERS-DEFAULT-1"  "Enter NAMESERVER 1 (123.123.123.123): "
-    localize_info "CUSTOM-NAMESERVERS-DEFAULT-2"  "Enter Search (ex: (sub-domain.)url.tdl or Blank (enter) for none): "
+    localize_info "CUSTOM-NAMESERVERS-DEFAULT-2"  "Enter NAMESERVER 2 (123.123.123.123): "
+    localize_info "CUSTOM-NAMESERVERS-DEFAULT-3"  "Enter Search (ex: (sub-domain.)url.tdl or Blank (enter) for none): "
 fi
 # -------------------------------------
 custom_nameservers()
@@ -2015,18 +2196,18 @@ custom_nameservers()
         print_info "CUSTOM-NAMESERVERS-INFO-8"
         print_warning "CUSTOM-NAMESERVERS-WARN-1"
         #
-        read_input_yn "Use-custom-nameserers" " " 1
+        read_input_yn "CUSTOM-NAMESERVERS-USE" " " 1
         #
         if [[ "$YN_OPTION" -eq 1 ]]; then
             IS_CUSTOM_NAMESERVER=1
             read_nameserver
             read_input_default "CUSTOM-NAMESERVERS-DEFAULT-1" "$CUSTOM_NS1"
             CUSTOM_NS1=$(trim "$OPTION")
-            read_input_default "Enter NAMESERVER 2 [123.123.123.123]: " "$CUSTOM_NS2"
+            read_input_default "CUSTOM-NAMESERVERS-DEFAULT-2" "$CUSTOM_NS2"
             CUSTOM_NS2=$(trim "$OPTION")
-            read_input_default "CUSTOM-NAMESERVERS-DEFAULT-2" "$CUSTOM_NS_SEARCH"
+            read_input_default "CUSTOM-NAMESERVERS-DEFAULT-3" "$CUSTOM_NS_SEARCH"
             CUSTOM_NS_SEARCH=$(trim "$OPTION")
-            read_input_yn "CORRECT" " " 1
+            read_input_yn "CUSTOM-NAMESERVERS-CORRECT" " " 1
             if [[ "$YN_OPTION" -eq 1 ]]; then
                 write_nameserver
                 cat "${FULL_SCRIPT_PATH}"/etc/resolv.conf
@@ -2034,7 +2215,7 @@ custom_nameservers()
             fi
         else
             if [[ "$RUNTIME_MODE" -eq 1 ]]; then
-                copy_file "/etc/resolv.conf" ${MOUNTPOINT}/etc/resolv.conf ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                copy_file "/etc/resolv.conf" ${MOUNTPOINT}/etc/resolv.conf "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
             break
         fi
@@ -2206,12 +2387,12 @@ fi
 # -------------------------------------
 create_config()
 {
-    get_hostname              # $CONFIG_HOSTNAME
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_hostname : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_user_name             # $USERNAME
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_user_name : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_editor                # $EDITOR
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_editor : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    get_hostname              # $CONFIG_HOSTNAME
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_hostname : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     configure_keymap          # $KEYMAP
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_keymap  : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_keyboard_layout       # $KEYBOARD
@@ -2226,10 +2407,10 @@ create_config()
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "choose_aurhelper : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     custom_nameservers        # $IS_CUSTOM_NAMESERVER
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "custom_nameservers : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-    get_flesh                 # $FLESH
-    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_flesh : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     get_aur_package_folder    # $AUR_REPO_NAME and $AUR_REPO
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_aur_package_folder : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+    get_flesh                 # $FLESH
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_flesh : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     save_last_config
 }
 #}}}
@@ -2435,30 +2616,30 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "SHOW-LOADED-DESC"  "Show Loaded Variables"
-    localize_info "SHOW-LOADED-NOTES" "Localized."
+    localize_info "SHOW-LOADED-DESC"               "Show Loaded Variables"
+    localize_info "SHOW-LOADED-NOTES"              "Localized."
     #
-    localize_info "Last-Config"                    "Last Configuration Database contain User specific Settings."
-    localize_info "Load-User-Config"               "Load User Configuration Database"
-    localize_info "Last-Config-Failed"             "Last Config Failed to load at line"
-    localize_info "The-below-Config"               "The below Configuration Settings can be changed without re-running Software install."
-    localize_info "Change-UserName"                "You can just change User Name (Y), or whole configuration (N)."
-    localize_info "Do-You-Want-To-Change-UserName" "Do you wish to change User Name"
-    localize_info "Edit-Settings"                  "Do you wish to edit these settings"
+    localize_info "SHOW-LOADED-LAST-CONFIG"        "Last Configuration Database contain User specific Settings."
+    localize_info "SHOW-LOADED-LOAD-USER-CONFIG"   "Load User Configuration Database"
+    localize_info "SHOW-LOADED-FAILED"             "Last Config Failed to load at line"
+    localize_info "SHOW-LOADED-BELOW"              "The below Configuration Settings can be changed without re-running Software install."
+    localize_info "SHOW-LOADED-USERNAME"           "You can just change User Name (Y), or whole configuration (N)."
+    localize_info "SHOW-LOADED-CHANGE-USERNAME"    "Do you wish to change User Name"
+    localize_info "SHOW-LOADED-EDIT"               "Do you wish to edit these settings"
 fi
 # -------------------------------------
 show_last_config()
 {
-    print_this "Last-Config"
-    read_input_yn "Load-User-Config" " " 1 
+    print_this "SHOW-LOADED-LAST-CONFIG"
+    read_input_yn "SHOW-LOADED-LOAD-USER-CONFIG" " " 1 
     if [[ "YN_OPTION" -eq 1 ]]; then
         load_last_config
         if [[ "$IS_LAST_CONFIG_LOADED" -eq 0 ]]; then
-            print_warning "Last-Config-Failed" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_warning "SHOW-LOADED-FAILED" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             create_config
         fi
         echo -e " "
-        echo -e "$(localize "The-below-Config")"
+        echo -e $(localize "SHOW-LOADED-BELOW")
         echo -e ""
         echo -e "FLESH                    = ${BWhite} $(yes_no "${FLESH}") ${White}"
         echo -e "CUSTOM_MIRRORLIST        = ${BWhite} $(yes_no "${CUSTOM_MIRRORLIST}") ${White}"
@@ -2487,22 +2668,22 @@ show_last_config()
         echo -e "USERNAME                 = ${BWhite} ${USERNAME}${White}"
         echo -e " "
         #
-        print_info "Change-UserName"
-        read_input_yn "Do-You-Want-To-Change-UserName" " " 0
+        print_info "SHOW-LOADED-USERNAME"
+        read_input_yn "SHOW-LOADED-CHANGE-USERNAME" " " 0
         if [[ "$YN_OPTION" -eq 1 ]]; then
             change_user
             show_last_config
         fi       
-        read_input_yn "Edit-Settings" " " 0
+        read_input_yn "SHOW-LOADED-EDIT" " " 0
         if [[ "$YN_OPTION" -eq 1 ]]; then
             create_config
             show_last_config
-            pause_function "show_last_config $(basename $BASH_SOURCE) : $LINENO"
+            pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     else
         create_config
         show_last_config
-        pause_function "show_last_config $(basename $BASH_SOURCE) : $LINENO"
+        pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 }
 #}}}
@@ -2617,7 +2798,7 @@ get_install_mode()
 # VERIFY CONFIG {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="verify_config"
-    USAGE="verify_config $(localize "VERIFY-CONFIG-USAGE")"
+    USAGE=$(localize "VERIFY-CONFIG-USAGE")
     DESCRIPTION=$(localize "VERIFY-CONFIG-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="Flesher"
@@ -2631,9 +2812,9 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "VERIFY-CONFIG-DESC"  "Verify Configuration settings and load all files or create new ones."
     #
     localize_info "VERIFY-CONFIG-Optimization"          "Do you wish to Configure pacman Optimization" 
-    localize_info "Create-New-Software-Config"          "Do you wish to Create a New Software Configuration File" 
-    localize_info "Disk-Profile"                        "Do you wish change Disk Profile" 
-    localize_info "KEEP-Disk-Profile"                   "Do you wish to continue with this Disk Profile" 
+    localize_info "VERIFY-CONFIG-CREATE-NEW-CONFIG"     "Do you wish to Create a New Software Configuration File" 
+    localize_info "VERIFY-CONFIG-DISK-PROFILE"          "Do you wish change Disk Profile" 
+    localize_info "VERIFY-CONFIG-KEEP-DISK-PROFILE"     "Do you wish to continue with this Disk Profile" 
     localize_info "VERIFY-CONFIG-Import-User-Folder-settings" "Import User Folder settings" 
     localize_info "VERIFY-CONFIG-COPY-FOLDER"           "Do you wish to Copy saved Flash Folder: /etc/ to /" 
     localize_info "VERIFY-CONFIG-PACMAN-OPTIMIZATION"   "pacman Optimization will configure system to use aria2 reflector and pm2ml; it will also configure a local repository which can be share across a local Network; this will help download files faster."
@@ -2675,7 +2856,7 @@ verify_config()
         print_info "VERIFY-CONFIG-NO-CONFIG"
         create_config
         show_last_config
-        pause_function "verify_config $(basename $BASH_SOURCE) : $LINENO"
+        pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi        
     # Software Configuration Files
     if is_software_files ; then            
@@ -2684,7 +2865,7 @@ verify_config()
     else
         if [[ "$1" -eq 1 ]]; then # Boot Mode
             print_info "VERIFY-CONFIG-SOFTWARE-CONFIG-FOUND"
-            read_input_yn "Create-New-Software-Config" " " 1
+            read_input_yn "VERIFY-CONFIG-CREATE-NEW-CONFIG" " " 1
             if [[ "$YN_OPTION" -eq 1 ]]; then
                 install_menu
             fi
@@ -2694,15 +2875,15 @@ verify_config()
     fi
     # Disk Configuration Files
     if [[ "$1" -eq 1 ]]; then # Boot Mode
-        if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" && "$BOOT_MODE" -eq 1 ]]; then
+        if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db" && "$BOOT_MODE" -eq 1 ]]; then
             print_info "VERIFY-CONFIG-VERIFY-DISK-SETTINGS"
             show_disk_profile
-            read_input_yn "Disk-Profile" " " 0
+            read_input_yn "VERIFY-CONFIG-DISK-PROFILE" " " 0
             if [[ "$YN_OPTION" -eq 1 ]]; then
                 edit_disk
                 show_disk_profile
             else
-                read_input_yn "KEEP-Disk-Profile" " " 1
+                read_input_yn "VERIFY-CONFIG-KEEP-DISK-PROFILE" " " 1
                 if [[ "$YN_OPTION" -eq 0 ]]; then
                     print_warning "VERIFY-CONFIG-RUN-SCRIPT-AGAIN"
                     abort_install
@@ -2728,14 +2909,7 @@ verify_config()
         fi
         if [ ! -f "${USER_FOLDER}/.xinitrc" ]; then
             if [ ! -f /etc/skel/.xinitrc ]; then                    # Create .xinitrc file in user folder
-                echo "#!/bin/sh"                                    > "${USER_FOLDER}/.xinitrc"
-                echo "if [ -d /etc/X11/xinit/xinitrc.d ]; then"    >> "${USER_FOLDER}/.xinitrc"
-                echo "    for f in /etc/X11/xinit/xinitrc.d/*; do" >> "${USER_FOLDER}/.xinitrc"
-                echo "        [ -x \"\$f\" ] && . \"\$f\""         >> "${USER_FOLDER}/.xinitrc"
-                echo "    done"                                    >> "${USER_FOLDER}/.xinitrc"
-                echo "    unset f"                                 >> "${USER_FOLDER}/.xinitrc"
-                echo "fi"                                          >> "${USER_FOLDER}/.xinitrc"
-                echo " "                                           >> "${USER_FOLDER}/.xinitrc"
+                create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc'
             else
                 copy_file "/etc/skel/.xinitrc" "${USER_FOLDER}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
@@ -2755,7 +2929,7 @@ verify_config()
         fi
     fi
     print_info "VERIFY-CONFIG-CONFIG-COMPLETED"
-    pause_function "verify_config :> $(basename $BASH_SOURCE) -> $LINENO"
+    pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) -> $LINENO"
     return 0
 }
 #}}}
@@ -2784,8 +2958,8 @@ clear_software()
 {
     CORE_INSTALL=()
     FAILED_CORE_INSTALL=()
-    AUR_INSTALL=( "" )
-    FAILED_AUR_INSTALL=( "" )
+    AUR_INSTALL=()
+    FAILED_AUR_INSTALL=()
     TASKMANAGER_NAME=( "" )
     TASKMANAGER=( "" )
     #
@@ -2815,18 +2989,61 @@ clear_software()
     CINNAMON_INSTALLED=0
     UNITY_INSTALLED=0
     #
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"            ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-install.db"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db"       ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-install.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    remove_file "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-10-packagemanager-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-10-packagemanager-name-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-11-taskmanager-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-11-taskmanager-name-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-12-packages-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-12-aur-packages-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db" "${CONFIG_PATH}/${CONFIG_NAME}-13-user-groups-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-14-software-config-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db" ]; then
+        remove_file "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
     #
     if is_wildcard_file "${MENU_PATH}/" "db" ; then # " " | "ext" 
         rm -r "${MENU_PATH}"/*.db
@@ -2854,70 +3071,143 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "SAVE-INSTALL-DESC"  "Save Install"
+    localize_info "SAVE-INSTALL-DESC"  "Save Install list to LOG_PATH."
 fi
 # -------------------------------------
 save_install()
 {
-    local LOG_DATE_TIME=$(date2stamp `date`)    
     # CORE_INSTALL
+    if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then
+        copy_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "${LOG_PATH}/13-${CONFIG_NAME}-core-installed-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
     local -i total="${#CORE_INSTALL[@]}"
     if [[ "$total" -ne 0 ]]; then
-        if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-core-installed-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        fi
         for (( i=0; i<${total}; i++ )); do
             if [[ "$i" == 0 ]]; then
-                echo "${CORE_INSTALL[$i]}"        >  "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db"      # installed_core  - array
+                echo "${CORE_INSTALL[$i]}"        >  "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log"      # installed_core  - array
             else
-                echo "${CORE_INSTALL[$i]}"        >> "${CONFIG_PATH}/${CONFIG_NAME}-core-installed.db"      # installed_core  - array
+                echo "${CORE_INSTALL[$i]}"        >> "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log"      # installed_core  - array
             fi
         done
+    else
+        if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then
+            remove_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
     fi
     # AUR_INSTALL
-    if [[ "${#AUR_INSTALL}" -ne 0 ]]; then
-        if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-aur-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        fi
-        total="${#AUR_INSTALL[@]}"
+    if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then
+        copy_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "${LOG_PATH}/14-${CONFIG_NAME}-aur-installed-${LOG_DATE_TIME}.log" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    total="${#AUR_INSTALL[@]}"
+    if [[ "$total" -ne 0 ]]; then
         for (( i=0; i<${total}; i++ )); do
             if [[ "$i" == 0 ]]; then
-                echo "${AUR_INSTALL[$i]}"         >  "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db"       # installed_aur - array
+                echo "${AUR_INSTALL[$i]}"         >  "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log"       # installed_aur - array
             else
-                echo "${AUR_INSTALL[$i]}"         >> "${CONFIG_PATH}/${CONFIG_NAME}-aur-installed.db"       # installed_aur - array
+                echo "${AUR_INSTALL[$i]}"         >> "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log"       # installed_aur - array
             fi
         done
+    else
+        if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then
+            remove_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
     fi
     # FAILED_CORE_INSTALL
+    if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then
+        copy_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "${LOG_PATH}/15-${CONFIG_NAME}-failed-core-installed-${LOG_DATE_TIME}.log" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
     total="${#FAILED_CORE_INSTALL[@]}"
     if [[ "$total" -ne 0 ]]; then
-        if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-installed-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        fi
         for (( i=0; i<${total}; i++ )); do
             if [[ "$i" == 0 ]]; then
-                echo "${FAILED_CORE_INSTALL[$i]}" >  "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-install.db" # failed_install_core  - array
+                echo "${FAILED_CORE_INSTALL[$i]}" >  "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" # failed_install_core  - array
             else
-                echo "${FAILED_CORE_INSTALL[$i]}" >> "${CONFIG_PATH}/${CONFIG_NAME}-failed-core-install.db" # failed_install_core  - array
+                echo "${FAILED_CORE_INSTALL[$i]}" >> "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" # failed_install_core  - array
             fi
         done
+    else
+        if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then
+            remove_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
     fi
     # FAILED_AUR_INSTALL
-    if [[ "${#FAILED_AUR_INSTALL}" -ne 0 ]]; then
-        if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-core-installed.db" ]; then
-            copy_file "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-installed.db" "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-installed-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        fi
-        total="${#FAILED_AUR_INSTALL[@]}"
+    if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
+        copy_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "${LOG_PATH}/16-${CONFIG_NAME}-failed-aur-installed-${LOG_DATE_TIME}.log" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    total="${#FAILED_AUR_INSTALL[@]}"
+    if [[ "$total" -ne 0 ]]; then
         for (( i=0; i<${total}; i++ )); do
             if [[ "$i" == 0 ]]; then
-                echo "${FAILED_AUR_INSTALL[$i]}"  >  "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-install.db"  # failed_install_aur - array
+                echo "${FAILED_AUR_INSTALL[$i]}"  >  "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log"  # failed_install_aur - array
             else
-                echo "${FAILED_AUR_INSTALL[$i]}"  >> "${CONFIG_PATH}/${CONFIG_NAME}-failed-aur-install.db"  # failed_install_aur - array
+                echo "${FAILED_AUR_INSTALL[$i]}"  >> "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log"  # failed_install_aur - array
             fi
         done
+    else
+        if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
+            remove_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
     fi
     return 0
 }
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    save_install
+    # CORE_INSTALL
+    total="${#CORE_INSTALL[@]}"
+    echo "CORE_INSTALL=$total"
+    if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then
+        if is_string_in_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "core-foo" ; then
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
+    else        
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FNF")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi    
+    remove_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "save_install @ $(basename $BASH_SOURCE) : $LINENO"
+    # AUR_INSTALL
+    total="${#AUR_INSTALL[@]}"
+    echo "AUR_INSTALL=$total"
+    if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then
+        if is_string_in_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "aur-foo" ; then
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
+    else        
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FNF")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi    
+    remove_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "save_install @ $(basename $BASH_SOURCE) : $LINENO"
+    # FAILED_CORE_INSTALL
+    total="${#FAILED_CORE_INSTALL[@]}"
+    echo "FAILED_CORE_INSTALL=$total"
+    if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then
+        if is_string_in_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "core-food" ; then
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
+    else        
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FNF")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi    
+    remove_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "save_install @ $(basename $BASH_SOURCE) : $LINENO"
+    # FAILED_AUR_INSTALL
+    total="${#FAILED_AUR_INSTALL[@]}"
+    echo "FAILED_AUR_INSTALL=$total"
+    if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
+        if is_string_in_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "aur-food" ; then
+            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
+    else        
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FNF")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi    
+    if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
+        remove_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "save_install @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # SAVE SOFTWARE {{{
@@ -2938,141 +3228,140 @@ fi
 # -------------------------------------
 save_software()
 {
-    local LOG_DATE_TIME=$(date2stamp `date`)    
     # 
     # add_packagemanager TASKMANAGER TASKMANAGER_NAME
     # TASKMANAGER_NAME
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-11-taskmanager-name-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#TASKMANAGER_NAME[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${TASKMANAGER_NAME[$i]}"  > "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" # add_taskmanager  - array
+            echo "${TASKMANAGER_NAME[$i]}"  > "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" # add_taskmanager  - array
         else
-            echo "${TASKMANAGER_NAME[$i]}" >> "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" # add_taskmanager  - array
+            echo "${TASKMANAGER_NAME[$i]}" >> "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" # add_taskmanager  - array
         fi
     done
     # TASKMANAGER
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-11-taskmanager-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#TASKMANAGER[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${TASKMANAGER[$i]}"       > "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"      # add_taskmanager  - array
+            echo "${TASKMANAGER[$i]}"       > "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"      # add_taskmanager  - array
         else
-            echo "${TASKMANAGER[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"      # add_taskmanager  - array
+            echo "${TASKMANAGER[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"      # add_taskmanager  - array
         fi
     done
     #    
     # add_packagemanager PACKMANAGER PACKMANAGER_NAME
     # PACKMANAGER_NAME
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" "${CONFIG_PATH}/${CONFIG_NAME}-10-packagemanager-name-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#PACKMANAGER_NAME[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${PACKMANAGER_NAME[$i]}"  > "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" # add_packagemanager  - array
+            echo "${PACKMANAGER_NAME[$i]}"  > "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" # add_packagemanager  - array
         else
-            echo "${PACKMANAGER_NAME[$i]}" >> "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" # add_packagemanager  - array
+            echo "${PACKMANAGER_NAME[$i]}" >> "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" # add_packagemanager  - array
         fi
     done
     # PACKMANAGER
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" "${CONFIG_PATH}/${CONFIG_NAME}-10-packagemanager-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#PACKMANAGER[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${PACKMANAGER[$i]}"       > "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"      # add_packagemanager  - array
+            echo "${PACKMANAGER[$i]}"       > "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"      # add_packagemanager  - array
         else
-            echo "${PACKMANAGER[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"      # add_packagemanager  - array
+            echo "${PACKMANAGER[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"      # add_packagemanager  - array
         fi
     done
     #
     # PACKAGES
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-packages-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-12-packages-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${PACKAGES[$i]}"         > "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"             # add_package         - array
+            echo "${PACKAGES[$i]}"         > "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"             # add_package         - array
         else
-            echo "${PACKAGES[$i]}"        >> "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"             # add_package         - array
+            echo "${PACKAGES[$i]}"        >> "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"             # add_package         - array
         fi
     done
     #
     # AUR_PACKAGES
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db" "${CONFIG_PATH}/${CONFIG_NAME}-12-aur-packages-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${AUR_PACKAGES[$i]}"   > "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"           # add_aur_package  - array
+            echo "${AUR_PACKAGES[$i]}"   > "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"           # add_aur_package  - array
         else
-            echo "${AUR_PACKAGES[$i]}"  >> "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"           # add_aur_package  - array
+            echo "${AUR_PACKAGES[$i]}"  >> "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"           # add_aur_package  - array
         fi
     done
     # USER_GROUPS
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db" "${CONFIG_PATH}/${CONFIG_NAME}-user-groups-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db" "${CONFIG_PATH}/${CONFIG_NAME}-13-user-groups-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     total="${#USER_GROUPS[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${USER_GROUPS[$i]}"      >  "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"         # add_user_group      - array
+            echo "${USER_GROUPS[$i]}"      >  "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"         # add_user_group      - array
         else
-            echo "${USER_GROUPS[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"         # add_user_group      - array
+            echo "${USER_GROUPS[$i]}"      >> "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"         # add_user_group      - array
         fi
     done
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-software-config-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-14-software-config-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # WEBSERVER
-    echo "?WEBSERVER"           > "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$WEBSERVER"          >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?WEBSERVER"           > "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$WEBSERVER"          >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # CONFIG_ORPHAN
-    echo "?CONFIG_ORPHAN"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$CONFIG_ORPHAN"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?CONFIG_ORPHAN"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$CONFIG_ORPHAN"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # CONFIG_XORG
-    echo "?CONFIG_XORG"        >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$CONFIG_XORG"        >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?CONFIG_XORG"        >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$CONFIG_XORG"        >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # CONFIG_SSH
-    echo "?CONFIG_SSH"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$CONFIG_SSH"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?CONFIG_SSH"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$CONFIG_SSH"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # CONFIG_TOR
-    echo "?CONFIG_TOR"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$CONFIG_TOR"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?CONFIG_TOR"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$CONFIG_TOR"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # CONFIG_KDE
-    echo "?CONFIG_KDE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$CONFIG_KDE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?CONFIG_KDE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$CONFIG_KDE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # VIDEO_CARD
-    echo "?VIDEO_CARD"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$VIDEO_CARD"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?VIDEO_CARD"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$VIDEO_CARD"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # DE_MANAGER
-    echo "?DE_MANAGER"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$DE_MANAGER"         >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?DE_MANAGER"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$DE_MANAGER"         >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # MATE_INSTALLED
-    echo "?MATE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$MATE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?MATE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$MATE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # GNOME_INSTALL
-    echo "?GNOME_INSTALL"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$GNOME_INSTALL"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?GNOME_INSTALL"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$GNOME_INSTALL"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # XFCE_INSTALLED
-    echo "?XFCE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$XFCE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?XFCE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$XFCE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # E17_INSTALLED
-    echo "?E17_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$E17_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?E17_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$E17_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # KDE_INSTALLED
-    echo "?KDE_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$KDE_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?KDE_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$KDE_INSTALLED"      >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # LXDE_INSTALLED
-    echo "?LXDE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$LXDE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?LXDE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$LXDE_INSTALLED"     >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # OPENBOX_INSTALLED
-    echo "?OPENBOX_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$OPENBOX_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?OPENBOX_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$OPENBOX_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # AWESOME_INSTALLED
-    echo "?AWESOME_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$AWESOME_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?AWESOME_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$AWESOME_INSTALLED"  >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # GNOME_INSTALLED
-    echo "?GNOME_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$GNOME_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?GNOME_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$GNOME_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # CINNAMON_INSTALLED
-    echo "?CINNAMON_INSTALLED" >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$CINNAMON_INSTALLED" >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?CINNAMON_INSTALLED" >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$CINNAMON_INSTALLED" >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     # UNITY_INSTALLED
-    echo "?UNITY_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
-    echo "$UNITY_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+    echo "?UNITY_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+    echo "$UNITY_INSTALLED"    >> "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
     #
     save_last_config
 }
@@ -3100,81 +3389,80 @@ save_last_config()
         print_warning "Nothing has been configured yet! LOCALE_ARRAY=${LOCALE_ARRAY[*]} is empty on line $(basename $BASH_SOURCE) : $LINENO"
         abort_install
     fi
-    local LOG_DATE_TIME=$(date2stamp `date`)    
     # 
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-last-config-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-15-last-config-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # CONFIG_HOSTNAME
-    echo "?CONFIG_HOSTNAME"      >  "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$CONFIG_HOSTNAME"      >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?CONFIG_HOSTNAME"      >  "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$CONFIG_HOSTNAME"      >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # USERNAME
-    echo "?USERNAME"             >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "${USERNAME}"           >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?USERNAME"             >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "${USERNAME}"           >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # KEYBOARD
-    echo "?KEYBOARD"             >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$KEYBOARD"             >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?KEYBOARD"             >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$KEYBOARD"             >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # NETWORK_MANAGER
-    echo "?NETWORK_MANAGER"      >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$NETWORK_MANAGER"      >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?NETWORK_MANAGER"      >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$NETWORK_MANAGER"      >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # EDITOR
-    echo "?EDITOR"               >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$EDITOR"               >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?EDITOR"               >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$EDITOR"               >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # KEYMAP
-    echo "?KEYMAP"               >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$KEYMAP"               >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?KEYMAP"               >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$KEYMAP"               >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # COUNTRY_CODE
-    echo "?COUNTRY_CODE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$COUNTRY_CODE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?COUNTRY_CODE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$COUNTRY_CODE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # COUNTRY
-    echo "?COUNTRY"              >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$COUNTRY"              >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?COUNTRY"              >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$COUNTRY"              >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # FSTAB_CONFIG
-    echo "?FSTAB_CONFIG"         >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$FSTAB_CONFIG"         >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?FSTAB_CONFIG"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$FSTAB_CONFIG"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # FSTAB_EDIT
-    echo "?FSTAB_EDIT"           >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$FSTAB_EDIT"           >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?FSTAB_EDIT"           >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$FSTAB_EDIT"           >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # LOCALE
-    echo "?LOCALE"               >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$LOCALE"               >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?LOCALE"               >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$LOCALE"               >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # AUR_HELPER
-    echo "?AUR_HELPER"           >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$AUR_HELPER"           >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?AUR_HELPER"           >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$AUR_HELPER"           >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # AUR_REPO_NAME
-    echo "?AUR_REPO_NAME"        >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$AUR_REPO_NAME"        >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?AUR_REPO_NAME"        >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$AUR_REPO_NAME"        >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # AUR_REPO
-    echo "?AUR_REPO"             >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$AUR_REPO"             >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?AUR_REPO"             >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$AUR_REPO"             >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # PACMAN_OPTIMIZER
-    echo "?PACMAN_OPTIMIZER"     >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$PACMAN_OPTIMIZER"     >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?PACMAN_OPTIMIZER"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$PACMAN_OPTIMIZER"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # PACMAN_REPO_TYPE
-    echo "?PACMAN_REPO_TYPE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$PACMAN_REPO_TYPE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?PACMAN_REPO_TYPE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$PACMAN_REPO_TYPE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # IS_CUSTOM_NAMESERVER
-    echo "?IS_CUSTOM_NAMESERVER" >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$IS_CUSTOM_NAMESERVER" >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?IS_CUSTOM_NAMESERVER" >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$IS_CUSTOM_NAMESERVER" >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # CUSTOM_MIRRORLIST
-    echo "?CUSTOM_MIRRORLIST"    >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$CUSTOM_MIRRORLIST"    >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?CUSTOM_MIRRORLIST"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$CUSTOM_MIRRORLIST"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # FLESH
-    echo "?FLESH"                >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$FLESH"                >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?FLESH"                >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$FLESH"                >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # ZONE
-    echo "?ZONE"                 >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$ZONE"                 >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?ZONE"                 >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$ZONE"                 >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # SUBZONE
-    echo "?SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
-    echo "$SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+    echo "?SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # LOCALE_ARRAY
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-locale.db" "${CONFIG_PATH}/${CONFIG_NAME}-locale-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db" "${CONFIG_PATH}/${CONFIG_NAME}-16-locale-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # ${#LOCALE_ARRAY[*]}
     total="${#LOCALE_ARRAY[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [[ "$i" == 0 ]]; then
-            echo "${LOCALE_ARRAY[$i]}"         >  "${CONFIG_PATH}/${CONFIG_NAME}-locale.db"       #   - array
+            echo "${LOCALE_ARRAY[$i]}" >  "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db"       #   - array
         else
-            echo "${LOCALE_ARRAY[$i]}"         >> "${CONFIG_PATH}/${CONFIG_NAME}-locale.db"       #   - array
+            echo "${LOCALE_ARRAY[$i]}" >> "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db"       #   - array
         fi
     done
     #
@@ -3200,78 +3488,79 @@ fi
 # -------------------------------------
 save_disk_config()
 {
-    local LOG_DATE_TIME=$(date2stamp `date`)    
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-disk-config-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    if [ -f  "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db" ]; then                            # Used to get the lastest sudoers file from ISO boot OS
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-17-disk-config-${LOG_DATE_TIME}.db" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
     # 
     # UEFI
-    echo "?UEFI"              >  "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" # Clear File
-    echo "$UEFI"              >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?UEFI"              >  "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db" # Clear File
+    echo "$UEFI"              >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # UEFI_SIZE
-    echo "?UEFI_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$UEFI_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?UEFI_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$UEFI_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_BOOT_PARTITION
-    echo "?IS_BOOT_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_BOOT_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_BOOT_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_BOOT_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # BOOT_SYSTEM_TYPE
-    echo "?BOOT_SYSTEM_TYPE"  >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$BOOT_SYSTEM_TYPE"  >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?BOOT_SYSTEM_TYPE"  >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$BOOT_SYSTEM_TYPE"  >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # BOOT_SIZE
-    echo "?BOOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$BOOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?BOOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$BOOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_SWAP_PARTITION
-    echo "?IS_SWAP_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_SWAP_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_SWAP_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_SWAP_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # SWAP_SIZE
-    echo "?SWAP_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$SWAP_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?SWAP_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$SWAP_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # ROOT_SIZE
-    echo "?ROOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$ROOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?ROOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$ROOT_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # ROOT_FORMAT
-    echo "?ROOT_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$ROOT_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?ROOT_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$ROOT_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_HOME_PARTITION
-    echo "?IS_HOME_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_HOME_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_HOME_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_HOME_PARTITION" >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # HOME_SIZE
-    echo "?HOME_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$HOME_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?HOME_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$HOME_SIZE"         >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # HOME_FORMAT
-    echo "?HOME_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$HOME_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?HOME_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$HOME_FORMAT"       >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_HOME_DRIVE
-    echo "?IS_HOME_DRIVE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_HOME_DRIVE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_HOME_DRIVE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_HOME_DRIVE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_VAR_PARTITION
-    echo "?IS_VAR_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_VAR_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_VAR_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_VAR_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # VAR_SIZE
-    echo "?VAR_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$VAR_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?VAR_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$VAR_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # VAR_FORMAT
-    echo "?VAR_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$VAR_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?VAR_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$VAR_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_VAR_DRIVE
-    echo "?IS_VAR_DRIVE"      >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_VAR_DRIVE"      >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_VAR_DRIVE"      >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_VAR_DRIVE"      >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_TMP_PARTITION
-    echo "?IS_TMP_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_TMP_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_TMP_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_TMP_PARTITION"  >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_TMP_SIZE
-    echo "?IS_TMP_SIZE"       >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_TMP_SIZE"       >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_TMP_SIZE"       >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_TMP_SIZE"       >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # TMP_SIZE
-    echo "?TMP_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$TMP_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?TMP_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$TMP_SIZE"          >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # TMP_FORMAT
-    echo "?TMP_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$TMP_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?TMP_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$TMP_FORMAT"        >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # EDIT_GDISK
-    echo "?EDIT_GDISK"        >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$EDIT_GDISK"        >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?EDIT_GDISK"        >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$EDIT_GDISK"        >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
     # IS_SSD
-    echo "?IS_SSD"            >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
-    echo "$IS_SSD"            >> "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+    echo "?IS_SSD"            >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
+    echo "$IS_SSD"            >> "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3293,7 +3582,7 @@ fi
 # -------------------------------------
 is_software_files()
 {
-    local -a test_file_names=( "packagemanager-name.db" "packagemanager.db" "packages.db" "aur-packages.db" "user-groups.db" "software-config.db" )
+    local -a test_file_names=( "0-packagemanager-name.db" "0-packagemanager.db" "2-packages.db" "2-aur-packages.db" "3-user-groups.db" "4-software-config.db" )
     local -i test_passed=1
     total="${#test_file_names[@]}"
     for (( i=0; i<${total}; i++ )); do
@@ -3341,86 +3630,86 @@ load_software()
     local -i TEST_6=0
     local -i TEST_7=0
     local -i TEST_8=0
-    # TASKMANAGER
-    # TASKMANAGER_NAME - add_taskmanager - array
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db" ]]; then
-        i=0
-        while read line; do 
-            TASKMANAGER_NAME[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db"
-        TEST_1=1
-    else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-taskmanager-name.db"
-        pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
-    fi
-    # TASKMANAGER - add_taskmanager - array
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db" ]]; then
-        i=0
-        while read line; do 
-            TASKMANAGER[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"
-        TEST_2=1
-    else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-taskmanager.db"
-        pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
-    fi
     # PACKMANAGER_NAME - add_packagemanager - array
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" ]]; then
         i=0
         while read line; do 
             PACKMANAGER_NAME[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db"
         TEST_3=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-packagemanager-name.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # PACKMANAGER - add_packagemanager - array
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" ]]; then
         i=0
         while read line; do 
             PACKMANAGER[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"
         TEST_4=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-packagemanager.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"
+        pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    # TASKMANAGER
+    # TASKMANAGER_NAME - add_taskmanager - array
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db" ]]; then
+        i=0
+        while read line; do 
+            TASKMANAGER_NAME[$((i++))]="$line"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db"
+        TEST_1=1
+    else
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db"
+        pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    # TASKMANAGER - add_taskmanager - array
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" ]]; then
+        i=0
+        while read line; do 
+            TASKMANAGER[$((i++))]="$line"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"
+        TEST_2=1
+    else
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # PACKAGES
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-packages.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db" ]]; then
         i=0
         while read line; do 
             PACKAGES[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-packages.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"
         TEST_5=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-packages.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # AUR_PACKAGES
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db" ]]; then
         i=0
         while read line; do 
             AUR_PACKAGES[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"
         TEST_6=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-aur-packages.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     #
     # users - add_user_group - array
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db" ]]; then
         while read line; do 
             add_user_group "$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"
         TEST_7=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-user-groups.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # Store only if 1
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db" ]]; then
         while read line; do 
             if [[ "${line:0:1}" == "?" ]]; then
                 THE_VAR="${line:1}"
@@ -3485,10 +3774,10 @@ load_software()
                         ;;
                esac
             fi
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
         TEST_8=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-software-config.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     
@@ -3521,16 +3810,17 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "IS-LAST-CONFIG-FILES-DESC"  "Test if all Config files exist"
+    localize_info "IS-LAST-CONFIG-FILES-FNF"  "File Missing! Will create new one."
 fi
 # -------------------------------------
 is_last_config_files()
 {
-    local -a test_file_names=( "last-config.db" "locale.db" )
+    local -a test_file_names=( "5-last-config.db" "6-locale.db" )
     local -i test_passed=1
     total="${#test_file_names[@]}"
     for (( i=0; i<${total}; i++ )); do
         if [ ! -f "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]}" ]; then
-            print_warning "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]} File Missing! Will create new one."
+            print_warning "IS-LAST-CONFIG-FILES-FNF" "${CONFIG_PATH}/${CONFIG_NAME}-${test_file_names[$i]}"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             test_passed=0
             break;
@@ -3562,10 +3852,13 @@ fi
 # -------------------------------------
 load_last_config()
 {
+    OLD_IFS="$IFS"
     IFS=$' '
     # CONFIG_HOSTNAME USERNAME KEYBOARD
     # 
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db" ]]; then
+    local line=""
+    local THE_VAR=""
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db" ]]; then
         while read line; do 
             if [[ "${line:0:1}" == "?" ]]; then
                 THE_VAR="${line:1}"
@@ -3635,33 +3928,34 @@ load_last_config()
                     "PACMAN_REPO_TYPE")   
                         PACMAN_REPO_TYPE="$line"    
                         ;;
-               esac
+                esac
             fi
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
         IS_LAST_CONFIG_LOADED=1
     else
-        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-last-config.db"
+        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
         pause_function "load_last_config $(basename $BASH_SOURCE) : $LINENO"
     fi
     if [[ "$IS_CUSTOM_NAMESERVER" -eq 1 ]]; then
         read_nameserver
     fi
     # LOCALE_ARRAY
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-locale.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db" ]]; then
         local -i i=0
         while read line; do 
             LOCALE_ARRAY[$((i++))]="$line"
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-locale.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db"
     else
         IS_LAST_CONFIG_LOADED=0
-        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-locale.db"
+        print_warning "No" " ${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db"
         pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     #
     # PACKAGE_CHECK_FAILURES
+    # We manually Create these files
     PACKAGE_CHECK_FAILURES=()
     PACKAGE_FAILURES_CHECK=()
-    if [[ -f "${CONFIG_PATH}/package-failure-list.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/0-package-failure-list.db" ]]; then
         local -i i=0
         local lines=()
         local line=""
@@ -3669,12 +3963,13 @@ load_last_config()
             lines=($line) # Stored Data - Do not quote
             PACKAGE_CHECK_FAILURES[$i]="${lines[0]}"
             PACKAGE_FAILURES_CHECK[$((i++))]="${lines[1]}"
-        done < "${CONFIG_PATH}/package-failure-list.db"
+        done < "${CONFIG_PATH}/0-package-failure-list.db"
     else
         IS_LAST_CONFIG_LOADED=0
-        print_warning "No" ": ${CONFIG_PATH}/package-failure-list.db"
+        print_warning "No" ": ${CONFIG_PATH}/0-package-failure-list.db"
         pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
+    IFS="$OLD_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3696,8 +3991,9 @@ fi
 # -------------------------------------
 load_disk_config()
 {
+    OLD_IFS="$IFS"
     IFS=$' '
-    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db" ]]; then
+    if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db" ]]; then
         while read line; do 
             if [[ "${line:0:1}" == "?" ]]; then
                 THE_VAR="${line:1}"
@@ -3774,12 +4070,13 @@ load_disk_config()
                         ;;
                esac
             fi
-        done < "${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+        done < "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
         IS_DISK_CONFIG_LOADED=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-disk-config.db"
+        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
         pause_function "load_disk_config $(basename $BASH_SOURCE) : $LINENO"
     fi
+    IFS="$OLD_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4219,21 +4516,23 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CONFIGURE-USER-ACCOUNT-ERROR-2"   "configure_user_account: pentadactyl failed to Download"
     localize_info "CONFIGURE-USER-ACCOUNT-ERROR-3"   "configure_user_account: dotfiles failed to Download"
     localize_info "CONFIGURE-USER-ACCOUNT-ERROR-4"   "configure_user_account: Failure in creating .Xauthority for user"
+    localize_info "CONFIGURE-USER-ACCOUNT-ERROR-5"   "configure_user_account: Failure in creating .xinitrc for user"
     localize_info "CONFIGURE-USER-ACCOUNT-COMPLETED" "Configuring User Account Completed."
     localize_info "CONFIGURE-USER-ACCOUNT-CONFIG"    "Configuring Dot Files..."
 fi
 # -------------------------------------
 configure_user_account()
 {
+    write_log  "CONFIGURE-USER-ACCOUNT-TITLE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     print_info "CONFIGURE-USER-ACCOUNT-TITLE" " ${USERNAME}..."
     print_info "CONFIGURE-USER-ACCOUNT-INFO" " - https://wiki.archlinux.org/index.php/Bashrc"
     #
-    make_dir "/home/${USERNAME}/.config"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"   # Just checking
+    make_dir "/home/${USERNAME}/.config"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"   # Just checking
     chown "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.config"
     chmod 755 /home/${USERNAME}/.config
-    make_dir "/home/${USERNAME}/.cache"   ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"   # Just checking
+    make_dir "/home/${USERNAME}/.cache"   "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"   # Just checking
     chmod 755 "/home/${USERNAME}/.cache"
-    make_dir "/home/${USERNAME}/.config/fontconfig" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/.config/fontconfig" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     # @FIX helmuthdu replace with custom repo
     #
@@ -4268,7 +4567,7 @@ configure_user_account()
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     else
         cp -f "/home/${USERNAME}/dotfiles/.bashrc" "/home/${USERNAME}/dotfiles/.dircolors" "/home/${USERNAME}/dotfiles/.dircolors_256" "/home/${USERNAME}/dotfiles/.nanorc" ~/  # should be root
-        cp -f "/home/${USERNAME}/dotfiles/.bashrc" "/home/${USERNAME}/dotfiles/.dircolors" "/home/${USERNAME}/dotfiles/.dircolors_256" "/home/${USERNAME}/dotfiles/.nanorc" "/home/${USERNAME}/"   # USERNAME
+        cp -f "/home/${USERNAME}/dotfiles/.bashrc" "/home/${USERNAME}/dotfiles/.dircolors" "/home/${USERNAME}/dotfiles/.dircolors_256" "/home/${USERNAME}/dotfiles/.nanorc" "/home/${USERNAME}/" # USERNAME
         cp -f "/home/${USERNAME}/dotfiles/fonts.conf" "/home/${USERNAME}/.config/fontconfig"
         rm -fr "/home/${USERNAME}/dotfiles"
     fi
@@ -4297,19 +4596,29 @@ configure_user_account()
         sed -i '/VISUAL/s/vim/emacs\ -nw/' ~/.bashrc
     fi
     #    
-    make_dir "/home/${USERNAME}/Downloads" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Documents" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Pictures"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Videos"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "/home/${USERNAME}/Music"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Downloads" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Documents" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Pictures"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Videos"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/Music"     "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "/home/${USERNAME}/usb"       "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
-    copy_file "/etc/skel/.bash_logout"  "/home/${USERNAME}/.bash_logout"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/skel/.bash_profile" "/home/${USERNAME}/.bash_profile" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/skel/.bashrc"       "/home/${USERNAME}/.bashrc"       ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #copy_file "/etc/skel/.zshrc"        "/home/${USERNAME}/.zshrc"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #copy_file "/etc/skel/.xinitrc"      "/home/${USERNAME}/.xinitrc"      ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #copy_file "/etc/skel/.xsession"     "/home/${USERNAME}/.xsession"     ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/skel/.bash_logout"  "/home/${USERNAME}/.bash_logout"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/skel/.bash_profile" "/home/${USERNAME}/.bash_profile" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/skel/.bashrc"       "/home/${USERNAME}/.bashrc"       "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_file "/etc/skel/.zshrc"        "/home/${USERNAME}/.zshrc"       "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_file "/etc/skel/.xinitrc"      "/home/${USERNAME}/.xinitrc"     "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #copy_file "/etc/skel/.xsession"     "/home/${USERNAME}/.xsession"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # @FIX add all others
+    if [[ "$GNOME_INSTALL" -eq 1 ]]; then
+        if copy_files "${FULL_SCRIPT_PATH}/mateconf/" " " "/home/${USERNAME}/.mateconf/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" ; then
+            chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/"
+        else
+            print_warning "CONFIGURE-USER-ACCOUNT-ERROR-5" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error   "CONFIGURE-USER-ACCOUNT-ERROR-5" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        fi
+    fi
     if [[ "$MATE_INSTALLED" -eq 1 ]]; then
         touch "/home/${USERNAME}/.dmrc"
         echo "[Desktop]" >> "/home/${USERNAME}/.dmrc"
@@ -4320,17 +4629,26 @@ configure_user_account()
         echo "Session=cinnamon" >> "/home/${USERNAME}/.dmrc"
     fi
     #
+    make_dir "/usr/share/fonts/OTF/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" 
+    cd /usr/share/fonts/OTF/
+    mkfontdir
+    cd "$FULL_SCRIPT_PATH"
+    #
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
     #chmod -R 775 /home/${USERNAME}/  # User=RWX, Group=RWX and Others=R
     #
     chmod 770 "/home/${USERNAME}/.bash_logout"  # User=RWX, Group=RWX and Others=None
     chmod 770 "/home/${USERNAME}/.bash_profile" # User=RWX, Group=RWX and Others=None
     chmod 770 "/home/${USERNAME}/.bashrc"       # User=RWX, Group=RWX and Others=None
-    #chmod 770 /home/${USERNAME}/.xinitrc       # User=RWX, Group=RWX and Others=None
+    if [ -f "/home/${USERNAME}/.xinitrc" ]; then
+        chmod 770 "/home/${USERNAME}/.xinitrc"       # User=RWX, Group=RWX and Others=None
+    fi
     #chmod 770 /home/${USERNAME}/.xsession      # User=RWX, Group=RWX and Others=None
     #
 #    pause_function "about to execute user_config $(basename $BASH_SOURCE) : $LINENO"
     # @FIX
+
+
     return 0
     
     # skip this; left here to show how I trid to fix this; turns out to be a bug in systemd
@@ -4342,7 +4660,7 @@ configure_user_account()
         print_warning "CONFIGURE-USER-ACCOUNT-ERROR-4" ": ${USERNAME} function: user_config : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Failed for XAUTHORITY : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
-    cd /"$FULL_SCRIPT_PATH" # Is this required, if cd from within a su, it shouldn't leave the pwd there, it should revert back, as if it never happened.
+    cd "$FULL_SCRIPT_PATH" # Is this required, if cd from within a su, it shouldn't leave the pwd there, it should revert back, as if it never happened.
     chmod 600 "/home/${USERNAME}/.Xauthority" # User=RW, Group and Others=None
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.Xauthority"
     #
@@ -4366,8 +4684,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GET-AUR-PACKAGE-FOLDER-DESC"  "Get AUR package folder and AUR Repository Setting."
     localize_info "GET-AUR-PACKAGE-FOLDER-NOTES" "Notes."
     #
-    localize_info "Use-AUR-Repository" "Use AUR Repository"
-    localize_info "Enter-Name-for-AUR-Packages" "Enter Name for AUR Packages"
+    localize_info "GET-AUR-PACKAGE-USE"           "Use AUR Repository"
+    localize_info "GET-AUR-PACKAGE-ENTER-NAME"    "Enter Name for AUR Packages"
     localize_info "GET-AUR-PACKAGE-FOLDER-INFO-1" "This is the Folder where AUR Projects get Downloaded into and Compiled At."
     localize_info "GET-AUR-PACKAGE-FOLDER-INFO-2" "This will create a folder in your /mnt folder, to give you an Option to Share (Server) or Mount (Client) as a share drive; where it will be compiled, then the Package will be copied over into the Custom Packages Folder, so we can create a Custom Repository to install the Package from."
     localize_info "GET-AUR-PACKAGE-FOLDER-INFO-3" "Even if you do not use the Repository, you still have to download and compile AUR projects here."
@@ -4377,19 +4695,19 @@ fi
 # -------------------------------------
 get_aur_package_folder()
 {
-    print_title "Use-AUR-Repository" "https://aur.archlinux.org/ and https://wiki.archlinux.org/index.php/AUR_User_Guidelines"
+    print_title "GET-AUR-PACKAGE-USE" "https://aur.archlinux.org/ and https://wiki.archlinux.org/index.php/AUR_User_Guidelines"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-1"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-2"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-3"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-4"
     #
-    read_input_default "Enter-Name-for-AUR-Packages" "AUR-Packages"
+    read_input_default "GET-AUR-PACKAGE-ENTER-NAME" "AUR-Packages"
     #
     AUR_REPO_NAME="$OPTION"
     #    
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-5"    
     #
-    read_input_yn "Use-AUR-Repository" " " 1
+    read_input_yn "GET-AUR-PACKAGE-USE" " " 0 # @FIX
     #
     AUR_REPO="$YN_OPTION"
 }
@@ -4614,10 +4932,10 @@ abort_install()
     if [[ "$1" -eq 1 ]]; then
         print_info    "ABORT-INSTALL-INFO-1"
         print_warning "ABORT-INSTALL-ERROR"
-        copy_dir   "$FULL_SCRIPT_PATH/etc/"        ${MOUNTPOINT}/root/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_dir   "${FULL_SCRIPT_PATH}/etc/"        ${MOUNTPOINT}/root/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/root/CONFIG/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/root/LOG/    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh" ${MOUNTPOINT}/root/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh" ${MOUNTPOINT}/root/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_info "ABORT-INSTALL-INFO-2"
     fi
@@ -4669,15 +4987,15 @@ finish()
     if [[ "$1" -eq 1 ]]; then # Boot Mode
         print_info    "FINISH-INFO-4"
         print_warning "FINISH-ERROR"
-        copy_dir   "$FULL_SCRIPT_PATH/etc/"           ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_dir   "${FULL_SCRIPT_PATH}/etc/"           ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         copy_files "${CONFIG_PATH}/" "db"             ${MOUNTPOINT}/${USERNAME}/CONFIG/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         copy_files "$LOG_PATH/"      "log"            ${MOUNTPOINT}/${USERNAME}/LOG/    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/wiz"            ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/wizard.sh"      ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/arch-wiz.sh"    ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/common-wiz.sh"  ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/package-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "$FULL_SCRIPT_PATH/packages.sh"    ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/wiz"            ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/wizard.sh"      ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh"    ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/common-wiz.sh"  ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/package-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file  "${FULL_SCRIPT_PATH}/packages.sh"    ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else # Live Mode
         print_info "FINISH-INFO-5"
         if is_string_in_file "/etc/sudoers" "$FILE_SIGNATURE COMMENT-OUT" ; then # Only make changes once
@@ -4687,19 +5005,25 @@ finish()
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             else
                 cat "${MOUNTPOINT}/etc/sudoers"
-                copy_file "/etc/sudoers" "$FULL_SCRIPT_PATH/etc/sudoers"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                copy_file "/etc/sudoers" "${FULL_SCRIPT_PATH}/etc/sudoers"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi            
         else
             print_warning "FINISH-SUDO-ERR1" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             write_error   "FINISH-SUDO-ERR1" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi
+        copy_file  "/etc/X11/xorg.conf" "${FULL_SCRIPT_PATH}/etc/X11/xorg.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     # @FIX, where to save it to
     chown -R "${USERNAME}:${USERNAME}" "${CONFIG_PATH}/"
     chown -R "${USERNAME}:${USERNAME}" "${LOG_PATH}/"
     chown -R "${USERNAME}:${USERNAME}" "${MENU_PATH}/"
     chown -R "${USERNAME}:${USERNAME}" "${FULL_SCRIPT_PATH}/etc/"
+    #
+    chmod -R 775 "${CONFIG_PATH}/"
+    chmod -R 775 "${LOG_PATH}/"
+    chmod -R 775 "${MENU_PATH}/"
+    chmod -R 775 "${FULL_SCRIPT_PATH}/etc/"
     #
     read_input_yn "FINISH-REBOOT" " " 1
     if [[ "$YN_OPTION" -eq 1 ]]; then
