@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="5 Jan 2013 16:33"
+# LAST_UPDATE="11 Jan 2013 16:33"
 #
 declare ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
@@ -228,7 +228,7 @@ fi
 config_menu()
 {
     local -r menu_name="Config-Menu"  # You must define Menu Name here
-    local BreakableKey="B" 
+    local BreakableKey="B"            # Q=Quit, D=Done, B=Back
     # No reason to save menu
     OLD_IFS="$IFS"
     IFS=$'\n\t' # Very Important
@@ -241,8 +241,7 @@ config_menu()
         print_title "CONFIG-MENU-TITLE" "$TEXT_SCRIPT_ID"
         print_caution "${StatusBar}" "${StatusBar2}"
         #
-        declare -a MenuItems=( "" )
-        declare -a MenuInfo=( "" )
+        local -a MenuItems=( "" ); local -a MenuInfo=( "" )  # Reset
         RESET_MENU=1
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CREATE-CONF"       "" "" "CONFIG-MENU-DESC-CREATE"        "MenuTheme[@]"
@@ -495,7 +494,7 @@ fi
 main_menu()
 {
     local -r menu_name="MainMenu"  # You must define Menu Name here
-    local BreakableKey="Q" 
+    local BreakableKey="Q"         # Q=Quit, D=Done, B=Back
     local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
     local -a MenuThemeDflt=( "${BGreen}" "${White}" ")" )
     # No reason to save menu
@@ -564,7 +563,7 @@ main_menu()
                     MenuChecks[$((M_OPT - 1))]=1
                     set_debugging_mode "$DetectedMode" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     get_install_mode "$DetectedMode"
-                    clear_software
+                    clear_software 1
                     if is_last_config_files ; then
                         show_last_config
                     else
@@ -653,21 +652,14 @@ main_menu()
                     ;;
                 9)  # Quit
                     MenuChecks[$((M_OPT - 1))]=1
-                    chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
-                    chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
-                    chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
-                    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
                     M_OPT="$BreakableKey"
                     break
                     ;;
                 *)
                     if [[ "$M_OPT" == $(to_lower_case "$BreakableKey") ]]; then
+                        M_OPT="$BreakableKey"
                         break;
                     fi
-                    chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
-                    chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
-                    chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
-                    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
                     invalid_option "$M_OPT"
                     StatusBar=$(localize "INVALID_OPTION")
                     StatusBar2=""
@@ -676,6 +668,11 @@ main_menu()
         done
         is_breakable "$M_OPT" "$BreakableKey"
     done
+    chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/var/"
 }
 #}}}
 # -----------------------------------------------------------------------------
