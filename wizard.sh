@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-declare LAST_UPDATE="4 Jan 2013 16:33"
-declare SCRIPT_VERSION="1.0"
+declare LAST_UPDATE="11 Jan 2013 16:33"
+declare SCRIPT_VERSION="1.0.0.A"
 declare SCRIPT_NAME="ArchLinux Installation Wizard"
 #
 # Things to Fix
@@ -44,6 +44,7 @@ declare ROOTPASSWD='archlinux'
 declare -a USER_GROUPS=() 
 # 
 declare DATE_TIME=`date +"%d-%b-%Y @ %r"`
+declare LOG_DATE_TIME=$(date +"%d-%b-%Y-T-%H-%M")    
 #
 declare EXCLUDE_FILE_WARN=( "${CONFIG_NAME}-1-taskmanager-name.db" "${CONFIG_NAME}-1-taskmanager.db" "${CONFIG_NAME}-0-packagemanager-name.db" "${CONFIG_NAME}-0-packagemanager.db" "${CONFIG_NAME}-2-packages.db" "${CONFIG_NAME}-2-aur-packages.db" "${CONFIG_NAME}-3-user-groups.db" "${CONFIG_NAME}-4-software-config.db" )
 # Network
@@ -154,42 +155,13 @@ print_help()
             echo "<hr />" >> "${FULL_SCRIPT_PATH}/help.html"
         done
     else
-        print_warning "PRINT-HELP-ERROR"
+        print_error "PRINT-HELP-ERROR"
     fi        
     echo "" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "</body>" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "</html>" >> "${FULL_SCRIPT_PATH}/help.html"
     print_info "Help Printed to ${FULL_SCRIPT_PATH}/help.html"
-}
-#}}}
-# -----------------------------------------------------------------------------
-# CHECK ARG {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="check_arg"
-    USAGE=$(gettext -s "CHECK-ARG-USAGE")
-    DESCRIPTION=$(gettext -s "CHECK-ARG-DESC")
-    NOTES=$(gettext -s "CHECK-ARG-NOTES")
-    AUTHOR="Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-# -------------------------------------
-check_arg()
-{
-    #[[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
-    if [ "$#" -ne "4" ]; then
-        print_warning "CHECK-ARG-ERROR-1"
-        exit 1
-    fi
-    #
-    if [[ "$3" -ne "$2" ]]; then
-        print_warning "CHECK-ARG-ERROR-2" ": $1; $(gettext -s "CHECK-ARG-EXPECTING") $2, $(gettext -s "CHECK-ARG-FOUND") $3; @ $4"
-        exit 1
-    fi
-    return 0    
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -339,7 +311,7 @@ load_2d_array()
             echo -e "${lines[$2]}"
         done < "$1" # Load Array from serialized disk file
     else
-        print_warning "LOAD-2D-ARRAY-MISSING" ": $1"
+        print_error "LOAD-2D-ARRAY-MISSING" ": $1"
         write_error "LOAD-2D-ARRAY-MISSING" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         exit 1
@@ -423,7 +395,7 @@ localize_save()
     if [[ "$RUN_LOCALIZER" -eq 0 ]]; then return 0; fi
     echo "Starting localize_save..."
     
-    make_dir "${LOCALIZED_PATH}/en/LC_MESSAGES/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${LOCALIZED_PATH}/en/LC_MESSAGES/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     echo "make_dir ${LOCALIZED_PATH}/en/LC_MESSAGES/"
     
     local -i total="${#LOCALIZE_ID[@]}"
@@ -481,7 +453,7 @@ localize_save()
 
             LocalePath="${LOCALIZED_PATH}/${TransLate[$index]}/${TransLate[$index]}.po" # [/script/locale]/lang/lang.po
             echo "LocalePath=$LocalePath"
-            make_dir "${LOCALIZED_PATH}/${TransLate[$index]}/LC_MESSAGES/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            make_dir "${LOCALIZED_PATH}/${TransLate[$index]}/LC_MESSAGES/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             for (( i=0; i<${total}; i++ )); do
                 if [ ! -f "$LocalePath" ]; then
                     touch "$LocalePath"
@@ -912,7 +884,7 @@ print_caution()
 # PRINT WARNING {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="print_warning"
-    USAGE="print_warning 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+    USAGE="print_error 1->(Localized Text ID) 2->(Optional Not Localized Text)"
     DESCRIPTION=$(localize "PRINT-WARNING-DESC")
     NOTES=$(localize "PRINT-WARNING-NOTES")
     AUTHOR="helmuthdu and Flesher"
@@ -927,6 +899,35 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
 fi
 # -------------------------------------
 print_warning()
+{ 
+    # Console width number
+    T_COLS=`tput cols`
+    if [ "$#" -eq "1" ]; then
+        echo -e "\t${BYellow}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 1 ))
+    else
+        echo -e "\t${BYellow}$(localize "$1") ${2}${White}\n" | fold -sw $(( $T_COLS - 1 ))
+    fi
+} 
+#}}}
+# -----------------------------------------------------------------------------
+# PRINT ERROR {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="print_error"
+    USAGE="print_error 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+    DESCRIPTION=$(localize "PRINT-ERROR-DESC")
+    NOTES=$(localize "PRINT-ERROR-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "PRINT-ERROR-DESC"  "Print error"
+    localize_info "PRINT-ERROR-NOTES" "Localized."
+fi
+# -------------------------------------
+print_error()
 { 
     # Console width number
     T_COLS=`tput cols`
@@ -1297,15 +1298,15 @@ set_debugging_mode()
         print_info "SET-DEBUGGING-MODE-INTERNET-UP"
     else
         fix_network
-        print_warning "SET-DEBUGGING-MODE-TRIED-TO-FIX"
+        print_error "SET-DEBUGGING-MODE-TRIED-TO-FIX"
         print_this "SET-DEBUGGING-MODE-TRY-AGAIN"
         sleep 13
         if ! is_internet ; then
-            write_error "SET-DEBUGGING-MODE-INTERNET-DOWN" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            print_warning "SET-DEBUGGING-MODE-INTERNET-DOWN" 
+            write_error "SET-DEBUGGING-MODE-INTERNET-DOWN" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "SET-DEBUGGING-MODE-INTERNET-DOWN" 
             if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
                 INSTALL_NO_INTERNET=1
-                print_warning "SET-DEBUGGING-MODE-NO-INTERNET"
+                print_error "SET-DEBUGGING-MODE-NO-INTERNET"
             fi
             pause_function "set_debugging_mode $1 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
@@ -1313,8 +1314,8 @@ set_debugging_mode()
     if [[ "$DEBUGGING" -eq 1 ]]; then
         #set -u
         set -o nounset 
-        print_warning "SET-DEBUGGING-MODE-WARN-1"
-        print_warning "SET-DEBUGGING-MODE-WARN-2"
+        print_error "SET-DEBUGGING-MODE-WARN-1"
+        print_error "SET-DEBUGGING-MODE-WARN-2"
         pause_function "set_debugging_mode $1 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 }
@@ -1614,7 +1615,7 @@ read_input_options()
         fi
     done
     OPTIONS=($(echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]'))
-    #write_log "read_input_options  $OPTION" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #write_log "read_input_options  $OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1672,14 +1673,14 @@ read_input_yn()
         else 
             MY_OPTION=0
             if [[ "$3" -eq 1 ]]; then
-                print_warning "$(localize "Wrong-Key-Yn")"
+                print_error "$(localize "Wrong-Key-Yn")"
             else
-                print_warning "$(localize "Wrong-Key-Ny")"
+                print_error "$(localize "Wrong-Key-Ny")"
             fi
             pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     done
-    #write_log "read_input_yn [$3] answer $YN_OPTION" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    #write_log "read_input_yn [$3] answer $YN_OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1729,7 +1730,7 @@ fi
 read_input_data()
 { 
     read -p "$(localize "$1") : " OPTION
-    write_log "read_input_data  $1 = $OPTION" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" 
+    write_log "read_input_data  $1 = $OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" 
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1773,7 +1774,7 @@ verify_input_default_data()
             YN_OPTION=0
         fi
     done
-    write_log "$FUNCNAME $1 = $YN_OPTION" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    write_log "$FUNCNAME $1 = $YN_OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1905,18 +1906,18 @@ make_dir()
         [[ ! -d "$1" ]] && mkdir -pv "$1"
         if [ -d "$1" ]; then
             if [[ "$SILENT_MODE" -eq 0 ]]; then
-                write_log "make_dir $1 from $2 at $DATE_TIME" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_log "make_dir $1 from $2 at $DATE_TIME" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
             return 0
         else
-            write_error "make_dir $1 failed to create directory from line $2." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            print_warning "make_dir $1 failed to create directory from line $2." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "make_dir $1 failed to create directory from line $2." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "make_dir $1 failed to create directory from line $2." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             return 1
         fi
     else
-        write_error "Empty: make_dir [$1] failed to create directory from line $2." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        print_warning "make_dir $1 failed to create directory from line $2." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "Empty: make_dir [$1] failed to create directory from line $2." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "make_dir $1 failed to create directory from line $2." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -1960,15 +1961,15 @@ copy_dir()
     [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     #
     if [[ -z "$1" ]]; then
-        print_warning "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
     #
     if [ -z "$2" ]; then
-        print_warning "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -1977,9 +1978,9 @@ copy_dir()
     # local file_to="${2##*/}"
     if [ ! -d "$dir_to" ]; then
         if [ -n "$dir_to" ]; then
-            if ! make_dir "$dir_to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" ; then
-                print_warning "COPY-DIRECTORY-MAKE" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                write_error   "COPY-DIRECTORY-MAKE" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            if ! make_dir "$dir_to" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" ; then
+                print_error "COPY-DIRECTORY-MAKE" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error "COPY-DIRECTORY-MAKE" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
             fi
         fi
@@ -1990,8 +1991,8 @@ copy_dir()
         print_this "COPY-DIRECTORY-COPY" "[$1] -> [$2] : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         write_log  "COPY-DIRECTORY-COPY" "[$1] -> [$2] : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "COPY-DIRECTORY-ERROR" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "COPY-DIRECTORY-ERROR" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "COPY-DIRECTORY-ERROR" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "COPY-DIRECTORY-ERROR" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         # @FIX if /etc resolv.conf needs its attributes changed
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
@@ -2036,8 +2037,8 @@ remove_file()
         print_this "remove_file $1" " -> $2"
         return 0
     else
-        write_error   "REMOVE-FILE-NOT_FOUND" ": remove_file [$1] @ $2"
-        print_warning "REMOVE-FILE-NOT_FOUND" ": remove_file [$1] @ $2"
+        write_error "REMOVE-FILE-NOT_FOUND" ": remove_file [$1] @ $2"
+        print_error "REMOVE-FILE-NOT_FOUND" ": remove_file [$1] @ $2"
         return 1
     fi
 } 
@@ -2075,32 +2076,32 @@ copy_file()
     # 
     if [ ! -f "$1" ]; then
         if [[ "${EXCLUDE_FILE_WARN[@]}" != *"$1"* ]]; then
-            write_error "File Not Found! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "File Not Found! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "File Not Found! $1 to $2 from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         fi
         return 1
     fi
     if [ -z "$2" ]; then # Check for Empty
-        write_error "Path Emtpy! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "Path Emtpy! copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Path Emtpy! $1 to $2 from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         return 1
     fi
     local dir_to="${2%/*}"
     # local file_to="${2##*/}"
     if [ ! -d "$dir_to" ]; then # Check for Empty
-        make_dir "$dir_to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        make_dir "$dir_to" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     if [[ -n "$1" && -n "$2" ]]; then # Check for Empty
         cp -fv "$1" "$2"
         if [ $? -eq 0 ]; then
-            write_log "copy_file $1 to $2 from $3 at $DATE_TIME" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_log "copy_file $1 to $2 from $3 at $DATE_TIME" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         else
-            write_error "copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "copy_file $1 to $2 failed to copy file from $3 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$1 to $2 from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
             return 1
         fi
     else
-        write_error "Empty: copy_file [$1] to [$2] failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "Empty: copy_file [$1] to [$2] failed to copy file from $3 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Empty: [$1] to [$2] from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         return 1
     fi
@@ -2140,23 +2141,23 @@ copy_files()
     [[ "$#" -ne "4" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
     if ! is_wildcard_file "$1" "$2" ; then # " " | "ext" 
         if [[ "$2" == " " ]]; then
-            write_error "Files Not Found! copy_files->is_wildcard_file [$1] to [$3] failed to copy file from $4 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "Files Not Found! copy_files->is_wildcard_file [$1] to [$3] failed to copy file from $4 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Files Not Found! -rfv [$1] to [$3] from $4 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         else
-            write_error "Files Not Found! copy_files->is_wildcard_file [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "Files Not Found! copy_files->is_wildcard_file [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Files Not Found! -fv [$1*.$2] to [$3] from $4 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         fi
         return 1
     fi
     if [[ -z "$3" ]]; then # Check for Empty
-        write_error "Path Emtpy! copy_files $1 to $3 failed to copy file from $4 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "Path Emtpy! copy_files $1 to $3 failed to copy file from $4 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Path Emtpy! $1 to $3 from $4 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         return 1
     fi
     local dir_to="${3%/*}"
     # local file_to="${3##*/}"
     if [ ! -d "$dir_to" ]; then  # Check for Empty
-        make_dir "$dir_to" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        make_dir "$dir_to" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     if [[ -n "$1" && -n "$3" ]]; then  # Check for Empty
         echo -e "${BWhite} copy_files [$1*.$2] to [$3] ${White}"
@@ -2167,22 +2168,22 @@ copy_files()
         fi
         if [ $? -eq 0 ]; then
             if [[ "$2" == " " ]]; then
-                write_log "copy_files -rfv [$1.] to [$3] from $4 at $DATE_TIME" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_log "copy_files -rfv [$1.] to [$3] from $4 at $DATE_TIME" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             else
-                write_log "copy_files -rfv [$1*.$2] to [$3] from $4 at $DATE_TIME" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_log "copy_files -rfv [$1*.$2] to [$3] from $4 at $DATE_TIME" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
         else
-            print_warning "copy_files -rfv [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "copy_files -rfv [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             if [[ "$2" == " " ]]; then
-                write_error "copy_files -rfv [$1.] to [$3] failed to copy file from $4." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error "copy_files -rfv [$1.] to [$3] failed to copy file from $4." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             else
-                write_error "copy_files -rfv [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error "copy_files -rfv [$1*.$2] to [$3] failed to copy file from $4 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$1*.$2 to $3 from $4 returned $TEMP (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
             return 1
         fi
     else
-        write_error "Empty: copy_files [$1*.$2] to [$2] failed to copy file from $3 at $DATE_TIME." ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "Empty: copy_files [$1*.$2] to [$2] failed to copy file from $3 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Empty: [$1*.$2] to [$2] from $3 (: $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO)"; fi
         return 1
     fi
@@ -2256,7 +2257,7 @@ fi
 comment_file()
 {
     [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
-    [[ ! -f "$2" ]] && (print_warning "COMMENT-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; return 1)
+    [[ ! -f "$2" ]] && (print_error "COMMENT-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; return 1)
     sed -i 's/^'${1}'/#'${1}'/g' "$2"
     return "$?"
 }
@@ -2265,7 +2266,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     if comment_file "Defaults:${USERNAME}" "${FULL_SCRIPT_PATH}/Test/Target/Source/sudoers" ; then
         print_info "TEST-FUNCTION-PASSED" "comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "TEST-FUNCTION-FAILED" "comment_file @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "TEST-FUNCTION-FAILED" "comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 fi
 # -----------------------------------------------------------------------------
@@ -2290,7 +2291,7 @@ fi
 un_comment_file()
 {
     [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
-    [[ ! -f "$2" ]] && (print_warning "COMMENT-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; return 1)
+    [[ ! -f "$2" ]] && (print_error "COMMENT-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; return 1)
     sed -i 's/^#'${1}'/'${1}'/g' "$2"           
     return "$?"
 }
@@ -2299,7 +2300,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     if un_comment_file "#Defaults:${USERNAME}" "${FULL_SCRIPT_PATH}/Test/Target/Source/sudoers" ; then
         print_info "TEST-FUNCTION-PASSED" "un_comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "TEST-FUNCTION-FAILED" "un_comment_file @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "TEST-FUNCTION-FAILED" "un_comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 fi
 # -----------------------------------------------------------------------------
@@ -2335,16 +2336,16 @@ add_option()
                 sed -i '/'${2}'/ s_$_'${3}'_' ${1}
                 return "$?"
             else
-                print_warning "ADD-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                write_error   "ADD-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_error "ADD-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error "ADD-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
         else
-            print_warning "ADD-OPTION-ERROR" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            write_error   "ADD-OPTION-ERROR" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "ADD-OPTION-ERROR" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "ADD-OPTION-ERROR" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     else
-        print_warning "ADD-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "ADD-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "ADD-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "ADD-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -2356,7 +2357,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_string_in_file "${FULL_SCRIPT_PATH}/Test/Target/Source/kdmrc" ",/usr/share/xsessions" ; then
         print_info "TEST-FUNCTION-PASSED" "add_option @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "TEST-FUNCTION-FAILED" "add_option @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "TEST-FUNCTION-FAILED" "add_option @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 fi
 #}}}
@@ -2399,16 +2400,16 @@ replace_option()
                 #debugger 0
                 return "$?"
             else
-                print_warning "REPLACE-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                write_error   "REPLACE-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_error "REPLACE-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error "REPLACE-OPTION-SF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             fi
         else
-            print_warning "REPLACE-OPTION-ERROR"
-            write_error   "REPLACE-OPTION-ERROR" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "REPLACE-OPTION-ERROR"
+            write_error "REPLACE-OPTION-ERROR" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     else
-        print_warning "REPLACE-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        write_error   "REPLACE-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "REPLACE-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "REPLACE-OPTION-FNF" "$1 - $2 - $3 - Package: $4 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -2418,7 +2419,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_string_in_file "${FULL_SCRIPT_PATH}/Test/Target/Source/kdmrc" "AllowClose=true" ; then
         print_info "TEST-FUNCTION-PASSED" "replace_option @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "TEST-FUNCTION-FAILED" "replace_option @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "TEST-FUNCTION-FAILED" "replace_option @ $(basename $BASH_SOURCE) : $LINENO"
     fi
 fi
 #}}}
@@ -2457,6 +2458,7 @@ make_file()
         fi
     else
         write_error "MAKE-FILE-FAILED" "$1 # $2 : -n : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "MAKE-FILE-FAILED" "$1 # $2 : -n : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "Empty: [$1] at $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         return 1
     fi
@@ -2487,12 +2489,14 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
     localize_info "SAVE-ARRAY-DESC"  "Save Array."
     localize_info "SAVE-ARRAY-NOTES" "None."
+    localize_info "SAVE-ARRAY-ERROR" "Error Saving Array."
 fi
 # -------------------------------------
 save_array()
 {
     [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
-    make_dir "${2}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${2}" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    touch "${2}/$3"
     local -a array=("${!1}")
     local -i total="${#array[@]}"
     for (( i=0; i<${total}; i++ )); do
@@ -2502,6 +2506,12 @@ save_array()
             echo "${array[$i]}" >> "${2}/$3" # Append
         fi
     done
+    if [ ! -f "${2}/$3" ]; then
+        write_error "SAVE-ARRAY-ERROR" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "SAVE-ARRAY-ERROR" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+        return 1
+    fi
     return 0
 }
 # -------------------------------------
@@ -2752,17 +2762,17 @@ add_menu_item()
     #
     if [[ -z "${cba}" ]]; then
         cba=0
-        write_error "add_menu_item checkbox null value is wrong! Menu Description: $4 " ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "add_menu_item checkbox null value is wrong! Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     if ! is_number "${cba}" ; then
         cba=0
-        write_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     #
     local -a arrayTheme=("${!8}")     # Theme Array 
     local -i total_theme="${#arrayTheme[@]}"
     if [[ "$total_theme" -ne 3 ]]; then
-        write_error "add_menu_item MenuTheme_Array should have 3 elements: total=$total Menu Description: $4 " ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "add_menu_item MenuTheme_Array should have 3 elements: total=$total Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         arrayTheme[0]="${Yellow}"
         arrayTheme[1]="${White}"
         arrayTheme[2]=")"
@@ -2967,7 +2977,7 @@ get_index()
             return 0
         fi
     done
-    write_error "FAILED:only use this if you know the record exist in get_index [$1] [$2]; check  " ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    write_error "FAILED:only use this if you know the record exist in get_index [$1] [$2]; check  " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     pause_function "FAILED:only use this if you know the record exist in get_index [$1] [$2] at line $LINENO" 
     exit 1
 }    
@@ -3139,13 +3149,12 @@ fi
 clear_logs()
 {
     echo "Clearing Log Files..."
-    make_dir "$LOG_PATH"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "$MENU_PATH"   ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "$CONFIG_PATH" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "$LOG_PATH"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "$MENU_PATH"   "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "$CONFIG_PATH" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     echo "Creaded Log Folders"
-    local LOG_DATE_TIME=$(date2stamp `date`)    
-    copy_file "${ERROR_LOG}"    "${ERROR_LOG}.${LOG_DATE_TIME}.log"    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file "${ACTIVITY_LOG}" "${ACTIVITY_LOG}.${LOG_DATE_TIME}.log" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${ERROR_LOG}"    "10-${ERROR_LOG}.${LOG_DATE_TIME}.log"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${ACTIVITY_LOG}" "11-${ACTIVITY_LOG}.${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     echo "# Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "$ERROR_LOG"
     echo "# Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME."  > "$ACTIVITY_LOG"
     echo "Logs Cleared"
@@ -3343,8 +3352,8 @@ add_group()
             write_log "ADD-GROUP-OK" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"    
             return 0
         else
-            print_warning "ADD-GROUP-FAIL" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            write_error   "ADD-GROUP-FAIL" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"    
+            print_error "ADD-GROUP-FAIL" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            write_error "ADD-GROUP-FAIL" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"    
             return 1
         fi
     fi
@@ -3383,7 +3392,7 @@ add_user_2_group()
 {
     if ! is_user_in_group "$1" ; then
         if gpasswd -a "${USERNAME}" "$1" ; then
-            write_log "add_user_2_group $1" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"    
+            write_log "add_user_2_group $1" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"    
             return 0
         else
             write_error "ADD-USER-2-GROUP-ERROR" ": gpasswd -a ${USERNAME} $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"    
@@ -3493,7 +3502,7 @@ get_country_codes()
     print_line
     print_this $"Uzbekistan    = UZ | Viet Nam = VN"
     print_line
-    print_warning "GET-COUNTRY-CODES-WARN"
+    print_error "GET-COUNTRY-CODES-WARN"
     #
     read_input_default "GET-COUNTRY-CODES-INPUT" "${LOCALE#*_}"
     COUNTRY_CODE=`echo "$OPTION" | tr '[:lower:]' '[:upper:]'`  # Upper case only
@@ -3816,7 +3825,7 @@ select_create_user()
     PS3="$prompt1"
     print_info "SELECT-CREATE-USER-AVAILABLE-USERS"
     if [[ "$(( ${#users[@]} ))" -gt 0 ]]; then
-        print_warning localize "SUDO-WARNING" ""
+        print_error localize "SUDO-WARNING" ""
     else
         echo ""
     fi
@@ -3850,11 +3859,12 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
     localize_info "RESTART-INTERNET-DESC"  "Restart Internet."
-    localize_info "RESTART-INTERNET-NOTES" "Assumes system.d."
+    localize_info "RESTART-INTERNET-NOTES" "Assumes system.d; uses systemctl restart; needs generic functions for other then Arch Linux calls."
 fi
 # -------------------------------------
 restart_internet()
 {
+    # @FIX Works in Arch Linux; if you make this Generic; make a case for it
     if [[ "$NETWORK_MANAGER" == "networkmanager" ]]; then
         systemctl restart NetworkManager.service
     elif [[ "$NETWORK_MANAGER" == "wicd" ]]; then
@@ -3924,7 +3934,7 @@ fix_network()
         if ! is_internet ; then
             sleep 10
             if ! is_internet ; then
-                print_warning "FIX-NETWORK-TRIED-TO-FIX" # if you see this; 20 seconds wasn't long enough, add another 10 for a full half minute
+                print_error "FIX-NETWORK-TRIED-TO-FIX" # if you see this; 20 seconds wasn't long enough, add another 10 for a full half minute
                 return 1
             fi
         fi
@@ -4412,7 +4422,7 @@ configure_timezone()
         if [[ "$DRIVE_FORMATED" -eq 1 ]]; then
             touch ${MOUNTPOINT}/etc/timezone
             echo "${ZONE}/${SUBZONE}" > ${MOUNTPOINT}/etc/timezone
-            copy_file ${MOUNTPOINT}/etc/timezone "${FULL_SCRIPT_PATH}/etc/timezone" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            copy_file ${MOUNTPOINT}/etc/timezone "${FULL_SCRIPT_PATH}/etc/timezone" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         else
             echo "${ZONE}/${SUBZONE}" > "${FULL_SCRIPT_PATH}/etc/timezone" 
         fi
@@ -4445,14 +4455,6 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "PRINT-HELP-NOTES" "This Allows easy reading and Look up of all Functions in Program."
     localize_info "PRINT-HELP-TITLE" "Arch Wizard Help File Generated on"
     localize_info "PRINT-HELP-FUNCT" "Function"
-    # Help file Localization
-    localize_info "CHECK-ARG-USAGE"     "check_arg 1->(Function Name) 2->(Number of Arguments) 3->(Total Arguments) 3->(&#36;LINENO)"
-    localize_info "CHECK-ARG-DESC"      "check arguments for correct number passed into function"
-    localize_info "CHECK-ARG-NOTES"     "Make sure this function comes at the top of the stack."
-    localize_info "CHECK-ARG-ERROR-1"   "check_arg requires 4 arguments: check_arg 1->'Function Name' 2->'Number of Arguments' 3->'Total Arguments' 2->'&#36;LINENO'"
-    localize_info "CHECK-ARG-ERROR-2"   "Error Wrong number of Arguments passed in; function name"
-    localize_info "CHECK-ARG-EXPECTING" "expecting"
-    localize_info "CHECK-ARG-FOUND"     "found"
     # Help file Localization
     localize_info "TRIM-DESC"   "Remove space on Right and Left of string"
     localize_info "TRIM-NOTES"  "MY_SPACE=' Left and Right '<br />${HELP_TAB}MY_SPACE=&#36;(trim &#34;&#36;MY_SPACE&#34;)<br />${HELP_TAB}echo &#34;|&#36;(trim &#34;&#36;MY_SPACE&#34;)|&#34;"
