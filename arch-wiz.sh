@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="4 Jan 2013 16:33"
+# LAST_UPDATE="11 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -159,11 +159,11 @@ install_base_system()
     #
     PACSTRAP_PACKAGES="base base-devel sudo wget dbus git systemd systemd-sysvcompat haveged btrfs-progs xorg-xauth pkgfile $PACMAN_OPTIMIZE_PACKAGES $NETWORK_MANAGER $extras"
     #
-    copy_dir "${FULL_SCRIPT_PATH}/etc/" "${MOUNTPOINT}/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_dir "${FULL_SCRIPT_PATH}/etc/" "${MOUNTPOINT}/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     create_custom_repo 1
     #
-    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Fresh Copy of pacman.conf
+    copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Fresh Copy of pacman.conf
     #        
     
     #pacman_args+=(--cachedir="$newroot/var/cache/pacman/pkg")
@@ -173,7 +173,7 @@ install_base_system()
     
     if ! pacstrap "${MOUNTPOINT}" ${PACSTRAP_PACKAGES} ; then # do not quote PACSTRAP_PACKAGES
         write_error    "INSTALL-BASE-SYSTEM-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        print_warning  "INSTALL-BASE-SYSTEM-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error  "INSTALL-BASE-SYSTEM-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         pause_function "install_base_system FAILED : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         exit 1
     fi
@@ -183,7 +183,7 @@ install_base_system()
     #if [[ "$USE_PACMAN" -eq 1 ]]; then
     #    pacstrap ${MOUNTPOINT} "$PACSTRAP_PACKAGES" 
     #else
-    #    copy_file "${FULL_SCRIPT_PATH}/pacstrap2" "/usr/bin/" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #    copy_file "${FULL_SCRIPT_PATH}/pacstrap2" "/usr/bin/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #    #
     #    pacstrap2 ${MOUNTPOINT} "$PACSTRAP_PACKAGES"
     #fi
@@ -196,7 +196,7 @@ install_base_system()
     echo "KEYMAP=$KEYMAP" > ${MOUNTPOINT}/etc/vconsole.conf
     echo "FONT=\"\""     >> ${MOUNTPOINT}/etc/vconsole.conf
     echo "FONT_MAP=\"\"" >> ${MOUNTPOINT}/etc/vconsole.conf
-    copy_file ${MOUNTPOINT}/etc/vconsole.conf "${FULL_SCRIPT_PATH}/etc/vconsole.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file ${MOUNTPOINT}/etc/vconsole.conf "${FULL_SCRIPT_PATH}/etc/vconsole.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     mv -f "${MOUNTPOINT}/${CUSTOM_PACKAGES_NAME}/" "${MOUNTPOINT}${MOUNTPOINT}/${CUSTOM_PACKAGES_NAME}/"
     print_info "INSTALL-BASE-SYSTEM-COMPLETE"
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -234,11 +234,11 @@ configure_aur_helper()
             pacman -D --asdeps yajl namcap
             if ! aur_download_packages "package-query yaourt" ; then
                 write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_error  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 if ! aur_download_packages "package-query yaourt" ; then
                     write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                    print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    print_error  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     return 1
                 fi    
@@ -247,8 +247,8 @@ configure_aur_helper()
             fi
             pacman -D --asdeps package-query
             if ! check_package "yaourt" ; then
-                print_warning "CONFIGURE-AUR-HELPER-NOT-INSTALLED" ": $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                write_error   "CONFIGURE-AUR-HELPER-NOT-INSTALLED" ": $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_error "CONFIGURE-AUR-HELPER-NOT-INSTALLED" ": $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_error "CONFIGURE-AUR-HELPER-NOT-INSTALLED" ": $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 # @FIX how to fix this
                 pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 return 1
@@ -263,7 +263,7 @@ configure_aur_helper()
             if ! check_package "packer" ; then
                 echo "Packer not installed. EXIT now"
                 write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_error  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 return 1
             fi
@@ -280,7 +280,7 @@ configure_aur_helper()
             if ! check_package "pacaur" ; then
                 echo "Pacaur not installed. EXIT now"
                 write_error    "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                print_warning  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                print_error  "CONFIGURE-AUR-HELPER-NOT-INSTALLED" " $AUR_HELPER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                 return 1
             fi
@@ -297,7 +297,7 @@ if [[ "$RUN_TEST" -eq 2 ]]; then
     if aur_download_packages "package-query yaourt" ; then
         print_info "TEST-FUNCTION-PASSED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "TEST-FUNCTION-FAILED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
+        print_error "TEST-FUNCTION-FAILED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
     fi  
 fi
 #}}}
@@ -326,7 +326,7 @@ configure_sudo()
 {
     # sudo is installed during pacstrap
     if [[ ! -f  "${MOUNTPOINT}/etc/sudoers-old" ]]; then                            # Used to get the lastest sudoers file from ISO boot OS
-        copy_file "/etc/sudoers" "${MOUNTPOINT}/etc/sudoers-old" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file "/etc/sudoers" "${MOUNTPOINT}/etc/sudoers-old" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         if ! is_string_in_file "${MOUNTPOINT}/etc/sudoers" "$FILE_SIGNATURE" ; then # Only make changes once
             echo "$FILE_SIGNATURE"                                            >> ${MOUNTPOINT}/etc/sudoers
             ## Uncomment to allow members of group wheel to execute any command
@@ -392,16 +392,16 @@ run_task_manager()
             # @FIX test return logic; 0 = success; 
             eval "${TASKMANAGER[$index]}"
             if [ "$?" -eq 0 ]; then
-                write_log "$TASKMANAGER_NAME - ${TASKMANAGER[$index]}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                write_log "$TASKMANAGER_NAME - ${TASKMANAGER[$index]}" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
             else
-                write_error   "RUN-TASK-MANAGER-ERROR" " $TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
-                print_warning "RUN-TASK-MANAGER-ERROR" " $TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
+                write_error "RUN-TASK-MANAGER-ERROR" " $TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
+                print_error "RUN-TASK-MANAGER-ERROR" " $TASKMANAGER_NAME - ${TASKMANAGER[$index]} -> $(basename $BASH_SOURCE) : $LINENO"
                 if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "eval TASKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO (line by line errors)"; fi
             fi
         done
         # Copy all files that can be changed by Task Manager
-        copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
-        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+        copy_file "/etc/pacman.conf" "${MOUNTPOINT}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
+        copy_file "/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Get Copy of pacman.conf
         REFRESH_REPO=1
         refresh_pacman
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "eval TASKMANAGER : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -558,34 +558,6 @@ create_script_lib()
     echo "#}}}" >> ${MOUNTPOINT}/install_scripts
     echo "#" >> ${MOUNTPOINT}/install_scripts
     #
-    echo "# CHECK PACKAGE {{{" >> ${MOUNTPOINT}/install_scripts
-    echo "check_package()" >> ${MOUNTPOINT}/install_scripts
-    echo "{" >> ${MOUNTPOINT}/install_scripts
-    echo "    # check if a package is already installed" >> ${MOUNTPOINT}/install_scripts
-    echo "    for PACKAGE in \$1; do" >> ${MOUNTPOINT}/install_scripts
-    echo "        pacman -Q \"\$PACKAGE\" &> /dev/null && return 0;" >> ${MOUNTPOINT}/install_scripts
-    echo "    done" >> ${MOUNTPOINT}/install_scripts
-    echo "    return 1" >> ${MOUNTPOINT}/install_scripts
-    echo "}" >> ${MOUNTPOINT}/install_scripts
-    echo "#}}}" >> ${MOUNTPOINT}/install_scripts    
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    #
-    echo "# PACKAGE REMOVE {{{" >> ${MOUNTPOINT}/install_scripts
-    echo "package_remove()" >> ${MOUNTPOINT}/install_scripts
-    echo "{" >> ${MOUNTPOINT}/install_scripts 
-    echo "    REMOVE_PACKAGES=\" \"" >> ${MOUNTPOINT}/install_scripts
-    echo "    for PACKAGE in \$1; do" >> ${MOUNTPOINT}/install_scripts
-    echo "        if check_package \"\$PACKAGE\" ; then" >> ${MOUNTPOINT}/install_scripts
-    echo "            REMOVE_PACKAGES=\"\$REMOVE_PACKAGES \$PACKAGE\"" >> ${MOUNTPOINT}/install_scripts
-    echo "        fi" >> ${MOUNTPOINT}/install_scripts
-    echo "    done" >> ${MOUNTPOINT}/install_scripts
-    echo "    REMOVE_PACKAGES=\$(trim \"\$REMOVE_PACKAGES\")" >> ${MOUNTPOINT}/install_scripts
-    echo "    for PACKAGE in \$REMOVE_PACKAGES; do" >> ${MOUNTPOINT}/install_scripts
-    echo "        pacman -Rcsn --noconfirm \"\$PACKAGE\"" >> ${MOUNTPOINT}/install_scripts
-    echo "    done" >> ${MOUNTPOINT}/install_scripts
-    echo "} #}}}" >> ${MOUNTPOINT}/install_scripts
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    #
     echo "# PRINT LINE {{{" >> ${MOUNTPOINT}/install_scripts
     echo "print_line()" >> ${MOUNTPOINT}/install_scripts
     echo "{" >> ${MOUNTPOINT}/install_scripts
@@ -624,71 +596,6 @@ create_script_lib()
     echo "    echo -e \"\${BRed}\$1\${White}\\n\" | fold -sw \$(( \$T_COLS - 1 ))" >> ${MOUNTPOINT}/install_scripts
     echo "}" >> ${MOUNTPOINT}/install_scripts 
     echo "#}}}" >> ${MOUNTPOINT}/install_scripts   
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    #
-    echo "#PACKMAN PACKAGE SIGNING {{{" >> ${MOUNTPOINT}/install_scripts
-    echo "configure_pacman_package_signing()" >> ${MOUNTPOINT}/install_scripts
-    echo "{" >> ${MOUNTPOINT}/install_scripts
-    echo "    if [[ ! -d /etc/pacman.d/gnupg ]]; then" >> ${MOUNTPOINT}/install_scripts
-    echo "        print_title \"PACMAN PACKAGE SIGNING - https://wiki.archlinux.org/index.php/Pacman-key\"" >> ${MOUNTPOINT}/install_scripts
-    echo "        print_info \"Pacman-key is a new tool available with pacman 4. It allows the user to manage pacmans list of trusted keys in the new package signing implementation.\"" >> ${MOUNTPOINT}/install_scripts
-    echo "        haveged -w 1024" >> ${MOUNTPOINT}/install_scripts
-    echo "        pacman-key --init --keyserver pgp.mit.edu" >> ${MOUNTPOINT}/install_scripts
-    echo "        pacman-key --populate archlinux" >> ${MOUNTPOINT}/install_scripts
-    echo "        killall haveged" >> ${MOUNTPOINT}/install_scripts
-    echo "        package_remove \"haveged\"" >> ${MOUNTPOINT}/install_scripts
-    echo "    fi" >> ${MOUNTPOINT}/install_scripts
-    echo "    echo \$\"Pacman Package Signing Configured\"" >> ${MOUNTPOINT}/install_scripts
-    echo "}" >> ${MOUNTPOINT}/install_scripts
-    echo "#}}}" >> ${MOUNTPOINT}/install_scripts
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    #
-    echo "#SYSTEM UPDATE {{{" >> ${MOUNTPOINT}/install_scripts
-    echo "system_upgrade()" >> ${MOUNTPOINT}/install_scripts
-    echo "{" >> ${MOUNTPOINT}/install_scripts
-    echo "    print_title \"UPDATING YOUR SYSTEM\"" >> ${MOUNTPOINT}/install_scripts
-    echo "    pacman -Syu --noconfirm" >> ${MOUNTPOINT}/install_scripts
-    echo "    REFRESH_REPO=0" >> ${MOUNTPOINT}/install_scripts
-    echo "}" >> ${MOUNTPOINT}/install_scripts
-    echo "#}}}" >> ${MOUNTPOINT}/install_scripts
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    #
-    echo "# GET AUR PACKAGES {{{" >> ${MOUNTPOINT}/install_scripts
-    echo "get_aur_packages()" >> ${MOUNTPOINT}/install_scripts
-    echo "{ #{{{" >> ${MOUNTPOINT}/install_scripts
-    echo "    #" >> ${MOUNTPOINT}/install_scripts
-    echo "    echo \"Downloading: \$1.tar.gz from https://aur.archlinux.org/packages/\${1:0:2}/\$1/\$1.tar.gz\"" >> ${MOUNTPOINT}/install_scripts
-    echo "    curl -o \$1.tar.gz https://aur.archlinux.org/packages/\${1:0:2}/\$1/\$1.tar.gz" >> ${MOUNTPOINT}/install_scripts
-    echo "    if [ -f \"\$1.tar.gz\" ]; then" >> ${MOUNTPOINT}/install_scripts
-    echo "        if tar zxvf \$1.tar.gz ; then" >> ${MOUNTPOINT}/install_scripts
-    echo "            rm \$1.tar.gz" >> ${MOUNTPOINT}/install_scripts
-    echo "            cd \$1" >> ${MOUNTPOINT}/install_scripts
-    echo "            makepkg -si --noconfirm" >> ${MOUNTPOINT}/install_scripts
-    echo "         else" >> ${MOUNTPOINT}/install_scripts
-    echo "             echo \"File Currupted: curl -o \$1.tar.gz https://aur.archlinux.org/packages/\${1:0:2}/\$1/\$1.tar.gz\"" >> ${MOUNTPOINT}/install_scripts
-    echo "         fi" >> ${MOUNTPOINT}/install_scripts
-    echo "    else" >> ${MOUNTPOINT}/install_scripts
-    echo "        echo \"File Not Found: curl -o \$1.tar.gz https://aur.archlinux.org/packages/\${1:0:2}/\$1/\$1.tar.gz\"" >> ${MOUNTPOINT}/install_scripts
-    echo "    fi" >> ${MOUNTPOINT}/install_scripts
-    echo "}" >> ${MOUNTPOINT}/install_scripts
-    echo "#}}}" >> ${MOUNTPOINT}/install_scripts
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    echo "export -f get_aur_packages" >> ${MOUNTPOINT}/install_scripts
-    #
-    echo "package_install()" >> ${MOUNTPOINT}/install_scripts
-    echo "{ #{{{" >> ${MOUNTPOINT}/install_scripts
-    echo "    if [[ \$REFRESH_REPO -eq 1 ]]; then" >> ${MOUNTPOINT}/install_scripts
-    echo "        echo \"Update Pacman Database.\"" >> ${MOUNTPOINT}/install_scripts
-    echo "        pacman -Syy" >> ${MOUNTPOINT}/install_scripts
-    echo "        REFRESH_REPO=0" >> ${MOUNTPOINT}/install_scripts
-    echo "    fi" >> ${MOUNTPOINT}/install_scripts
-    echo "    # install packages using pacman" >> ${MOUNTPOINT}/install_scripts
-    echo "    for PACKAGE in \$1; do" >> ${MOUNTPOINT}/install_scripts
-    echo "        if ! check_package \"\$PACKAGE\" ; then" >> ${MOUNTPOINT}/install_scripts
-    echo "            pacman -S --noconfirm --needed \"\$PACKAGE\"" >> ${MOUNTPOINT}/install_scripts 
-    echo "        fi" >> ${MOUNTPOINT}/install_scripts
-    echo "    done" >> ${MOUNTPOINT}/install_scripts
-    echo "} #}}}" >> ${MOUNTPOINT}/install_scripts
     echo "#" >> ${MOUNTPOINT}/install_scripts
     #
     echo "# GET SECRET {{{" >> ${MOUNTPOINT}/install_scripts
@@ -751,7 +658,7 @@ create_script_boot()
     # Install all software need to do this task; i.e. hostnamectl requires systemd, also it seems systemd will not work till reboot
     # echo "pacman -S " >> ${MOUNTPOINT}/install_scripts
     #
-    echo "print_info \$\"Mount boot partitions...\"" >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"Mount boot partitions...\"" >> ${MOUNTPOINT}/install_scripts
     # remount here or grub gets confused
     # Always on the Second Partition, but lets keep track
     # echo "mkdir -p /boot" > ${MOUNTPOINT}/install_scripts
@@ -771,7 +678,7 @@ create_script_boot()
     #        
     # Resolv Nameservers
     if [[ "$IS_CUSTOM_NAMESERVER" -eq 1 ]]; then
-        echo "print_info \$\"Resolv...\"" >> ${MOUNTPOINT}/install_scripts
+        echo "print_info \"Resolv...\"" >> ${MOUNTPOINT}/install_scripts
         #echo "mkdir -p /etc" >> ${MOUNTPOINT}/install_scripts
         echo "if [[ -f /etc/resolv.conf ]]; then" >> ${MOUNTPOINT}/install_scripts
         echo "   chattr -i /etc/resolv.conf" >> ${MOUNTPOINT}/install_scripts # Un Write Protect it
@@ -806,7 +713,7 @@ create_script_boot()
     fi
     echo "touch /etc/locale.conf" >> ${MOUNTPOINT}/install_scripts
     if [[ "${#LOCALE_ARRAY}" -ne 0 ]]; then
-        echo "print_info \$\"Locale...\"" >> ${MOUNTPOINT}/install_scripts
+        echo "print_info \"Locale...\"" >> ${MOUNTPOINT}/install_scripts
         total="${#LOCALE_ARRAY[@]}"
         for (( index=0; index<${total}; index++ )); do
             if [[ "$index" -eq 0 ]]; then
@@ -824,39 +731,37 @@ create_script_boot()
     # echo "echo 'LANG=\"${LOCALE}.UTF-8\"' > /etc/locale.conf" >> ${MOUNTPOINT}/install_scripts
     # or   sed -i '/'$LOCALE'/s/^#//' /etc/locale.gen
     # echo "sed -i \"s/#(${LOCALE}\.UTF-8.*$)/\1/\" /etc/locale.gen" >> ${MOUNTPOINT}/install_scripts
-    echo "print_info \$\"Locale-gen...\"" >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"Locale-gen...\"" >> ${MOUNTPOINT}/install_scripts
     echo "locale-gen" >> ${MOUNTPOINT}/install_scripts 
     if [[ "$DEBUGGING" -eq 1 ]]; then 
         echo "pause_function \"locale-gen \$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts; 
     fi
     # hwclock
-    echo "print_info \$\"hwclock...\"" >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"hwclock...\"" >> ${MOUNTPOINT}/install_scripts
     echo "hwclock --systohc --utc" >> ${MOUNTPOINT}/install_scripts
     # mkinitcpio
-    echo "print_info \$\"mkinitcpio...\"" >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"mkinitcpio...\"" >> ${MOUNTPOINT}/install_scripts
     echo "mkinitcpio -p linux" >> ${MOUNTPOINT}/install_scripts # disable configure_mkinitcpio
     if [[ "$DEBUGGING" -eq 1 ]]; then 
         echo "pause_function \"mkinitcpio \$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts; 
     fi
     # Add passwords and Users
     echo "echo ''" >> ${MOUNTPOINT}/install_scripts
-    echo "echo ''" >> ${MOUNTPOINT}/install_scripts
-    echo "print_info \$\"Setup Root Password\"" >> ${MOUNTPOINT}/install_scripts
-    echo "get_secret 'root_user'" >> ${MOUNTPOINT}/install_scripts
-    echo "" >> ${MOUNTPOINT}/install_scripts
-    echo "echo ''" >> ${MOUNTPOINT}/install_scripts
-    echo "echo ''" >> ${MOUNTPOINT}/install_scripts
-    echo "print_info \$\"Setup Group...\"" >> ${MOUNTPOINT}/install_scripts
-    echo "groupadd \"\$USERNAME\"" >> ${MOUNTPOINT}/install_scripts
-    echo "echo ''" >> ${MOUNTPOINT}/install_scripts
-    echo "print_info \$\"Setup User...\"" >> ${MOUNTPOINT}/install_scripts
+    echo "echo ''"                              >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"Setup Root Password\"" >> ${MOUNTPOINT}/install_scripts
+    echo "get_secret 'root_user'"               >> ${MOUNTPOINT}/install_scripts
+    echo "echo ''"                              >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"Setup Group...\""      >> ${MOUNTPOINT}/install_scripts
+    echo "groupadd \"\$USERNAME\""              >> ${MOUNTPOINT}/install_scripts
+    echo "echo ''"                              >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"Setup User...\""       >> ${MOUNTPOINT}/install_scripts
     # if ! grep $USERNAME /etc/passwd
     # optical,video,audio,scanner,games,lp,power,storage
     echo "useradd -m -g \"\$USERNAME\" -G \"\${USERNAME}\",wheel,users -s /bin/bash \"\$USERNAME\"" >> ${MOUNTPOINT}/install_scripts
     if [[ "$DEBUGGING" -eq 1 ]]; then 
         echo "pause_function \"useradd -m -g \'$USERNAME\' -G \'${USERNAME}\',wheel,users -s /bin/bash \'$USERNAME\' at line \$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts
     fi
-    echo "print_info \$\"Setup User Password...\"" >> ${MOUNTPOINT}/install_scripts
+    echo "print_info \"Setup User Password...\"" >> ${MOUNTPOINT}/install_scripts
     echo "get_secret 'user_user'" >> ${MOUNTPOINT}/install_scripts
     if [[ "$DEBUGGING" -eq 1 ]]; then 
         echo "pause_function \"get_secret 'user_user' at line \$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts
@@ -872,7 +777,7 @@ create_script_boot()
     if [[ "$DEBUGGING" -eq 1 ]]; then 
         echo "pause_function \"Add User 2 Group: \$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts
     fi
-    #echo "print_info \$\"Setup User Information...\"" >> ${MOUNTPOINT}/install_scripts
+    #echo "print_info \"Setup User Information...\"" >> ${MOUNTPOINT}/install_scripts
     #echo "echo 'To enter user information for the GECOS field (e.g. the full user name)'" >> ${MOUNTPOINT}/install_scripts
     #echo "chfn \$USERNAME" >> ${MOUNTPOINT}/install_scripts
     #echo "echo ''" >> ${MOUNTPOINT}/install_scripts
@@ -954,95 +859,59 @@ create_script_log()
     # Run from arch-chroot
     # 
     #
-    echo "print_info \$\"Writing log files...\"" >> ${MOUNTPOINT}/install_scripts
-    echo "make_dir \"$LOG_PATH\"  \"\$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts
-    echo "echo '# $TEXT_SCRIPT_ID' > $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    print_info "Writing log files..."
+    make_dir "$LOG_PATH"  "$FUNCNAME @ $(basename $BASH_SOURCE) $LINENO" 
+    echo '# $TEXT_SCRIPT_ID' > $SCRIPT_LOG
     # locale
-    echo "echo '## /etc/locale.conf ###########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/locale.conf >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "echo '## /etc/locale.gen ############################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/locale.gen >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/locale.conf ###########################################################' >> $SCRIPT_LOG
+    cat /etc/locale.conf >> $SCRIPT_LOG
+    echo '## /etc/locale.gen ############################################################' >> $SCRIPT_LOG
+    cat /etc/locale.gen >> $SCRIPT_LOG
     if [[ "$BOOT_SYSTEM_TYPE" -eq 0 ]]; then # Grub2
         if [[ "$UEFI" -eq 0 ]]; then # UEFI=0, BIOS=1 and NONE=2
-            echo "echo '## /boot/grub/grub.cfg ########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-            echo "cat /boot/grub/grub.cfg >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-            echo "echo '## /boot/grub_uefi.log ########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-            echo "cat /boot/grub_uefi.log >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+            echo '## /boot/grub/grub.cfg ########################################################' >> $SCRIPT_LOG
+            cat /boot/grub/grub.cfg >> $SCRIPT_LOG
+            echo '## /boot/grub_uefi.log ########################################################' >> $SCRIPT_LOG
+            cat /boot/grub_uefi.log >> $SCRIPT_LOG
         fi
     elif [[ "$BOOT_SYSTEM_TYPE" -eq 1 ]]; then # Syslinux
-        echo "echo '## /boot/syslinux/syslinux.cfg ################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-        echo "cat /boot/syslinux/syslinux.cfg" >> ${MOUNTPOINT}/install_scripts
+        echo '## /boot/syslinux/syslinux.cfg ################################################' >> $SCRIPT_LOG
+        cat /boot/syslinux/syslinux.cfg
     fi
     # loadkeys
-    echo "echo '## /etc/vconsole.conf #########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/vconsole.conf >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/vconsole.conf #########################################################' >> $SCRIPT_LOG
+    cat /etc/vconsole.conf >> $SCRIPT_LOG
     # hostname
-    echo "echo '## /etc/hostname ##############################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/hostname >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/hostname ##############################################################' >> $SCRIPT_LOG
+    cat /etc/hostname >> $SCRIPT_LOG
     # hosts
-    echo "echo '## /etc/hosts #################################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/hosts >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/hosts #################################################################' >> $SCRIPT_LOG
+    cat /etc/hosts >> $SCRIPT_LOG
     # pacman.conf
-    echo "echo '## /etc/pacman.conf ###########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/pacman.conf >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/pacman.conf ###########################################################' >> $SCRIPT_LOG
+    cat /etc/pacman.conf >> $SCRIPT_LOG
     # resolv.conf
-    echo "echo '## /etc/resolv.conf ###########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/resolv.conf >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/resolv.conf ###########################################################' >> $SCRIPT_LOG
+    cat /etc/resolv.conf >> $SCRIPT_LOG
     # fstab
-    echo "echo '## /etc/fstab #################################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/fstab >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/fstab #################################################################' >> $SCRIPT_LOG
+    cat /etc/fstab >> $SCRIPT_LOG
     # /etc/dhcpcd.conf
-    echo "echo '## /etc/dhcpcd.conf ###########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/dhcpcd.conf >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/dhcpcd.conf ###########################################################' >> $SCRIPT_LOG
+    cat /etc/dhcpcd.conf >> $SCRIPT_LOG
     # /etc/conf.d/dhcpd
-    echo "echo '## /etc/conf.d/dhcpd ##########################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat /etc/conf.d/dhcpd >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/conf.d/dhcpd ##########################################################' >> $SCRIPT_LOG
+    cat /etc/conf.d/dhcpd >> $SCRIPT_LOG
     # install_scripts
-    echo "echo '## /etc/install_scripts #######################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "cat install_scripts >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
+    echo '## /etc/install_scripts #######################################################' >> $SCRIPT_LOG
+    cat install_scripts >> $SCRIPT_LOG
     #    
-    echo "echo '## END OF LOG #################################################################' >> $SCRIPT_LOG" >> ${MOUNTPOINT}/install_scripts
-    echo "#" >> ${MOUNTPOINT}/install_scripts
-    echo "#" >> ${MOUNTPOINT}/install_scripts
+    echo '## END OF LOG #################################################################' >> $SCRIPT_LOG
+    #
+    #
     if [[ "$DEBUGGING" -eq 1 ]]; then
-        echo "pause_function \"install_scripts has executed and logs written at line \$(basename \$BASH_SOURCE) \$LINENO\"" >> ${MOUNTPOINT}/install_scripts
+        pause_function "install_scripts has executed and logs written at line $(basename $BASH_SOURCE) $LINENO"
     fi
-}
-#}}}
-# -----------------------------------------------------------------------------
-# CREATE INSTALL SCRIPTS {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="create_install_scripts"
-    USAGE="create_install_scripts"
-    DESCRIPTION=$(localize "CREATE-INSTALL-SCRIPTS-DESC")
-    NOTES=$(localize "NONE")
-    AUTHOR="Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "CREATE-INSTALL-SCRIPTS-DESC"  "Create Install Scripts"
-fi
-# -------------------------------------
-create_install_scripts()
-{
-    # NOTE: /boot and /boot/efi (if UEFI) should exist and be mounted, this is done during Drive Preperation so when modprobe efivars will create folders
-    # Create Script to run as arch-chroot
-    create_script_lib
-    if [[ "$1" -eq 1 ]]; then
-        create_script_boot
-        # create_script_software # left here in case Arch Linux ISO boots with systemd running
-    elif [[ "$1" -eq 2 ]]; then
-        create_script_boot
-    # elif [[ "$1" -eq 3 ]]; then create_script_software # left here in case Arch Linux ISO boots with systemd running
-    fi
-    create_script_log
-    #
-    #
-    echo "echo 'You are in arch-chroot, you can make any changes to the OS here.'" >> ${MOUNTPOINT}/install_scripts
-    echo "echo 'Type exit and hit enter when complete.'" >> ${MOUNTPOINT}/install_scripts
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1076,26 +945,29 @@ run_install_scripts()
     #
     create_script_lib
     create_script_boot
-    create_script_log
     # 
     # Run in chroot
     arch-chroot "${MOUNTPOINT}" /install_scripts
+    #
+    make_dir "/home/${USERNAME}/usb/"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
     #
     print_info "RUN-INSTALL-SCRIPTS-SUDOERS"
     configure_sudo
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     #
-    copy_file  ${MOUNTPOINT}/boot/grub_uefi.log "${LOG_PATH}/"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file  ${MOUNTPOINT}/install_scripts    "${FULL_SCRIPT_PATH}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file  ${MOUNTPOINT}/boot/grub_uefi.log "${LOG_PATH}/"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file  ${MOUNTPOINT}/install_scripts    "${FULL_SCRIPT_PATH}" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # Copy all files to root @FIX
-    copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh"       ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_files "$CONFIG_PATH/" "db"              ${MOUNTPOINT}/${USERNAME}/CONFIG/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_files "${LOG_PATH}/"  "log"             ${MOUNTPOINT}/${USERNAME}/LOG/    ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file  ${MOUNTPOINT}/install_scripts     ${MOUNTPOINT}/${USERNAME}/        ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_files "$CONFIG_PATH/" "db"              ${MOUNTPOINT}/${USERNAME}/CONFIG/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_files "${LOG_PATH}/"  "log"             ${MOUNTPOINT}/${USERNAME}/LOG/    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file  ${MOUNTPOINT}/install_scripts     ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #
     rm ${MOUNTPOINT}"/install_scripts"
     # Overwrite all Config files 
-    # copy_dir "${FULL_SCRIPT_PATH}/etc/" ${MOUNTPOINT}/ ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    # copy_file "${FULL_SCRIPT_PATH}"/etc/hosts "/etc/hosts" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    # copy_dir "${FULL_SCRIPT_PATH}/etc/" ${MOUNTPOINT}/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    # copy_file "${FULL_SCRIPT_PATH}"/etc/hosts "/etc/hosts" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # Make sure to delete these files, they have passwords in them
     delete_secret 'user_user'
     delete_secret 'root_user'
@@ -1103,6 +975,7 @@ run_install_scripts()
     print_title "RUN-INSTALL-SCRIPTS-TITLE" 'https://wiki.archlinux.org/index.php/Beginners%27_Guide#Boot_Arch_Linux_Installation_Media'
     print_info "RUN-INSTALL-SCRIPTS-MSG-1"
     print_info "RUN-INSTALL-SCRIPTS-MSG-2"
+    create_script_log
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
 #}}}
@@ -1255,7 +1128,7 @@ gdisk_partition()
     print_info "GDISK-PARTITION-FORMAT-ROOT"
     mkfs -t "$ROOT_FORMAT" -L "ROOT" "/dev/${INSTALL_DEVICE}${ROOT_PARTITION_NO}"                 # Format with user specified format type
     fsck "/dev/${INSTALL_DEVICE}${ROOT_PARTITION_NO}"                                             # Check File System
-    make_dir "$MOUNTPOINT" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                              # Create Folder /mnt
+    make_dir "$MOUNTPOINT" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                              # Create Folder /mnt
     mount -t "$ROOT_FORMAT" "/dev/$INSTALL_DEVICE$ROOT_PARTITION_NO" "$MOUNTPOINT"                # Mount at /mnt
     #
     # Partition HOME
@@ -1263,7 +1136,7 @@ gdisk_partition()
         print_info "GDISK-PARTITION-FORMAT-HOME"
         mkfs -t "$HOME_FORMAT" -L "HOME" "/dev/${INSTALL_DEVICE}${HOME_PARTITION_NO}"             # Format with user specified format type
         fsck "/dev/${INSTALL_DEVICE}${HOME_PARTITION_NO}"                                         # Check File System
-        make_dir "${MOUNTPOINT}/home" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                   # Make Folder /mnt/home
+        make_dir "${MOUNTPOINT}/home" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                   # Make Folder /mnt/home
         mount -t "$HOME_FORMAT" "/dev/${INSTALL_DEVICE}${HOME_PARTITION_NO}" "${MOUNTPOINT}/home" # Mount at /mnt/home
     fi
     #
@@ -1272,7 +1145,7 @@ gdisk_partition()
         print_info "GDISK-PARTITION-FORMAT-VAR"
         mkfs -t "$VAR_FORMAT" -L "VAR" "/dev/${INSTALL_DEVICE}${VAR_PARTITION_NO}"                # Format with user specified format type
         fsck "/dev/${INSTALL_DEVICE}${VAR_PARTITION_NO}"                                          # Check File System
-        make_dir "${MOUNTPOINT}/var" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                    # Make Folder /mnt/var
+        make_dir "${MOUNTPOINT}/var" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                    # Make Folder /mnt/var
         mount -t "$VAR_FORMAT" "/dev/${INSTALL_DEVICE}${VAR_PARTITION_NO}" "${MOUNTPOINT}/var"    # Mount at /mnt/var
     fi
     #
@@ -1281,7 +1154,7 @@ gdisk_partition()
         print_info "GDISK-PARTITION-FORMAT-BOOT"
         mkfs.ext2 -L "BOOT" "/dev/${INSTALL_DEVICE}${BOOT_PARTITION_NO}"                          # Format ext2
         fsck "/dev/${INSTALL_DEVICE}${BOOT_PARTITION_NO}"                                         # Check File System
-        make_dir "${MOUNTPOINT}/boot" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                   # Make Folder /mnt/boot in case its not created above
+        make_dir "${MOUNTPOINT}/boot" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                   # Make Folder /mnt/boot in case its not created above
         mount -t ext2 "/dev/${INSTALL_DEVICE}${BOOT_PARTITION_NO}" "${MOUNTPOINT}/boot"           # Mount Drive /mnt/boot; lets also unmount and re-mount this in install_script
     fi
     #        
@@ -1290,15 +1163,15 @@ gdisk_partition()
         print_info "GDISK-PARTITION-FORMAT-UEFI" 
         mkfs.vfat -F32 -n "UEFISYS" "/dev/${INSTALL_DEVICE}1"                                     # Format vfat 32
         fsck "/dev/${INSTALL_DEVICE}1"                                                            # Check File System   
-        make_dir "${MOUNTPOINT}/boot" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                   # Create Folder /mnt/boot
-        make_dir "${MOUNTPOINT}/boot/efi" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                               # Create Folder /mnt/boot/efi  
+        make_dir "${MOUNTPOINT}/boot" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                                   # Create Folder /mnt/boot
+        make_dir "${MOUNTPOINT}/boot/efi" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                               # Create Folder /mnt/boot/efi  
         mount -t vfat "/dev/${INSTALL_DEVICE}1" "${MOUNTPOINT}/boot/efi"                          # Mount Drive to /mnt/boot/efi; lets also mount this in install_script
     elif [[ "$UEFI" -eq 1 ]]; then # BIOS=1
         if [[ "$BOOT_SYSTEM_TYPE" -eq 0 ]]; then # 0=Grub2
             print_info "GDISK-PARTITION-FORMAT-BIOS" 
             mkfs.vfat -F32 -n "BIOS" "/dev/${INSTALL_DEVICE}1"                                    # Format vfat 32
             fsck "/dev/${INSTALL_DEVICE}1"                                                        # Check File System    
-            make_dir "${MOUNTPOINT}/boot/bios" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                          # Create Folder /mnt/boot/bios
+            make_dir "${MOUNTPOINT}/boot/bios" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"                                          # Create Folder /mnt/boot/bios
             mount -t vfat "/dev/${INSTALL_DEVICE}1" "${MOUNTPOINT}/boot/bios"                     # Mount Drive to /mnt/boot/bios @FIX This can not be right, research did not find answer
         fi
     fi
@@ -1313,32 +1186,32 @@ gdisk_partition()
     # ------------------------------------------------------------------------
     # mount proc, sys, dev in install root
     # ------------------------------------------------------------------------
-    #make_dir "${MOUNTPOINT}/proc" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #make_dir "${MOUNTPOINT}/sys"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #make_dir "${MOUNTPOINT}/dev"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    #make_dir "${MOUNTPOINT}/run"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #make_dir "${MOUNTPOINT}/proc" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #make_dir "${MOUNTPOINT}/sys"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #make_dir "${MOUNTPOINT}/dev"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #make_dir "${MOUNTPOINT}/run"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # do not mount; arch-chroot will mount
     #mount -o bind /proc ${MOUNTPOINT}/proc
     #mount -o bind /sys  ${MOUNTPOINT}/sys
     #mount -o bind /dev  ${MOUNTPOINT}/dev
     #if [[ "$IS_TMP_PARTITION" -eq 0 ]]; then
-        # make_dir "${MOUNTPOINT}/tmp"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        # make_dir "${MOUNTPOINT}/tmp"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         #mkdir -m 1777 -p "$MOUNTPOINT"/tmp
         #mount -o bind /tmp  ${MOUNTPOINT}/tmp
     #fi
     #
-    make_dir "${MOUNTPOINT}${PACMAN_CACHE}" ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "${MOUNTPOINT}/etc/"           ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    make_dir "${MOUNTPOINT}/etc/pacman.d/"  ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}${PACMAN_CACHE}" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/etc/"           "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/etc/pacman.d/"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #    
     required_repo "multilib"
     if [ ! -f /etc/pacman.conf.old ]; then
-        copy_file "/etc/pacman.conf"         /etc/pacman.conf.old              ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file "/etc/pacman.conf"         /etc/pacman.conf.old              "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        copy_file "/etc/pacman.conf.old"    /etc/pacman.conf                   ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file "/etc/pacman.conf.old"    /etc/pacman.conf                   "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
-    copy_file "/etc/pacman.conf"         ${MOUNTPOINT}/etc/pacman.conf         ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file "/etc/pacman.d/mirrorlist" ${MOUNTPOINT}/etc/pacman.d/mirrorlist ": $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/pacman.conf"         ${MOUNTPOINT}/etc/pacman.conf         "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "/etc/pacman.d/mirrorlist" ${MOUNTPOINT}/etc/pacman.d/mirrorlist "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     # Print Table
     if [[ "$EDIT_GDISK" -eq 1 ]]; then
@@ -1397,7 +1270,7 @@ setup_os()
     print_title "https://wiki.archlinux.org/index.php/Partitioning and https://wiki.archlinux.org/index.php/GUID_Partition_Table"
     print_info "Script-uses-GPT"
     print_info "Partitioning-hard-drive"
-    print_warning "Running-gdisk"
+    print_error "Running-gdisk"
     print_info "Standard-Partition-4-Primary-Types"
     echo "UEFI"
     print_info "Unified-Extensible-Firmware-Interface" "https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface"
@@ -1432,11 +1305,11 @@ setup_os()
     INSTALL_DEVICE=${LIST_DEVICES[$((OPTION-1))]:0:3}
     read_input_yn "Install-Arch" "$INSTALL_DEVICE" 0
     if [[ "$YN_OPTION" -eq 0 ]]; then
-        print_warning "what-drive"
+        print_error "what-drive"
         exit 0
     fi
     if [[ "$SCRIPT_DEVICE" == "$INSTALL_DEVICE" ]]; then
-        print_warning "same-drive-Script"
+        print_error "same-drive-Script"
         exit 0
     fi
     INSTALL_DEVICE=`echo $INSTALL_DEVICE | sed 's/[0-9]//'`  # i.e. sda; make sure no partition number is assigned
@@ -1444,14 +1317,14 @@ setup_os()
         print_info "Install-on-Device" "/dev/$INSTALL_DEVICE"
         write_log "Install-on-Device" "/dev/$INSTALL_DEVICE $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_warning "Device-does-not-exist" "/dev/$INSTALL_DEVICE"
+        print_error "Device-does-not-exist" "/dev/$INSTALL_DEVICE"
         lsblk
         exit # @FIX test before passing it in; make a list and have them pick from it
     fi
     #
     set_log_drive # just run it from mounted drive
     #
-    print_warning "Format-Drive" "$INSTALL_DEVICE"
+    print_error "Format-Drive" "$INSTALL_DEVICE"
     pause_function "$(localize "Last-Chance") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     get_user_name           # $USERNAME
@@ -1563,7 +1436,7 @@ start_screen()
 {
     # Run this script after your first boot with archlinux (as root)
     if [[ "$EUID" -ne 0 ]]; then
-        print_warning "root-privileges" 
+        print_error "root-privileges" 
         exit 0
     fi
     print_title "START-SCREEN-TITLE" " - https://wiki.archlinux.org/index.php/Arch_Install_Scripts"
@@ -1574,8 +1447,8 @@ start_screen()
     print_info "START-SCREEN-INFO-4"
     print_info "START-SCREEN-INFO-5"
     echo ""
-    print_warning "START-SCREEN-WARN-1"
-    print_warning "START-SCREEN-WARN-2"
+    print_error "START-SCREEN-WARN-1"
+    print_error "START-SCREEN-WARN-2"
     print_info "START-SCREEN-INFO-6"
     pause_function "$(basename $BASH_SOURCE) : $LINENO"
     setup_os
