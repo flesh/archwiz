@@ -32,6 +32,8 @@ To start the install from a Flash Drive to a Hard Drive you wish to Format, type
     ./wiz -h # Help File for browser: file:///home/USERNAME/Full-Path/archwiz/help.html
     Automatic install option is -a, it will automatically preform install.
     ./wiz -a # Automatically install.
+    Built in self test is -t
+    ./wiz -t # Run all Self-Test
 
 2.  Follow the Instructions: These may change and I do not wish to document them here; so a brief overview.
     This Wizard allows you to create a Software List of all Applications you want to install; 
@@ -83,5 +85,9 @@ Wizard API:
     for those that do not read English; and this is static text; so these instructions really need to be in the script itself;
     which is why its self Documenting; so it can translate that into the language the person reading it can read it in,
     so that is it for this static file, all other Documentation will be built in.
+    Every program ever write should do 3 things, besides running flawlessly:
+    1. Localized for every language that will be using it.
+    2. Self Documenting.
+    3. Self Testing, ability to run Test and Determine if program is working correctly.
     
 End of Document
