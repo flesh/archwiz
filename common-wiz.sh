@@ -1,7 +1,10 @@
 #!/bin/bash
 #
-# LAST_UPDATE="11 Jan 2013 16:33"
+# LAST_UPDATE="18 Jan 2013 16:33"
 # SCRIPT_VERSION="1.0.0.a"
+#
+# THINGS TO DO
+# 1. Create .xinitrc with switch 
 #
 # VARIABLES {{{
 # DESKTOP ENVIRONMENT {{{
@@ -25,6 +28,7 @@ declare -i USE_PACMAN=1
 declare -i AUR_REPO=0
 declare -i IS_PHTHON3_AUR=0 # install python3-aur
 declare PACMAN_OPTIMIZE_PACKAGES="rsync"
+declare -i SIMULATE=0 # Simulate Install, create Scripts for importing
 #
 declare -i MATE_INSTALLED=0
 declare -i GNOME_INSTALL=0
@@ -40,6 +44,19 @@ declare -i UNITY_INSTALLED=0
 declare -i DE_MANAGER=0 # GDM KDE Elsa LightDM LXDM Slim Qingy XDM
 declare -a DE_MANAGERS=( "GDM" "KDE" "Elsa" "LightDM" "LXDM" "Slim" "Qingy" "XDM" ) # ${DE_MANAGERS[$DE_MANAGER]}
 declare -i PHONON=0 # 0=phonon-gstreamer, 1=phonon-vlc
+declare -i INSTALL_TYPE=0 # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
+declare -i BASIC_INSTALL_VER=0 # Increament if you change Settings in Basic Install script
+# Save these settings in last config file
+declare -i INSTALL_NFS=0
+declare -i INSTALL_SAMBA=0
+declare -i INSTALL_LMT=0
+declare -i INSTALL_PRELOAD=0
+declare -i INSTALL_ZRAM=0
+declare -i INSTALL_TOR=0
+declare -i INSTALL_CUPS=0
+declare -i INSTALL_USB_MODEM=0
+declare -i INSTALL_FIRMWARE=0
+declare -i INSTALLED_VIDEO_CARD=0
 #
 declare -i IS_INSTALL_SOFTWARE=0
 declare -i IS_LAST_CONFIG_LOADED=0
@@ -47,7 +64,6 @@ declare -i SAVED_SOFTWARE=0
 declare -i FAST_INSTALL=0
 declare -i DISK_PROFILE=0
 declare -i BOOT_MODE=0
-declare -i DRIVE_FORMATED=0
 declare -i BOOT_PARTITION_NO=2
 declare -a LOCALE_ARRAY=( "" ) 
 declare -a LIST_DEVICES=( "" ) 
@@ -68,8 +84,6 @@ declare -i WEBSERVER=0
 declare -i CUSTOM_MIRRORLIST=0
 declare -i SAFE_MODE=0
 declare -i FLESH=0
-declare -i VIDEO_CARD=7
-declare -a VIDEO_CARDS=( "nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "Skip" );
 #
 declare NETWORK_MANAGER="networkmanager" # or wicd
 #
@@ -129,7 +143,6 @@ declare -i IS_TMP_PARTITION=0
 declare -i IS_TMP_SIZE=0
 declare TMP_SIZE="1G"
 declare TMP_FORMAT="ext4"
-declare OPTION=" "
 #
 # AUTOMATICALLY DETECTS THE SYSTEM LANGUAGE {{{
 # automatically detects the system language based on your locale
@@ -441,10 +454,12 @@ check_package()
 } 
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 2 ]]; then
-    if check_package "mate" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
-    else
-        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    if is_os "Arch Linux" ; then
+        if check_package "mate" ; then
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        else
+            echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        fi
     fi
 fi
 #}}}
@@ -546,7 +561,7 @@ download_aur_repo_packages()
         done
     else
         print_error "DOWNLOAD-AUR-REPO-PACKAGES-NO-PACKAGES" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     print_info "DOWNLOAD-AUR-REPO-PACKAGES-DOWNLOADING" ": $all_packages"
     #
@@ -606,7 +621,7 @@ fi
 # -------------------------------------
 copy_custom_repo()
 {
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     print_info "COPY-CUSTOM-REPO-INFO"
     copy_file  "${1}/${2}.db.tar.gz" "$3"          "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     copy_file  "${1}/${2}.db.tar.gz" "${3}${2}.db" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # rename it to db
@@ -651,7 +666,7 @@ download_repo_packages()
     else
         print_error "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         write_error "DOWNLOAD-REPO-PACKAGES-NO-PACKAGES" ": download_repo_packages : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     print_info "DOWNLOAD-REPO-PACKAGES-CREATING" ": ${all_packages}"
     # @ FIX; is optimized use other methods
@@ -858,7 +873,7 @@ fi
 # -------------------------------------
 add_repo()
 {
-    [[ "$#" -ne "4" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "4" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if ! is_string_in_file "/etc/pacman.conf" "$1" ; then
         sed -i '$ a #'               "/etc/pacman.conf"
         sed -i "$ a [${1}]"          "/etc/pacman.conf"
@@ -1123,7 +1138,7 @@ package_install()
                         print_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                         # @FIX what to do now: restart network adapter
-                        abort_install
+                        abort_install "$RUNTIME_MODE"
                     else
                         print_this "PACKAGE-INSTALL-REFRESH"
                         pacman -Syu
@@ -1179,7 +1194,7 @@ package_install()
                                     print_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                                     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                                     # @FIX what to do now: restart network adapter
-                                    abort_install
+                                    abort_install "$RUNTIME_MODE"
                                 else
                                     print_this "Refreshing pacman Database and Updates..."
                                     pacman -Syu
@@ -1439,8 +1454,8 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "GET-AUR-PACKAGES-DESC"  "Get AUR packages"
-    localize_info "GET-AUR-PACKAGES-NOTES" "Called from export under user, so script functions not available, cd folder before calling"
+    localize_info "GET-AUR-PACKAGES-DESC"             "Get AUR packages"
+    localize_info "GET-AUR-PACKAGES-NOTES"            "Called from export under user, so script functions not available, cd folder before calling"
     #
     localize_info "GET-AUR-PACKAGES-COMPILING"        "Compiling Package"
     localize_info "GET-AUR-PACKAGES-FAILED-COMPILING" "Failed to compile"
@@ -1677,7 +1692,7 @@ aur_package_install()
                                        print_error "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                                        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
                                        # @FIX what to do now
-                                       abort_install
+                                       abort_install "$RUNTIME_MODE"
                                    fi
                                fi             
                            fi
@@ -1688,9 +1703,9 @@ aur_package_install()
                            if ! check_package "$PACKAGE" ; then
                                print_info "AUR-PACKAGE-INSTALL-NOT-INSTALLED" ": $PACKAGE -> $2"
                                if [[ "$retry_times" -ge 1 ]]; then
-                                   read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 0
+                                   read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 0 # Allow Bypass
                                else
-                                   read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 1
+                                   read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 1 # Allow Bypass
                                fi
                                if [[ "$YN_OPTION" -eq 0 ]]; then
                                    failed_install_aur "$PACKAGE"
@@ -1790,25 +1805,66 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CREATE-CONFIG-SKEL-USAGE" "create_config_skel 1->(config name) 2->(/Full/Path/) 3->(FileName.ext) 4->(extra)"
-    localize_info "CREATE-CONFIG-SKEL-DESC"  "Create a Configuration File Skeliton."
+    localize_info "CREATE-CONFIG-SKEL-DESC"  "Create a Configuration File Skeleton."
     localize_info "CREATE-CONFIG-SKEL-NOTES" "None."
 fi
 # -------------------------------------
 create_config_skel()
 { 
     make_dir "$2" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    touch "$2$3"
+    create_startx()
+    {
+        if [[ "$1" == "mate-session" ]]; then                              # Mate
+            echo '[[ "$1" == "mate-session" ]] && exec mate-session'
+        elif [[ "$1" == "spectrwm" ]]; then                                # spectrwm
+            echo '[[ "$1" == "spectrwm" ]] && exec spectrwm'
+        elif [[ "$1" == "startxfce4" ]]; then                              # XFCE
+            echo '[[ "$1" == "startxfce4" ]] && exec startxfce4'
+        elif [[ "$1" == "fluxbox" ]]; then                                 # Fluxbox
+            echo '[[ "$1" == "fluxbox" ]] && exec fluxbox'
+        elif [[ "$1" == "twm" ]]; then                                     # TWM
+            echo '[[ "$1" == "twm" ]] && exec twm'
+        elif [[ "$1" == "gnome-session-cinnamon" ]]; then                  # Cinnamon
+            echo '[[ "$1" == "gnome-session-cinnamon" ]] && exec gnome-session-cinnamon'
+        elif [[ "$1" == "enlightenment_start" ]]; then                     # E17
+            echo '[[ "$1" == "enlightenment_start" ]] && exec enlightenment_start'
+        elif [[ "$1" == "openbox-session" ]]; then                         # Openbox
+            echo '[[ "$1" == "openbox-session" ]] && exec openbox-session'
+            # xrdb -merge ~/.Xresources         # update x resources db
+            # xscreensaver -no-splash &         # starts screensaver daemon 
+            # xsetroot -cursor_name left_ptr &  # sets the cursor icon
+            # sh ~/.fehbg &                     # sets the background image
+        elif [[ "$1" == "gnome-session" ]]; then                           # Gnome
+            echo '[[ "$1" == "gnome-session" ]] && exec gnome-session'
+        elif [[ "$1" == "wmaker" ]]; then                                  # wmaker
+            echo '[[ "$1" == "wmaker" ]] && exec wmaker'
+        elif [[ "$1" == "icewm" ]]; then                                   # icewm
+            echo '[[ "$1" == "icewm" ]] && exec icewm'
+        elif [[ "$1" == "blackbox" ]]; then                                # blackbox
+            echo '[[ "$1" == "blackbox" ]] && exec blackbox'
+        elif [[ "$1" == "xterm" ]]; then                                   # xterm
+            echo '[[ "$1" == "xterm" ]] && exec xterm'
+        elif [[ "$1" == "awesome" ]]; then                                 # awesome
+            echo '[[ "$1" == "awesome" ]] && exec awesome'
+        fi
+    }
     if [[ "$1" == "xinitrc" ]]; then
-        echo '#!/bin/sh' > "$2$3"
-        echo 'if [ -d /etc/X11/xinit/xinitrc.d ]; then' >> "$2$3"
-        echo '  for f in /etc/X11/xinit/xinitrc.d/*; do' >> "$2$3"
-        echo '    [ -x "$f" ] && . "$f"' >> "$2$3"
-        echo '  done' >> "$2$3"
-        echo '  unset f' >> "$2$3"
-        echo 'fi' >> "$2$3"
-        echo '#' >> "$2$3"
-        echo "exec $4" >> "$2$3"
-        chmod +x "$2$3"
+        if [ ! -f "$2$3" ]; then
+            touch "$2$3"
+            echo '#!/bin/sh' > "$2$3"
+            echo '# Executed by startx (run your window manager from here)' > "$2$3"
+            echo 'if [ -d /etc/X11/xinit/xinitrc.d ]; then' >> "$2$3"
+            echo '  for f in /etc/X11/xinit/xinitrc.d/*; do' >> "$2$3"
+            echo '    [ -x "$f" ] && . "$f"' >> "$2$3"
+            echo '  done' >> "$2$3"
+            echo '  unset f' >> "$2$3"
+            echo 'fi' >> "$2$3"
+            echo '#' >> "$2$3"
+            echo $(create_startx "$1") >> "$2$3"
+        else
+            echo $(create_startx "$1") >> "$2$3"
+        fi
+        chmod 750 "$2$3"
     fi
 }
 # -------------------------------------
@@ -1818,7 +1874,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     fi
     create_config_skel 'xinitrc' "${FULL_SCRIPT_PATH}/Test/" '.xinitrc' 'mate-session'
     if [ -f "${FULL_SCRIPT_PATH}/Test/.xinitrc" ]; then
-        print_info "TEST-FUNCTION-PASSED" "create_config_skel @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "create_config_skel @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "create_config_skel @ $(basename $BASH_SOURCE) : $LINENO"
     fi  
@@ -1882,13 +1938,13 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     eval "$TEMP"
     make_dir "/home/${USERNAME}/" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -f "/home/${USERNAME}/.xinitrc" ]; then
-        print_info "TEST-FUNCTION-PASSED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
     fi  
     #    
     if [[ "$(config_xinitrc 'mate-session')" == "create_config_skel 'xinitrc' \"/home/\${USERNAME}/\" '.xinitrc' \"$1\"; chown -R \${USERNAME}:\${USERNAME} /home/\${USERNAME}/.xinitrc" ]]; then
-        print_info "TEST-FUNCTION-PASSED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "config_xinitrc @ $(basename $BASH_SOURCE) : $LINENO"
     fi  
@@ -1917,7 +1973,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CHOOSE-AUR-HELPER-INFO-4"  "Yaourt is Recommended."
     localize_info "CHOOSE-AUR-HELPER-INFO-5"  "List of AUR Helpers: yaourt, packer and pacaur."
     localize_info "CHOOSE-AUR-HELPER-INFO-6"  "None of these tools are officially supported by Arch devs."
-    localize_info "CHOOSE-AUR-HELPER-SELECT"  "Choose your default AUR helper to install"
+    localize_info "CHOOSE-AUR-HELPER-SELECT"  "Choose your default AUR helper to install and use, you can only use one."
     localize_info "CHOOSE-AUR-HELPER-CHANGE"  "Do you wish to change the Default AUR Helper" 
 fi
 # -------------------------------------
@@ -1930,7 +1986,9 @@ choose_aurhelper()
     print_info  "CHOOSE-AUR-HELPER-INFO-4"
     print_info  "CHOOSE-AUR-HELPER-INFO-5"
     print_error "CHOOSE-AUR-HELPER-INFO-6"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "CHOOSE-AUR-HELPER-CHANGE" "$AUR_HELPER" 0
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
         print_info "CHOOSE-AUR-HELPER-SELECT"
@@ -2056,7 +2114,9 @@ configure_mirrorlist()
 {
     if [ -f "${FULL_SCRIPT_PATH}/mirrorlist" ]; then
         print_info "CONFIGURE-MIRRORLIST-FOUND" ": ${FULL_SCRIPT_PATH}"
+        Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
         read_input_yn "Use-Mirrorlist" "${FULL_SCRIPT_PATH}/mirrorlist" 1
+        BYPASS="$Old_BYPASS" # Restroe Bypass
         if [[ "YN_OPTION" -eq 1 ]]; then
             CUSTOM_MIRRORLIST=1
         fi
@@ -2191,6 +2251,8 @@ custom_nameservers()
         chattr +i ${FULL_SCRIPT_PATH}/etc/resolv.conf
     }
     #
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+    #
     while [[ 1 ]]; do
         print_title " " "https://wiki.archlinux.org/index.php/Resolv.conf"
         print_info  "CUSTOM-NAMESERVERS-INFO-1"
@@ -2227,6 +2289,7 @@ custom_nameservers()
             break
         fi
     done
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2254,7 +2317,9 @@ get_flesh()
 {
     print_title "GET-FLESH-TITLE" "https://wiki.archlinux.org/index.php/Pacman_Tips"
     print_info "GET-FLESH-INFO"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-FLESH-INSTALL" " " 1
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         FLESH=1
     else
@@ -2278,11 +2343,10 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CUSTOM-REPOSITORIES-DESC"  "Add Custom Repositories"
     #
-    localize_info "CUSTOM-REPOSITORIES-ADD-REPO"     "Add custom Repositories"
-    localize_info "CUSTOM-REPOSITORIES-TITLE"        "CUSTOM REPOSITORIES"
+    localize_info "CUSTOM-REPOSITORIES-ADD-REPO"     "Add Custom Repositories"
+    localize_info "CUSTOM-REPOSITORIES-TITLE"        "Custom Repositories"
     localize_info "CUSTOM-REPOSITORIES-INFO"         "Do not add &#36;arch to the end, the script will do that for you."
-    localize_info "CUSTOM-REPOSITORIES-NEW"          "Add new repository"
-    localize_info "CUSTOM-REPOSITORIES-MENU"         "D. DONE"
+    localize_info "CUSTOM-REPOSITORIES-NEW"          "Add new Repository"
     localize_info "CUSTOM-REPOSITORIES-REPO-NAME"    "Repository Name (ex: custom): "
     localize_info "CUSTOM-REPOSITORIES-REPO-ADDRESS" "Repository Address (ex: http://domain.url.tdl/archlinux): "
     localize_info "CUSTOM-REPOSITORIES-TRUST-LEVEL"  "Select your Trust Level:"
@@ -2305,18 +2369,16 @@ add_custom_repositories()
         fi
     fi
     #}}}
-    print_title "CUSTOM REPOSITORIES - https://wiki.archlinux.org/index.php/Unofficial_User_Repositories"
+    print_title "CUSTOM-REPOSITORIES-TITLE" " - https://wiki.archlinux.org/index.php/Unofficial_User_Repositories"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "CUSTOM-REPOSITORIES-ADD-REPO" " " 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
-        while [[ 1 ]]; do
+        while [[ "$YN_OPTION" -eq 1 ]]; do
             print_title "CUSTOM-REPOSITORIES-TITLE" " - https://wiki.archlinux.org/index.php/Unofficial_User_Repositories"
             print_info  "CUSTOM-REPOSITORIES-INFO" 
             print_this  "CUSTOM-REPOSITORIES-NEW"
             echo ""
-            print_this "CUSTOM-REPOSITORIES-MENU"
-            echo ""
-            read -p "$prompt1" OPTION
-            case $OPTION in
+            case $YN_OPTION in
                 1)
                     # @FIX Test and add error handling and exit without changes
                     read_input_data "CUSTOM-REPOSITORIES-REPO-NAME" 
@@ -2336,18 +2398,21 @@ add_custom_repositories()
                     done
                     add_repo "$REPONAME" "$REPOADDRESS" "${trust_levels[((REPLY - 1))]}" "$YN_OPTION"
                     pause_function "add_custom_repositories $(basename $BASH_SOURCE) : $LINENO"
+                    break;
                     ;;
-              "d")
-                    break
+                2)
+                    break;
                     ;;
                 *)
-                    invalid_option "$OPTION"
+                    invalid_option "$YN_OPTION"
                     ;;
             esac
+            read_input_yn "CUSTOM-REPOSITORIES-ADD-REPO" " " 0
         done
     fi
     # pacstrap will overwrite pacman.conf so copy it to temp 
     copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2480,6 +2545,7 @@ edit_disk()
     get_tmp_partition  # IS_TMP_PARTITION IS_TMP_SIZE TMP_SIZE TMP_FORMAT
     #
     print_info "EDIT-DISK-INFO-1"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "EDIT-DISK-EDIT-DRIVE" " " 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
         EDIT_GDISK=1
@@ -2489,6 +2555,7 @@ edit_disk()
     # @FIX add SSD optimization
     print_info "EDIT-DISK-INFO-2"
     read_input_yn "EDIT-DISK-IS-SSD-DISK" " " 0
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         IS_SSD=1
     else
@@ -2540,6 +2607,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "SHOW-SOFTWARE-DESC"          "Show Loaded Variables for Software Configuration"
     localize_info "SHOW-SOFTWARE-NOTES"         "Configuration files exist"
     #
+    localize_info "SHOW-SOFTWARE-WARN-USERS"    "No User Groups set."
+    #
     localize_info "SHOW-SOFTWARE-INFO-1"        "Software Configuration Database is built using the Full install menu; then saved to this file; the menu settings are store also, so you can visually see what you installed."
     localize_info "SHOW-SOFTWARE-INFO-2"        "If the Menu's get out of sync with the Database, they will have to be deleted; the software handles this automatically; but if you know the Database is out of sync; create a new one."
     localize_info "SHOW-SOFTWARE-INFO-3"        "If you want to create a New Software Configuration file; you must not load the last one, or clear the Arrays and delete the files, this is handled automatically if you chose a new Configuration."
@@ -2579,12 +2648,13 @@ show_software()
     print_this "SHOW-SOFTWARE-INFO-1"
     print_this "SHOW-SOFTWARE-INFO-2"
     print_this "SHOW-SOFTWARE-INFO-3"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "SHOW-SOFTWARE-LOAD-SOFTWARE" " " 1 
     if [[ "YN_OPTION" -eq 1 ]]; then
         load_software
         if [[ "$IS_SOFTWARE_CONFIG_LOADED" -eq 0 ]]; then
             print_error "SHOW-SOFTWARE-INFO-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            abort_install
+            abort_install "$RUNTIME_MODE"
         fi
         print_title "SHOW-SOFTWARE-INFO-VAR"
         print_this "$TEXT_SCRIPT_ID"
@@ -2596,7 +2666,11 @@ show_software()
         echo -e "CONFIG_SSH           = ${BWhite}$(yes_no $CONFIG_SSH)    ${White}"
         echo -e "CONFIG_TOR           = ${BWhite}$(yes_no $CONFIG_TOR)    ${White}"
         echo -e "CONFIG_KDE           = ${BWhite}$(yes_no $CONFIG_KDE)    ${White}"
-        echo -e "USER_GROUPS          = ${BWhite}${USER_GROUPS[*]}        ${White}"
+        if [[ "${#USER_GROUPS[*]}" -eq 0 ]]; then
+            echo -e "USER_GROUPS          = ${BRed} $(localize "SHOW-SOFTWARE-WARN-USERS")  ${White}"
+        else
+            echo -e "USER_GROUPS          = ${BWhite}${USER_GROUPS[*]}        ${White}"
+        fi
         echo -e "VIDEO_CARD           = ${BWhite}${VIDEO_CARDS[$(( $VIDEO_CARD - 1 ))]} ${White}"
         echo -e "DE_MANAGER           = ${BWhite}${DE_MANAGERS[$(( $DE_MANAGER - 1 ))]} ${White}"
         echo -e "MATE INSTALLED       = ${BWhite}$(yes_no $MATE_INSTALLED)     ${White}"
@@ -2622,11 +2696,13 @@ show_software()
         print_this "SHOW-SOFTWARE-INFO-4"
         print_this "SHOW-SOFTWARE-INFO-5"
         read_input_yn "SHOW-SOFTWARE-NEW-CONFIG" " " 0
+        BYPASS="$Old_BYPASS" # Restroe Bypass
         if [[ "$YN_OPTION" -eq 1 ]]; then
             clear_software 1
             install_menu
         fi
     else
+        BYPASS="$Old_BYPASS" # Restroe Bypass
         clear_software 1
         install_menu
     fi
@@ -2661,6 +2737,7 @@ fi
 show_last_config()
 {
     print_this "SHOW-LOADED-LAST-CONFIG"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "SHOW-LOADED-LOAD-USER-CONFIG" " " 1 
     if [[ "YN_OPTION" -eq 1 ]]; then
         load_last_config
@@ -2716,6 +2793,7 @@ show_last_config()
         show_last_config
         pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2792,28 +2870,29 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GET-INSTALL-MODE-DESC"  "Change MOUNTPOINT"
     #
-    localize_info "Install-Mode"         "Install mode has two options: Boot and Live:"
-    localize_info "Boot-Mode"            "Boot mode is when you Boot from an Arch ISO to install OS for first time, not to be confused with LIVE CD."
-    localize_info "Live-Mode"            "Live mode is after you install Boot, and then reboot into Live mode, i.e. Active Installed OS."
-    localize_info "Is-Install-Mode-Live" "Is Install Mode Live"
-    localize_info "BOOT-MODE-DETECTED"   "Boot Mode Detected."
-    localize_info "LIVE-MODE-DETECTED"   "Live Mode Detected."
+    localize_info "GET-INSTALL-MODE"               "Install mode has two options: Boot and Live:"
+    localize_info "GET-INSTALL-MODE-BOOT"          "Boot mode is when you Boot from an Arch ISO to install OS for first time, not to be confused with LIVE CD."
+    localize_info "GET-INSTALL-MODE-LIVE"          "Live mode is after you install Boot, and then reboot into Live mode, i.e. Active Installed OS."
+    localize_info "GET-INSTALL-MODE-IS-LIVE"       "Is Install Mode Live"
+    localize_info "GET-INSTALL-MODE-BOOT-DETECTED" "Boot Mode Detected."
+    localize_info "GET-INSTALL-MODE-LIVE-DETECTED" "Live Mode Detected."
 fi
 # -------------------------------------
 get_install_mode()
 {
-    print_info "Install-Mode"
-    print_info "Boot-Mode"
-    print_info "Live-Mode"    
+    print_title "GET-INSTALL-MODE"
+    print_info  "GET-INSTALL-MODE-BOOT"
+    print_info  "GET-INSTALL-MODE-LIVE"    
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     if [ -d "/home/arch/" ]; then
-        print_caution "BOOT-MODE-DETECTED"
-        read_input_yn "Is-Install-Mode-Live" " " 0
+        print_caution "GET-INSTALL-MODE-BOOT-DETECTED"
+        read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 0
     else
-        print_caution "LIVE-MODE-DETECTED"
+        print_caution "GET-INSTALL-MODE-LIVE-DETECTED"
         if [[ "$1" -eq 1 ]]; then
-            read_input_yn "Is-Install-Mode-Live" " " 0
+            read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 0
         else
-            read_input_yn "Is-Install-Mode-Live" " " 1
+            read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 1
         fi
     fi
     if [[ "$YN_OPTION" -eq 1 ]]; then
@@ -2823,6 +2902,7 @@ get_install_mode()
     else
         RUNTIME_MODE=1
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2842,11 +2922,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "VERIFY-CONFIG-USAGE" " 1->(1=Install OS, 2=Install Software)" 
     localize_info "VERIFY-CONFIG-DESC"  "Verify Configuration settings and load all files or create new ones."
     #
-    localize_info "VERIFY-CONFIG-Optimization"          "Do you wish to Configure pacman Optimization" 
+    localize_info "VERIFY-CONFIG-OPTIMIZATION"          "Do you wish to Configure pacman Optimization" 
     localize_info "VERIFY-CONFIG-CREATE-NEW-CONFIG"     "Do you wish to Create a New Software Configuration File" 
     localize_info "VERIFY-CONFIG-DISK-PROFILE"          "Do you wish change Disk Profile" 
     localize_info "VERIFY-CONFIG-KEEP-DISK-PROFILE"     "Do you wish to continue with this Disk Profile" 
-    localize_info "VERIFY-CONFIG-Import-User-Folder-settings" "Import User Folder settings" 
     localize_info "VERIFY-CONFIG-COPY-FOLDER"           "Do you wish to Copy saved Flash Folder: /etc/ to /" 
     localize_info "VERIFY-CONFIG-PACMAN-OPTIMIZATION"   "pacman Optimization will configure system to use aria2 reflector and pm2ml; it will also configure a local repository which can be share across a local Network; this will help download files faster."
     localize_info "VERIFY-CONFIG-CHECKING-OPTIMIZE"      "Checking for pacman Optimization"
@@ -2857,7 +2936,6 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "VERIFY-CONFIG-RUN-SCRIPT-AGAIN"      "Run Script again, after you decide on a Disk Profile."
     localize_info "VERIFY-CONFIG-FOLDER-ETC-HOLDS"      "The Folder etc holds various configurations files like: pacman.conf, fstab, hostname, hosts, resolve.conf, sudoers, timezone, vconsole.conf, and mirrorlist."
     localize_info "VERIFY-CONFIG-CONFIG-COMPLETED"      "Configuration File Check Completed..."
-    localize_info "VERIFY-CONFIG-USER-FOLDER-SETTINGS"  "User Folder Settings are stored on Disk; they are part of the Flesh, to add to the Bare Bones install and add customization to user settings."
 fi
 # -------------------------------------
 verify_config()
@@ -2865,11 +2943,26 @@ verify_config()
     if [[ "$CONFIG_VERIFIED" -eq 1 ]]; then return 0; fi
     [[ ! -d "$LOG_PATH/ssp" ]] && (mkdir -pv "$LOG_PATH/ssp") # Make sure you create all the folders you need before using them.
     CONFIG_VERIFIED=1
+    if [[ "$AUTOMAN" -eq 1 ]]; then
+        load_last_config
+        load_software
+        if [[ "$RUNTIME_MODE" -eq 1 ]]; then
+            load_disk_config
+        else
+            if [ -d "${FULL_SCRIPT_PATH}/etc/" ]; then
+                copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" 
+            fi
+        fi
+        # @FIX pacman Optimization
+        return 0
+    fi
     get_install_mode "$1"
+    print_title "VERIFY-CONFIG-DESC"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass - AUTOMAN Mode will never make it this far, and no Wizard here
     if [[ "$RUNTIME_MODE" -eq 2 ]]; then
         # @FIX test to see if this is done
-        print_this "VERIFY-CONFIG-PACMAN-OPTIMIZATION"
-        read_input_yn "VERIFY-CONFIG-Optimization" " " 0
+        print_info "VERIFY-CONFIG-PACMAN-OPTIMIZATION"
+        read_input_yn "VERIFY-CONFIG-OPTIMIZATION" " " 0
         if [[ "$YN_OPTION" -eq 1 ]]; then
             print_info "VERIFY-CONFIG-CHECKING-OPTIMIZE"
             if check_package "pm2ml" ; then
@@ -2917,56 +3010,11 @@ verify_config()
                 read_input_yn "VERIFY-CONFIG-KEEP-DISK-PROFILE" " " 1
                 if [[ "$YN_OPTION" -eq 0 ]]; then
                     print_error "VERIFY-CONFIG-RUN-SCRIPT-AGAIN"
-                    abort_install
+                    abort_install "$RUNTIME_MODE"
                 else
                     DISK_PROFILE=1
                 fi
             fi
-        fi
-    fi
-    # User Configuration Files
-    if [[ -f "${USER_FOLDER}/.xinitrc" && ! -f "/home/${USERNAME}/.xinitrc" && "$RUNTIME_MODE" -eq 2 ]]; then  # USER_FOLDER = "${FULL_SCRIPT_PATH}/USER"
-        print_info "VERIFY-CONFIG-USER-FOLDER-SETTINGS"
-        read_input_yn "VERIFY-CONFIG-Import-User-Folder-settings" " " 1
-        if [[ "$YN_OPTION" -eq 1 ]]; then
-            copy_files "${USER_FOLDER}/" " " "/home/${USERNAME}/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        fi
-    else
-        if [[ "$RUNTIME_MODE" -eq 1 ]]; then
-            USER_FOLDER="${FULL_SCRIPT_PATH}/USER"
-            make_dir "${USER_FOLDER}/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        else
-            USER_FOLDER="/home/${USERNAME}"
-        fi
-        if [ ! -f "${USER_FOLDER}/.xinitrc" ]; then
-            if [ ! -f /etc/skel/.xinitrc ]; then                    # Create .xinitrc file in user folder
-                if [[ "$MATE_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'mate-session'
-                elif [[ "XFCE_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'startxfce4'
-                elif [[ "E17_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'enlightenment_start'
-                elif [[ "KDE_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'startkde'
-                elif [[ "LXDE_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'startlxde'
-                elif [[ "OPENBOX_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'openbox-session'
-                elif [[ "AWESOME_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'awesome'
-                elif [[ "GNOME_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'gnome-session'
-                elif [[ "CINNAMON_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'gnome-session-cinnamon'
-                elif [[ "UNITY_INSTALLED" -eq 1 ]]; then
-                    create_config_skel 'xinitrc' "${USER_FOLDER}/" '.xinitrc' 'gnome-session'
-                fi
-            else
-                copy_file "/etc/skel/.xinitrc" "${USER_FOLDER}/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            fi
-        fi
-        if  [[ ! -f "/home/${USERNAME}/.xinitrc" && "$RUNTIME_MODE" -eq 2  ]]; then
-            copy_files "${USER_FOLDER}/" " " "/home/${USERNAME}/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
     if [[ "$1" -eq 2 ]]; then # Live Mode
@@ -2981,6 +3029,7 @@ verify_config()
     fi
     print_info "VERIFY-CONFIG-CONFIG-COMPLETED"
     pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) -> $LINENO"
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     return 0
 }
 #}}}
@@ -3020,7 +3069,7 @@ clear_software()
         PACKMANAGER_NAME=( "" )
         PACKMANAGER=( "" )
         #
-        USER_GROUPS=( "" )
+        USER_GROUPS=()
         #
         WEBSERVER=0
         CONFIG_ORPHAN=0
@@ -3114,7 +3163,7 @@ fi
 save_install()
 {
     # CORE_INSTALL
-    if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then
+    if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then # Back it up
         copy_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "${LOG_PATH}/13-${CONFIG_NAME}-core-installed-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     local -i total="${#CORE_INSTALL[@]}"
@@ -3127,12 +3176,12 @@ save_install()
             fi
         done
     else
-        if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then
+        if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then # Empty Remove it
             remove_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
     # AUR_INSTALL
-    if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then
+    if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then # Back it up
         copy_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "${LOG_PATH}/14-${CONFIG_NAME}-aur-installed-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     total="${#AUR_INSTALL[@]}"
@@ -3145,12 +3194,12 @@ save_install()
             fi
         done
     else
-        if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then
+        if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then # Empty Remove it
             remove_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
     # FAILED_CORE_INSTALL
-    if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then
+    if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then # Back it up
         copy_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "${LOG_PATH}/15-${CONFIG_NAME}-failed-core-installed-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     total="${#FAILED_CORE_INSTALL[@]}"
@@ -3163,12 +3212,12 @@ save_install()
             fi
         done
     else
-        if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then
+        if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then # Empty Remove it
             remove_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
     # FAILED_AUR_INSTALL
-    if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
+    if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then # Back it up
         copy_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "${LOG_PATH}/16-${CONFIG_NAME}-failed-aur-installed-${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     total="${#FAILED_AUR_INSTALL[@]}"
@@ -3181,7 +3230,7 @@ save_install()
             fi
         done
     else
-        if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
+        if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then # Empty Remove it
             remove_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     fi
@@ -3195,7 +3244,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     echo "CORE_INSTALL=$total"
     if [ -f "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" ]; then
         if is_string_in_file "${LOG_PATH}/3-${CONFIG_NAME}-core-installed.log" "core-foo" ; then
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
@@ -3208,7 +3257,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     echo "AUR_INSTALL=$total"
     if [ -f "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" ]; then
         if is_string_in_file "${LOG_PATH}/4-${CONFIG_NAME}-aur-installed.log" "aur-foo" ; then
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
@@ -3221,7 +3270,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     echo "FAILED_CORE_INSTALL=$total"
     if [ -f "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" ]; then
         if is_string_in_file "${LOG_PATH}/5-${CONFIG_NAME}-failed-core-installed.log" "core-food" ; then
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
@@ -3234,7 +3283,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     echo "FAILED_AUR_INSTALL=$total"
     if [ -f "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" ]; then
         if is_string_in_file "${LOG_PATH}/6-${CONFIG_NAME}-failed-aur-installed.log" "aur-food" ; then
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_install @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
@@ -3410,17 +3459,19 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "SAVE-LAST-CONFIG-DESC"  "Save Last Config"
+    localize_info "SAVE-LAST-CONFIG-DESC"  "Save Last Configuration file."
 fi
 # -------------------------------------
 save_last_config()
 {
     if [ "${#LOCALE_ARRAY}" -eq 0 ]; then
         print_error "Nothing has been configured yet! LOCALE_ARRAY=${LOCALE_ARRAY[*]} is empty on line $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     # 
-    copy_file "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-15-last-config-${LOG_DATE_TIME}.db" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    if [ -f "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db" ]; then
+        copy_file "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db" "${CONFIG_PATH}/${CONFIG_NAME}-15-last-config-${LOG_DATE_TIME}.db" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
     # CONFIG_HOSTNAME
     echo "?CONFIG_HOSTNAME"      >  "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     echo "$CONFIG_HOSTNAME"      >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
@@ -3484,6 +3535,40 @@ save_last_config()
     # SUBZONE
     echo "?SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     echo "$SUBZONE"              >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_NFS
+    echo "?INSTALL_NFS"          >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_NFS"          >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_SAMBA
+    echo "?INSTALL_SAMBA"        >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_SAMBA"        >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_LMT
+    echo "?INSTALL_LMT"          >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_LMT"          >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_PRELOAD
+    echo "?INSTALL_PRELOAD"      >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_PRELOAD"      >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_ZRAM
+    echo "?INSTALL_ZRAM"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_ZRAM"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_TOR
+    echo "?INSTALL_TOR"          >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_TOR"          >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_CUPS
+    echo "?INSTALL_CUPS"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_CUPS"         >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_USB_MODEM
+    echo "?INSTALL_USB_MODEM"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_USB_MODEM"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALL_FIRMWARE
+    echo "?INSTALL_FIRMWARE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALL_FIRMWARE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # INSTALLED_VIDEO_CARD
+    echo "?INSTALLED_VIDEO_CARD"   >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALLED_VIDEO_CARD"   >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # BASIC_INSTALL_VER
+    echo "?BASIC_INSTALL_VER"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$BASIC_INSTALL_VER"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    #
     # LOCALE_ARRAY
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db" "${CONFIG_PATH}/${CONFIG_NAME}-16-locale-${LOG_DATE_TIME}.db" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     # ${#LOCALE_ARRAY[*]}
@@ -3613,7 +3698,7 @@ fi
 # -------------------------------------
 is_software_files()
 {
-    local -a test_file_names=( "0-packagemanager-name.db" "0-packagemanager.db" "2-packages.db" "2-aur-packages.db" "3-user-groups.db" "4-software-config.db" )
+    local -a test_file_names=( "0-packagemanager-name.db" "0-packagemanager.db" "2-packages.db" "2-aur-packages.db" "4-software-config.db" )
     local -i test_passed=1
     total="${#test_file_names[@]}"
     for (( i=0; i<${total}; i++ )); do
@@ -3646,12 +3731,12 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "LOAD-SOFTWARE-DESC"  "Load Software Configuration files"
+    localize_info "LOAD-SOFTWARE-ERROR" "No Configuration File"
 fi
 # -------------------------------------
 load_software()
 {
-    OLD_IFS="$IFS"
-    IFS=$' '
+    local Last_IFS="$IFS"; IFS=$' '; 
     # Test each file
     local -i TEST_1=0
     local -i TEST_2=0
@@ -3659,7 +3744,6 @@ load_software()
     local -i TEST_4=0
     local -i TEST_5=0
     local -i TEST_6=0
-    local -i TEST_7=0
     local -i TEST_8=0
     # PACKMANAGER_NAME - add_packagemanager - array
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db" ]]; then
@@ -3669,7 +3753,7 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db"
         TEST_3=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager-name.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # PACKMANAGER - add_packagemanager - array
@@ -3680,7 +3764,7 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"
         TEST_4=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # TASKMANAGER
@@ -3692,7 +3776,7 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db"
         TEST_1=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager-name.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # TASKMANAGER - add_taskmanager - array
@@ -3703,7 +3787,7 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"
         TEST_2=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # PACKAGES
@@ -3714,7 +3798,7 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"
         TEST_5=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-2-packages.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     # AUR_PACKAGES
@@ -3725,19 +3809,20 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"
         TEST_6=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-2-aur-packages.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     #
-    # users - add_user_group - array
+    # USER_GROUPS users - add_user_group - array
+    # @FIX will there be a reason to have no User Groups? Its used in Network Managers, but what if none is selected
+    USER_GROUPS=()
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db" ]]; then
         while read line; do 
             add_user_group "$line"
         done < "${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"
-        TEST_7=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"
-        pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
+        print_error "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-3-user-groups.db"
+        if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     # Store only if 1
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db" ]]; then
@@ -3808,11 +3893,11 @@ load_software()
         done < "${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
         TEST_8=1
     else
-        echo "No ${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
+        echo "LOAD-SOFTWARE-ERROR" ": ${CONFIG_PATH}/${CONFIG_NAME}-4-software-config.db"
         pause_function "load_software $(basename $BASH_SOURCE) : $LINENO"
     fi
     
-    if [[ "$TEST_1" -eq 1 && "$TEST_2" -eq 1 && "$TEST_3" -eq 1 && "$TEST_4" -eq 1 && "$TEST_5" -eq 1 && "$TEST_6" -eq 1 && "$TEST_7" -eq 1 && "$TEST_8" -eq 1 ]]; then
+    if [[ "$TEST_1" -eq 1 && "$TEST_2" -eq 1 && "$TEST_3" -eq 1 && "$TEST_4" -eq 1 && "$TEST_5" -eq 1 && "$TEST_6" -eq 1 && "$TEST_8" -eq 1 ]]; then
         IS_SOFTWARE_CONFIG_LOADED=1
     fi
     unset TEST_1
@@ -3821,9 +3906,8 @@ load_software()
     unset TEST_4
     unset TEST_5
     unset TEST_6
-    unset TEST_7
     unset TEST_8
-    IFS="$OLD_IFS"
+    IFS="$Last_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3884,8 +3968,7 @@ fi
 # -------------------------------------
 load_last_config()
 {
-    OLD_IFS="$IFS"
-    IFS=$' '
+    local Last_IFS="$IFS"; IFS=$' ';
     # CONFIG_HOSTNAME USERNAME KEYBOARD
     # 
     local line=""
@@ -3960,6 +4043,39 @@ load_last_config()
                     "PACMAN_REPO_TYPE")   
                         PACMAN_REPO_TYPE="$line"    
                         ;;
+                    "INSTALL_NFS")   
+                        INSTALL_NFS="$line"    
+                        ;;
+                    "INSTALL_SAMBA")   
+                        INSTALL_SAMBA="$line"    
+                        ;;
+                    "INSTALL_LMT")   
+                        INSTALL_LMT="$line"    
+                        ;;
+                    "INSTALL_PRELOAD")   
+                        INSTALL_PRELOAD="$line"    
+                        ;;
+                    "INSTALL_ZRAM")   
+                        INSTALL_ZRAM="$line"    
+                        ;;
+                    "INSTALL_TOR")   
+                        INSTALL_TOR="$line"    
+                        ;;
+                    "INSTALL_CUPS")   
+                        INSTALL_CUPS="$line"    
+                        ;;
+                    "INSTALL_USB_MODEM")   
+                        INSTALL_USB_MODEM="$line"    
+                        ;;
+                    "INSTALL_FIRMWARE")   
+                        INSTALL_FIRMWARE="$line"    
+                        ;;
+                    "INSTALLED_VIDEO_CARD")   
+                        INSTALLED_VIDEO_CARD="$line"    
+                        ;;
+                    "BASIC_INSTALL_VER")
+                        BASIC_INSTALL_VER="$line"
+                        ;;
                 esac
             fi
         done < "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
@@ -4001,7 +4117,7 @@ load_last_config()
         print_error "LOAD-LAST-CONFIG-FNF" ": 0-package-failure-list.db"
         pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
-    IFS="$OLD_IFS"
+    IFS="$Last_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4023,8 +4139,7 @@ fi
 # -------------------------------------
 load_disk_config()
 {
-    OLD_IFS="$IFS"
-    IFS=$' '
+    local Last_IFS="$IFS"; IFS=$' ';
     if [[ -f "${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db" ]]; then
         while read line; do 
             if [[ "${line:0:1}" == "?" ]]; then
@@ -4108,7 +4223,7 @@ load_disk_config()
         echo "No ${CONFIG_PATH}/${CONFIG_NAME}-7-disk-config.db"
         pause_function "load_disk_config $(basename $BASH_SOURCE) : $LINENO"
     fi
-    IFS="$OLD_IFS"
+    IFS="$Last_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4134,10 +4249,10 @@ fi
 # -------------------------------------
 add_packagemanager()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$2" ]; then
         print_error "ADD-PACKAGEMANAGER-ERROR"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     CMD="$(rtrim $1)"
     if [[ -z "$CMD" || "$CMD" == "" ]]; then
@@ -4162,7 +4277,7 @@ add_packagemanager()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-TEST-PACKAGE"
     if is_in_array "PACKMANAGER_NAME[@]" "CONFIG-TEST-PACKAGE" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  add_packagemanager @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  add_packagemanager @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  add_packagemanager @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -4220,10 +4335,10 @@ fi
 # -------------------------------------
 add_taskmanager()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$2" ]; then
         print_error "ADD-TASKMANAGER-ERROR"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     CMD="$(rtrim $1)"
     if [[ -z "$CMD" || "$CMD" == "" ]]; then
@@ -4269,10 +4384,10 @@ fi
 # -------------------------------------
 add_package()
 { 
-    [[ "$#" -ne "1" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "1" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$1" ]; then
         print_error "ADD-PACKAGE-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     CMD="$(rtrim $1)"
     if [[ -z "$CMD" || "$CMD" == "" ]]; then
@@ -4314,10 +4429,10 @@ fi
 # -------------------------------------
 remove_package()
 { 
-    [[ "$#" -ne "1" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "1" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$1" ]; then
         print_error "REMOVE-PACKAGE-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     CMD="$(rtrim $1)"
     if [[ -z "$CMD" || "$CMD" == "" ]]; then
@@ -4355,10 +4470,10 @@ fi
 # -------------------------------------
 add_aur_package()
 { 
-    [[ "$#" -ne "1" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "1" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$1" ]; then
         print_error "ADD-AUR-PACKAGE-ERROR" " add_aur_package : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     CMD="$(rtrim $1)"
     if [[ -z "$CMD" || "$CMD" == "" ]]; then
@@ -4400,10 +4515,10 @@ fi
 # -------------------------------------
 remove_aur_package()
 { 
-    [[ "$#" -ne "1" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "1" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$1" ]; then
         print_error "REMOVE-AUR-PACKAGE-ERROR" " : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        abort_install
+        abort_install "$RUNTIME_MODE"
     fi
     CMD="$(rtrim $1)"
     if [[ -z "$CMD" || "$CMD" == "" ]]; then
@@ -4735,15 +4850,16 @@ get_aur_package_folder()
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-3"
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-4"
     #
-    read_input_default "GET-AUR-PACKAGE-ENTER-NAME" "AUR-Packages"
-    #
+    Old_BYPASS="$BYPASS"; BYPASS=0;  
+    # Do not Allow Bypass, we save this var in file
+    read_input_default "GET-AUR-PACKAGE-ENTER-NAME" "${AUR_REPO_NAME}"
     AUR_REPO_NAME="$OPTION"
     #    
     print_info  "GET-AUR-PACKAGE-FOLDER-INFO-5"    
     #
     read_input_yn "GET-AUR-PACKAGE-USE" " " 0 # @FIX
-    #
     AUR_REPO="$YN_OPTION"
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4795,7 +4911,9 @@ get_fstab_config()
                 ;;
         esac
     done
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-FSTAB-CONFIG-EDIT" " " 0
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         FSTAB_EDIT=1
     fi
@@ -4930,8 +5048,10 @@ get_hostname()
     print_this "GET-HOSTNAME-INFO-2"
     print_this "GET-HOSTNAME-INFO-3"
     print_this "GET-HOSTNAME-INFO-4"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "GET-HOSTNAME-DEFAULT" "$CONFIG_HOSTNAME"
     CONFIG_HOSTNAME="$OPTION"
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 
@@ -5066,10 +5186,12 @@ finish()
     #
     chmod -R 775 "/home/${USERNAME}/"
     #
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "FINISH-REBOOT" " " 1
     if [[ "$YN_OPTION" -eq 1 ]]; then
         reboot
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     exit 0
 }
 #}}}
@@ -5139,11 +5261,13 @@ fi
 set_log_drive()
 {
     print_info "Device-Script"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "Correct-Device" "[$SCRIPT_DEVICE]" 1
     if [[ "$YN_OPTION" -eq 0 ]]; then
         read_input_default "Device-Script-running" "$SCRIPT_DEVICE"
         SCRIPT_DEVICE="$OPTION"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ -b "/dev/$SCRIPT_DEVICE" ]]; then
         print_info "Copying-Device" "/dev/$SCRIPT_DEVICE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         write_log  "Copying-Device" "/dev/$SCRIPT_DEVICE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -5379,6 +5503,9 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GET-BOOT-TYPE-INFO-WARN-2" "You do not have a UEFI BIOS, switching to BIOS Mode."
     localize_info "GET-BOOT-TYPE-INFO-WARN-3" "You have an Option have no partition for Boot, this will force it to load to the Root, this is not recommended, but an option."
     localize_info "DEFAULT-NONE"              "Default is BIOS mode, do you wish to change Boot to NONE" 
+    localize_info "GET-BOOT-TYPE-GRUB2"       "Grub2"
+    localize_info "GET-BOOT-TYPE-SYSLINUX"    "Syslinux"
+    localize_info "GET-BOOT-TYPE-SKIP"        "Skip"
 fi
 # -------------------------------------
 get_boot_type()
@@ -5393,7 +5520,7 @@ get_boot_type()
         print_this "GET-BOOT-TYPE-INFO-4"
         print_this "GET-BOOT-TYPE-INFO-5"
         print_this "GET-BOOT-TYPE-INFO-6"
-        local -a BOOT_SYSTEM_TYPES=("Grub2" "Syslinux" "Skip");
+        local -a BOOT_SYSTEM_TYPES=( "$(localize "GET-BOOT-TYPE-GRUB2")" "$(localize "GET-BOOT-TYPE-SYSLINUX")" "$(localize "GET-BOOT-TYPE-SKIP")" );
         PS3="$prompt1"
         print_info "GET-BOOT-TYPE-SELECT"
         select OPT in "${BOOT_SYSTEM_TYPES[@]}"; do
@@ -5401,8 +5528,10 @@ get_boot_type()
                 1)
                     BOOT_SYSTEM_TYPE=0
                     print_info "GET-BOOT-TYPE-SPECIFY"
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
                     read_input_default "GET-BOOT-TYPE-DEFAULT" "2M"
                     BIOS_SIZE="$OPTION"
+                    BYPASS="$Old_BYPASS" # Restroe Bypass
                     break
                     ;;
                 2)
@@ -5470,6 +5599,7 @@ get_boot_type()
     print_this "GET-BOOT-TYPE-INFO-17"
     print_this "GET-BOOT-TYPE-INFO-18"
     echo ""
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     if is_uefi_mode ; then
         read_input_yn "Default-Boot-Mode" "${BIOS_SYSTEM_TYPES[$UEFI]}" 0
         if [[ "$YN_OPTION" -eq 1 ]]; then
@@ -5490,6 +5620,7 @@ get_boot_type()
     elif [[ "$UEFI" -eq 1 ]]; then  # BIOS=1
         get_bios_size    # BOOT_SYSTEM_TYPE and BIOS_SIZE
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5530,6 +5661,7 @@ get_boot_partition()
     print_info  "GET-BOOT-PARTITION-INFO-5"
     print_info  "GET-BOOT-PARTITION-INFO-6"
     IS_BOOT_PARTITION=0
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-BOOT-PARTITION-SEPARATE-PART" " " 1
     if [[ "$YN_OPTION" -eq 1 ]]; then
         IS_BOOT_PARTITION=1
@@ -5538,6 +5670,7 @@ get_boot_partition()
         read_input_default "GET-BOOT-PARTITION-BOOT-SIZE" "100M"
         BOOT_SIZE="$OPTION"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5583,6 +5716,7 @@ get_swap_partition()
     print_this "GET-SWAP-PARTITION-INFO-6"
     print_info "GET-SWAP-PARTITION-INFO-7"
     IS_SWAP_PARTITION=0
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-SWAP-PARTITION-SWAP" " " 1
     if [[ "$YN_OPTION" -eq 1 ]]; then
         IS_SWAP_PARTITION=1
@@ -5618,6 +5752,7 @@ get_swap_partition()
         read_input_default "GET-SWAP-PARTITION-SIZE" "$SWAP_SIZE"
         SWAP_SIZE="$OPTION"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5669,6 +5804,7 @@ get_home_partition()
     print_info " " "UUID=(Your UUID)       /home   ext4         defaults,noatime        0       2"
     IS_HOME_PARTITION=0
     IS_HOME_DRIVE=0
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-HOME-PARTITION-PARTITION" " " 0
     if [[ "$YN_OPTION" -eq 0 ]]; then
         read_input_yn "GET-HOME-PARTITION-DRIVE" " " 0
@@ -5679,6 +5815,7 @@ get_home_partition()
         get_format_system # Ask for Format Type
         HOME_FORMAT="$OPTION"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5730,6 +5867,7 @@ get_var_partition()
     print_info " " "UUID=(Your UUID)       /var   ext4         defaults,noatime        0       2"
     IS_VAR_PARTITION=0
     IS_VAR_DRIVE=0
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-VAR-PARTITION-PARTITION" " " 0
     if [[ "$YN_OPTION" -eq 0 ]]; then
         read_input_yn "GET-VAR-PARTITION-DRIVE" " " 0
@@ -5740,6 +5878,7 @@ get_var_partition()
         get_format_system # Ask for Format Type
         VAR_FORMAT="$OPTION"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5825,6 +5964,7 @@ get_tmp_partition()
     print_this  " " "tmpfs   /www/cache    tmpfs  rw,size=1G,nr_inodes=5k,noexec,nodev,nosuid,uid=648,gid=648,mode=1700   0  0"
     print_this  ""
     print_this  "GET-TMP-PARTITION-INFO-23"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-TMP-PARTITION-tmpfs" " " 1
     if [[ "$YN_OPTION" -eq 1 ]]; then
         read_input_yn "GET-TMP-PARTITION-SIZE-TMPFS" " " 0
@@ -5840,6 +5980,7 @@ get_tmp_partition()
         get_format_system # Ask for Format Type
         TMP_FORMAT="$OPTION"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5882,8 +6023,10 @@ get_root_size()
     print_this  "GET-ROOT-SIZE-INFO-7"
     print_info  "GET-ROOT-SIZE-INFO-8"
     #
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "GET-ROOT-SIZE-SIZE" "0"
     ROOT_SIZE="$OPTION"
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     get_root_format
 }
 #}}}
@@ -5954,6 +6097,7 @@ fi
 # -------------------------------------
 static_ip()
 {
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     while [[ 1 ]]; do
         print_title "STATIC-IP-TITLE" "https://wiki.archlinux.org/index.php/Configuring_Network#Static_IP_address"
         print_info  "STATIC-IP-INFO"
@@ -5967,13 +6111,13 @@ static_ip()
             print_this "STATIC-IP-NIC-2" ": $check_eth2"
         fi
         read_input_data "STATIC-IP-STATIC" 
-
         read_input_yn "CORRECT" "$OPTION" 1
         if [[ "$YN_OPTION" -eq 1 ]]; then
             STATIC_IP="$OPTION"
             break
         fi
     done    
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -6031,5 +6175,146 @@ escape_special_characters()
 #}}}
 # -----------------------------------------------------------------------------
 set_language "$LANGUAGE" # Run function to set defaults
+# -----------------------------------------------------------------------------
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "SHOW-CUSTOM-HELP-INFO-1"  "Arch Linux Installation Wizard Script"
+    localize_info "SHOW-CUSTOM-HELP-INFO-2"  "Arch Linux Installation Wizard AKA archwiz, is an Installation script file to install Arch Linux on a Hard Drive."
+    localize_info "SHOW-CUSTOM-HELP-INFO-3"  "This script was originally written by helmuthdu[at]gmail[dot]com prior to Nov 2012."
+    localize_info "SHOW-CUSTOM-HELP-INFO-4"  "It was modified by Jeffrey Scott Flesher: jeff[at]lightwizzard[dot]com"
+    localize_info "SHOW-CUSTOM-HELP-INFO-5"  "Its written using the Wizard Script API, to make maintaining it easier, and makes the script more robust."
+    localize_info "SHOW-CUSTOM-HELP-INFO-6"  "It has many Options:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-7"  "To start the install from a Flash Drive to a Hard Drive you wish to Format, do the Following:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-8"  "1.  Boot up Arch Linux ISO and Mount your Flash Drive as such:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-9"  "&nbsp;&nbsp;&nbsp;&nbsp; mkdir usb # You can call it and mount it anywhere you want, but /mnt is not a good place for it; the root is; so /root/usb is good"
+    localize_info "SHOW-CUSTOM-HELP-INFO-10" "&nbsp;&nbsp;&nbsp;&nbsp; mount /dev/sdb1 usb # where sdb1 is your Flash Drive; assuming you only have to drives in the system; and usb is the folder we created above"
+    localize_info "SHOW-CUSTOM-HELP-INFO-11" "&nbsp;&nbsp;&nbsp;&nbsp; cd usb"
+    localize_info "SHOW-CUSTOM-HELP-INFO-12" "&nbsp;&nbsp;&nbsp;&nbsp; Now we are in Boot Mode:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-13" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz # This is all Menu Driven."
+    localize_info "SHOW-CUSTOM-HELP-INFO-14" "&nbsp;&nbsp;&nbsp;&nbsp; Note: The Following command will build the Localized Database, this must be done prior to using this script:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-15" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz -l # Localize"
+    localize_info "SHOW-CUSTOM-HELP-INFO-16" "&nbsp;&nbsp;&nbsp;&nbsp; Then you must build the Help File if you wish to view it"
+    localize_info "SHOW-CUSTOM-HELP-INFO-17" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz -h # Help File for browser: file:///home/USERNAME/Full-Path/archwiz/help.html"
+    localize_info "SHOW-CUSTOM-HELP-INFO-18" "&nbsp;&nbsp;&nbsp;&nbsp; Automatic install option is -a, it will automatically preform install."
+    localize_info "SHOW-CUSTOM-HELP-INFO-19" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz -a # Automatically install."
+    localize_info "SHOW-CUSTOM-HELP-INFO-20" "&nbsp;&nbsp;&nbsp;&nbsp; Built in self test is -t and -s for special test"
+    localize_info "SHOW-CUSTOM-HELP-INFO-21" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz -t # Run all Self-Test"
+    localize_info "SHOW-CUSTOM-HELP-INFO-22" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz -s # Run all Special Self-Test"
+    localize_info "SHOW-CUSTOM-HELP-INFO-23" "2.  Follow the Instructions: These may change and I do not wish to document them here; so a brief overview."
+    localize_info "SHOW-CUSTOM-HELP-INFO-24" "&nbsp;&nbsp;&nbsp;&nbsp; This Wizard allows you to create a Software List of all Applications you want to install; "
+    localize_info "SHOW-CUSTOM-HELP-INFO-25" "&nbsp;&nbsp;&nbsp;&nbsp; this list is also known as a script, since you can just run it from a shell terminal,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-26" "&nbsp;&nbsp;&nbsp;&nbsp; the software list should be created prior to installing the Software,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-27" "&nbsp;&nbsp;&nbsp;&nbsp; even though it may let you make changes to it after its installed,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-28" "&nbsp;&nbsp;&nbsp;&nbsp; best practice is to build the system from a fresh install, "
+    localize_info "SHOW-CUSTOM-HELP-INFO-29" "&nbsp;&nbsp;&nbsp;&nbsp; instead of trying to patch an existing OS,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-30" "&nbsp;&nbsp;&nbsp;&nbsp; then after a reboot into the new OS created using the Install OS option; "
+    localize_info "SHOW-CUSTOM-HELP-INFO-31" "&nbsp;&nbsp;&nbsp;&nbsp; it can load the software list using the Load Software option in the menu."
+    localize_info "SHOW-CUSTOM-HELP-INFO-32" "3.  Reboot; now we are in Live Mode:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-33" "&nbsp;&nbsp;&nbsp;&nbsp; cd /home/\$USERNAME"
+    localize_info "SHOW-CUSTOM-HELP-INFO-34" "&nbsp;&nbsp;&nbsp;&nbsp; mkdir usb # if it does not exist"
+    localize_info "SHOW-CUSTOM-HELP-INFO-35" "&nbsp;&nbsp;&nbsp;&nbsp; mount /dev/sdb1 usb"
+    localize_info "SHOW-CUSTOM-HELP-INFO-36" "&nbsp;&nbsp;&nbsp;&nbsp; cd usb"
+    localize_info "SHOW-CUSTOM-HELP-INFO-37" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz -a # Automatically install."
+    localize_info "SHOW-CUSTOM-HELP-INFO-38" "&nbsp;&nbsp;&nbsp;&nbsp; or"
+    localize_info "SHOW-CUSTOM-HELP-INFO-39" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz"
+    localize_info "SHOW-CUSTOM-HELP-INFO-40" "&nbsp;&nbsp;&nbsp;&nbsp; Choose option to Load Software"
+    localize_info "SHOW-CUSTOM-HELP-INFO-41" "Features:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-42" "Custom Repository: This script creates a Custom Repository with all Software in it;"
+    localize_info "SHOW-CUSTOM-HELP-INFO-43" "&nbsp;&nbsp;&nbsp;&nbsp; this way it can be installed multiple times and save bandwidth,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-44" "&nbsp;&nbsp;&nbsp;&nbsp; also it might be possible to install it on a machine with no Internet access,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-45" "&nbsp;&nbsp;&nbsp;&nbsp; but that has not been tested."
+    localize_info "SHOW-CUSTOM-HELP-INFO-46" "&nbsp;&nbsp;&nbsp;&nbsp; Currently its limited to just the Core; working on AUR next."
+    localize_info "SHOW-CUSTOM-HELP-INFO-47" "Profile: This script saves all settings as a Profile per user; it has the ability to change user names; "
+    localize_info "SHOW-CUSTOM-HELP-INFO-48" "&nbsp;&nbsp;&nbsp;&nbsp; so you can create a software package installation and customize it to have all the software you want installed on it,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-49" "&nbsp;&nbsp;&nbsp;&nbsp; and also configure the Hard Drive Partition Scheme to use, while still being able to change both independently of each other,"
+    localize_info "SHOW-CUSTOM-HELP-INFO-50" "&nbsp;&nbsp;&nbsp;&nbsp; you can copy the profiles to another folder and save them, then simple copy them back; in future versions this will allow"
+    localize_info "SHOW-CUSTOM-HELP-INFO-51" "&nbsp;&nbsp;&nbsp;&nbsp; you to name the profiles and load them back."
+    localize_info "SHOW-CUSTOM-HELP-INFO-52" "Optimization: This script allows you to Optimize Pacman to use parallel downloads using Aria2, rsync and ppl parisync, as well as use pacget."
+    localize_info "SHOW-CUSTOM-HELP-INFO-53" "All downloads are Automatic, unless they fail to install the first time, then they will drop to interactive mode, so you will have to hit keys manually; if AUR package; you will want to say No to edit configuration files, and Yes to all others."
+    localize_info "SHOW-CUSTOM-HELP-INFO-54" ""
+    localize_info "SHOW-CUSTOM-HELP-INFO-55" ""
+    localize_info "SHOW-CUSTOM-HELP-INFO-56" ""
+    localize_info "SHOW-CUSTOM-HELP-INFO-57" ""
+    localize_info "SHOW-CUSTOM-HELP-INFO-58" ""
+    localize_info "SHOW-CUSTOM-HELP-INFO-59" ""
+
+fi
+# -----------------------------------------------------------------------------
+show_custom_help()
+{
+    echo -e "<hr />"
+    echo -e "<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-1")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-2")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-3")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-4")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-5")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-6")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-7")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-8")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-9")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-10")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-11")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-12")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-13")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-14")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-15")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-16")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-17")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-18")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-19")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-20")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-21")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-22")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-23")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-24")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-25")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-26")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-27")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-28")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-29")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-30")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-31")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-32")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-33")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-34")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-35")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-36")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-37")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-38")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-39")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-40")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-41")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-42")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-43")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-44")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-45")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-46")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-47")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-48")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-49")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-50")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-51")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-52")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-53")<br />"
+
+    return 0
+    
+    
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-54")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-55")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-56")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-57")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-58")<br />"
+    echo -e "$(gettext -s "SHOW-CUSTOM-HELP-INFO-59")<br />"
+}
 # ************************************* END OF SCRIPT *************************
 
