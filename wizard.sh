@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-declare LAST_UPDATE="11 Jan 2013 16:33"
+declare LAST_UPDATE="18 Jan 2013 16:33"
 declare SCRIPT_VERSION="1.0.0.A"
 declare SCRIPT_NAME="ArchLinux Installation Wizard"
+#
 #
 # Things to Fix
 # Check for USERNAME in all Log functions and replace it with $USERNAME
@@ -20,11 +21,9 @@ declare MENU_PATH="${FULL_SCRIPT_PATH}/MENU"
 # Debugging
 declare -i DEBUGGING=0
 declare -i SET_DEBUGGING=0 # Used in set_debugging_mode
-declare -i RUNTIME_MODE=1  # 1 = Boot Mode, 2 = Live
 declare -i SILENT_MODE=0   # Used to Silentance Loging and warnings
+declare -i SHOW_PAUSE=1 
 # Localization
-export TEXTDOMAINDIR="$LOCALIZED_PATH" # declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
-export TEXTDOMAIN="$LOCALIZED_FILE"    # declare LOCALIZED_FILE="wizard.sh"
 declare -a LOCALIZE_ID=( "" )
 declare -a LOCALIZE_MSG=( "" )
 # Help
@@ -37,7 +36,7 @@ declare -i ETH0_ACTIVE=0
 declare -i ETH1_ACTIVE=0
 declare -i ETH2_ACTIVE=0
 #
-declare USERNAME=$(whoami)
+declare USERNAME='archlinux'
 declare USERPASSWD='archlinux'
 declare ROOTPASSWD='archlinux'
 # 
@@ -47,24 +46,23 @@ declare DATE_TIME=`date +"%d-%b-%Y @ %r"`
 declare LOG_DATE_TIME=$(date +"%d-%b-%Y-T-%H-%M")    
 #
 declare EXCLUDE_FILE_WARN=( "${CONFIG_NAME}-1-taskmanager-name.db" "${CONFIG_NAME}-1-taskmanager.db" "${CONFIG_NAME}-0-packagemanager-name.db" "${CONFIG_NAME}-0-packagemanager.db" "${CONFIG_NAME}-2-packages.db" "${CONFIG_NAME}-2-aur-packages.db" "${CONFIG_NAME}-3-user-groups.db" "${CONFIG_NAME}-4-software-config.db" )
+#
+declare OPTION=" "           # Options - Used in Input
+declare -a OPTIONS=()        # Array of Options - Used in Input
+declare -i INSTALL_WIZARD=0  # Install Wizard - Setup default list to execute; do it in code so recording Marcors is not needed.
+declare -i AUTOMAN=0         # Automatic / Manual
+declare -i BYPASS=1          # Allow Bypass in Input
 # Network
 declare check_eth0=" "
 declare check_eth1=" "
 declare check_eth2=" "
 declare SPACE='\x20'
 declare HELP_TAB="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+#
+declare -i VIDEO_CARD=7
+declare -a VIDEO_CARDS=( "nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "Skip" );
 # COLORS {{{
 # Text color variables
-declare txtund=$(tput sgr 0 1)          # Underline
-declare txtbld=$(tput bold)             # Bold
-declare bldred=${txtbld}$(tput setaf 1) #  red
-declare bldblu=${txtbld}$(tput setaf 4) #  blue
-declare bldwht=${txtbld}$(tput setaf 7) #  white
-declare txtrst=$(tput sgr0)             # Reset
-declare info=${bldwht}*${txtrst}        # Feedback
-declare pass=${bldblu}*${txtrst}
-declare warn=${bldred}*${txtrst}
-declare ques=${bldblu}?${txtrst}
 # Regular Colors
 declare Black='\e[0;30m'        # Black
 declare Blue='\e[0;34m'         # Blue
@@ -114,7 +112,7 @@ create_help()
 {
     if [[ "$RUN_HELP" -eq 0 ]]; then return 0; fi
     if [[ "$CREATE_HELP" -eq 1 ]]; then
-        echo $(gettext -s "CREATE-HELP-WORKING")
+        echo "$(gettext -s "CREATE-HELP-WORKING")"
         CREATE_HELP=0
     fi
     echo -n "."
@@ -146,6 +144,8 @@ print_help()
     echo "<html>" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "<body>" >> "${FULL_SCRIPT_PATH}/help.html"
     echo "$(gettext -s "PRINT-HELP-TITLE"): $DATE_TIME" >> "${FULL_SCRIPT_PATH}/help.html"
+    show_help  >> "${FULL_SCRIPT_PATH}/help.html"
+    show_custom_help >> "${FULL_SCRIPT_PATH}/help.html" # Must be defined in Custom Script
     echo "<hr />" >> "${FULL_SCRIPT_PATH}/help.html"
     if [[ "${#HELP_ARRAY}" -ne 0 ]]; then
         total="${#HELP_ARRAY[@]}"
@@ -228,17 +228,17 @@ rtrim()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     MY_SPACE=' Left and Right '
     if [[ $(rtrim "$MY_SPACE") == " Left and Right" ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") rtrim @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") rtrim @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") rtrim @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
     if [[ $(ltrim "$MY_SPACE") == "Left and Right " ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") ltrim @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") ltrim @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") ltrim @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
     if [[ $(trim "$MY_SPACE") == "Left and Right" ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  trim @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  trim @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  trim @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -261,7 +261,7 @@ fi
 # -------------------------------------
 is_in_array()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     [[ -z "$1" ]] && return 1
     local -a array=("${!1}")          # Cast as Array 'array[@]'
     local -i total="${#array[@]}"     # Total in Array
@@ -278,7 +278,7 @@ is_in_array()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     MyArrary=( "1" "2" "3" )
     if is_in_array "MyArrary[@]" "2" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_in_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_in_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_in_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -300,8 +300,8 @@ fi
 # -------------------------------------
 load_2d_array()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
-    old_IFS="$IFS"
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
+    local OLD_IFS="$IFS"
     IFS=$' '
     if [ -f "$1" ]; then
         local lines=()
@@ -316,25 +316,24 @@ load_2d_array()
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         exit 1
     fi
-    IFS="$old_IFS"
+    IFS="$OLD_IFS"
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    old_IFS="$IFS"
-    IFS=$'\n\t' # Very important
+    OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     TransLate=( $(load_2d_array "${FULL_SCRIPT_PATH}/Test/Target/Source/gtranslate-cc.db" "0" ) ) # 1 is for Country
     if is_in_array "TransLate[@]" "English" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") load_2d_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") load_2d_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") load_2d_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
     TransLate=( $(load_2d_array "${FULL_SCRIPT_PATH}/Test/Target/Source/gtranslate-cc.db" "1" ) ) # 1 is for Country Code
     if is_in_array "TransLate[@]" "en" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") load_2d_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") load_2d_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") load_2d_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
-    IFS="$old_IFS"
+    IFS="$OLD_IFS"
 fi
 #}}}
 # -----------------------------------------------------------------------------
@@ -353,7 +352,7 @@ fi
 # -------------------------------------
 is_string_in_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$2" ]; then return 1; fi
     if [ -e "$1" ]; then
         count=`egrep -ic "$2" "$1"`
@@ -369,7 +368,7 @@ is_string_in_file()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_string_in_file "${FULL_SCRIPT_PATH}/Test/Target/Source/sudoers" "$FILE_SIGNATURE COMMENT-OUT" ; then # Only make changes once
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_string_in_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_string_in_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_string_in_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -482,7 +481,7 @@ localize_save()
                         RETURN_TRANS=$(echo "$RESPONSE" | cut -d ':' -f 3 | cut -d '}' -f 1)
                     
                     fi
-    
+                    #
                     if [[ "$i" == 0 ]]; then
                         echo "msgid \"${LOCALIZE_ID[$i]}\""    >> "$LocalePath" # 
                         echo "msgstr \"$RETURN_TRANS}\""  >> "$LocalePath" # 
@@ -516,13 +515,13 @@ localize_info()
 {
     [[ "$RUN_LOCALIZER" -eq 0 ]] && return 0
     if [[ "$CREATE_LOCALIZER" -eq 1 ]]; then
-        echo $(gettext -s "CREATE-LOCALIZER-WORKING")
+        echo "$(gettext -s "CREATE-LOCALIZER-WORKING")"
         CREATE_LOCALIZER=0
     fi
     echo -en "\b${progress[$((progresion++))]}"
     [[ "$progresion" -ge 3 ]] && progresion=0
     #    
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     [ -z "$1" ] && return 1
     [ -z "$2" ] && return 1
     #echo ">: $1"
@@ -555,7 +554,7 @@ fi
 # Help file Localization
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
     localize_info "LOCALIZE-DESC"  "Localize Text, look up ID and return Localized string."
-    localize_info "LOCALIZE-NOTES" "Localized."
+    localize_info "LOCALIZE-NOTES" "Localized. Used to Centralized the Localization Function, also to add more Functionality."
 fi
 # -------------------------------------
 localize()
@@ -591,7 +590,7 @@ fi
 # -------------------------------------
 write_error()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ ! -f "$ERROR_LOG" ]; then
         [[ ! -d "$LOG_PATH" ]] && (mkdir -pv "$LOG_PATH")
         touch "$ERROR_LOG"
@@ -602,7 +601,7 @@ write_error()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     write_error "MY-ERROR-WRITE-ERROR" "write_error @ $(basename $BASH_SOURCE) : $LINENO"
     if is_string_in_file "${ERROR_LOG}" "MY-ERROR-WRITE-ERROR" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -632,7 +631,7 @@ fi
 # -------------------------------------
 clean_logs()
 {
-    [[ "$#" -ne "1" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "1" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     local LogString="$1"
     local ReplaceWith='$USERNAME'
     #
@@ -655,7 +654,7 @@ clean_logs()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     
     if [[ $(clean_logs "$(gettext -s "WRITE-LOG-TEST") $USERNAME $USERPASSWD $ROOTPASSWD MY-TEST -> write_log @ $(basename $BASH_SOURCE) : $LINENO")  != *"$USERNAME"* ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -685,7 +684,7 @@ fi
 # -------------------------------------
 write_log()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ ! -f "$ACTIVITY_LOG" ]; then
         [[ ! -d "$LOG_PATH" ]] && (mkdir -pv "$LOG_PATH")
         touch "$ACTIVITY_LOG"
@@ -696,7 +695,7 @@ write_log()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     write_log "WRITE-LOG-TEST" "MY-TEST $USERNAME $USERPASSWD $ROOTPASSWD -> write_log @ $(basename $BASH_SOURCE) : $LINENO"
     if is_string_in_file "${ACTIVITY_LOG}" "MY-TEST" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") write_log @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -724,6 +723,7 @@ fi
 print_line()
 { 
     printf "%$(tput cols)s\n"|tr ' ' '-'
+    tput sgr0
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -814,11 +814,13 @@ print_this()
 { 
     # Console width number
     T_COLS=`tput cols`
+    tput sgr0
     if [ "$#" -eq "1" ]; then
         echo -e "${BWhite}$(localize "$1")${White}" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     else
         echo -e "${BWhite}$(localize "$1") ${2}${White}" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     fi
+    tput sgr0
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -844,11 +846,13 @@ print_that()
 { 
     # Console width number
     T_COLS=`tput cols`
+    tput sgr0
     if [ "$#" -eq "1" ]; then
         echo -e "\t\t${BWhite}$(localize "$1")${White}" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     else
         echo -e "\t\t${BWhite}$(localize "$1") ${2}${White}" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     fi
+    tput sgr0
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -874,11 +878,13 @@ print_caution()
 { 
     # Console width number
     T_COLS=`tput cols`
+    tput sgr0
     if [ "$#" -eq "1" ]; then
        echo -e "${BYellow}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     else
         echo -e "${BYellow}$(localize "$1") ${2}${White}\n" | fold -sw $(( $T_COLS - 18 )) | sed 's/^/\t/'
     fi
+    tput sgr0
 } #}}}
 # -----------------------------------------------------------------------------
 # PRINT WARNING {{{
@@ -902,11 +908,44 @@ print_warning()
 { 
     # Console width number
     T_COLS=`tput cols`
+    tput sgr0
     if [ "$#" -eq "1" ]; then
-        echo -e "\t${BYellow}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 1 ))
+        echo -e "\t${BPurple}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 1 ))
     else
-        echo -e "\t${BYellow}$(localize "$1") ${2}${White}\n" | fold -sw $(( $T_COLS - 1 ))
+        echo -e "\t${BPurple}$(localize "$1") ${2}${White}\n" | fold -sw $(( $T_COLS - 1 ))
     fi
+    tput sgr0
+} 
+#}}}
+# -----------------------------------------------------------------------------
+# PRINT TEST {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="print_warning"
+    USAGE="print_error 1->(Localized Text ID) 2->(Optional Not Localized Text)"
+    DESCRIPTION=$(localize "PRINT-TEST-DESC")
+    NOTES=$(localize "PRINT-TEST-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "PRINT-WARNING-DESC"  "Print Test"
+    localize_info "PRINT-WARNING-NOTES" "Localized."
+fi
+# -------------------------------------
+print_test()
+{ 
+    # Console width number
+    T_COLS=`tput cols`
+    tput sgr0
+    if [ "$#" -eq "1" ]; then
+        echo -e "\t${BBlue}$(localize "$1")${White}" | fold -sw $(( $T_COLS - 1 ))
+    else
+        echo -e "\t${BBlue}$(localize "$1") ${2}${White}" | fold -sw $(( $T_COLS - 1 ))
+    fi
+    tput sgr0
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -931,18 +970,20 @@ print_error()
 { 
     # Console width number
     T_COLS=`tput cols`
+    tput sgr0
     if [ "$#" -eq "1" ]; then
         echo -e "\t${BRed}$(localize "$1")${White}\n" | fold -sw $(( $T_COLS - 1 ))
     else
         echo -e "\t${BRed}$(localize "$1") ${2}${White}\n" | fold -sw $(( $T_COLS - 1 ))
     fi
+    tput sgr0
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # CHECK BOX {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="checkbox"
-    USAGE="checkbox 1->(1=True, else false)"
+    USAGE=$(localize "CHECK-BOX-USAGE")
     DESCRIPTION=$(localize "CHECK-BOX-DESC")
     NOTES=$(localize "CHECK-BOX-NOTES")
     AUTHOR="helmuthdu and Flesher"
@@ -952,13 +993,20 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "CHECK-BOX-DESC"  "Display {X} or { } in Menus."
+    localize_info "CHECK-BOX-USAGE" "checkbox 1->(0={ }, 1={X}, 2={U})"
+    localize_info "CHECK-BOX-DESC"  "Display {X} or { } or {U} in Menus."
     localize_info "CHECK-BOX-NOTES" "Used in Menu System."
 fi
 # -------------------------------------
 checkbox()
 { 
-    [[ "$1" -eq 1 ]] && echo -e "${BBlue}[${BWhite}X${BBlue}]${White}" || echo -e "${BBlue}[${White} ${BBlue}]${White}";
+    if [[ "$1" -eq 0 ]]; then 
+        echo -e "${BBlue}[${White} ${BBlue}]${White}"
+    elif [[ "$1" -eq 1 ]]; then 
+        echo -e "${BBlue}[${BWhite}X${BBlue}]${White}"
+    elif [[ "$1" -eq 2 ]]; then 
+        echo -e "${BBlue}[${BWhite}U${BBlue}]${White}"
+    fi
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1012,7 +1060,7 @@ contains_element()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     MyArrary=( "1" "2" "3" )    
     if contains_element "2" "${MyArrary[@]}"; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_in_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_in_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_in_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -1034,18 +1082,20 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INVALID-OPTION-DESC"  "Invalid option"
     localize_info "INVALID-OPTION-NOTES" "None."
     #
-    localize_info "INVALID-OPTION-TEXT" "Invalid option. Try another one."
+    localize_info "INVALID-OPTION-TEXT-1" "Invalid option"
 fi
 # -------------------------------------
 invalid_option()
 { 
     print_line
     if [ "$#" -eq 0 ]; then
-        print_this "INVALID-OPTION-TEXT"
+        print_this "INVALID-OPTION-TEXT-1"
     else
-        print_this "INVALID-OPTION-TEXT" ": $1"
+        print_this "INVALID-OPTION-TEXT-1" ": $1"
     fi
-    pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    if [[ "$INSTALL_WIZARD" -eq 0 && "$AUTOMAN" -eq 0 ]]; then
+        pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
 } 
 # -----------------------------------------------------------------------------
 #}}}
@@ -1108,14 +1158,16 @@ fi
 pause_function()
 {
     print_line
-    read -e -sn 1 -p "$(localize "PRESS-ANY-KEY-CONTINUE" "[$1]...")"
+    tput sgr0
+    read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE") [$1]..."
+    tput sgr0
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # ASSERT {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="assert"
-    USAGE="assert 1->(Called from) 2->(Test] 1->(LINENO)"
+    USAGE="assert 1->(Called from) 2->(Test] 1->(&#36;LINENO)"
     DESCRIPTION=$(localize "ASSERT-DESC")
     NOTES=$(localize "ASSERT-NOTES")
     AUTHOR="Flesher"
@@ -1260,7 +1312,7 @@ show_users()
 # SET DEBUGGING MODE {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="set_debugging_mode"
-    USAGE="set_debugging_mode 1->(1=Boot, 2=Live) 2->(&#36;LINENO)"
+    USAGE=$(localize "SET-DEBUGGING-MODE-USAGE")
     DESCRIPTION=$(localize "SET-DEBUGGING-MODE-DESC")
     NOTES=$(localize "SET-DEBUGGING-MODE-NOTES")
     AUTHOR="Flesher"
@@ -1270,6 +1322,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "SET-DEBUGGING-MODE-USAGE" "set_debugging_mode 1->(1=Boot, 2=Live) 2->(&#36;LINENO)"
     localize_info "SET-DEBUGGING-MODE-DESC"  "Set Debugging Mode: also checks for Internet Connection."
     localize_info "SET-DEBUGGING-MODE-NOTES" "Fill try to Repair Internet Connection. Only sets Debugging switch if DEBUGGING is set to 1."
     #
@@ -1340,8 +1393,7 @@ fi
 # -------------------------------------
 device_list()
 {
-    local old_IFS="$IFS"
-    IFS=$' '
+    local OLD_IFS="$IFS"; IFS=$' ';
     # Get all SD devices
     LIST_ALL_DEVICES=$(ls /dev/sd*)
     # List: /dev/sda /dev/sda1 /dev/sda2 /dev/sdb /dev/sdb1
@@ -1385,7 +1437,7 @@ device_list()
             fi
         fi
     done    
-    IFS="$old_IFS"
+    IFS="$OLD_IFS"
 }
 #}}}
 # -----------------------------------------------------------------------------    
@@ -1463,41 +1515,18 @@ to_lower_case()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if [[ $(to_lower_case "A") == 'a' ]]; then # Only make changes once
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  to_lower_case @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  to_lower_case @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  to_lower_case @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
 fi
 # -----------------------------------------------------------------------------
-# READ INPUT {{{
+# TO UPPER CASE {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="read_input"
-    USAGE="read_input"
-    DESCRIPTION=$(localize "READ-INPUT-DESC")
-    NOTES=$(localize "READ-INPUT-NOTES")
-    AUTHOR="helmuthdu and Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "READ-INPUT-DESC"  "read keyboard input."
-    localize_info "READ-INPUT-NOTES" "Sets Variable OPTION as return."
-fi
-# -------------------------------------
-read_input()
-{ 
-    read -p "$prompt1" OPTION
-} 
-#}}}
-# -----------------------------------------------------------------------------
-# GET INPUT OPTION {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="get_input_option"
-    USAGE="get_input_option 1->(array of devices) 2->(default)"
-    DESCRIPTION=$(localize "GET-INPUT-OPTION-DESC")
-    NOTES=$(localize "GET-INPUT-OPTION-NOTES")
+    NAME="to_upper_case"
+    USAGE="to_upper_case 1->(Word)"
+    DESCRIPTION=$(localize "TO-UPPER-CASE-DESC")
+    NOTES=$(localize "TO-UPPER-CASE-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
@@ -1505,37 +1534,23 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "GET-INPUT-OPTION-DESC"  "Get Keyboard Input Options between two numbers."
-    localize_info "GET-INPUT-OPTION-NOTES" "None."
+    localize_info "TO-UPPER-CASE-DESC"  "Make all Upper Case."
+    localize_info "TO-UPPER-CASE-NOTES" "None."
 fi
 # -------------------------------------
-get_input_option()
+to_upper_case()
 { 
-    local -a array=("${!1}")
-    local -i total="${#array[@]}"
-    local -i index=0
-    for var in "${array[@]}"; do
-        echo "$(( ++index ))) ${var}"
-    done    
-    echo "Choose a number between 1 and $total"
-    print_this "Default is $2 (${array[$(( $2 - 1 ))]})"
-    YN_OPTION=0
-    while [[ "$YN_OPTION" -ne 1 ]]; do
-        read_input
-        if [ -z "$OPTION" ]; then
-            OPTION=$2
-            break;
-        fi
-        if ! [[ "$OPTION" =~ ^[0-9]+$ ]] ; then
-            invalid_options "$OPTION"
-        elif [[ "$OPTION" -le $total && "$OPTION" -ne "0" ]]; then
-            break;
-        else
-            invalid_options "$OPTION"
-        fi
-    done    
+    echo $1 | tr '[a-z]' '[A-Z]'
 } 
 #}}}
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    if [[ $(to_upper_case "a") == 'A' ]]; then # Only make changes once
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  to_upper_case @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  to_upper_case @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+fi
 # -----------------------------------------------------------------------------
 # PRINT ARRAY {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
@@ -1557,21 +1572,95 @@ fi
 # -------------------------------------
 print_array()
 {
+    local OLD_IFS="$IFS"; IFS=$' '; 
     local -a myArray=("${!1}")     # Array 
-
-    local -i total=0
-    eval "total=\${#$1[@]}"
-    
-    local -i current=0
-    echo "-------------"
-    echo "$1 total=$total"
-    echo ""
+    local -i total="${#myArray[@]}"
+    echo -e "\t---------------------------------"
+    echo -e "\t${BBlue}$1 total=$total ${White}"
     for (( i=0; i<${total}; i++ )); do
-        eval "value=\${$1[$i]}"
-        echo "$1[$((current++))]=|$value|"
+        echo -e "\t${BBlue}$1[$i]=|${myArray[$i]}| ${White}"
     done    
-    echo "-------------"
+    echo -e "\t---------------------------------"
+    IFS="$OLD_IFS"
 }
+#}}}
+# -----------------------------------------------------------------------------
+# Keyboard Input Functions
+# -----------------------------------------------------------------------------
+# READ INPUT {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="read_input"
+    USAGE="read_input"
+    DESCRIPTION=$(localize "READ-INPUT-DESC")
+    NOTES=$(localize "READ-INPUT-NOTES")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "READ-INPUT-DESC"  "read keyboard input."
+    localize_info "READ-INPUT-NOTES" "Sets Variable OPTION as return; do not us in AUTOMAN or INSTALL_WIZARD Mode."
+fi
+# -------------------------------------
+read_input()
+{ 
+    read -p "$prompt1" OPTION
+} 
+#}}}
+# -----------------------------------------------------------------------------
+# GET INPUT OPTION {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="get_input_option"
+    USAGE="GET-INPUT-OPTION-USAGE"
+    DESCRIPTION=$(localize "GET-INPUT-OPTION-DESC")
+    NOTES=$(localize "GET-INPUT-OPTION-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "GET-INPUT-OPTION-USAGE"   "get_input_option 1->(array of options) 2->(default) <- return value OPTION"
+    localize_info "GET-INPUT-OPTION-DESC"    "Get Keyboard Input Options between two numbers."
+    localize_info "GET-INPUT-OPTION-NOTES"   "None."
+    localize_info "GET-INPUT-OPTION-CHOOSE"  "Choose a number between 1 and "
+    localize_info "GET-INPUT-OPTION-DEFAULT" "Default is"
+fi
+# -------------------------------------
+get_input_option()
+{ 
+    if [[ "$AUTOMAN" -eq 1 || "$INSTALL_WIZARD" -eq 1 && "$BYPASS" -eq 1 ]]; then
+        OPTION="$2"
+        return 0
+    fi
+    local -a array=("${!1}")
+    local -i total="${#array[@]}"
+    local -i index=0
+    for var in "${array[@]}"; do
+        echo "$(( ++index ))) ${var}"
+    done    
+    print_warning "GET-INPUT-OPTION-CHOOSE" "$total"
+    print_this    "GET-INPUT-OPTION-DEFAULT" ": $2 (${array[$(( $2 - 1 ))]})"
+    YN_OPTION=0
+    while [[ "$YN_OPTION" -ne 1 ]]; do
+        read_input
+        if [ -z "$OPTION" ]; then
+            OPTION=$2
+            break;
+        fi
+        if ! [[ "$OPTION" =~ ^[0-9]+$ ]] ; then
+            invalid_options "$OPTION"
+        elif [[ "$OPTION" -le $total && "$OPTION" -ne "0" ]]; then
+            break;
+        else
+            invalid_options "$OPTION"
+        fi
+    done
+    return 0
+} 
 #}}}
 # -----------------------------------------------------------------------------
 # READ INPUT OPTIONS {{{
@@ -1587,35 +1676,80 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "READ-INPUT-OPTIONS-USAGE" "read_input_options"
-    localize_info "READ-INPUT-OPTIONS-DESC"  "Read Keyboard Input Options:  String of values: 1 2 3 or 1-3"
-    localize_info "READ-INPUT-OPTIONS-NOTES" "None."
+    localize_info "READ-INPUT-OPTIONS-USAGE"   "read_input_options 1->(options) 2->(Breakable Key) <- return value OPTIONS"
+    localize_info "READ-INPUT-OPTIONS-DESC"    "Read Keyboard Input Options:  String of values: 1 2 3 or 1-3 or 1,2,3"
+    localize_info "READ-INPUT-OPTIONS-NOTES"   "AUTOMAN, INSTALL_WIZARD and BYPASS to easily configure default values, hit 'r' to run Recommended Options."
+    localize_info "READ-INPUT-OPTIONS-OPTIONS" "Use Options"
+    localize_info "READ-INPUT-OPTIONS-IT-1"    "read_input_options Removed Dupplicates"
+    localize_info "READ-INPUT-OPTIONS-IT-2"    "read_input_options Return Array"
 fi
 # -------------------------------------
 read_input_options()
 { 
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     # |1|
-    # |1 2 3 4-5 7 Q|
+    # |1 2 3 4-6 8,7,9 10 Q|
+    #debugger 1
+    local -i count=0
+    local -a MyArray=()
+    local OLD_IFS="$IFS"; IFS=$'\n\t';
+    OPTION="" # Clear it; we have no idea whats in it
+    IFS=$' '
+    if [[ "$AUTOMAN" -eq 1 || "$INSTALL_WIZARD" -eq 1 && "$BYPASS" -eq 1 ]]; then
+        if [ -z "$1" ]; then
+            MyArray=( $( echo "$2" ) ) # @FIX this should not happen; how to fix it?
+        else
+            MyArray=( $( echo "$1" ) )
+        fi
+    else
+        while [[ -z "$OPTION" ]]; do
+            read -p "        $prompt2" OPTION
+        done
+        if [[ $(echo "$OPTION" | tr '[:upper:]' '[:lower:]') == 'r' ]]; then
+            MyArray=( $( echo "$1" ) )
+        else
+            MyArray=( $( echo "$(trim "$OPTION")" ) ) # |1 2 3 4-6 8 7,9 10 Q|
+        fi
+    fi
     local line=""
     local packages_opt=""
-    OPTION=""
-    while [[ -z "$OPTION" ]]; do
-        read -p "        $prompt2" OPTION
-    done
-    IFS=" "
-    array=($(trim "$OPTION")) # 1 2 3-6 7 Q
-    # "1" "2" "3-6" "7" "Q"
-    for line in ${array[@]/,/ }; do
-        if [[ ${line/-/} != $line ]]; then
-            for ((i=${line%-*}; i<=${line#*-}; i++)); do
-                [ -n "$i" ] && packages_opt+=($i);
-            done
-        else
-            packages_opt+=($line)
+    # "1" "2" "3-6" "7" "8,9" "Q"
+    IFS=$' ';
+    # Fix any problems with input
+    local -i total="${#MyArray[@]}"
+    for (( i=0; i<${total}; i++ )); do
+        if [[ "${MyArray[$i]:0:1}" == "-" ]]; then
+            MyArray[$i]=${MyArray[$i]:1}
         fi
     done
-    OPTIONS=($(echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]'))
-    #write_log "read_input_options  $OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #    
+    for line in ${MyArray[@]/,/ }; do
+        if [[ ${line/-/} != $line ]]; then
+            for ((i=${line%-*}; i<=${line#*-}; i++)); do # Start at line with a - after it, 1-, then end with the - before it -3, then count each item in between it
+                [[ -n "$i" ]] && packages_opt+=( "$i" );
+            done
+        else
+            packages_opt+=( "$line" ) 
+        fi
+    done
+    OPTIONS=( $(echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]') )
+    if [[ "$RUN_TEST" -eq 2 ]]; then
+        print_test "READ-INPUT-OPTIONS-OPTIONS" "$1"
+    fi
+    if [[ "$RUN_TEST" -eq 2 ]]; then
+        print_test "READ-INPUT-OPTIONS-IT-2" ":"
+        print_array "OPTIONS[@]"
+    fi
+    IFS=$'\t\n';
+    OPTIONS=( $(remove_array_duplicates "OPTIONS[@]") )
+    IFS=" ";
+    if [[ "$RUN_TEST" -eq 2 ]]; then
+        print_test "READ-INPUT-OPTIONS-IT-1" ":"
+        print_array "MyArray[@]"
+    fi
+    IFS="$OLD_IFS"
+    #debugger 0
+    write_log "read_input_options  $OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1632,7 +1766,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "READ-INPUT-YN-USAGE" "read_input_yn 1->(Question) 2->(None Localize) 3->(0=No, 1=Yes)"
+    localize_info "READ-INPUT-YN-USAGE" "read_input_yn 1->(Question) 2->(None Localize) 3->(0=No, 1=Yes) <- return value YN_OPTION"
     localize_info "READ-INPUT-YN-DESC"  "Read Keyboard Input for Yes and No."
     localize_info "READ-INPUT-YN-NOTES" "Localized."
     #
@@ -1642,7 +1776,11 @@ fi
 # -------------------------------------
 read_input_yn()
 { 
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
+    if [[ "$AUTOMAN" -eq 1 || "$INSTALL_WIZARD" -eq 1 && "$BYPASS" -eq 1 ]]; then
+        YN_OPTION="$3"
+        return 0
+    fi
     local MY_OPTION=0
     # read_input_yn "Is this Correct" "This" 1
     # GET INPUT YN {{{
@@ -1673,30 +1811,31 @@ read_input_yn()
         else 
             MY_OPTION=0
             if [[ "$3" -eq 1 ]]; then
-                print_error "$(localize "Wrong-Key-Yn")"
+                print_error "Wrong-Key-Yn"
             else
-                print_error "$(localize "Wrong-Key-Ny")"
+                print_error "Wrong-Key-Ny"
             fi
             pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
     done
-    #write_log "read_input_yn [$3] answer $YN_OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    write_log "read_input_yn [$3] answer $YN_OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
 } 
 #}}}
 # -----------------------------------------------------------------------------
 # READ INPUT DEFAULT {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="read_input_default"
-    USAGE="read_input_default"
+    USAGE=$(localize "READ-INPUT-DEFAULT-USAGE")
     DESCRIPTION=$(localize "READ-INPUT-DEFAULT-DESC")
     NOTES=$(localize "READ-INPUT-DEFAULT-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
+    REVISION="15 Jan 2013"
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "READ-INPUT-DEFAULT-USAGE" "read_input_default 1->(Prompt) 2->(Default Value)"
     localize_info "READ-INPUT-DEFAULT-DESC"  "Read Keyboard Input and allow Edit of Default value."
     localize_info "READ-INPUT-DEFAULT-NOTES" "None."
 fi
@@ -1704,7 +1843,11 @@ fi
 read_input_default()
 { 
     # read_input_default "Enter Data" "Default-Date"
-    read -e -p "$( localize "$1") >" -i "$2" OPTION
+    if [[ "$AUTOMAN" -eq 1 || "$INSTALL_WIZARD" -eq 1 && "$BYPASS" -eq 1 ]]; then
+        OPTION="$2"
+        return 0
+    fi
+    read -e -p "$(localize "$1") >" -i "$2" OPTION
     echo ""
 } 
 #}}}
@@ -1722,9 +1865,9 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "READ-INPUT-DATA-USAGE" "read_input_data 1->(Localized Prompt)"
+    localize_info "READ-INPUT-DATA-USAGE" "read_input_data 1->(Localized Prompt) <- return value OPTION"
     localize_info "READ-INPUT-DATA-DESC"  "Read Data."
-    localize_info "READ-INPUT-DATA-NOTES" "Return value in variable OPTION"
+    localize_info "READ-INPUT-DATA-NOTES" "Return value in variable OPTION; not to be used in AUTOMAN or INSTALL_WIZARD Mode, since there is no default value."
 fi
 # -------------------------------------
 read_input_data()
@@ -1747,7 +1890,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "VERIFY-INPUT-DEFAULT-DATA-USAGE"     "verify_input_default_data 1->(Prompt) 2->(Default-Value) 3->(Default 1=Yes or 0=No)"
+    localize_info "VERIFY-INPUT-DEFAULT-DATA-USAGE"     "verify_input_default_data 1->(Prompt) 2->(Default-Value) 3->(Default 1=Yes or 0=No) <- return value in OPTION"
     localize_info "VERIFY-INPUT-DEFAULT-DATA-DESC"      "Verify Keyboard Input of Default Editable Value."
     localize_info "VERIFY-INPUT-DEFAULT-DATA-NOTES"     "None."
     #
@@ -1758,23 +1901,31 @@ fi
 # -------------------------------------
 verify_input_default_data()
 { 
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
+    if [[ "$AUTOMAN" -eq 1 || "$INSTALL_WIZARD" -eq 1 && "$BYPASS" -eq 1 ]]; then
+        write_log "$FUNCNAME $1 = $YN_OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+        OPTION="$2"
+        return 0
+    fi
+    # READ VERIFY INPUT {{{
     read_verify_input()
     {
         echo ""
         read -e -p "$(localize "VERIFY-INPUT-DEFAULT-DATA-ENTER") $(localize "$1") >" -i "$2" OPTION
         echo ""
     }
+    #}}}
     YN_OPTION=0
     while [[ "$YN_OPTION" -ne 1 ]]; do
         read_verify_input "$1" "$2"
         read_input_yn "VERIFY-INPUT-DEFAULT-DATA-VERIFY" " $(localize "$1") :  [$OPTION]" "$3"
-        if [ -z "$OPTION" ]; then
+        if [ -z "$YN_OPTION" ]; then
             echo "$(localize "VERIFY-INPUT-DEFAULT-DATA-NOT-EMPTY")!"
             YN_OPTION=0
         fi
     done
     write_log "$FUNCNAME $1 = $YN_OPTION" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    return 0
 } 
 #}}}
 # -----------------------------------------------------------------------------
@@ -1791,33 +1942,78 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "VERIFY-INPUT-DATA-USAGE" "verify_input_data 1->(Prompt) 2->(Data)"
-    localize_info "VERIFY-INPUT-DATA-DESC"  "verify input data."
-    localize_info "VERIFY-INPUT-DATA-NOTES" "Localized."
+    localize_info "VERIFY-INPUT-DATA-USAGE"  "verify_input_data 1->(Prompt) 2->(Data) <- return value OPTION"
+    localize_info "VERIFY-INPUT-DATA-DESC"   "verify input data."
+    localize_info "VERIFY-INPUT-DATA-NOTES"  "Localized."
     #
     localize_info "VERIFY-INPUT-DATA-ENTER"  "Enter"
     localize_info "VERIFY-INPUT-DATA-VERIFY" "Verify"
-    localize_info "VERIFY-INPUT-DATA-EMPTY" "Can not be empty"
+    localize_info "VERIFY-INPUT-DATA-EMPTY"  "Can not be empty"
 fi
 # -------------------------------------
 verify_input_data()
 { 
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
+    if [[ "$AUTOMAN" -eq 1 || "$INSTALL_WIZARD" -eq 1 && "$BYPASS" -eq 1 ]]; then
+        OPTION="$2"
+        return 0
+    fi
+    # READ VERIFY INPUT {{{
     read_verify_input()
     {
         read -p "$(localize "VERIFY-INPUT-DATA-ENTER") $(localize "$1") : " OPTION
     }
+    #}}}
     YN_OPTION=0
     while [[ "$YN_OPTION" -ne 1 ]]; do
-        read_verify_input "$1"
-        read_input_yn "VERIFY-INPUT-DATA-VERIFY" "$(localize "$1"): [$OPTION]" "$2"
+        read_verify_input "$1" # Returns OPTION
+        read_input_yn "VERIFY-INPUT-DATA-VERIFY" "$(localize "$1"): [$OPTION]" "$2" # Returns YN_OPTION
         if [ -z "$OPTION" ]; then
             echo "$(localize "VERIFY-INPUT-DATA-EMPTY")!"
             YN_OPTION=0
         fi
     done
     write_log "$FUNCNAME $1 = $YN_OPTION" "$(basename $BASH_SOURCE) : $LINENO" # Left out data, it could be a password or user name.
+    return 0
 } 
+#}}}
+# -----------------------------------------------------------------------------
+# IS OS {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="is_os"
+    USAGE=$(localize "IS-OS-USAGE")
+    DESCRIPTION=$(localize "IS-OS-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "IS-OS-USAGE" "is_os 1->(os-name)"
+    localize_info "IS-OS-DESC"  "Check to see if OS matches what you think it is"
+fi
+# -------------------------------------
+is_os()
+{
+    count=$(egrep -ic "$1" '/etc/os-release')
+    [[ "$count" -gt 0 ]] &&	return 0
+    if [[ "$count" -gt 0 ]]; then
+        return 0
+    else
+        return 1
+    fi    
+}
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 2 ]]; then
+    #if is_os "UBUNTU" ; then
+    if is_os "Arch Linux" ; then
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_os @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_os @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi    
+fi
 #}}}
 # -----------------------------------------------------------------------------
 # IS WILDCARD FILE {{{
@@ -1839,7 +2035,7 @@ fi
 # -------------------------------------
 is_wildcard_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     get_filter()
     {
         echo $(find "$1" -type f \( -name "*.$2" \))
@@ -1869,12 +2065,12 @@ is_wildcard_file()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/gtranslate-cc.db" ]; then
         if is_wildcard_file "${FULL_SCRIPT_PATH}/Test/Target/Source/" "db" ; then # " " | "ext" 
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
         if is_wildcard_file "${FULL_SCRIPT_PATH}/Test/Target/Source/" " " ; then # " " | "ext" 
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_wildcard_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
@@ -1901,7 +2097,7 @@ fi
 # -------------------------------------
 make_dir()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [[ -n "$1" ]]; then # Check for Empty
         [[ ! -d "$1" ]] && mkdir -pv "$1"
         if [ -d "$1" ]; then
@@ -1926,7 +2122,7 @@ make_dir()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if make_dir "${FULL_SCRIPT_PATH}/Test/Target/Source/MakeMe/" ": make_dir @ $(basename $BASH_SOURCE) : $LINENO" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  make_dir @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  make_dir @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  make_dir @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -1952,13 +2148,13 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     #
     localize_info "COPY-DIRECTORY-PATH"  "Empty Path."
     localize_info "COPY-DIRECTORY-COPY"  "Copied Directory"
-    localize_info "COPY-DIRECTORY-ERROR" "Failed to copy Direcory."
-    localize_info "COPY-DIRECTORY-MAKE"  "Failed to Make Direcory."
+    localize_info "COPY-DIRECTORY-ERROR" "Failed to copy Directory."
+    localize_info "COPY-DIRECTORY-MAKE"  "Failed to Make Directory."
 fi
 # -------------------------------------
 copy_dir()
 {
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     #
     if [[ -z "$1" ]]; then
         print_error "COPY-DIRECTORY-PATH" "[$1] -> [$2] | $3 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -2002,7 +2198,7 @@ copy_dir()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if copy_dir "${FULL_SCRIPT_PATH}/Test/Source/" "${FULL_SCRIPT_PATH}/Test/Target/" ": copy_dir @ $(basename $BASH_SOURCE) : $LINENO" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  copy_dir @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  copy_dir @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  copy_dir @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2030,7 +2226,7 @@ fi
 # -------------------------------------
 remove_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -f "$1" ]; then
         rm -f "$1"
         write_log  "remove_file $1" " -> $2"
@@ -2046,7 +2242,7 @@ remove_file()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     remove_file "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" "write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
     if [ ! -f "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" ]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED") write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED") write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED") write_error @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2072,7 +2268,7 @@ fi
 # -------------------------------------
 copy_file()
 {
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     # 
     if [ ! -f "$1" ]; then
         if [[ "${EXCLUDE_FILE_WARN[@]}" != *"$1"* ]]; then
@@ -2111,7 +2307,7 @@ copy_file()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     copy_file "${FULL_SCRIPT_PATH}/Test/Source/README.md" "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" "copy_file @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" ]; then # Only make changes once
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  copy_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  copy_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  copy_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2138,7 +2334,7 @@ fi
 # -------------------------------------
 copy_files()
 {
-    [[ "$#" -ne "4" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "4" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if ! is_wildcard_file "$1" "$2" ; then # " " | "ext" 
         if [[ "$2" == " " ]]; then
             write_error "Files Not Found! copy_files->is_wildcard_file [$1] to [$3] failed to copy file from $4 at $DATE_TIME." "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -2193,13 +2389,13 @@ copy_files()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     copy_files "${FULL_SCRIPT_PATH}/Test/Extras/" "log" "${FULL_SCRIPT_PATH}/Test/Target/Source/Extras/" "copy_files @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" ]; then # Only make changes once
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
     copy_files "${FULL_SCRIPT_PATH}/Test/Extras/" " " "${FULL_SCRIPT_PATH}/Test/Target/Source/Extras/" "copy_files @ $(basename $BASH_SOURCE) : $LINENO"
     if [ -f "${FULL_SCRIPT_PATH}/Test/Target/Source/README.md" ]; then # Only make changes once
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  copy_files @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2225,7 +2421,7 @@ fi
 # -------------------------------------
 delete_line_in_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     sed -i '/'${1}'/ d' "$2"
     return "$?"
 }
@@ -2256,7 +2452,7 @@ fi
 # -------------------------------------
 comment_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     [[ ! -f "$2" ]] && (print_error "COMMENT-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; return 1)
     sed -i 's/^'${1}'/#'${1}'/g' "$2"
     return "$?"
@@ -2264,7 +2460,7 @@ comment_file()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if comment_file "Defaults:${USERNAME}" "${FULL_SCRIPT_PATH}/Test/Target/Source/sudoers" ; then
-        print_info "TEST-FUNCTION-PASSED" "comment_file @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     fi
@@ -2290,7 +2486,7 @@ fi
 # -------------------------------------
 un_comment_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     [[ ! -f "$2" ]] && (print_error "COMMENT-FILE-FNF" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; return 1)
     sed -i 's/^#'${1}'/'${1}'/g' "$2"           
     return "$?"
@@ -2298,7 +2494,7 @@ un_comment_file()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if un_comment_file "#Defaults:${USERNAME}" "${FULL_SCRIPT_PATH}/Test/Target/Source/sudoers" ; then
-        print_info "TEST-FUNCTION-PASSED" "un_comment_file @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "un_comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "un_comment_file @ $(basename $BASH_SOURCE) : $LINENO"
     fi
@@ -2329,7 +2525,7 @@ fi
 # -------------------------------------
 add_option()
 {
-    [[ "$#" -ne "4" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "4" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -f "$1" ]; then
         if is_string_in_file "$1" "$2" ; then
             if ! is_string_in_file "$1" "$3" ; then
@@ -2355,7 +2551,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     # SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions
     add_option "${FULL_SCRIPT_PATH}/Test/Target/Source/kdmrc" 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-KDM'
     if is_string_in_file "${FULL_SCRIPT_PATH}/Test/Target/Source/kdmrc" ",/usr/share/xsessions" ; then
-        print_info "TEST-FUNCTION-PASSED" "add_option @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "add_option @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "add_option @ $(basename $BASH_SOURCE) : $LINENO"
     fi
@@ -2390,7 +2586,7 @@ replace_option()
     # replace_option "/usr/share/config/kdm/kdmrc" "AllowClose=" "true" "APPEND-FILE-"
     # sed '/AllowClose=/ c\AllowClose=true' /home/jflesher/Downloads/arch-git/archwiz/Test/Target/Source/kdmrc
     # AllowClose=false to AllowClose=true
-    [[ "$#" -ne "4" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "4" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -f "$1" ]; then
         if is_string_in_file "$1" "$2" ; then
             if ! is_string_in_file "$1" "${2}$3" ; then
@@ -2417,7 +2613,7 @@ replace_option()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     replace_option "${FULL_SCRIPT_PATH}/Test/Target/Source/kdmrc" 'AllowClose=' 'true' 'ADD-OPTION-KDM'
     if is_string_in_file "${FULL_SCRIPT_PATH}/Test/Target/Source/kdmrc" "AllowClose=true" ; then
-        print_info "TEST-FUNCTION-PASSED" "replace_option @ $(basename $BASH_SOURCE) : $LINENO"
+        print_test "TEST-FUNCTION-PASSED" "replace_option @ $(basename $BASH_SOURCE) : $LINENO"
     else
         print_error "TEST-FUNCTION-FAILED" "replace_option @ $(basename $BASH_SOURCE) : $LINENO"
     fi
@@ -2445,7 +2641,7 @@ fi
 # -------------------------------------
 make_file()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [[ -n "$1" && -n "$2" ]]; then # Check for Empty
         [[ ! -f "$1" ]] && touch "$1"    
         if [ -f "$1" ]; then
@@ -2467,7 +2663,7 @@ make_file()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if make_file "${FULL_SCRIPT_PATH}/Test/Target/Source/MakeMe/me.txt" ": make_file @ $(basename $BASH_SOURCE) : $LINENO" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  make_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  make_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  make_file @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2477,7 +2673,7 @@ fi
 # SAVE ARRAY {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="save_array"
-    USAGE="save_array 1->(Array(@)) 2->(/Path) 3->(MenuName.ext)"
+    USAGE=$(localize "SAVE-ARRAY-USAGE")
     DESCRIPTION=$(localize "SAVE-ARRAY-DESC")
     NOTES=$(localize "SAVE-ARRAY-NOTES")
     AUTHOR="Flesher"
@@ -2487,6 +2683,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "SAVE-ARRAY-USAGE" "save_array 1->(Array(@)) 2->(/Path) 3->(MenuName.ext)"
     localize_info "SAVE-ARRAY-DESC"  "Save Array."
     localize_info "SAVE-ARRAY-NOTES" "None."
     localize_info "SAVE-ARRAY-ERROR" "Error Saving Array."
@@ -2494,7 +2691,7 @@ fi
 # -------------------------------------
 save_array()
 {
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     make_dir "${2}" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     touch "${2}/$3"
     local -a array=("${!1}")
@@ -2518,7 +2715,7 @@ save_array()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     MyArray=( "1" "2" "3")
     if save_array "MyArray[@]" "${FULL_SCRIPT_PATH}/Test/Target/Source/" "MyArray.db" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  save_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  save_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  save_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2528,7 +2725,7 @@ fi
 # LOAD ARRAY {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="load_array"
-    USAGE="Array=( &#36;(load_array 1->(/Path/ArrayName.ext) 2->(ArrarySize) 3->(Default Data) ) )"
+    USAGE=$(localize "LOAD-ARRAY-USAGE")
     DESCRIPTION=$(localize "LOAD-ARRAY-DESC")
     NOTES=$(localize "LOAD-ARRAY-NOTES")
     AUTHOR="Flesher"
@@ -2538,13 +2735,14 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "LOAD-ARRAY-USAGE" "Array=( &#36;(load_array 1->(/Path/ArrayName.ext) 2->(ArrarySize) 3->(Default Data) ) )"
     localize_info "LOAD-ARRAY-DESC"  "Load a saved Array from Disk."
     localize_info "LOAD-ARRAY-NOTES" "None."
 fi
 # -------------------------------------
 load_array()
 {
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [[ -f "$1" ]]; then
         while read line; do 
             echo "$line" # Stored Data
@@ -2557,12 +2755,11 @@ load_array()
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    OLD_IFS="$IFS"
-    IFS=$'\n\t' # Very Important
+    OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     MyArray=( $(load_array "${FULL_SCRIPT_PATH}/Test/Target/Source/MyArray.db" 0 0 ) ) 
     total="${#MyArray[@]}"
     if [[ "$total" -eq 3 ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  load_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  load_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  load_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2590,7 +2787,7 @@ fi
 # -------------------------------------
 create_data_array()
 { 
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     [[ "$1" -eq 0 ]] && return 0
     for (( i=0; i<${1}; i++ )); do
         echo "$1" # Default Data
@@ -2598,12 +2795,11 @@ create_data_array()
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    OLD_IFS="$IFS"
-    IFS=$'\n\t' # Very Important
+    OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     MyArray=( $(create_data_array 3 0 ) ) 
     total="${#MyArray[@]}"
     if [[ "$total" -eq 3 ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  create_data_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  create_data_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  create_data_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2614,7 +2810,7 @@ fi
 # IS NUMBER {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="is_number"
-    USAGE="is_number 1->(value)"
+    USAGE=$(localize "IS-NUMBER-USAGE")
     DESCRIPTION=$(localize "IS-NUMBER-DESC")
     NOTES=$(localize "IS-NUMBER-NOTES")
     AUTHOR="Flesher"
@@ -2624,6 +2820,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "IS-NUMBER-USAGE" "is_number 1->(value)"
     localize_info "IS-NUMBER-DESC"  "Is Number."
     localize_info "IS-NUMBER-NOTES" "None."
 fi
@@ -2639,7 +2836,7 @@ is_number()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if $(is_number "1") && ! $(is_number "A") ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_number @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_number @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_number @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2649,7 +2846,7 @@ fi
 # PRINT MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="print_menu"
-    USAGE="print_menu 1->(MenuArray[@]) 2->(MenuInfoArray[@]) 3->(Letter to Exit)" 
+    USAGE=$(localize "PRINT-MENU-USAGE")
     DESCRIPTION=$(localize "PRINT-MENU-DESC")
     NOTES=$(localize "PRINT-MENU-NOTES")
     AUTHOR="Flesher"
@@ -2659,6 +2856,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "PRINT-MENU-USAGE" "print_menu 1->(MenuArray[@]) 2->(MenuInfoArray[@]) 3->(Letter to Exit)"
     localize_info "PRINT-MENU-DESC"  "Print Menu."
     localize_info "PRINT-MENU-NOTES" "Localized."
     #
@@ -2669,7 +2867,7 @@ fi
 # -------------------------------------
 print_menu()
 { 
-    [[ "$#" -ne "3" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "3" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     local -a arrayMenu=("${!1}")     # Array 
     local -i total="${#arrayMenu[@]}"
     #
@@ -2680,7 +2878,7 @@ print_menu()
     tput sgr0
     #
     for (( index=0; index<${totalInfo}; index++ )); do
-        if [[ "$totalInfo" -le 9 ]]; then
+        if [[ "$totalInfo" -le 8 ]]; then
             if [ "${#arrayInfo[$index]}" -gt 0 ]; then
                 print_this "${SPACE}${arrayInfo[$index]}"; tput sgr0
             fi
@@ -2693,7 +2891,7 @@ print_menu()
     #
     echo ""
     for (( index=0; index<${total}; index++ )); do
-        if [[ "$index" -le 9 ]]; then
+        if [[ "$index" -le 8 ]]; then
             echo -e "${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${arrayMenu[$index]}"; tput sgr0
         else
             echo -e "${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${arrayMenu[$index]}"; tput sgr0    
@@ -2708,7 +2906,7 @@ print_menu()
         MY_ACTION=$(localize "MENU-D")
     fi
     echo ""
-    if [[ "$index" -le 9 ]]; then
+    if [[ "$index" -le 8 ]]; then
         echo -e "${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${3}) $MY_ACTION"; tput sgr0 
     else
         echo -e "${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${SPACE}${3}) $MY_ACTION"; tput sgr0 
@@ -2730,14 +2928,14 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "ADD-MENU-ITEM-USAGE" "add_menu_item 1->(Checkbox_List_Array) 2->(Menu_Array) 3->(Info_Array) 4->(Menu Description in White) 5->(In Yellow) 6->(In Red) 7->(Information Printed Above Menu) 8->(MenuTheme_Array{@})"
+    localize_info "ADD-MENU-ITEM-USAGE" "add_menu_item 1->(Checkbox_List_Array) 2->(Menu_Array) 3->(Info_Array) 4->(Menu Description in White) 5->(In Yellow) 6->(In Red) 7->(Information Printed Above Menu) 8->(MenuTheme_Array[@])"
     localize_info "ADD-MENU-ITEM-DESC"  "Add Menu Item."
     localize_info "ADD-MENU-ITEM-NOTES" "Text should be Localize ID."
 fi
 # -------------------------------------
 add_menu_item()
 { 
-    [[ "$#" -ne "8" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "8" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     # 1. Checkbox List Array
     # 2. Menu Array
     # 3. Info-Array
@@ -2747,12 +2945,16 @@ add_menu_item()
     # 7. Informatin Printed Above Menu -> Build InfoArray
     # 8. Theme
     # @FIX pass in Checkbox-List-Array
+    # RESET_MENU Unused; but lets function knows its a new menu
     
     #local -a checkbox_array=("${!1}")  # Checkbox List Array 
     #echo "checkbox_array=${checkbox_array[@]}"
     eval "total_checkbox=\${#$1[@]}"
+    if [[ "$total_checkbox" -eq 0 ]]; then
+        array_push "$1" "0"
+        total_checkbox=1
+    fi
     eval "total=\${#$2[@]}"
-    total=$((total -1))
     #    
     if [[ "$total" -ge "$total_checkbox"  ]]; then
         array_push "$1" "0"
@@ -2762,10 +2964,16 @@ add_menu_item()
     #
     if [[ -z "${cba}" ]]; then
         cba=0
+        if [[ "$RUN_TEST" -eq 2 ]]; then
+            print_error "add_menu_item checkbox null value is wrong! Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
         write_error "add_menu_item checkbox null value is wrong! Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     if ! is_number "${cba}" ; then
         cba=0
+        if [[ "$RUN_TEST" -eq 2 ]]; then
+            print_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
         write_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
     #
@@ -2813,12 +3021,12 @@ is_internet()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_internet ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fix_network
         if is_internet ; then
-            echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
+            echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
         else
             echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_internet @ $(basename $BASH_SOURCE) : $LINENO${White}"
         fi
@@ -2858,7 +3066,7 @@ is_online()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_online "google.com" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_online @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_online @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_online @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2895,7 +3103,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     array_push "MyArray" "3"
     total="${#MyArray[@]}"
     if [[ "$total" -eq 3 ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  array_push @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  array_push @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  array_push @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2924,7 +3132,7 @@ fi
 # -------------------------------------
 remove_from_array()
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     # Check to see if its in Array    
     if is_in_array "$1[@]" "$2" ; then
         eval "local -a array=(\${$1[@]})"
@@ -2940,7 +3148,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
         remove_from_array "MyArray" "2"
     fi
     if ! is_in_array "MyArray[@]" "2" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  remove_from_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  remove_from_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  remove_from_array @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -2966,7 +3174,7 @@ fi
 # -------------------------------------
 get_index() 
 {
-    [[ "$#" -ne "2" ]] && (echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1)
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     local -a i_array=("${!1}")
     #echo "i_array=${i_array[@]}"
     local -i total="${#i_array[@]}"
@@ -2985,7 +3193,7 @@ get_index()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     MyArray=( "1" "2" "3" )
     if [[ $(get_index "MyArray[@]" "2") -eq 1 ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  get_index @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  get_index @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  get_index @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3017,7 +3225,7 @@ remove_array_duplicates()
     # MY_ARR=("MY" "MY" "2" "2" "LIST" "LIST" "OK")
     # local -i total=${#MY_ARR[@]}
     # echo ${MY_ARR[@]} # Prints: MY MY 2 2 LIST LIST OK
-    # MY_ARR=( $(remove_dups MY_ARR[@]) )
+    # MY_ARR=( $(remove_array_duplicates MY_ARR[@]) )
     # echo ${MY_ARR[@]} # Prints: MY 2 LIST OK    declare -a array=("${!1}")
     # for (( index=0; index<${total}; index++ )); do echo "ARRAY= ${MY_ARR[$index]}"; done # to echo with new line
     local -a array=("${!1}")
@@ -3029,7 +3237,7 @@ remove_array_duplicates()
     for (( i=0; i<${total}; i++ )); do
         (( j = i + 1 ))
         while (( j < total )); do
-            if [ "${array[$i]}" = "${array[$j]}" ]; then
+            if [ "${array[$i]}" == "${array[$j]}" ]; then
                 break
             fi
             (( j = j + 1 ))
@@ -3043,18 +3251,17 @@ remove_array_duplicates()
     done
     # Must echo to fill array
     for element in ${sarray[*]}; do
-        echo "${element}"
+        echo -e "${element}"
     done
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
-    OLD_IFS="$IFS"
-    IFS=$'\n\t' # Very Important
-    MyArray=( "1" "2" "3" "4" "4" "5" )
+    OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    MyArray=( "1" "2" "3" "4" "4" "5" "6-8" "6-8" )
     MyArray=( $( remove_array_duplicates "MyArray[@]") )
     total="${#MyArray[@]}"
-    if [[ "$total" -eq 5 ]]; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  remove_array_duplicates @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    if [[ "$total" -eq 6 ]]; then
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  remove_array_duplicates @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  remove_array_duplicates @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3099,7 +3306,7 @@ is_last_item()
 if [[ "$RUN_TEST" -eq 1 ]]; then
     MyArray=( "1" "2" "3" "4" "5" "6" )
     if is_last_item "MyArray[@]" "6" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_last_item @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_last_item @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_last_item @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3109,7 +3316,7 @@ fi
 # DATE2STAMP {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="date2stamp"
-    USAGE="date2stamp 1->(date)"
+    USAGE=$(localize "DATE2STAMP-USAGE")
     DESCRIPTION=$(localize "DATE2STAMP-DESC")
     NOTES=$(localize "DATE2STAMP-NOTES")
     AUTHOR="Flesher"
@@ -3119,6 +3326,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "DATE2STAMP-USAGE" "date2stamp 1->(date)"
     localize_info "DATE2STAMP-DESC"  "Convert Date to Datetime stamp."
     localize_info "DATE2STAMP-NOTES" "None."
 fi
@@ -3126,6 +3334,46 @@ fi
 date2stamp()
 {
     date --utc --date "$1" +%s
+}
+#}}}
+# ----------------------------------------------------------------------------- 
+# DETECTED VIDEO CARD {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="detected_video_card"
+    USAGE="detected_video_card"
+    DESCRIPTION=$(localize "DETECTED-VIDEO-CARD-DESC")
+    NOTES=$(localize "DETECTED-VIDEO-CARD-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="19 Jan 2013"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "DETECTED-VIDEO-CARD-DESC"  "Detect Video Card."
+    localize_info "DETECTED-VIDEO-CARD-NOTES" "Need to add more support for Video Cards, currently it supports: nVidia, Intel, ATI and Vesa."
+fi
+# -------------------------------------
+detected_video_card()
+{
+    # @FIX Add more Video cards and Options
+    #  1        2         3       4     5      6            7
+    # "nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "Skip"
+    if (lspci | grep -q 'VGA compatible controller: NVIDIA'); then 
+        VIDEO_CARD=1
+    elif (lspci | grep -q 'VGA compatible controller: NVIDIA'); then # This will never get set
+        VIDEO_CARD=2
+    elif (lspci | grep -q 'VGA compatible controller: Intel'); then 
+        VIDEO_CARD=3
+    elif (lspci | grep -q 'VGA compatible controller: ATI'); then 
+        VIDEO_CARD=4
+    elif (lspci | grep -q 'VGA compatible controller: Vesa'); then # Don't know if this works
+        VIDEO_CARD=5
+    elif (lspci | grep -q 'VGA compatible controller: Virtualbox'); then  # This doesn't work, just putting it out there for a better fix, since its just an option and not hardware
+        VIDEO_CARD=6
+    else
+        VIDEO_CARD=7
+    fi
 }
 #}}}
 # ----------------------------------------------------------------------------- 
@@ -3142,19 +3390,21 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "CLEAR-LOGS-DESC"  "Clear all Log Entries."
-    localize_info "CLEAR-LOGS-NOTES" "None."
+    localize_info "CLEAR-LOGS-DESC"    "Clear all Log Entries."
+    localize_info "CLEAR-LOGS-NOTES"   "None."
+    localize_info "CLEAR-LOGS-CLEAR-1" "Clearing Log Files"
+    localize_info "CLEAR-LOGS-CLEAR-2" "Creaded Log Folders"
 fi
 # -------------------------------------
 clear_logs()
 {
-    echo "Clearing Log Files..."
+    print_this "CLEAR-LOGS-CLEAR-1" "..."
     make_dir "$LOG_PATH"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     make_dir "$MENU_PATH"   "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     make_dir "$CONFIG_PATH" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    echo "Creaded Log Folders"
-    copy_file "${ERROR_LOG}"    "10-${ERROR_LOG}.${LOG_DATE_TIME}.log"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file "${ACTIVITY_LOG}" "11-${ACTIVITY_LOG}.${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    print_this "CLEAR-LOGS-CLEAR-2" "..."
+    copy_file "${ERROR_LOG}"    "Archive/${ERROR_LOG}.${LOG_DATE_TIME}.log"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file "${ACTIVITY_LOG}" "Archive/${ACTIVITY_LOG}.${LOG_DATE_TIME}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     echo "# Error Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "$ERROR_LOG"
     echo "# Log: $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME."  > "$ACTIVITY_LOG"
     echo "Logs Cleared"
@@ -3186,7 +3436,7 @@ is_user()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_user $(whoami) ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_user @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_user @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_user @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3213,13 +3463,15 @@ fi
 add_user_group()
 {
     USER_GROUPS[${#USER_GROUPS[*]}]="$1"
+    local OLD_IFS="$IFS"; IFS=$'\n\t';
     USER_GROUPS=( $( remove_array_duplicates "USER_GROUPS[@]") )
+    IFS=$"$OLD_IFS"
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     add_user_group "TestMyAccount"
     if is_in_array "USER_GROUPS[@]" "TestMyAccount" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  add_user_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  add_user_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  add_user_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3255,7 +3507,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
     add_user_group "TestMyAccount2"
     remove_user_group "TestMyAccount2"
     if ! is_in_array "USER_GROUPS[@]" "TestMyAccount2" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  remove_user_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  remove_user_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  remove_user_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3287,7 +3539,7 @@ is_user_in_group()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_user_in_group $(whoami) ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_user_in_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_user_in_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_user_in_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3319,7 +3571,7 @@ is_group()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if is_group "users" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  is_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3362,7 +3614,7 @@ add_group()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if add_group "testgroup" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  add_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  add_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  add_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3404,7 +3656,7 @@ add_user_2_group()
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
     if add_user_2_group "testgroup" ; then
-        echo -e "\t${BWhite}$(gettext -s "TEST-FUNCTION-PASSED")  add_user_2_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  add_user_2_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     else
         echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  add_user_2_group @ $(basename $BASH_SOURCE) : $LINENO${White}"
     fi
@@ -3458,53 +3710,72 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "GET-COUNTRY-CODES-DESC"  "Get Country Code and set Counter."
-    localize_info "GET-COUNTRY-CODES-NOTES" "None."
+    localize_info "GET-COUNTRY-CODES-DESC"    "Get Country Code and set Counter."
+    localize_info "GET-COUNTRY-CODES-NOTES"   "None."
     #
-    localize_info "GET-COUNTRY-CODES-WARN"  "You must enter your Country correctly, no validation is done!"
-    localize_info "GET-COUNTRY-CODES-INPUT" "Country Code for Mirror List: (US) "
-    localize_info "GET-COUNTRY-CODES-TITLE" "Country Code for Mirror List"
+    localize_info "GET-COUNTRY-CODES-WARN"    "You must enter your Country correctly, no validation is done!"
+    localize_info "GET-COUNTRY-CODES-INPUT"   "Country Code for Mirror List: (US) "
+    localize_info "GET-COUNTRY-CODES-TITLE"   "Country Code for Mirror List"
+    #
+    localize_info "GET-COUNTRY-CODES-INFO-1"  "Australia     = AU | Belarus       = BY | Belgium       = BE"
+    localize_info "GET-COUNTRY-CODES-INFO-2"  "Brazil        = BR | Bulgaria      = BG | Canada        = CA"
+    localize_info "GET-COUNTRY-CODES-INFO-3"  "Chile         = CL | China         = CN | Colombia      = CO"
+    localize_info "GET-COUNTRY-CODES-INFO-4"  "Czech Repub   = CZ | Denmark       = DK | Estonia       = EE"
+    localize_info "GET-COUNTRY-CODES-INFO-5"  "Finland       = FI | France        = FR | Germany       = DE"
+    localize_info "GET-COUNTRY-CODES-INFO-6"  "Greece        = GR | Hungary       = HU | India         = IN"
+    localize_info "GET-COUNTRY-CODES-INFO-7"  "Ireland       = IE | Israel        = IL | Italy         = IT"
+    localize_info "GET-COUNTRY-CODES-INFO-8"  "Japan         = JP | Kazakhstan    = KZ | Korea         = KR"
+    localize_info "GET-COUNTRY-CODES-INFO-9"  "Macedonia     = MK | Netherlands   = NL | New Caledonia = NC"
+    localize_info "GET-COUNTRY-CODES-INFO-10" "New Zealand   = NZ | Norway        = NO | Poland        = PL"
+    localize_info "GET-COUNTRY-CODES-INFO-11" "Portugal      = PT | Romania       = RO | Russian Fed   = RU"
+    localize_info "GET-COUNTRY-CODES-INFO-12" "Serbia        = RS | Singapore     = SG | Slovakia      = SK"
+    localize_info "GET-COUNTRY-CODES-INFO-13" "South Africa  = ZA | Spain         = ES | Sri Lanka     = LK"
+    localize_info "GET-COUNTRY-CODES-INFO-14" "Sweden        = SE | Switzerland   = CH | Taiwan        = TW"
+    localize_info "GET-COUNTRY-CODES-INFO-15" "Ukraine       = UA | United King   = GB | United States = US"
+    localize_info "GET-COUNTRY-CODES-INFO-16" "Uzbekistan    = UZ | Viet Nam = VN"
 fi
 # -------------------------------------
 get_country_codes() 
 {
     # I pull the code from Locale, so it should always be right, so no need for a menu; default should work.
     print_title "GET-COUNTRY-CODES-TITLE" " - https://www.archlinux.org/mirrorlist/"
-    print_this $"Australia     = AU | Belarus       = BY | Belgium       = BE"
+    print_this  "GET-COUNTRY-CODES-INFO-1"
     print_line
-    print_this $"Brazil        = BR | Bulgaria      = BG | Canada        = CA"
+    print_this  "GET-COUNTRY-CODES-INFO-2"
     print_line
-    print_this $"Chile         = CL | China         = CN | Colombia      = CO"
+    print_this  "GET-COUNTRY-CODES-INFO-3"
     print_line
-    print_this $"Czech Repub   = CZ | Denmark       = DK | Estonia       = EE"
+    print_this  "GET-COUNTRY-CODES-INFO-4"
     print_line
-    print_this $"Finland       = FI | France        = FR | Germany       = DE"
+    print_this  "GET-COUNTRY-CODES-INFO-5"
     print_line
-    print_this $"Greece        = GR | Hungary       = HU | India         = IN"
+    print_this  "GET-COUNTRY-CODES-INFO-6"
     print_line
-    print_this $"Ireland       = IE | Israel        = IL | Italy         = IT"
+    print_this  "GET-COUNTRY-CODES-INFO-7"
     print_line
-    print_this $"Japan         = JP | Kazakhstan    = KZ | Korea         = KR"
+    print_this  "GET-COUNTRY-CODES-INFO-8"
     print_line
-    print_this $"Macedonia     = MK | Netherlands   = NL | New Caledonia = NC"
+    print_this  "GET-COUNTRY-CODES-INFO-9"
     print_line
-    print_this $"New Zealand   = NZ | Norway        = NO | Poland        = PL"
+    print_this  "GET-COUNTRY-CODES-INFO-10"
     print_line
-    print_this $"Portugal      = PT | Romania       = RO | Russian Fed   = RU"
+    print_this  "GET-COUNTRY-CODES-INFO-11"
     print_line
-    print_this $"Serbia        = RS | Singapore     = SG | Slovakia      = SK"
+    print_this  "GET-COUNTRY-CODES-INFO-12"
     print_line
-    print_this $"South Africa  = ZA | Spain         = ES | Sri Lanka     = LK"
+    print_this  "GET-COUNTRY-CODES-INFO-13"
     print_line
-    print_this $"Sweden        = SE | Switzerland   = CH | Taiwan        = TW"
+    print_this  "GET-COUNTRY-CODES-INFO-14"
     print_line
-    print_this $"Ukraine       = UA | United King   = GB | United States = US"
+    print_this  "GET-COUNTRY-CODES-INFO-15"
     print_line
-    print_this $"Uzbekistan    = UZ | Viet Nam = VN"
+    print_this  "GET-COUNTRY-CODES-INFO-16"
     print_line
     print_error "GET-COUNTRY-CODES-WARN"
     #
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "GET-COUNTRY-CODES-INPUT" "${LOCALE#*_}"
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     COUNTRY_CODE=`echo "$OPTION" | tr '[:lower:]' '[:upper:]'`  # Upper case only
     COUNTRY="${COUNTRIES[$(get_index "COUNTRY_CODES[@]" "$COUNTRY_CODE")]}"
 }   
@@ -3523,19 +3794,21 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "GET-COUNTRY-CODE-DESC"  "Get Country and Country Code."
-    localize_info "GET-COUNTRY-CODE-NOTES" "Localized."
+    localize_info "GET-COUNTRY-CODE-DESC"    "Get Country and Country Code."
+    localize_info "GET-COUNTRY-CODE-NOTES"   "Localized."
     #
-    localize_info "Confirm Country Code" "Confirm Country Code"
+    localize_info "GET-COUNTRY-CODE-CONFIRM" "Confirm Country Code"
 fi
 # -------------------------------------
 get_country_code() 
 {
     YN_OPTION=0 
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     while [[ $YN_OPTION -ne 1 ]]; do
         get_country_codes
-        read_input_yn "$(localize "Confirm Country Code"): " "$COUNTRY_CODE" 1
+        read_input_yn "GET-COUNTRY-CODE-CONFIRM" "$COUNTRY_CODE" 1 # Returns YN_OPTION
     done
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     OPTION="$COUNTRY_CODE"
 }   
 #}}}
@@ -3569,8 +3842,10 @@ get_root_password()
     print_title "GET-ROOT-PASSWORD-TITLE" " - https://wiki.archlinux.org/index.php/Users_and_Groups"
     print_info  "GET-ROOT-PASSWORD-INFO-1"
     print_info  "GET-ROOT-PASSWORD-INFO-2"
+    Old_BYPASS="$BYPASS"; BYPASS=0;
     verify_input_data "GET-ROOT-PASSWORD-VD" 1
     ROOTPASSWD="$OPTION"
+    BYPASS="$Old_BYPASS"
     print_title "GET-ROOT-PASSWORD-TITLE" "https://wiki.archlinux.org/index.php/Users_and_Groups"
     print_info  "GET-ROOT-PASSWORD-INFO-3"
     # @FIX check for empty name
@@ -3605,8 +3880,10 @@ get_user_name()
     print_title "GET-USER-NAME-TITLE" " - https://wiki.archlinux.org/index.php/Users_and_Groups"
     print_info  "GET-USER-NAME-INFO-1"
     print_info  "GET-USER-NAME-INFO-2"
+    Old_BYPASS="$BYPASS"; BYPASS=0;
     verify_input_default_data "GET-USER-NAME-VD" "${USERNAME}" 1
     USERNAME="$OPTION"
+    BYPASS="$Old_BYPASS"
     return 0
 }
 #}}}
@@ -3639,8 +3916,10 @@ get_user_password()
     print_title "GET-USER-PASSWORD-TITLE" " - https://wiki.archlinux.org/index.php/Users_and_Groups"
     print_info  "GET-USER-PASSWORD-INFO-1"
     print_info  "GET-USER-PASSWORD-INFO-2" ": ${USERNAME}"
+    Old_BYPASS="$BYPASS"; BYPASS=0;
     verify_input_data "GET-USER-PASSWORD-VD" 1
     USERPASSWD="$OPTION"
+    BYPASS="$Old_BYPASS"
     print_title "GET-USER-PASSWORD-TITLE" "https://wiki.archlinux.org/index.php/Users_and_Groups"
     print_info  "GET-USER-PASSWORD-INFO-3"
     # @FIX check for empty name
@@ -3727,7 +4006,7 @@ get_locale()
         print_info  "GET-LOCALE-INFO-7"
         print_info  "GET-LOCALE-INFO-8"
         #
-        read_input_yn "GET-LOCALE-DEFAULT" "${LANGUAGE}" 1
+        read_input_yn "GET-LOCALE-DEFAULT" "${LANGUAGE}" 1 # Returns YN_OPTION
         if [[ "$YN_OPTION" -eq 1 ]]; then
             LOCALE="$LANGUAGE"
             set_language "$LOCALE"
@@ -3740,6 +4019,7 @@ get_locale()
     #}}}
     #
     LOCALE_ARRAY=( "" )
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     #
     language_selector
     #
@@ -3750,7 +4030,7 @@ get_locale()
         else
             LOCALE_ARRAY=( "${LOCALE_ARRAY[@]}" "$LOCALE" )
         fi
-        read_input_yn "GET-LOCALE-ADD-MORE" " " 0
+        read_input_yn "GET-LOCALE-ADD-MORE" " " 0 # Returns YN_OPTION
         if [[ "$YN_OPTION" -eq 1 ]]; then
             get_locales_list
             read_input_default "GET-LOCALE-EDIT" "$LOCALE"
@@ -3764,6 +4044,7 @@ get_locale()
             break;
         fi
     done
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }    
 #}}}
 # -----------------------------------------------------------------------------
@@ -4109,9 +4390,11 @@ network_troubleshooting()
                                 ;;
                         esac
                     done
-                    read_input_data "NETWORK-TROUBLESHOOTING-RD-1"
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+                    read_input_data "NETWORK-TROUBLESHOOTING-RD-1" # Enter IP Address
                     IP_ADDRESS="$OPTION"
                     read_input_data "NETWORK-TROUBLESHOOTING-RD-2"
+                    BYPASS="$Old_BYPASS" # Restroe Bypass
                     IP_MASK="$OPTION"
                     ip addr add "${IP_ADDRESS}/${IP_MASK}" dev "$NIC_DEV"
                     pause_function "network_troubleshooting $LINENO"
@@ -4120,7 +4403,9 @@ network_troubleshooting()
                     
                11)
                     # Add Static Gateway
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
                     read_input_data "NETWORK-TROUBLESHOOTING-RD-3"
+                    BYPASS="$Old_BYPASS" # Restroe Bypass
                     IP_ADDRESS="$OPTION"
                     ip route add default via "$IP_ADDRESS"
                     pause_function "network_troubleshooting $LINENO"
@@ -4199,6 +4484,17 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CONFIGURE-KEYMAP-INFO"    "The KEYMAP variable is specified in the /etc/rc.conf file. It defines what keymap the keyboard is in the virtual consoles. Keytable files are provided by the kbd package."
     localize_info "CONFIGURE-KEYMAP-DEFAULT" "If Default is ok, then no changes needed: "
     localize_info "CONFIGURE-KEYMAP-LAYOUT"  "Keyboard Layout (ex: us-acentos): "
+    #
+    localize_info "CONFIGURE-KEYMAP-INFO-1"  "Belgian                = be-latin1    | Brazilian Portuguese = br-abnt2     | Canadian-French = cf"
+    localize_info "CONFIGURE-KEYMAP-INFO-2"  "Canadian Multilingual  = ca_multi     | Colemak (US)         = colemak      | Croatian        = croat"
+    localize_info "CONFIGURE-KEYMAP-INFO-3"  "Czech                  = cz-lat2      | Dvorak               = dvorak       | French          = fr-latin1"
+    localize_info "CONFIGURE-KEYMAP-INFO-4"  "German                 = de-latin1 or de-latin1-nodeadkeys                  | Italian         = it"
+    localize_info "CONFIGURE-KEYMAP-INFO-5"  "Lithuanian             = lt.baltic    | Norwegian            = no-latin1    | Polish          = pl"
+    localize_info "CONFIGURE-KEYMAP-INFO-6"  "Portuguese             = pt-latin9    | Romanian             = ro_win       | Russian         = ru4"
+    localize_info "CONFIGURE-KEYMAP-INFO-7"  "Singapore              = sg-latin1    | Slovene              = slovene      | Swedish         = sv-latin1"
+    localize_info "CONFIGURE-KEYMAP-INFO-8"  "Swiss-French           = fr_CH-latin1 | Swiss-German         = de_CH-latin1 | Spanish         = es"
+    localize_info "CONFIGURE-KEYMAP-INFO-9"  "Spanish Latinoamerican = la-latin1    | Turkish              = tr_q-latin5  | Ukrainian       = ua"
+    localize_info "CONFIGURE-KEYMAP-INFO-10" "United States          = us or us-acentos                                   | United Kingdom  = uk"
 fi
 # -------------------------------------
 configure_keymap()
@@ -4224,27 +4520,28 @@ configure_keymap()
     print_title "CONFIGURE-KEYMAP-TITLE" " - https://wiki.archlinux.org/index.php/KEYMAP"
     print_this  "CONFIGURE-KEYMAP-INFO"
     print_line
-    print_this $"Belgian                = be-latin1    | Brazilian Portuguese = br-abnt2     | Canadian-French = cf"
+    print_this "CONFIGURE-KEYMAP-INFO-1"
     print_line
-    print_this $"Canadian Multilingual  = ca_multi     | Colemak (US)         = colemak      | Croatian        = croat"
+    print_this "CONFIGURE-KEYMAP-INFO-2"
     print_line
-    print_this $"Czech                  = cz-lat2      | Dvorak               = dvorak       | French          = fr-latin1"
+    print_this "CONFIGURE-KEYMAP-INFO-3"
     print_line
-    print_this $"German                 = de-latin1 or de-latin1-nodeadkeys                  | Italian         = it"
+    print_this "CONFIGURE-KEYMAP-INFO-4"
     print_line
-    print_this $"Lithuanian             = lt.baltic    | Norwegian            = no-latin1    | Polish          = pl"
+    print_this "CONFIGURE-KEYMAP-INFO-5"
     print_line
-    print_this $"Portuguese             = pt-latin9    | Romanian             = ro_win       | Russian         = ru4"
+    print_this "CONFIGURE-KEYMAP-INFO-6"
     print_line
-    print_this $"Singapore              = sg-latin1    | Slovene              = slovene      | Swedish         = sv-latin1"
+    print_this "CONFIGURE-KEYMAP-INFO-7"
     print_line
-    print_this $"Swiss-French           = fr_CH-latin1 | Swiss-German         = de_CH-latin1 | Spanish         = es"
+    print_this "CONFIGURE-KEYMAP-INFO-8"
     print_line
-    print_this $"Spanish Latinoamerican = la-latin1    | Turkish              = tr_q-latin5  | Ukrainian       = ua"
+    print_this "CONFIGURE-KEYMAP-INFO-9"
     print_line
-    print_this $"United States          = us or us-acentos                                   | United Kingdom  = uk"
+    print_this "CONFIGURE-KEYMAP-INFO-10"
     print_line
     print_this  "CONFIGURE-KEYMAP-DEFAULT" " [$KEYMAP]"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "Keymap" "$KEYMAP"
     read_input_yn "Load-Keymap" "$KEYMAP" 0
     if [[ "$YN_OPTION" -eq 1 ]]; then
@@ -4255,6 +4552,7 @@ configure_keymap()
     else
         KEYMAP="us"
     fi
+    BYPASS="$Old_BYPASS" # Restroe Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4290,30 +4588,32 @@ get_editor()
         print_info "GET-EDITOR-INSTALLED" "emacs & vim"
     fi
     print_this "GET-EDITOR-EDITORS" ": ${EDITORS[*]}"
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-EDITOR-DEFAULT" "$EDITOR" 0
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
         print_this "GET-EDITOR-SELECT"
         select OPT in "${EDITORS[@]}"; do
             case "$REPLY" in
                 1)
-                    EDITOR=nano
+                    EDITOR="nano"
                     break
                     ;;
                 2)
-                    EDITOR=emacs
+                    EDITOR="emacs"
                     break
                     ;;
                 3)
-                    EDITOR=vi
+                    EDITOR="vi"
                     break
                     ;;
                 4)
-                    EDITOR=vim
+                    EDITOR="vim"
                     break
                     ;;
                 5)
-                    EDITOR=joe
+                    EDITOR="joe"
                     break
                     ;;
                 *)
@@ -4373,15 +4673,32 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "CONFIGURE-TIMEZONE-DESC"    "Configure Timezone."
-    localize_info "CONFIGURE-TIMEZONE-NOTES"   "None."
+    localize_info "CONFIGURE-TIMEZONE-DESC"     "Configure Timezone."
+    localize_info "CONFIGURE-TIMEZONE-NOTES"    "None."
     #
-    localize_info "Default-Timezone"           "Is the Default Timezone Correct"
-    localize_info "Confirm-Timezone"           "Confirm Timezone "
-    localize_info "CONFIGURE-TIMEZONE-TITLE"   "TIMEZONE"
-    localize_info "CONFIGURE-TIMEZONE-INFO-1"  "In an operating system the time (clock) is determined by four parts: Time value, Time standard, Time Zone, and DST (Daylight Saving Time if applicable)."
-    localize_info "CONFIGURE-TIMEZONE-ZONE"    "Select zone:"
-    localize_info "CONFIGURE-TIMEZONE-SUBZONE" "Select subzone:"
+    localize_info "CONFIGURE-TIMEZONE-DEFAULT"  "Is the Default Timezone Correct"
+    localize_info "CONFIGURE-TIMEZONE-CONFIRM"  "Confirm Timezone "
+    localize_info "CONFIGURE-TIMEZONE-TITLE"    "TIMEZONE"
+    localize_info "CONFIGURE-TIMEZONE-INFO-1"   "In an operating system the time (clock) is determined by four parts: Time value, Time standard, Time Zone, and DST (Daylight Saving Time if applicable)."
+    localize_info "CONFIGURE-TIMEZONE-ZONE"     "Select zone:"
+    localize_info "CONFIGURE-TIMEZONE-SUBZONE"  "Select subzone:"
+    #
+    localize_info "CONFIGURE-TIMEZONE-ZONE-1"   "Africa"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-2"   "America"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-3"   "Antarctica"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-4"   "Arctic"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-5"   "Asia"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-6"   "Atlantic"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-7"   "Australia"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-8"   "Brazil"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-9"   "Canada"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-10"  "Chile"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-11"  "Europe"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-12"  "Indian"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-13"  "Mexico"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-14"  "Midest"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-15"  "Pacific"
+    localize_info "CONFIGURE-TIMEZONE-ZONE-16"  "US"
 fi
 # -------------------------------------
 configure_timezone()
@@ -4389,7 +4706,7 @@ configure_timezone()
     settimezone()
     {
         # @FIX Localize?
-        local zone=("Africa" "America" "Antarctica" "Arctic" "Asia" "Atlantic" "Australia" "Brazil" "Canada" "Chile" "Europe" "Indian" "Mexico" "Midest" "Pacific" "US");
+        local zone=("$(localize "CONFIGURE-TIMEZONE-ZONE-1")" "$(localize "CONFIGURE-TIMEZONE-ZONE-2")" "$(localize "CONFIGURE-TIMEZONE-ZONE-3")" "$(localize "CONFIGURE-TIMEZONE-ZONE-4")" "$(localize "CONFIGURE-TIMEZONE-ZONE-5")" "$(localize "CONFIGURE-TIMEZONE-ZONE-6")" "$(localize "CONFIGURE-TIMEZONE-ZONE-7")" "$(localize "CONFIGURE-TIMEZONE-ZONE-8")" "$(localize "CONFIGURE-TIMEZONE-ZONE-9")" "$(localize "CONFIGURE-TIMEZONE-ZONE-10")" "$(localize "CONFIGURE-TIMEZONE-ZONE-11")" "$(localize "CONFIGURE-TIMEZONE-ZONE-12")" "$(localize "CONFIGURE-TIMEZONE-ZONE-13")" "$(localize "CONFIGURE-TIMEZONE-ZONE-14")" "$(localize "CONFIGURE-TIMEZONE-ZONE-15")" "$(localize "CONFIGURE-TIMEZONE-ZONE-16")");
         PS3="$prompt1"
         echo "CONFIGURE-TIMEZONE-ZONE"
         select ZONE in "${zone[@]}"; do
@@ -4413,11 +4730,13 @@ configure_timezone()
     }
     print_title "CONFIGURE-TIMEZONE-TITLE" " - https://wiki.archlinux.org/index.php/Timezone"
     print_info  "CONFIGURE-TIMEZONE-INFO-1"
-    read_input_yn "Default-Timezone" "$ZONE/$SUBZONE" 1
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+    read_input_yn "CONFIGURE-TIMEZONE-DEFAULT" "$ZONE/$SUBZONE" 1
     while [[ $YN_OPTION -ne 1 ]]; do
         settimezone
-        read_input_yn "Confirm-Timezone" "($ZONE/$SUBZONE)" 1
+        read_input_yn "CONFIGURE-TIMEZONE-CONFIRM" "($ZONE/$SUBZONE)" 1
     done
+    BYPASS="$Old_BYPASS" # Restroe Bypass
     if [[ "$RUNTIME_MODE" -eq 2 ]]; then # Live Mode
         if [[ "$DRIVE_FORMATED" -eq 1 ]]; then
             touch ${MOUNTPOINT}/etc/timezone
@@ -4439,15 +4758,15 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     # Menu
     localize_info "Make-Choose" "Make a Choose:"
     # PROMPT {{{
-    localize_info "ENTER-OPTION"  "Enter your option: "
-    localize_info "ENTER-OPTIONS" "Enter n of options (ex: 1 2 3 or 1-3): " # n°
+    localize_info "ENTER-OPTION"  "Enter your Option:"
+    localize_info "ENTER-OPTIONS" "Enter n° of options (ex: 1 2 3 or 1-3 or 1,2,3 d b q r): " # n°
     #}}}
     # All others that need to run before function is hit
     localize_info "LOCALIZER-COMPLETED" "Localizer Completed."
     # Help file Localization
     localize_info "CREATE-HELP-USAGE"   "create_help 1->(NAME of Function.) 2->(USAGE) 3->(DESCRIPTION) 4->(NOTES) 5->(AUTHOR) 6->(VERSION) 7->(CREATED) 8->(REVISION) 9->(Source File and LINENO)"
     localize_info "CREATE-HELP-DESC"    "Create an HTML Help File on the Fly"
-    localize_info "CREATE-HELP-NOTES"   "This Allows easy reading and Look up of all Functions in Program.<br />${HELP_TAB}This Function must be first Function all scripts see, so put it at the top of file.<br />${HELP_TAB}You can get as elborate with help files as you want."
+    localize_info "CREATE-HELP-NOTES"   "This Allows easy reading and Look up of all Functions in Program.<br />${HELP_TAB}This Function must be first Function all scripts see, so put it at the top of file.<br />${HELP_TAB}You can get as elaborate with help files as you want."
     localize_info "CREATE-HELP-WORKING" "Create Help Working"
     localize_info "PRINT-HELP-ERROR"    "Help Array Empty!"
     # Help file Localization
@@ -4489,10 +4808,237 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "IS-STRING-IN-FILE-NOTES" "Used to test files for Updates."
     #
     localize_info "IS-STRING-IN-FILE-FNF" "File Not Found"
+    # Show Help
+    localize_info "SHOW-HELP-INFO-USAGE-1"  "Usage:"
+    localize_info "SHOW-HELP-INFO-USAGE-2"  "./ScriptName &nbsp;&nbsp;   # Run Script in Interactive Mode."
+    localize_info "SHOW-HELP-INFO-USAGE-3"  "./ScriptName -l # Run Localizer"
+    localize_info "SHOW-HELP-INFO-USAGE-4"  "./ScriptName -h # Build Help File, must run -l first."
+    localize_info "SHOW-HELP-INFO-USAGE-5"  "./ScriptName -a # Automatically Run Scripts without Prompts."
+    localize_info "SHOW-HELP-INFO-USAGE-6"  "./ScriptName -t # Run Test in mode 1"
+    localize_info "SHOW-HELP-INFO-USAGE-7"  "./ScriptName -s # Run Special Test in mode 2"
+    # About
+    localize_info "SHOW-HELP-INFO-1"  "The Wizard API script was designed to help in writing complex scripts, it handles must of the input and handles common functions."
+    localize_info "SHOW-HELP-INFO-2"  "Wizard API:"
+    localize_info "SHOW-HELP-INFO-3"  "&nbsp;&nbsp;&nbsp;&nbsp; The Wizard API is the base of the script engine used to write this script, which in itself only writes another script,"
+    localize_info "SHOW-HELP-INFO-4"  "&nbsp;&nbsp;&nbsp;&nbsp; so this is known as a script engine, whereas the API or Application Programming Interface, is the syntax,"
+    localize_info "SHOW-HELP-INFO-5"  "&nbsp;&nbsp;&nbsp;&nbsp; which is the parameters sent to the function, as such Documenting all the functions would be a huge undertaking in most projects this size,"
+    localize_info "SHOW-HELP-INFO-6"  "&nbsp;&nbsp;&nbsp;&nbsp; so I decided to make this script self Documenting, as well as self Localizing, a non-localized script is worthless to the world,"
+    localize_info "SHOW-HELP-INFO-7"  "&nbsp;&nbsp;&nbsp;&nbsp; in a perfect Society we would all talk the same Language, for me that would be C++, "
+    localize_info "SHOW-HELP-INFO-8"  "&nbsp;&nbsp;&nbsp;&nbsp; so lets just say that no one can agree on what Language to speak in, let alone program in, so even this text needs to be translated,"
+    localize_info "SHOW-HELP-INFO-9"  "&nbsp;&nbsp;&nbsp;&nbsp; for those that do not read English; and this is static text; so these instructions really need to be in the script itself;"
+    localize_info "SHOW-HELP-INFO-10" "&nbsp;&nbsp;&nbsp;&nbsp; which is why its self Documenting; so it can translate that into the language the person reading it can read it in,"
+    localize_info "SHOW-HELP-INFO-11" "&nbsp;&nbsp;&nbsp;&nbsp; so that is it for this static file, all other Documentation will be built in."
+    localize_info "SHOW-HELP-INFO-12" "&nbsp;&nbsp;&nbsp;&nbsp; Every program ever write should do 3 things, besides running flawlessly:"
+    localize_info "SHOW-HELP-INFO-13" "&nbsp;&nbsp;&nbsp;&nbsp; 1. Localized for every language that will be using it."
+    localize_info "SHOW-HELP-INFO-14" "&nbsp;&nbsp;&nbsp;&nbsp; 2. Self Documenting."
+    localize_info "SHOW-HELP-INFO-15" "&nbsp;&nbsp;&nbsp;&nbsp; 3. Self Testing, ability to run Test and Determine if program is working correctly."
+    localize_info "SHOW-HELP-INFO-16" ""
+    localize_info "SHOW-HELP-INFO-17" ""
+    localize_info "SHOW-HELP-INFO-18" ""
+    localize_info "SHOW-HELP-INFO-19" ""
 fi
+# -----------------------------------------------------------------------------
+show_help()
+{
+    echo -e "<hr />"
+    echo -e "<br />"
+    # Usage
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-1")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-2")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-3")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-4")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-5")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-6")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-USAGE-7")<br />"
+    #
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-HELP-INFO-1")<br />"
+    echo '<br />'
+    echo -e "$(gettext -s "SHOW-HELP-INFO-2")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-3")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-4")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-5")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-6")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-7")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-8")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-9")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-10")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-11")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-12")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-13")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-14")<br />"
+    echo -e "$(gettext -s "SHOW-HELP-INFO-15")<br />"
+}
+#}}}
 declare TEXT_SCRIPT_ID="$(localize "SCRIPT-ID1"): $SCRIPT_NAME $(localize "SCRIPT-ID2"): $SCRIPT_VERSION $(localize "SCRIPT-ID3"): $LAST_UPDATE"
 declare prompt1=$(localize "ENTER-OPTION")
 declare prompt2=$(localize "ENTER-OPTIONS")
-declare StatusBar=$(localize "Make-Choose")
-declare StatusBar2=""
+declare StatusBar1=$(localize "Make-Choose")
+declare StatusBar2=" "
+# -------------------------------------
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "READ-INPUT-OPTIONS-TEST-1"  "Test Options."
+    localize_info "READ-INPUT-OPTIONS-TEST-2"  "Option :"
+    localize_info "READ-INPUT-OPTIONS-TEST-3"  "Testing Menu System with Options: "
+    localize_info "READ-INPUT-OPTIONS-TEST-4"  "Status of Option :"
+    localize_info "READ-INPUT-OPTIONS-TEST-5"  "Menu System Test"
+    localize_info "READ-INPUT-OPTIONS-MENU-1"  "Menu 1"
+    localize_info "READ-INPUT-OPTIONS-MENU-2"  "Menu 2"
+    localize_info "READ-INPUT-OPTIONS-MENU-3"  "Menu 3"
+    localize_info "READ-INPUT-OPTIONS-MENU-4"  "Menu 4"
+    localize_info "READ-INPUT-OPTIONS-MENU-5"  "Menu 5"
+    localize_info "READ-INPUT-OPTIONS-MENU-6"  "Menu 6"
+    localize_info "READ-INPUT-OPTIONS-MENU-7"  "Menu 7"
+    localize_info "READ-INPUT-OPTIONS-MENU-8"  "Menu 8"
+    localize_info "READ-INPUT-OPTIONS-MENU-9"  "Menu 9"
+    localize_info "READ-INPUT-OPTIONS-MENU-10" "Menu 10"
+    #
+    localize_info "READ-INPUT-OPTIONS-MENU-1-I"  "Menu 1: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-2-I"  "Menu 2: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-3-I"  "Menu 3: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-4-I"  "Menu 4: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-5-I"  "Menu 5: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-6-I"  "Menu 6: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-7-I"  "Menu 7: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-8-I"  "Menu 8: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-9-I"  "Menu 9: Information."
+    localize_info "READ-INPUT-OPTIONS-MENU-10-I" "Menu 10: Information."
+fi
+if [[ "$RUN_TEST" -eq 2 ]]; then
+    test_read_input_options()
+    {
+        local -r menu_name="TestMenu"  # You must define Menu Name here
+        local BreakableKey="Q"         # Q=Quit, D=Done, B=Back
+        local RecommendedOptions="1-3" # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+        #
+        local SUB_OPTIONS=""        
+        if [[ "$INSTALL_WIZARD" -eq 1 ]]; then
+            SUB_OPTIONS="1-7 $BreakableKey"
+        elif [[ "$AUTOMAN" -eq 1 ]]; then
+            SUB_OPTIONS="1-3 7 7 $BreakableKey"
+        fi
+        #
+        OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+        local -a MenuChecks=( $(create_data_array 0 0 ) )
+        IFS="$OLD_IFS"
+        #
+        StatusBar1="READ-INPUT-OPTIONS-TEST-1"
+        StatusBar2="$RecommendedOptions"
+        #
+        while [[ 1 ]]; do
+            #
+            print_line
+            print_info "READ-INPUT-OPTIONS-TEST-5"
+            print_caution "${StatusBar1}" "${StatusBar2}"
+            #
+            local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
+            #
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-1"  "" "" "READ-INPUT-OPTIONS-MENU-1-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-2"  "" "" "READ-INPUT-OPTIONS-MENU-2-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-3"  "" "" "READ-INPUT-OPTIONS-MENU-3-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-4"  "" "" "READ-INPUT-OPTIONS-MENU-4-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-5"  "" "" "READ-INPUT-OPTIONS-MENU-5-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-6"  "" "" "READ-INPUT-OPTIONS-MENU-6-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-7"  "" "" "READ-INPUT-OPTIONS-MENU-7-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-8"  "" "" "READ-INPUT-OPTIONS-MENU-8-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-9"  "" "" "READ-INPUT-OPTIONS-MENU-9-I"  "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "READ-INPUT-OPTIONS-MENU-10" "" "" "READ-INPUT-OPTIONS-MENU-10-I" "MenuTheme[@]"
+            #
+            print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+            #
+            read_input_options "$SUB_OPTIONS" "$BreakableKey"
+            SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+            #            
+            for S_OPT in ${OPTIONS[@]}; do
+                case "$S_OPT" in
+                    1)  # Option 1
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    2)  # Option 2
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    3)  # Option 3
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    4)  # Option 4
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    5)  # Option 5
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    6)  # Option 6
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    7)  # Option 7
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    8)  # Option 8
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    9)  # Option 9
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                   10)  # Option 10
+                        MenuChecks[$((S_OPT - 1))]=1
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        StatusBar1=$(localize "READ-INPUT-OPTIONS-TEST-4")
+                        StatusBar2="$S_OPT"
+                        ;;
+                    *)  # Not programmed key
+                        print_warning "READ-INPUT-OPTIONS-TEST-2" "$S_OPT"
+                        if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
+                            S_OPT="$BreakableKey"
+                            break;
+                        else
+                            invalid_option "$S_OPT"
+                        fi
+                        ;;
+                esac
+            done
+            is_breakable "$S_OPT" "$BreakableKey"
+        done
+    }
+    #
+    AUTOMAN=1
+    INSTALL_WIZARD=0
+    print_this "READ-INPUT-OPTIONS-TEST-3" "AUTOMAN=$AUTOMAN and INSTALL_WIZARD=$INSTALL_WIZARD"
+    test_read_input_options
+    #
+    AUTOMAN=0
+    INSTALL_WIZARD=1
+    print_this "READ-INPUT-OPTIONS-TEST-3" "AUTOMAN=$AUTOMAN and INSTALL_WIZARD=$INSTALL_WIZARD"
+    test_read_input_options
+    #
+    AUTOMAN=0
+    INSTALL_WIZARD=0
+    print_this "READ-INPUT-OPTIONS-TEST-3" "AUTOMAN=$AUTOMAN and INSTALL_WIZARD=$INSTALL_WIZARD"
+    test_read_input_options
+fi
 # ************************************* END OF SCRIPT *************************
