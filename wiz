@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# LAST_UPDATE="11 Jan 2013 16:33"
+# LAST_UPDATE="18 Jan 2013 16:33"
 #
 declare ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
 declare FULL_SCRIPT_PATH=$(dirname $(readlink -f "$0"))
-
+#
 declare CLEAN_ENV=1
 if [[ "$CLEAN_ENV" -eq 1 ]]; then
     source "/etc/profile" > /dev/null
@@ -25,23 +25,54 @@ fi
 
 # Wizard
 if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
-    declare -i RUN_LOCALIZER=0   #
-    declare -i RUN_HELP=0        #
-    declare -i RUN_TEST=0        # 0=Disable, 1=Run, 2=Run Extended Test
+    declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
+    declare LOCALIZED_FILE="arch-wizard.sh"
+    export TEXTDOMAINDIR="$LOCALIZED_PATH"  # declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
+    export TEXTDOMAIN="$LOCALIZED_FILE"     # declare LOCALIZED_FILE="wizard.sh"
+    declare -i RUN_LOCALIZER=0              # Localization of all script tags to support language
+    declare -i RUN_HELP=0                   # Create Help.html
+    declare -i RUN_TEST=0                   # 0=Disable, 1=Run, 2=Run Extended Test
+    declare -i AUTOMAN=0                    # Automatically install from saved settings
+    declare -i DETECTED_RUN_MODE=0          # Detected Run Mode
+    declare -i RUNTIME_MODE=1               # 1 = Boot Mode, 2 = Live
+    declare -i DRIVE_FORMATED=0
+    if [ -d "/home/arch/" ]; then
+        DETECTED_RUN_MODE=1
+        RUNTIME_MODE=1
+    else
+        DETECTED_RUN_MODE=2
+        RUNTIME_MODE=2
+        DRIVE_FORMATED=1        
+    fi
+    #
     if [[ "$#" -gt 0 ]]; then
         if [[ "$1" == "-l" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
             RUN_LOCALIZER=1
         fi
         if [[ "$1" == "-h" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
             RUN_HELP=1
         fi
         if [[ "$1" == "-t" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
             RUN_TEST=1
+            DEBUGGING=1
+        fi
+        if [[ "$1" == "-s" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_TEST=2
+            DEBUGGING=1
+        fi
+        if [[ "$1" == "-a" ]]; then
+            AUTOMAN=1
         fi
     fi
     # change to project needs
-    declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
-    declare LOCALIZED_FILE="arch-wizard.sh"
     declare CONFIG_NAME="archwiz"
     declare LOG_PATH="${FULL_SCRIPT_PATH}/LOG"
     declare CONFIG_PATH="${FULL_SCRIPT_PATH}/CONFIG"
@@ -230,19 +261,17 @@ config_menu()
     local -r menu_name="Config-Menu"  # You must define Menu Name here
     local BreakableKey="B"            # Q=Quit, D=Done, B=Back
     # No reason to save menu
-    OLD_IFS="$IFS"
-    IFS=$'\n\t' # Very Important
-    #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" "1" "0" ) ) # MENU_PATH is Global
+    OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     local -a MenuChecks=( $(create_data_array 0 0 ) ) 
     IFS="$OLD_IFS"
     #
     while [[ 1 ]]; do
         #
         print_title "CONFIG-MENU-TITLE" "$TEXT_SCRIPT_ID"
-        print_caution "${StatusBar}" "${StatusBar2}"
+        print_caution "${StatusBar1}" "${StatusBar2}"
         #
-        local -a MenuItems=( "" ); local -a MenuInfo=( "" )  # Reset
-        RESET_MENU=1
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset        
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CREATE-CONF"       "" "" "CONFIG-MENU-DESC-CREATE"        "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EDIT-CONF"         "" "" "CONFIG-MENU-DESC-EDIT"          "MenuTheme[@]"
@@ -256,19 +285,24 @@ config_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #-1-
-        read_input_options
-        for M_OPT in ${OPTIONS[@]}; do
-            case "$M_OPT" in
+        local SUB_OPTIONS=""        
+        #
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        #
+        local S_OPT
+        for S_OPT in ${OPTIONS[@]}; do
+            case "$S_OPT" in
                 1)  # View Config
-                    MenuChecks[$((M_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
 
                     create_config
                     
-                    StatusBar=$(localize "CONFIG-MENU-SB-CREATE")
+                    StatusBar1=$(localize "CONFIG-MENU-SB-CREATE")
                     ;;
                 2)  # Edit Config
-                    MenuChecks[$((M_OPT - 1))]=1
-                    
+                    MenuChecks[$((S_OPT - 1))]=1
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass                    
                     cat ${MOUNTPOINT}/etc/pacman.conf
                     read_input_yn "EDIT-PACMAN" " " 0
                     if [[ "$YN_OPTION" -eq 1 ]]; then
@@ -369,60 +403,61 @@ config_menu()
                     fi
                     pause_function "/etc/vconsole.conf $LINENO"
 
-                    StatusBar=$(localize "CONFIG-MENU-SB-EDIT")
+                    StatusBar1=$(localize "CONFIG-MENU-SB-EDIT")
+                    BYPASS="$Old_BYPASS" # Restroe Bypass
                     break
                     ;;
                 3)  # Backup Config
-                    MenuChecks[$((M_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     
                     backup
                     
-                    StatusBar=$(localize "CONFIG-MENU-SB-BACKUP")
+                    StatusBar1=$(localize "CONFIG-MENU-SB-BACKUP")
                     ;;
                 4)  # Restore Config
-                    MenuChecks[$((M_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     
                     copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     
-                    StatusBar=$(localize "CONFIG-MENU-SB-RESTORE") 
+                    StatusBar1=$(localize "CONFIG-MENU-SB-RESTORE") 
                     ;;
                 5)  # Custom Nameservers
-                    MenuChecks[$((M_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1
                     DEBUGGING=1
                     custom_nameservers
-                    StatusBar=$(localize "CONFIG-MENU-SB-C-NAMESERVERS")
+                    StatusBar1=$(localize "CONFIG-MENU-SB-C-NAMESERVERS")
                     ;;
                 6)  # Web Server
-                    MenuChecks[$((M_OPT - 1))]=1
-                    StatusBar=$(localize "CONFIG-MENU-SB-WEB-SERVER")
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-WEB-SERVER")
                     ;;
                 7)  # Flesh
-                    MenuChecks[$((M_OPT - 1))]=1
-                    StatusBar=$(localize "CONFIG-MENU-SB-FLESH")
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-FLESH")
                     break;
                     ;;
                 8)  # Log Files
-                    MenuChecks[$((M_OPT - 1))]=1
-                    StatusBar=$(localize "CONFIG-MENU-SB-LOGS")
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-LOGS")
                     copy_dir "/var/log/" "${FULL_SCRIPT_PATH}/var/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     break;
                     ;;
                 9)  # Return; same as Quit
-                    MenuChecks[$((M_OPT - 1))]=1
-                    M_OPT="$BreakableKey"
+                    MenuChecks[$((S_OPT - 1))]=1
+                    S_OPT="$BreakableKey"
                     break;
                     ;;
                 *)
-                    if [[ $(to_lower_case "$M_OPT") == $(to_lower_case "$BreakableKey") ]]; then
-                        M_OPT="$BreakableKey"
+                    if [[ $(to_lower_case "$S_OPT") == $(to_lower_case "$BreakableKey") ]]; then
+                        S_OPT="$BreakableKey"
                         break;
                     fi
-                    invalid_option "$M_OPT"
-                    StatusBar=$(localize "INVALID_OPTION")
+                    invalid_option "$S_OPT"
+                    StatusBar1=$(localize "INVALID_OPTION")
                     ;;
             esac
         done
-        is_breakable "$M_OPT" "$BreakableKey"
+        is_breakable "$S_OPT" "$BreakableKey"
     done
 }
 #}}}
@@ -440,13 +475,15 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "MAIN-MENU-DESC"  "Main Menu"
-    localize_info "MAIN-MENU-NOTES" "Notes."
+    localize_info "MAIN-MENU-DESC"   "Main Menu"
+    localize_info "MAIN-MENU-NOTES"  "This is the Main Menu Notes."
+    localize_info "MAIN-MENU-WIZARD" "Use Installation Wizard."
     # Menu Localization
     localize_info "MAIN-MENU-NEW-SOFTWARE"  "New Software Configure File"
     localize_info "MAIN-MENU-INSTALL"       "Install Arch Linux"
     localize_info "MAIN-MENU-LOAD-SOFTWARE" "Load Software Configuration File"
     localize_info "MAIN-MENU-DEBUG-MODE"    "Debug Mode"
+    localize_info "MAIN-MENU-SIMULATE-MODE" "SIMULATE Mode"
     localize_info "MAIN-MENU-NETWORK"       "Network Troubleshooting."
     localize_info "MAIN-MENU-CONFIG"        "Config"
     localize_info "MAIN-MENU-TEST"          "Test"
@@ -457,18 +494,20 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "MAIN-MENU-DESC-INSTALL"       "Install Arch Linux: Format Hard Drive and Install Arch Linux."
     localize_info "MAIN-MENU-DESC-LOAD-SOFTWARE" "Load Software: Will install Software Packages from above option."
     localize_info "MAIN-MENU-DESC-DEBUG-MODE"    "Debug Mode: Adds Debugging Information and pauses; helps troubleshoot, Call first, i.e. 4 1 2"
+    localize_info "MAIN-MENU-DESC-SIMULATE-MODE" "SIMULATE Mode: Do not Format Drive or Install Software, will only Create Scripts files for Importing into Live OS."
     localize_info "MAIN-MENU-DESC-NETWORK"       "Network Troubleshooting"
     localize_info "MAIN-MENU-DESC-CONFIG"        "Configuration Files: View, Edit, Backup and Restore Configuration files."
     localize_info "MAIN-MENU-DESC-TEST"          "Test: Put functions or Code that you wish to test here, for easy access."
     localize_info "MAIN-MENU-DESC-REBOOT"        "Reboot: Reboot the Computer."
     localize_info "MAIN-MENU-DESC-QUIT"          "Quit: Exit back to Command line"
     # Menu Warning Description Localization
-    localize_info "MAIN-MENU-WARN-FORMAT" "Format Hard Drive"
+    localize_info "MAIN-MENU-WARN-FORMAT"      "Format Hard Drive"
     # Status bar Localization
     localize_info "MAIN-MENU-SB-SOFTWARE"      "Software and Configuration files are ready."
     localize_info "MAIN-MENU-SB-INSTALL"       "Hard Drive ready for Reboot."
     localize_info "MAIN-MENU-SB-LOAD-SOFTWARE" "Software Configuration Loaded."
     localize_info "MAIN-MENU-SB-DEBUG-MODE"    "Debugging Mode set to On."
+    localize_info "MAIN-MENU-SB-SIMULATE-MODE" "SIMULATE Mode set to On, will only Create Script Files."    
     localize_info "MAIN-MENU-SB-NETWORK"       "Network Troubleshooting Completed"
     localize_info "MAIN-MENU-SB-CONFIG"        "Configuration Files Completed."
     localize_info "MAIN-MENU-SB-TEST"          "Test Completed."
@@ -495,34 +534,36 @@ main_menu()
 {
     local -r menu_name="MainMenu"  # You must define Menu Name here
     local BreakableKey="Q"         # Q=Quit, D=Done, B=Back
-    local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
-    local -a MenuThemeDflt=( "${BGreen}" "${White}" ")" )
     # No reason to save menu
-    OLD_IFS="$IFS"
-    IFS=$'\n\t' # Very Important
-    #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" "1" "0" ) ) # MENU_PATH is Global
+    local OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     local -a MenuChecks=( $(create_data_array 0 0 ) )
     IFS="$OLD_IFS"
+    local Old_BYPASS="$BYPASS"
+    local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
+    local -a MenuThemeDflt=( "${BGreen}" "${White}" ")" )
     #
-    local -i DetectedMode=0
+    StatusBar2=" "
     if [ -d "/home/arch/" ]; then
-        StatusBar="MM-BOOT-MODE-DETECTED"
-        DetectedMode=1
+        StatusBar1="MM-BOOT-MODE-DETECTED"
+        DETECTED_RUN_MODE=1
+        RUNTIME_MODE=1
     else
-        StatusBar="MM-LIVE-MODE-DETECTED"
-        DetectedMode=2
+        StatusBar1="MM-LIVE-MODE-DETECTED"
+        DETECTED_RUN_MODE=2
+        MOUNTPOINT=" "
+        RUNTIME_MODE=2
+        DRIVE_FORMATED=1        
     fi
     #
     while [[ 1 ]]; do
         local -i OLD_DEBUGGING=DEBUGGING # Save setting
         #
-        local -a MenuItems=( "" )
-        local -a MenuInfo=( "" )
-        RESET_MENU=1
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #IFS=" "
         #
         print_title "MAIN-MENU-TITLE" "$TEXT_SCRIPT_ID"
-        print_caution "${StatusBar}" "${StatusBar2}"
+        print_caution "${StatusBar1}" "${StatusBar2}"
         #
         print_this "MM-INFO-1"
         print_this "MM-INFO-2"
@@ -537,17 +578,18 @@ main_menu()
         echo 
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NEW-SOFTWARE"  "" ""                      "MAIN-MENU-DESC-SOFTWARE"      "MenuTheme[@]"
-        if [[ "$DetectedMode" -eq 1 ]]; then # Boot Mode
+        if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
             add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-DESC-INSTALL"       "MenuThemeDflt[@]"
         else # Live Mode
             add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-DESC-INSTALL"       "MenuThemeWarn[@]"
         fi
-        if [[ "$DetectedMode" -eq 1 ]]; then # Boot Mode
+        if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
             add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-DESC-LOAD-SOFTWARE" "MenuThemeWarn[@]"
         else # Live Mode
             add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-DESC-LOAD-SOFTWARE" "MenuThemeDflt[@]"
         fi
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-DEBUG-MODE"    "" ""                      "MAIN-MENU-DESC-DEBUG-MODE"    "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-SIMULATE-MODE" "" ""                      "MAIN-MENU-DESC-SIMULATE-MODE" "MenuTheme[@]"   
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NETWORK"       "" ""                      "MAIN-MENU-DESC-NETWORK"       "MenuTheme[@]"   
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-CONFIG"        "" ""                      "MAIN-MENU-DESC-CONFIG"        "MenuTheme[@]"   
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-TEST"          "" ""                      "MAIN-MENU-DESC-TEST"          "MenuTheme[@]"   
@@ -556,13 +598,18 @@ main_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options
+        local SUB_OPTIONS=""
+        #
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        #="$BYPASS"
+        local M_OPT
         for M_OPT in ${OPTIONS[@]}; do
             case "$M_OPT" in
                 1)  # Install New Software
                     MenuChecks[$((M_OPT - 1))]=1
-                    set_debugging_mode "$DetectedMode" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                    get_install_mode "$DetectedMode"
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    get_install_mode "$DETECTED_RUN_MODE"
                     clear_software 1
                     if is_last_config_files ; then
                         show_last_config
@@ -572,26 +619,34 @@ main_menu()
                         show_last_config
                         pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     fi        
-                    install_menu
-                    StatusBar=$(localize "MAIN-MENU-SB-SOFTWARE")
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+                    read_input_yn "MAIN-MENU-WIZARD" "" 1
+                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        run_install_wizzard
+                        exit 0
+                    else
+                        install_menu
+                    fi
+                    StatusBar1=$(localize "MAIN-MENU-SB-SOFTWARE")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 2)  # Install OS
-                    MenuChecks[$((M_OPT - 1))]=1
-                    set_debugging_mode "$DetectedMode" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    MenuChecks[$((="$BYPASS"M_OPT - 1))]=1
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     FAST_INSTALL=1
                     BOOT_MODE=1
                     # Assume Boot mode
-                    verify_config "$DetectedMode"
+                    verify_config "$DETECTED_RUN_MODE"
                     start_screen 
-                    StatusBar=$(localize "MAIN-MENU-SB-INSTALL")
+                    StatusBar1=$(localize "MAIN-MENU-SB-INSTALL")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     break        
                     ;;
                 3)  # Load Software
                     MenuChecks[$((M_OPT - 1))]=1
-                    set_debugging_mode "$DetectedMode" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                    verify_config "$DetectedMode"
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    verify_config "$DETECTED_RUN_MODE"
                     if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
                         echo "No Repository"
                     elif [[ "$PACMAN_REPO_TYPE" -eq 1 ]]; then # 1=Server
@@ -602,66 +657,76 @@ main_menu()
                         echo "mount repo"
                     fi
                     install_loaded_software
-                    StatusBar=$(localize "MAIN-MENU-SB-LOAD-SOFTWARE")
+                    StatusBar1=$(localize "MAIN-MENU-SB-LOAD-SOFTWARE")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
                 4)  # Debug mode
                     MenuChecks[$((M_OPT - 1))]=1
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+                    print_this "MAIN-MENU-EXTENDED-DESC"
                     read_input_yn "MAIN-MENU-EXTENDED" "" 0
+                    BYPASS="$Old_BYPASS" # Restroe Bypass
                     if [[ "$YN_OPTION" -eq 0 ]]; then
                         DEBUGGING=1
                     else
                         DEBUGGING=2
                     fi
-                    StatusBar=$(localize "MAIN-MENU-SB-DEBUG-MODE")
+                    StatusBar1=$(localize "MAIN-MENU-SB-DEBUG-MODE")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
-                5)  # Network
+                5)  # SIMULATE
                     MenuChecks[$((M_OPT - 1))]=1
-                    print_this "MAIN-MENU-EXTENDED-DESC"
+                    SIMULATE=1
+                    StatusBar1=$(localize "MAIN-MENU-SB-NETWORK")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                6)  # Network
+                    MenuChecks[$((M_OPT - 1))]=1
+                    print_this "MAIN-MENU-NETWORK"
                     DEBUGGING=1
                     network_troubleshooting
                     DEBUGGING=OLD_DEBUGGING # Restor Setting
-                    StatusBar=$(localize "MAIN-MENU-SB-NETWORK")
+                    StatusBar1=$(localize "MAIN-MENU-SB-NETWORK")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
-                6)  # Config
+                7)  # Config
                     MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
-                    verify_config "$DetectedMode"
+                    verify_config "$DETECTED_RUN_MODE"
                     config_menu
                     DEBUGGING=OLD_DEBUGGING # Restor Setting
-                    StatusBar=$(localize "MAIN-MENU-SB-CONFIG")
+                    StatusBar1=$(localize "MAIN-MENU-SB-CONFIG")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
-                7)  # Test
+                8)  # Test
                     MenuChecks[$((M_OPT - 1))]=1
                     DEBUGGING=1
-                    set_debugging_mode "$DetectedMode" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                    verify_config "$DetectedMode" # That puts this in test mode also
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    verify_config "$DETECTED_RUN_MODE" # That puts this in test mode also
                     test
                     DEBUGGING=OLD_DEBUGGING # Restor Setting
                     #
-                    StatusBar=$(localize "MAIN-MENU-SB-TEST")
+                    StatusBar1=$(localize "MAIN-MENU-SB-TEST")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
                     ;;
-                8)  # Reboot
+                9)  # Reboot
                     MenuChecks[$((M_OPT - 1))]=1
                     reboot
                     break
                     ;;
-                9)  # Quit
+               10)  # Quit
                     MenuChecks[$((M_OPT - 1))]=1
                     M_OPT="$BreakableKey"
                     break
                     ;;
-                *)
+                *)  # Catch ALL
                     if [[ "$M_OPT" == $(to_lower_case "$BreakableKey") ]]; then
                         M_OPT="$BreakableKey"
                         break;
+                    else
+                        invalid_option "$M_OPT"
                     fi
-                    invalid_option "$M_OPT"
-                    StatusBar=$(localize "INVALID_OPTION")
+                    StatusBar1=$(localize "INVALID_OPTION")
                     StatusBar2=""
                     ;;
             esac
@@ -676,6 +741,10 @@ main_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "WIZ-BYY"   "Exit Wizard"
+    localize_info "RUN-TEST"  "Run Self-Test"
+fi
 #
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     SILENT_MODE=1
@@ -687,10 +756,30 @@ elif [[ "$RUN_HELP" -eq 1 ]]; then
     SILENT_MODE=0
 elif [[ "$RUN_TEST" -eq 1 ]]; then
     print_info "RUN-TEST"
+elif [[ "$RUN_TEST" -eq 2 ]]; then
+    print_info "RUN-TEST"
+elif [[ "$AUTOMAN" -eq 1 ]]; then
+    verify_config "$DETECTED_RUN_MODE"
+    FAST_INSTALL=1
+    if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
+        setup_os
+    else                                 # Live Mode
+        MOUNTPOINT=" "
+        if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
+            echo "No Repository"
+        elif [[ "$PACMAN_REPO_TYPE" -eq 1 ]]; then # 1=Server
+            if [ ! -d "/mnt/${CUSTOM_PACKAGES_NAME}/" ]; then
+                copy_custom_repo "${CUSTOM_PACKAGES}" "${CUSTOM_REPO_NAME}" "/mnt/${CUSTOM_PACKAGES_NAME}/"                        
+            fi
+        elif [[ "$PACMAN_REPO_TYPE" -eq 2 ]]; then # 2=Client
+            echo "mount repo"
+        fi
+        install_loaded_software        
+    fi
 else
     cls
     clear_logs
     main_menu
 fi
-print_this "BYY"
+print_this "WIZ-BYY"
 # *** End of Script ***********************************************************
