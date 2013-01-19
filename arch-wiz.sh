@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="11 Jan 2013 16:33"
+# LAST_UPDATE="18 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -294,11 +294,13 @@ configure_aur_helper()
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 2 ]]; then
-    if aur_download_packages "package-query yaourt" ; then
-        print_info "TEST-FUNCTION-PASSED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
-    else
-        print_error "TEST-FUNCTION-FAILED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
-    fi  
+    if is_os "Arch Linux" ; then
+        if aur_download_packages "package-query yaourt" ; then
+            print_test "TEST-FUNCTION-PASSED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
+        else
+            print_error "TEST-FUNCTION-FAILED" "configure_aur_helper @ $(basename $BASH_SOURCE) : $LINENO"
+        fi  
+    fi
 fi
 #}}}
 # -----------------------------------------------------------------------------
@@ -1239,93 +1241,98 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "SETUP-OS-DESC"  "Setup OS"
     #
-    localize_info "Install-Arch" "Install Arch Linux on Drive"
-    localize_info "Script-uses-GPT" "This Script uses GPT: GUID Partition Table (GPT) is a new style of partitioning which is part of the Unified Extensible Firmware Interface Specification, using the globally unique identifier for devices. It is different from the Master Boot Record (the more commonly used partitioning style) in many aspects and has many advantages."
-    localize_info "Partitioning-hard-drive" "Partitioning a hard drive allows one to logically divide the available space into sections that can be accessed independently of one another. Partition information is stored within a hard drive's Master Boot Record."
-    localize_info "Running-gdisk" "Running gdisk options will DESTROY all DATA on installation disk!"
-    localize_info "Standard-Partition-4-Primary-Types" "This function sets up a Standard Partition of 4 Primary Types: UEFI - BOOT - SWAP and ROOT; you can also specify to create HOME and VAR Partitions."
-    localize_info "Unified-Extensible-Firmware-Interface" "Unified Extensible Firmware Interface (or UEFI for short) is a new type of firmware that was initially designed by Intel (known as EFI then) mainly for its Itanium based systems. It introduces new ways of booting an OS that is distinct from the commonly used 'MBR boot code' method followed for BIOS systems. It started as Intel's EFI in versions 1.x and then a group of companies called the UEFI Forum took over its development from which it was called Unified EFI starting with version 2.0."
-    localize_info "UEFI is formated as FAT32" "UEFI is formated as FAT32"
-    localize_info "BIOS" "If your motherboard supports UEFI Mode, then use it, otherwise use BIOS mode; both use GPT for this Script."
-    localize_info "BOOT" "The /boot directory contains the kernel and ramdisk images as well as the bootloader configuration file and bootloader stages."
-    localize_info "BOOT-Partition-not-required" "BOOT is not required to be a separate Partition, its recommended, BOOT is formated as Ext2"
-    localize_info "ROOT" "ROOT is required, and is recommended to be formated as Ext4."
-    localize_info "SWAP" "The swap partition provides memory that can be used as virtual RAM. It is recommended for PCs with 1GB or less of physical RAM."
-    localize_info "HOME" "The /home directory contains user-specific configuration files (the so-called 'dot files'). Optionally, it can also hold any type of media (videos, music, etc), and if you use Wine, the games/programs will be installed in ~/.wine/ by default. So please take this into account if you chose to create a separate home partition. While keeping it on a separate partition can be useful in case you reinstall, some prefer to start fresh (because that's usually the reason for a reinstall), instead of reusing old, and possibly deprecated or problematic, configuration files. The main advantage is that, in very rare cases, if the root partition becomes too full, it will not impact your web browser, media player, torrent client, etc. They will keep working uninhibited, and will keep saving new changes to their setting files or to their cache. A home partition can also be shared with other installed Linux distributions, but this is not recommended because of possible incompatibilities between user-specific configuration files. The only exception is if each distribution has its own user dir on the shared home partition."
-    localize_info "VAR" "The /var directory stores Contains variable data such as spool directories and files, administrative and logging data, pacman's cache, the ABS tree, etc. It is used for example for caching and logging, and hence frequently read or written. Keeping it in a separate partition avoids running out of disk space due to flunky logs, etc. It exists to make it possible to mount /usr as read-only. Everything that historically went into /usr that is written to during system operation (as opposed to installation and software maintenance) must reside under /var."
-    localize_info "series-of-question" "A series of question will guild us to setting up the Partition Table."
-    localize_info "Order-Partitions" "The Order the Partitions are made are: UEFI - BOOT - SWAP - ROOT - HOME - VAR"
-    localize_info "SETUP-INFO" "You can hit Shift-Page Up or Down to scroll screens, Ctrl-C to exit script at any time."
-    localize_info "choose-Drive-install-OS" "You must choose a Drive to install OS on, make sure you wish to Format this Whole Drive."
-    localize_info "what-drive" "Figure out what drive you wish to install to, then re-run this Script."
-    localize_info "Format-Drive" "About to Format Drive, be very sure you wish to continue! Hit Ctrl-C to Cancel, any key to Continue."
-    localize_info "Last-Chance" "Last Chance at line"
-    localize_info "same-drive-Script" "You can not install to same drive Script is Executing from."
-    localize_info "Install-on-Device" "Installing on Device"
-    localize_info "Device-does-not-exist" "Device does not exist! Try running script again using correct device name, run sgdisk -p for a list of Device names."
+    localize_info "SETUP-OS-INSTALL-ARCH"           "Install Arch Linux on Drive"
+    localize_info "SETUP-OS-GPT"                    "This Script uses GPT: GUID Partition Table (GPT) is a new style of partitioning which is part of the Unified Extensible Firmware Interface Specification, using the globally unique identifier for devices. It is different from the Master Boot Record (the more commonly used partitioning style) in many aspects and has many advantages."
+    localize_info "SETUP-OS-PARITION-HAR-DRIVE"     "Partitioning a hard drive allows one to logically divide the available space into sections that can be accessed independently of one another. Partition information is stored within a hard drive's Master Boot Record."
+    localize_info "SETUP-OS-RUNNING-GDISK"          "Running gdisk options will DESTROY all DATA on installation disk!"
+    localize_info "SETUP-OS-4-PARTITION-TYPES"      "This function sets up a Standard Partition of 4 Primary Types: UEFI - BOOT - SWAP and ROOT; you can also specify to create HOME and VAR Partitions."
+    localize_info "SETUP-OS-UEFI"                   "Unified Extensible Firmware Interface (or UEFI for short) is a new type of firmware that was initially designed by Intel (known as EFI then) mainly for its Itanium based systems. It introduces new ways of booting an OS that is distinct from the commonly used 'MBR boot code' method followed for BIOS systems. It started as Intel's EFI in versions 1.x and then a group of companies called the UEFI Forum took over its development from which it was called Unified EFI starting with version 2.0."
+    localize_info "SETUP-OS-UEFI-FAT32"             "UEFI is formated as FAT32"
+    localize_info "SETUP-OS-BIOS"                   "If your motherboard supports UEFI Mode, then use it, otherwise use SETUP-OS-BIOS mode; both use GPT for this Script."
+    localize_info "SETUP-OS-BIOS-INFO"              "BIOS is formated as FAT32"
+    localize_info "SETUP-OS-BOOT"                   "The /boot directory contains the kernel and ramdisk images as well as the bootloader configuration file and bootloader stages."
+    localize_info "SETUP-OS-BOOT-PART-NOT-REQUIRED" "BOOT is not required to be a separate Partition, its recommended, BOOT is formated as Ext2"
+    localize_info "SETUP-OS-ROOT"                   "ROOT is required, and is recommended to be formated as Ext4."
+    localize_info "SETUP-OS-SWAP"                   "The swap partition provides memory that can be used as virtual RAM. It is recommended for PCs with 1GB or less of physical RAM."
+    localize_info "SETUP-OS-SWAP-INFO"              "A SWAP partition is not required, but recommened."
+    localize_info "SETUP-OS-HOME"                   "The /home directory contains user-specific configuration files (the so-called 'dot files'). Optionally, it can also hold any type of media (videos, music, etc), and if you use Wine, the games/programs will be installed in ~/.wine/ by default. So please take this into account if you chose to create a separate home partition. While keeping it on a separate partition can be useful in case you reinstall, some prefer to start fresh (because that's usually the reason for a reinstall), instead of reusing old, and possibly deprecated or problematic, configuration files. The main advantage is that, in very rare cases, if the root partition becomes too full, it will not impact your web browser, media player, torrent client, etc. They will keep working uninhibited, and will keep saving new changes to their setting files or to their cache. A home partition can also be shared with other installed Linux distributions, but this is not recommended because of possible incompatibilities between user-specific configuration files. The only exception is if each distribution has its own user dir on the shared home partition."
+    localize_info "SETUP-OS-VAR"                    "The /var directory stores Contains variable data such as spool directories and files, administrative and logging data, pacman's cache, the ABS tree, etc. It is used for example for caching and logging, and hence frequently read or written. Keeping it in a separate partition avoids running out of disk space due to flunky logs, etc. It exists to make it possible to mount /usr as read-only. Everything that historically went into /usr that is written to during system operation (as opposed to installation and software maintenance) must reside under /var."
+    localize_info "SETUP-OS-QUESTIONS"              "A series of question will guild us to setting up the Partition Table."
+    localize_info "SETUP-OS-PARITION-ORDER"         "The Order the Partitions are made are: UEFI - BOOT - SWAP - ROOT - HOME - VAR"
+    localize_info "SETUP-OS-SETUP-INFO"             "You can hit Shift-Page Up or Down to scroll screens, Ctrl-C to exit script at any time."
+    localize_info "SETUP-OS-INSTALL-DRIVE"          "You must choose a Drive to install OS on, make sure you wish to Format this Whole Drive."
+    localize_info "SETUP-OS-WHAT-DRIVE"             "Figure out what drive you wish to install to, then re-run this Script."
+    localize_info "SETUP-OS-FORMAT-DRIVE"           "About to Format Drive, be very sure you wish to continue! Hit Ctrl-C to Cancel, any key to Continue."
+    localize_info "SETUP-OS-LAST-CHANCE"            "Last Chance at line"
+    localize_info "SETUP-OS-SAME-DRIVE-SCRIPT"      "You can not install to same drive Script is Executing from."
+    localize_info "SETUP-OS-INSTALL-ON-DEVICE"      "Installing on Device"
+    localize_info "SETUP-OS-DEVICE-NO-EXIST"        "Device does not exist! Try running script again using correct device name, run sgdisk -p for a list of Device names."
 fi
 # -------------------------------------
 setup_os()
 {
-    print_title "https://wiki.archlinux.org/index.php/Partitioning and https://wiki.archlinux.org/index.php/GUID_Partition_Table"
-    print_info "Script-uses-GPT"
-    print_info "Partitioning-hard-drive"
-    print_error "Running-gdisk"
-    print_info "Standard-Partition-4-Primary-Types"
+    print_title "SETUP-OS-DESC" "https://wiki.archlinux.org/index.php/Partitioning and https://wiki.archlinux.org/index.php/GUID_Partition_Table"
+    print_info  "SETUP-OS-GPT"
+    print_info  "SETUP-OS-PARITION-HAR-DRIVE"
+    print_error "SETUP-OS-RUNNING-GDISK"
+    print_info  "SETUP-OS-4-PARTITION-TYPES"
     echo "UEFI"
-    print_info "Unified-Extensible-Firmware-Interface" "https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface"
-    print_info "UEFI is formated as FAT32"
+    print_info "SETUP-OS-UEFI" "https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface"
+    print_info "SETUP-OS-UEFI-FAT32"
     echo "BIOS"
-    print_info "BIOS" "https://wiki.archlinux.org/index.php/GRUB2#BIOS_systems_2"
-    print_info "BIOS is formated as FAT32"
+    print_info "SETUP-OS-BIOS" "https://wiki.archlinux.org/index.php/GRUB2#BIOS_systems_2"
+    print_info "SETUP-OS-BIOS-INFO"
     is_uefi_mode
     echo "BOOT"
-    print_info "BOOT" "https://wiki.archlinux.org/index.php/Partitioning#.2Fboot"
-    print_info "BOOT-Partition-not-required"
+    print_info "SETUP-OS-BOOT" "https://wiki.archlinux.org/index.php/Partitioning#.2Fboot"
+    print_info "SETUP-OS-BOOT-PART-NOT-REQUIRED"
     echo "ROOT"
-    print_info "ROOT" "https://wiki.archlinux.org/index.php/Partitioning#.2F_.28root.29"
+    print_info "SETUP-OS-ROOT" "https://wiki.archlinux.org/index.php/Partitioning#.2F_.28root.29"
     echo "SWAP"
-    print_info "SWAP" "https://wiki.archlinux.org/index.php/Partitioning#Swap"
-    print_info "A SWAP partition is not required, but recommened."
+    print_info "SETUP-OS-SWAP" "https://wiki.archlinux.org/index.php/Partitioning#Swap"
+    print_info "SETUP-OS-SWAP-INFO"
     echo "HOME"
-    print_info "HOME" "https://wiki.archlinux.org/index.php/Partitioning#.2Fhome"
+    print_info "SETUP-OS-HOME" "https://wiki.archlinux.org/index.php/Partitioning#.2Fhome"
     echo "VAR"
-    print_info "VAR" "https://wiki.archlinux.org/index.php/Partitioning#.2Fvar"
+    print_info "SETUP-OS-VAR" "https://wiki.archlinux.org/index.php/Partitioning#.2Fvar"
     # Duplicate code for var and tmp, note usr is too much work, it dumps to gdisk and users can manually add anything they wish at that point
     #
     echo ""
-    print_info "series-of-question"
-    print_info "Order-Partitions"
+    print_info "SETUP-OS-QUESTIONS"
+    print_info "SETUP-OS-PARITION-ORDER"
     echo ""
-    print_info "SETUP-INFO"
+    print_info "SETUP-OS-SETUP-INFO"
     #
-    print_info "choose-Drive-install-OS"
+    print_info "SETUP-OS-INSTALL-DRIVE"
     device_list
+    Old_BYPASS="$BYPASS"; BYPASS=0; # Do not allow Bypass of Input
     get_input_option "LIST_DEVICES[@]" 1
     INSTALL_DEVICE=${LIST_DEVICES[$((OPTION-1))]:0:3}
-    read_input_yn "Install-Arch" "$INSTALL_DEVICE" 0
+    read_input_yn "SETUP-OS-INSTALL-ARCH" "$INSTALL_DEVICE" 0
     if [[ "$YN_OPTION" -eq 0 ]]; then
-        print_error "what-drive"
+        print_error "SETUP-OS-WHAT-DRIVE"
         exit 0
     fi
+    BYPASS="$Old_BYPASS"
     if [[ "$SCRIPT_DEVICE" == "$INSTALL_DEVICE" ]]; then
-        print_error "same-drive-Script"
+        print_error "SETUP-OS-SAME-DRIVE-SCRIPT"
         exit 0
     fi
     INSTALL_DEVICE=`echo $INSTALL_DEVICE | sed 's/[0-9]//'`  # i.e. sda; make sure no partition number is assigned
     if [[ -b "/dev/$INSTALL_DEVICE" ]]; then
-        print_info "Install-on-Device" "/dev/$INSTALL_DEVICE"
-        write_log "Install-on-Device" "/dev/$INSTALL_DEVICE $(basename $BASH_SOURCE) : $LINENO"
+        print_info "SETUP-OS-INSTALL-ON-DEVICE" "/dev/$INSTALL_DEVICE"
+        write_log  "SETUP-OS-INSTALL-ON-DEVICE" "/dev/$INSTALL_DEVICE $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     else
-        print_error "Device-does-not-exist" "/dev/$INSTALL_DEVICE"
+        print_error "SETUP-OS-DEVICE-NO-EXIST" "/dev/$INSTALL_DEVICE"
+        write_log   "SETUP-OS-DEVICE-NO-EXIST" "/dev/$INSTALL_DEVICE $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         lsblk
-        exit # @FIX test before passing it in; make a list and have them pick from it
+        exit 1 # @FIX test before passing it in; make a list and have them pick from it
     fi
     #
     set_log_drive # just run it from mounted drive
     #
-    print_error "Format-Drive" "$INSTALL_DEVICE"
-    pause_function "$(localize "Last-Chance") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    print_error "SETUP-OS-FORMAT-DRIVE" "$INSTALL_DEVICE"
+    pause_function "$(localize "SETUP-OS-LAST-CHANCE") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     get_user_name           # $USERNAME
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_user_name : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -1366,7 +1373,7 @@ setup_os()
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "configure_timezone : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         add_custom_repositories # @FIX save them to disk
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "add_custom_repositories : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-    else
+    else 
         get_mirrorlist "$COUNTRY_CODE"
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "get_mirrorlist : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
@@ -1440,17 +1447,17 @@ start_screen()
         exit 0
     fi
     print_title "START-SCREEN-TITLE" " - https://wiki.archlinux.org/index.php/Arch_Install_Scripts"
-    print_info "$TEXT_SCRIPT_ID"
-    print_info "START-SCREEN-INFO-1"
-    print_info "START-SCREEN-INFO-2"
-    print_info "START-SCREEN-INFO-3"
-    print_info "START-SCREEN-INFO-4"
-    print_info "START-SCREEN-INFO-5"
+    print_info  "$TEXT_SCRIPT_ID"
+    print_info  "START-SCREEN-INFO-1"
+    print_info  "START-SCREEN-INFO-2"
+    print_info  "START-SCREEN-INFO-3"
+    print_info  "START-SCREEN-INFO-4"
+    print_info  "START-SCREEN-INFO-5"
     echo ""
     print_error "START-SCREEN-WARN-1"
     print_error "START-SCREEN-WARN-2"
-    print_info "START-SCREEN-INFO-6"
-    pause_function "$(basename $BASH_SOURCE) : $LINENO"
+    print_info  "START-SCREEN-INFO-6"
+    if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     setup_os
 }
 #}}}
