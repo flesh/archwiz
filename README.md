@@ -5,13 +5,12 @@ Arch Linux Installation Wizard Script
 
 Last Update: 12 Jan 2012
 
-Arch Linux Installation Wizard AKA archwiz,
-is an Installation script file to install Arch Linux on a Hard Drive.
+Arch Linux Installation Wizard AKA archwiz, is an Installation script file to install Arch Linux on a Hard Drive.
 
 This script was originally written by helmuthdu[at]gmail[dot]com prior to Nov 2012.
 It was modified by Jeffrey Scott Flesher: jeff[at]lightwizzard[dot]com
 
-Currently I only tested the Mate Install; I did note problems with other Desktops; 
+Currently I only tested the Environments I use; I did note problems with other Environments; 
 the problem is in the Packages not the script; so most problems may be the packages.
 
 This is a bash script; I think its best to write this as a QT GUI Application; 
@@ -19,8 +18,8 @@ then create a Live Arch Disk with a real Installation Program; like other Distri
 so my work on this script is limited; just a fast way of getting going and to show it can be done.
 
 It has many Options:
-To start the install from a Flash Drive to a Hard Drive you wish to Format, type:
-1.  Boot up Arch Linux ISO and Mount your Flash Drive as such
+To start the install from a Flash Drive to a Hard Drive you wish to Format, do the Following:
+1.  Boot up Arch Linux ISO and Mount your Flash Drive as such:
     mkdir usb # You can call it and mount it anywhere you want, but /mnt is not a good place for it; the root is; so /root/usb is good
     mount /dev/sdb1 usb # where sdb1 is your Flash Drive; assuming you only have to drives in the system; and usb is the folder we created above
     cd usb
@@ -71,8 +70,8 @@ Profile: This script saves all settings as a Profile per user; it has the abilit
     
 Optimization: This script allows you to Optimize Pacman to use parallel downloads using Aria2, rsync and ppl parisync, as well as use pacget.
 
-All downloads are Automatic, unless they fail to install the first time, then they will drop to interactive mode, so you will have to 
-    hit keys manually; if AUR package; you will want to say No to edit configuration files, and Yes to all others.
+All downloads are Automatic, unless they fail to install the first time, then they will drop to interactive mode, 
+    so you will have to hit keys manually; if AUR package; you will want to say No to edit configuration files, and Yes to all others.
     
 Wizard API:
 
@@ -81,7 +80,7 @@ Wizard API:
     which is the parameters sent to the function, as such Documenting all the functions would be a huge undertaking in most projects this size,
     so I decided to make this script self Documenting, as well as self Localizing, a non-localized script is worthless to the world,
     in a perfect Society we would all talk the same Language, for me that would be C++, 
-    so lets just say that no one can agree on what Language to speak in, let a lone program in, so even this text needs to be translated,
+    so lets just say that no one can agree on what Language to speak in, let alone program in, so even this text needs to be translated,
     for those that do not read English; and this is static text; so these instructions really need to be in the script itself;
     which is why its self Documenting; so it can translate that into the language the person reading it can read it in,
     so that is it for this static file, all other Documentation will be built in.
