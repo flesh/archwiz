@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="18 Jan 2013 16:33"
+# LAST_UPDATE="21 Jan 2013 16:33"
 # SCRIPT_VERSION="1.0.0.a"
 #
 # THINGS TO DO
@@ -30,22 +30,25 @@ declare -i IS_PHTHON3_AUR=0 # install python3-aur
 declare PACMAN_OPTIMIZE_PACKAGES="rsync"
 declare -i SIMULATE=0 # Simulate Install, create Scripts for importing
 #
-declare -i MATE_INSTALLED=0
-declare -i GNOME_INSTALL=0
-declare -i XFCE_INSTALLED=0
-declare -i E17_INSTALLED=0
-declare -i KDE_INSTALLED=0
-declare -i LXDE_INSTALLED=0
-declare -i OPENBOX_INSTALLED=0
-declare -i AWESOME_INSTALLED=0
-declare -i GNOME_INSTALLED=0
-declare -i CINNAMON_INSTALLED=0
-declare -i UNITY_INSTALLED=0
-declare -i DE_MANAGER=0 # GDM KDE Elsa LightDM LXDM Slim Qingy XDM
+declare -i MATE_INSTALLED=0                        #
+declare -i GNOME_INSTALL=0                         #
+declare -i XFCE_INSTALLED=0                        #
+declare -i E17_INSTALLED=0                         #
+declare -i KDE_INSTALLED=0                         #
+declare -i LXDE_INSTALLED=0                        #
+declare -i OPENBOX_INSTALLED=0                     #
+declare -i AWESOME_INSTALLED=0                     #
+declare -i GNOME_INSTALLED=0                       #
+declare -i CINNAMON_INSTALLED=0                    #
+declare -i UNITY_INSTALLED=0                       #
+declare -i DE_MANAGER=0                            # GDM KDE Elsa LightDM LXDM Slim Qingy XDM
 declare -a DE_MANAGERS=( "GDM" "KDE" "Elsa" "LightDM" "LXDM" "Slim" "Qingy" "XDM" ) # ${DE_MANAGERS[$DE_MANAGER]}
-declare -i PHONON=0 # 0=phonon-gstreamer, 1=phonon-vlc
-declare -i INSTALL_TYPE=0 # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
-declare -i BASIC_INSTALL_VER=0 # Increament if you change Settings in Basic Install script
+declare -i PHONON=0                                # 0=phonon-gstreamer, 1=phonon-vlc
+declare -i INSTALL_TYPE=0                          # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
+declare -i BASIC_INSTALL_VER=0                     # Increament if you change Settings in Basic Install script
+declare -i CUSTOM_DE=0                             # 0=NONE, Mate=1, KDE=2, XFCE=3, Razor-QT & Openbox=4, Cinnamon=5, Awesume=6
+declare -i REINSTALL=0                             # Reinstall failed software installations
+declare -i TEST_INSTALL=1                          # Test software Installation
 # Save these settings in last config file
 declare -i INSTALL_NFS=0
 declare -i INSTALL_SAMBA=0
@@ -1267,7 +1270,7 @@ package_remove()
         if check_package "$PACKAGE" ; then
             print_info "PACKAGE-REMOVE-INFO" ": $PACKAGE"
             # pacman -Rcsn --noconfirm "$PACKAGE" # This operation is recursive, and must be used with care since it can remove many potentially needed packages.
-            pacman -Rddn --noconfirm "$PACKAGE" # We wish to remove some apps that will be replace with ones that replace it, so do not remove dependencies.
+            pacman -Rddn --noconfirm "$PACKAGE"   # We wish to remove some apps that will be replace with ones that replace it, so do not remove dependencies.
         fi
     done
 } 
@@ -3563,11 +3566,14 @@ save_last_config()
     echo "?INSTALL_FIRMWARE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     echo "$INSTALL_FIRMWARE"     >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # INSTALLED_VIDEO_CARD
-    echo "?INSTALLED_VIDEO_CARD"   >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
-    echo "$INSTALLED_VIDEO_CARD"   >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "?INSTALLED_VIDEO_CARD" >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$INSTALLED_VIDEO_CARD" >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     # BASIC_INSTALL_VER
     echo "?BASIC_INSTALL_VER"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     echo "$BASIC_INSTALL_VER"    >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    # CUSTOM_DE
+    echo "?CUSTOM_DE"            >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
+    echo "$CUSTOM_DE"            >> "${CONFIG_PATH}/${CONFIG_NAME}-5-last-config.db"
     #
     # LOCALE_ARRAY
     copy_file "${CONFIG_PATH}/${CONFIG_NAME}-6-locale.db" "${CONFIG_PATH}/${CONFIG_NAME}-16-locale-${LOG_DATE_TIME}.db" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -4075,6 +4081,9 @@ load_last_config()
                         ;;
                     "BASIC_INSTALL_VER")
                         BASIC_INSTALL_VER="$line"
+                        ;;
+                    "CUSTOM_DE")
+                        CUSTOM_DE="$line"
                         ;;
                 esac
             fi
