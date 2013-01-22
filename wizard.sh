@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-declare LAST_UPDATE="18 Jan 2013 16:33"
+declare LAST_UPDATE="21 Jan 2013 16:33"
 declare SCRIPT_VERSION="1.0.0.A"
 declare SCRIPT_NAME="ArchLinux Installation Wizard"
 #
@@ -41,9 +41,6 @@ declare USERPASSWD='archlinux'
 declare ROOTPASSWD='archlinux'
 # 
 declare -a USER_GROUPS=() 
-# 
-declare DATE_TIME=`date +"%d-%b-%Y @ %r"`
-declare LOG_DATE_TIME=$(date +"%d-%b-%Y-T-%H-%M")    
 #
 declare EXCLUDE_FILE_WARN=( "${CONFIG_NAME}-1-taskmanager-name.db" "${CONFIG_NAME}-1-taskmanager.db" "${CONFIG_NAME}-0-packagemanager-name.db" "${CONFIG_NAME}-0-packagemanager.db" "${CONFIG_NAME}-2-packages.db" "${CONFIG_NAME}-2-aur-packages.db" "${CONFIG_NAME}-3-user-groups.db" "${CONFIG_NAME}-4-software-config.db" )
 #
@@ -1703,6 +1700,7 @@ read_input_options()
         fi
     else
         while [[ -z "$OPTION" ]]; do
+            OPTION="" # Clear it again; we still have no idea whats in it
             read -p "        $prompt2" OPTION
         done
         if [[ $(echo "$OPTION" | tr '[:upper:]' '[:lower:]') == 'r' ]]; then
@@ -1725,11 +1723,11 @@ read_input_options()
     #    
     for line in ${MyArray[@]/,/ }; do
         if [[ ${line/-/} != $line ]]; then
-            for ((i=${line%-*}; i<=${line#*-}; i++)); do # Start at line with a - after it, 1-, then end with the - before it -3, then count each item in between it
+            for ((i=${line%-*}; i<=${line#*-}; i++)); do # Start at line with a - after it (%-*), 1-, then end with the - before it (#*-) -3, then count each item in between it, or expand it
                 [[ -n "$i" ]] && packages_opt+=( "$i" );
             done
         else
-            packages_opt+=( "$line" ) 
+            packages_opt+=( "$line" ) # This is building an Array; bash you have to love it for allowing this type of declaration; normally only works with strings in other languages; normally in bash: array=($array "new") or array[${#array[*]}]="new"
         fi
     done
     OPTIONS=( $(echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]') )
