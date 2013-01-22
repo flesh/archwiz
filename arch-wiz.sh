@@ -998,6 +998,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GDISK-PARTITION-DESC"  "Format Hard Drive and setup Partitions."
     #   
     localize_info "GDISK-PARTITION-TITLE"       "Partition Setup..."
+    localize_info "GDISK-PARTITION-SIMULATE"    "Simulate Installation."
     localize_info "GDISK-PARTITION-ERASING"     "Erasing Disk..."
     localize_info "GDISK-PARTITION-CREATE-UEFI" "Creating UEFI Disk..."
     localize_info "GDISK-PARTITION-CREATE-BIOS" "Creating BIOS Disk..."
@@ -1018,6 +1019,10 @@ fi
 gdisk_partition()
 {
     print_title "GDISK-PARTITION-TITLE"
+    if [[ "$SIMULATE" -eq 1 ]]; then
+        print_warning "GDISK-PARTITION-SIMULATE"
+        return 0
+    fi
     #
     # Disk prep
     print_warning "GDISK-PARTITION-ERASING" 
