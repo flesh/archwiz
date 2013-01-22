@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="19 Jan 2013 16:33"
+# LAST_UPDATE="21 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -399,19 +399,35 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-WIZARD-MENU-USAGE" "run_install_wizzard"
     localize_info "INSTALL-WIZARD-MENU-DESC"  "Install Wizard Now will Launch the Script in Wizard Mode."
     localize_info "INSTALL-WIZARD-MENU-NOTES" "NONE"
+    #
+    localize_info "INSTALL-WIZARD-MENU-BASIC" "Reconfigure Basic Setup"
 fi
 # -------------------------------------
 run_install_wizzard()
 {
     install_type_menu
-    if [[ "$BASIC_INSTALL_VER" -ne 1 ]]; then # Set BASIC_INSTALL_VER in install_basics_menu; change if you need to run this again
+    local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+    read_input_yn "INSTALL-WIZARD-MENU-BASIC" " " 1 # 
+    BYPASS="$Old_BYPASS" # Restroe Bypass
+    if [[ "$YN_OPTION" -eq 1 ]]; then
+        INSTALL_NFS=0
+        INSTALL_SAMBA=0
+        INSTALL_LMT=0
+        INSTALL_PRELOAD=0
+        INSTALL_ZRAM=0
+        INSTALL_TOR=0
+        INSTALL_CUPS=0
+        INSTALL_USB_MODEM=0
+        INSTALL_FIRMWARE=0
+        INSTALLED_VIDEO_CARD=0 # Same as VIDEO_CARD=7
         install_basics_menu
     fi
+    install_custom_de_menu
     SHOW_PAUSE=0
     INSTALL_WIZARD=1
-    install_basic 1
+    install_basic 1 # make sure INSTALL_WIZARD=1
     INSTALL_WIZARD=0
-    install_desktop_environment_menu 
+    install_desktop_environment_menu
     install_display_manager_menu
     INSTALL_WIZARD=1
     # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
@@ -465,7 +481,7 @@ run_install_wizzard()
         install_extra_menu
         install_kernel_menu
     fi
-    save_software
+    save_software    
     SAVED_SOFTWARE=1
     if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then
         FAST_INSTALL=1
@@ -488,7 +504,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     USAGE="install_type_menu"
     DESCRIPTION=$(localize "INSTALL-TYPE-DESC")
     NOTES=$(localize "INSTALL-TYPE-NOTES")
-    AUTHOR="helmuthdu and Flesher"
+    AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
     REVISION="5 Dec 2012"
@@ -514,7 +530,7 @@ install_type_menu()
 {
     local -r menu_name="INSTALL-TYPE"  # You must define Menu Name here
     local BreakableKey="D"             # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="2"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
@@ -535,7 +551,7 @@ install_type_menu()
     StatusBar2="$RecommendedOptions"
     #
     while [[ 1 ]]; do
-        print_title "CONFIGURE-TYPE-TITLE" 
+        print_title "INSTALL-TYPE-TITLE" 
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
@@ -597,38 +613,42 @@ install_type_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# INSTALL KERNEL MENU {{{
+# INSTALL CUSTOM DE MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_kernel_menu"
-    USAGE="install_kernel_menu"
-    DESCRIPTION=$(localize "INSTALL-KERNEL-DESC")
-    NOTES=$(localize "INSTALL-KERNEL-NOTES")
+    NAME="install_custom_de_menu"
+    USAGE="install_custom_de_menu"
+    DESCRIPTION=$(localize "INSTALL-CUSTOM-DE-DESC")
+    NOTES=$(localize "INSTALL-CUSTOM-DE-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
+    REVISION="19 Jan 2013"
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-KERNEL-DESC"   "Install Kernel Menu: "
-    localize_info "INSTALL-KERNEL-NOTES"  "NONE"
-    localize_info "INSTALL-KERNEL-TITLE"  "Kernel Installation:"
+    localize_info "INSTALL-CUSTOM-DE-DESC"   "Install Custom Desktop Menu: "
+    localize_info "INSTALL-CUSTOM-DE-NOTES"  "NONE"
+    localize_info "INSTALL-CUSTOM-DE-TITLE"  "Custom Desktop Menu:"
     #
-    localize_info "INSTALL-KERNEL-MENU-0"   "Liquorix"
-    localize_info "INSTALL-KERNEL-MENU-I-0"     "Liquorix is a distro kernel replacement built using the best configuration and kernel sources for desktop, multimedia, and gaming workloads, often used as a Debian Linux performance replacement kernel. damentz, the maintainer of the Liquorix patchset, is a developer for the Zen patchset as well, so many of the improvements there are found in this patchset. http://liquorix.net/"
-    localize_info "INSTALL-KERNEL-MENU-1"   "LTS"
-    localize_info "INSTALL-KERNEL-MENU-I-1"     "Long term support (LTS) Linux kernel and modules from the [core] repository."
-    localize_info "INSTALL-KERNEL-MENU-2"   "ZEN"
-    localize_info "INSTALL-KERNEL-MENU-I-2"     "The Zen Kernel is a the result of a collaborative effort of kernel hackers to provide the best Linux kernel possible for every day systems. https://github.com/damentz/zen-kernel?"
-    localize_info "INSTALL-KERNEL-MENU-3"   ""
-    localize_info "INSTALL-KERNEL-MENU-I-3"     ""
+    localize_info "INSTALL-CUSTOM-DE-MENU-1"   "Mate"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-1"      "Mate: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-2"   "KDE"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-2"      "KDE: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-3"   "XFCE"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-3"      "XFCE: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-4"   "Razor-QT & Openbox"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-4"      "Razor-QT & Openbox: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-5"   "Cinnamon"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-5"      "Cinnamon: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-6"   "Awesume"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-6"      "Awesume: "
 fi
 # -------------------------------------
-install_kernel_menu()
+install_custom_de_menu()
 {
-    local -r menu_name="INSTALL-KERNEL"  # You must define Menu Name here
-    local BreakableKey="D"               # Q=Quit, D=Done, B=Back
-    local RecommendedOptions=""          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local -r menu_name="INSTALL-CUSTOM-DE"  # You must define Menu Name here
+    local BreakableKey="D"                  # Q=Quit, D=Done, B=Back
+    local RecommendedOptions="4"            # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
@@ -649,54 +669,60 @@ install_kernel_menu()
     StatusBar2="$RecommendedOptions"
     #
     while [[ 1 ]]; do
-        print_title "CONFIGURE-KERNEL-TITLE" " - https://wiki.archlinux.org/index.php/Kernels"
+        print_title "INSTALL-CUSTOM-DE-TITLE" 
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-0" "" "" "INSTALL-TYPE-MENU-I-0" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-1" "" "" "INSTALL-TYPE-MENU-I-1" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-2" "" "" "INSTALL-TYPE-MENU-I-2" "MenuTheme[@]"
-        #add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-3" "" "" "INSTALL-TYPE-MENU-I-3" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CUSTOM-DE-MENU-1" "" "" "INSTALL-CUSTOM-DE-MENU-I-1" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CUSTOM-DE-MENU-2" "" "" "INSTALL-CUSTOM-DE-MENU-I-2" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CUSTOM-DE-MENU-3" "" "" "INSTALL-CUSTOM-DE-MENU-I-3" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CUSTOM-DE-MENU-4" "" "" "INSTALL-CUSTOM-DE-MENU-I-4" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CUSTOM-DE-MENU-5" "" "" "INSTALL-CUSTOM-DE-MENU-I-5" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CUSTOM-DE-MENU-6" "" "" "INSTALL-CUSTOM-DE-MENU-I-6" "MenuTheme[@]"
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
+        local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
         read_input_options "$SUB_OPTIONS" "$BreakableKey"
         SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restroe Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # Liquorix
+                1)  # Mate
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package        "$INSTALL_LIQURIX"
-                    add_packagemanager "package_install \"$INSTALL_LIQURIX\" 'INSTALL-LIQURIX'" "INSTALL-LIQURIX"
-                    #
-                    add_aur_package    "$AUR_INSTALL_LIQURIX"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX\" 'AUR-INSTALL-LIQURIX'" "AUR-INSTALL-LIQURIX"
-                    if [[ "$VIDEO_CARD" -eq 1 ]]; then    # nVidia for WINE
-                        add_aur_package    "$AUR_INSTALL_LIQURIX_NVIDIA"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX_NVIDIA\" 'AUR-INSTALL-LIQURIX-NVIDIA'" "AUR-INSTALL-LIQURIX-NVIDIA"
-                    fi
-                    # @FIX too many other things to do
+                    CUSTOM_DE=1
                     S_OPT="$BreakableKey"
                     break;
                     ;;
-                2)  # linux-lts 
+                2)  # KDE
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package        "$INSTALL_LTS"
-                    add_packagemanager "package_install \"$INSTALL_LTS\" 'INSTALL-LTS'" "INSTALL-LTS"
+                    CUSTOM_DE=2
                     S_OPT="$BreakableKey"
                     break;
                     ;;
-                3)  # linux-zen 
+                3)  # XFCE 
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package    "$AUR_INSTALL_ZEN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEN\" 'AUR-INSTALL-ZEN'" "AUR-INSTALL-ZEN"
                     S_OPT="$BreakableKey"
+                    CUSTOM_DE=3
                     break;
                     ;;
-                4)  # 
+                4)  # Razor-QT & Openbox
                     MenuChecks[$((S_OPT - 1))]=1
+                    S_OPT="$BreakableKey"
+                    CUSTOM_DE=4
+                    break;
+                    ;;
+                5)  # Cinnamon 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    S_OPT="$BreakableKey"
+                    CUSTOM_DE=5
+                    break;
+                    ;;
+                6)  # Awesume
+                    MenuChecks[$((S_OPT - 1))]=1
+                    CUSTOM_DE=6
                     S_OPT="$BreakableKey"
                     break;
                     ;;
@@ -805,6 +831,7 @@ install_basics_menu()
         MenuChecks[8]=1
     fi
     if [[ "$INSTALLED_VIDEO_CARD" -eq 1 ]]; then
+        MenuChecks[10]=1                             # Check these, it means they are allready Installed
         MenuChecks[11]=1                             # Check these, it means they are allready Installed
     fi
     if [[ "$INSTALLED_VIDEO_CARD" -eq 0 ]]; then
@@ -863,7 +890,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-1"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_NFS=0
                         StatusBar1="INSTALL-BASICS-MENU-1"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -876,7 +903,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-2"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_SAMBA=0
                         StatusBar1="INSTALL-BASICS-MENU-2"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -889,7 +916,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-3"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_LMT=0
                         StatusBar1="INSTALL-BASICS-MENU-3"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -902,7 +929,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-4"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_PRELOAD=0
                         StatusBar1="INSTALL-BASICS-MENU-4"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -915,7 +942,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-5"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_ZRAM=0
                         StatusBar1="INSTALL-BASICS-MENU-5"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -928,7 +955,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-6"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_TOR=0
                         StatusBar1="INSTALL-BASICS-MENU-6"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -941,7 +968,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-7"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_CUPS=0
                         StatusBar1="INSTALL-BASICS-MENU-7"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -954,7 +981,7 @@ install_basics_menu()
                         StatusBar1="INSTALL-BASICS-MENU-8"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                         INSTALL_USB_MODEM=0
                         StatusBar1="INSTALL-BASICS-MENU-8"
                         StatusBar2=$(localize "INSTALL-MENU-REMOVED")
@@ -965,7 +992,7 @@ install_basics_menu()
                     if [[ "$INSTALL_FIRMWARE" -eq 1 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                     else
-                        MenuChecks[$((S_OPT - 1))]=0
+                        MenuChecks[$((S_OPT - 1))]=2
                     fi
                     ;;
                10)  # Choose AUR Helper 
@@ -973,17 +1000,17 @@ install_basics_menu()
                     choose_aurhelper
                     ;;
                11)  # Network Managers
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_network_manager 
+                    MenuChecks[$((S_OPT - 1))]=1                     
+                    get_network_manager_menu
                     ;;
                12)  # Install Video Cards 
                     install_video_cards_menu 1
                     if [[ "$VIDEO_CARD" -eq 7 ]]; then
-                        MenuChecks[$((S_OPT - 1))]=0
-                        INSTALLED_VIDEO_CARD=0
+                        MenuChecks[$((S_OPT - 1))]=2
+                        INSTALLED_VIDEO_CARD=0         # Same as VIDEO_CARD=7
                     else
                         MenuChecks[$((S_OPT - 1))]=1
-                        INSTALLED_VIDEO_CARD=1
+                        INSTALLED_VIDEO_CARD=1         # Same as VIDEO_CARD != 7 
                     fi
                     ;;
                 *)  # Catch ALL 
@@ -1030,8 +1057,8 @@ install_basic()
     if [[ "$INSTALL_WIZARD" -eq 0 ]]; then
         install_basics_menu
     fi
-    install_basic_setup "$1" # Automan if keyboard is ES
-    install_nfs_now "$1"
+    install_basic_setup "$1"            # Automan if keyboard is ES
+    install_nfs_now "$1"                # 
     install_samba_now "$1"
     install_laptop_mode_tools_now "$1"
     install_preload_now "$1"
@@ -1040,6 +1067,9 @@ install_basic()
     #
     install_cups_now "$1"
     install_usb_modem_now "$1"
+    #
+    install_network_manager_now # @FIX Uninstall
+    install_video_card_now "$1"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -1161,7 +1191,7 @@ install_basic_setup()
     add_package        "$INSTALL_ALSA"
     add_packagemanager "package_install \"$INSTALL_ALSA\" 'INSTALL-ALSA'" "INSTALL-ALSA"
     add_module         "snd-usb-audio" "INSTALL-ALSA"
-    add_packagemanager "systemctl enable alsa-store.service alsa-restore.service" "SYSTEMD-ENABLE-ALSA"
+    add_packagemanager "systemctl enable alsa-store.service alsa-restore.service" "SYSTEMD-ENABLE-ALSA" # @FIX does this need to be called?
     # NTFS   
     print_info "INSTALL-BASIC-SETUP-NTFS-1" " - https://wiki.archlinux.org/index.php/File_Systems"
     print_info "INSTALL-BASIC-SETUP-NTFS-2"
@@ -1774,6 +1804,128 @@ install_additional_firmwares_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
+# INSTALL KERNEL MENU {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_kernel_menu"
+    USAGE="install_kernel_menu"
+    DESCRIPTION=$(localize "INSTALL-KERNEL-DESC")
+    NOTES=$(localize "INSTALL-KERNEL-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-KERNEL-DESC"   "Install Kernel Menu: "
+    localize_info "INSTALL-KERNEL-NOTES"  "NONE"
+    localize_info "INSTALL-KERNEL-TITLE"  "Kernel Installation:"
+    #
+    localize_info "INSTALL-KERNEL-MENU-0"   "Liquorix"
+    localize_info "INSTALL-KERNEL-MENU-I-0"     "Liquorix is a distro kernel replacement built using the best configuration and kernel sources for desktop, multimedia, and gaming workloads, often used as a Debian Linux performance replacement kernel. damentz, the maintainer of the Liquorix patchset, is a developer for the Zen patchset as well, so many of the improvements there are found in this patchset. http://liquorix.net/"
+    localize_info "INSTALL-KERNEL-MENU-1"   "LTS"
+    localize_info "INSTALL-KERNEL-MENU-I-1"     "Long term support (LTS) Linux kernel and modules from the [core] repository."
+    localize_info "INSTALL-KERNEL-MENU-2"   "ZEN"
+    localize_info "INSTALL-KERNEL-MENU-I-2"     "The Zen Kernel is a the result of a collaborative effort of kernel hackers to provide the best Linux kernel possible for every day systems. https://github.com/damentz/zen-kernel?"
+    localize_info "INSTALL-KERNEL-MENU-3"   ""
+    localize_info "INSTALL-KERNEL-MENU-I-3"     ""
+fi
+# -------------------------------------
+install_kernel_menu()
+{
+    local -r menu_name="INSTALL-KERNEL"  # You must define Menu Name here
+    local BreakableKey="D"               # Q=Quit, D=Done, B=Back
+    local RecommendedOptions=""          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    #
+    local SUB_OPTIONS=""        
+    if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+    fi
+    #
+    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$Last_IFS"
+    #
+    StatusBar1="INSTALL-MENU-REC"
+    StatusBar2="$RecommendedOptions"
+    #
+    while [[ 1 ]]; do
+        print_title "CONFIGURE-KERNEL-TITLE" " - https://wiki.archlinux.org/index.php/Kernels"
+        print_caution "${StatusBar1}" "${StatusBar2}"
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
+        #
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-0" "" "" "INSTALL-TYPE-MENU-I-0" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-1" "" "" "INSTALL-TYPE-MENU-I-1" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-2" "" "" "INSTALL-TYPE-MENU-I-2" "MenuTheme[@]"
+        #add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-3" "" "" "INSTALL-TYPE-MENU-I-3" "MenuTheme[@]"
+        #
+        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+        #
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        #
+        local S_OPT
+        for S_OPT in ${OPTIONS[@]}; do
+            case "$S_OPT" in
+                1)  # Liquorix
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package        "$INSTALL_LIQURIX"
+                    add_packagemanager "package_install \"$INSTALL_LIQURIX\" 'INSTALL-LIQURIX'" "INSTALL-LIQURIX"
+                    #
+                    add_aur_package    "$AUR_INSTALL_LIQURIX"
+                    add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX\" 'AUR-INSTALL-LIQURIX'" "AUR-INSTALL-LIQURIX"
+                    if [[ "$VIDEO_CARD" -eq 1 ]]; then    # nVidia for Liqurix
+                        add_aur_package    "$AUR_INSTALL_LIQURIX_NVIDIA"
+                        add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX_NVIDIA\" 'AUR-INSTALL-LIQURIX-NVIDIA'" "AUR-INSTALL-LIQURIX-NVIDIA"
+                    fi
+                    # @FIX too many other things to do
+                    S_OPT="$BreakableKey"
+                    break;
+                    ;;
+                2)  # linux-lts 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package        "$INSTALL_LTS"
+                    add_packagemanager "package_install \"$INSTALL_LTS\" 'INSTALL-LTS'" "INSTALL-LTS"
+                    S_OPT="$BreakableKey"
+                    break;
+                    ;;
+                3)  # linux-zen 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_aur_package    "$AUR_INSTALL_ZEN"
+                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEN\" 'AUR-INSTALL-ZEN'" "AUR-INSTALL-ZEN"
+                    S_OPT="$BreakableKey"
+                    break;
+                    ;;
+                4)  # 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    S_OPT="$BreakableKey"
+                    break;
+                    ;;
+                *)  # Catch ALL 
+                    if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
+                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
+                            SAVED_MAIN_MENU=1
+                            return 0
+                        else
+                            return 1
+                        fi
+                    else
+                        invalid_option "$S_OPT"
+                    fi
+                    ;;
+            esac
+        done
+        is_breakable "$S_OPT" "$BreakableKey"
+    done
+}
+#}}}
+# -----------------------------------------------------------------------------
 # INSTALL DESKTOP ENVIRONMENT {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_desktop_environment_menu"
@@ -1797,27 +1949,43 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-W"        "Installs from repo.mate-desktop.org"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I"            "Mate: Fork of Gnome 2.x"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2"    "KDE"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I"      "KDE:"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I"      "KDE: KDE software consists of a large number of individual applications and a desktop workspace as a shell to run these applications. https://wiki.archlinux.org/index.php/KDE"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3"    "XFCE"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I"      "XFCE:"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-4"    "Awesome"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-4-I"      "Awesome:"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I"      "XFCE: Xfce embodies the traditional UNIX philosophy of modularity and re-usability. It consists of a number of components that provide the full functionality one can expect of a modern desktop environment, while remaining relatively light. https://wiki.archlinux.org/index.php/Xfce"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-4"    "Razor-qt"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-4-I"      "Razor-qt [unsupported] is an advanced, easy-to-use, and fast desktop environment based on Qt technologies. It has been tailored for users who value simplicity, speed, and an intuitive interface. While still a new project, Razor-qt already contains all the key DE components. https://wiki.archlinux.org/index.php/Razor-qt"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-5"    "Cinnamon"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-5-I"      "Cinnamon:"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-5-I"      "Cinnamon: Cinnamon is a fork of Gnome 3. Cinnamon strives to provide a traditional user experienc, similar to Gnome 2. https://wiki.archlinux.org/index.php/Cinnamon"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-6"    "E17"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-6-I"      "E17"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-6-I"      "E17: The Enlightenment desktop shell provides an efficient yet breathtaking window manager based on the Enlightenment Foundation Libraries along with other essential desktop components like a file manager, desktop icons and widgets. https://wiki.archlinux.org/index.php/E17"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-7"    "LXDE"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-7-I"      "LXDE"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-8"    "OpenBox"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-8-I"      "OpenBox"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9"    "GNOME"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9-I"      "GNOME"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10"   "Unity"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10-I"     "Unity"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-11"   "DE Extras"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-11-I"     "Desktop Extras: "
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-7-I"      "LXDE: The 'Lightweight X11 Desktop Environment' is a fast and energy-saving desktop environment. Maintained by an international community of developers, it comes with a beautiful interface, multi-language support, standard keyboard short cuts and additional features like tabbed file browsing. Fundamentally designed to be lightweight, LXDE uses less CPU and RAM than other environments. https://wiki.archlinux.org/index.php/LXDE"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-8"    "GNOME"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-8-I"      "GNOME: The GNOME project provides two things: The GNOME desktop environment, an attractive and intuitive desktop for users, and the GNOME development platform, an extensive framework for building applications that integrate into the rest of the desktop. GNOME is free, usable, accessible, international, developer-friendly, organized, supported, and a community. https://wiki.archlinux.org/index.php/GNOME"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9"    "GNOME DE Extras"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9-I"      "Gnome Desktop Extras:"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10"   "Window Managers"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10-I"     "Window Managers: A Window Manager (WM) [Awesome, Openbox] is one component of a system's graphical user interface (GUI). Users may prefer to install a full-fledged Desktop Environment, which provides a complete user interface, including icons, windows, toolbars, wallpapers, and desktop widgets. https://wiki.archlinux.org/index.php/Window_Manager"
     #
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-REC"       "Recommended Options"
+    #
+    # Needs a WM: openbox 
+    # Lots of work to get ROX to work
+    # ROX is a fast, user friendly desktop which makes extensive use of drag-and-drop. The interface revolves around the file manager, following the traditional UNIX view that 'everything is a file' rather than trying to hide the filesystem beneath start menus, wizards, or druids. The aim is to make a system that is well designed and clearly presented. The ROX style favors using several small programs together instead of creating all-in-one mega-applications.  
+    # https://wiki.archlinux.org/index.php/ROX
+    # rox python gnupg pygtk
+    # gpg --recv-key --keyserver www.keyserver.net 59A53CC1
+    # wget http://osdn.dl.sourceforge.net/sourceforge/zero-install/zeroinstall-injector-0.26.tar.gz.gpg 
+    # python setup.py install
+    # rox -b Default -p default ; exec openbox
+    #
+    # Lots of work
+    # The Sugar Learning Platform is a computer environment composed of Activities designed to help children from 5 to 12 years of age learn together through rich-media expression. Sugar is the core component of a worldwide effort to provide every child with the opportunity for a quality education — it is currently used by nearly one-million children worldwide speaking 25 languages in over 40 countries. Sugar provides the means to help people lead fulfilling lives through access to a quality education that is currently missed by so many.   
+    # https://wiki.archlinux.org/index.php/Sugar
+    # AUR: sugar
+    #
+    #
+    #
 fi
 # -------------------------------------
 install_desktop_environment_menu() 
@@ -1825,7 +1993,20 @@ install_desktop_environment_menu()
     # 2
     local -r menu_name="DESKTOP-ENVIRONMENT"  # You must define Menu Name here
     local BreakableKey="D"                    # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="4"              # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="10"             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
+        RecommendedOptions="1"
+    elif [[ "$CUSTOM_DE" -eq 2 ]]; then       # KDE
+        RecommendedOptions="2"
+    elif [[ "$CUSTOM_DE" -eq 3 ]]; then       # XFCE
+        RecommendedOptions="3"
+    elif [[ "$CUSTOM_DE" -eq 4 ]]; then       # Razor-QT & Openbox
+        RecommendedOptions="4 10"
+    elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
+        RecommendedOptions="5"
+    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesume
+        RecommendedOptions="10"
+    fi
     #
     local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
@@ -1861,8 +2042,161 @@ install_desktop_environment_menu()
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-7"  ""                                     ""                                     "INSTALL-DESKTOP-ENVIRONMENT-MENU-7-I"  "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-8"  ""                                     ""                                     "INSTALL-DESKTOP-ENVIRONMENT-MENU-8-I"  "MenuTheme[@]"
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-9"  ""                                     "$AUR"                                 "INSTALL-DESKTOP-ENVIRONMENT-MENU-9-I"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-10" ""                                     ""                                     "INSTALL-DESKTOP-ENVIRONMENT-MENU-9-I"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-11" ""                                     ""                                     "INSTALL-DESKTOP-ENVIRONMENT-MENU-11-I" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-10" ""                                     ""                                     "INSTALL-DESKTOP-ENVIRONMENT-MENU-10-I" "MenuTheme[@]"
+        #
+        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+        #
+        local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restroe Bypass
+        #
+        local S_OPT
+        for S_OPT in ${OPTIONS[@]}; do
+            case "$S_OPT" in
+                1)  # Mate
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_mate_now
+                    ;;
+                2)  # KDE
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_kde_menu
+                    ;;
+                3)  # XFCE
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_xfce_menu
+                    ;;
+                4)  # Razor-qt
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_razor_qt_menu
+                    ;;
+                5)  # Cinnamon
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_cinnamon_menu
+                    ;;
+                6)  # E17
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_e17_menu
+                    ;;
+                7)  # LXDE
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_lxde_menu
+                    ;;
+                8)  # GNOME
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_gnome_menu
+                    ;;
+                9)  # GNOME DE Extras
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_gnome_de_extras_menu
+                    ;;
+               10)  # Window Managers
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_window_manager_menu
+                    ;;
+                *)  # Catch ALL 
+                    if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
+                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
+                            SAVED_MAIN_MENU=1
+                            return 0
+                        else
+                            return 1
+                        fi
+                    else
+                        invalid_option "$S_OPT"
+                    fi
+                    ;;
+            esac
+        done
+        is_breakable "$S_OPT" "$BreakableKey"
+    done
+}
+#}}}
+
+
+# -----------------------------------------------------------------------------
+# INSTALL WINDOW MANAGER {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_window_manager_menu"
+    USAGE="install_window_manager_menu"
+    DESCRIPTION=$(localize "INSTALL-WINDOW-MANAGER-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-WINDOW-MANAGER-DESC"    "Install Window Manager"
+    localize_info "INSTALL-WINDOW-MANAGER-TITLE"   "Desktop Environment"
+    localize_info "INSTALL-WINDOW-MANAGER-INFO-1"  "A Desktop environments (DE) provide a complete graphical user interface (GUI) for a system by bundling together a variety of X clients written using a common widget toolkit and set of libraries."
+    localize_info "INSTALL-WINDOW-MANAGER-INFO-2"  "Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME, and Unity"
+    #
+    localize_info "INSTALL-WINDOW-MANAGER-MENU-1"    "Awesome"
+    localize_info "INSTALL-WINDOW-MANAGER-MENU-1-I"      "Awesome: awesome is a highly configurable, next generation framework window manager for X. It is very fast, extensible and licensed under the GNU GPLv2 license. Configured in Lua, it has a system tray, information bar, and launcher built in. There are extensions available to it written in Lua. Awesome uses XCB as opposed to Xlib, which may result in a speed increase. Awesome has other features as well, such as an early replacement for notification-daemon, a right-click menu similar to that of the *box window managers, and many other things."
+    localize_info "INSTALL-WINDOW-MANAGER-MENU-2"    "OpenBox"
+    localize_info "INSTALL-WINDOW-MANAGER-MENU-2-I"      "OpenBox"
+    #
+    localize_info "INSTALL-WINDOW-MANAGER-REC"       "Recommended Options"
+    #
+    # Fluxbox 
+    # Enlightenment
+    # Metacity
+    # Compiz 
+    # twm
+    # Window Maker
+    # 
+    #
+fi
+# -------------------------------------
+install_window_manager_menu() 
+{ 
+    # 2
+    local -r menu_name="WINDOW-MANAGER"  # You must define Menu Name here
+    local BreakableKey="D"                    # Q=Quit, D=Done, B=Back
+    local RecommendedOptions="1"              # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 2 ]]; then       # KDE
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 3 ]]; then       # XFCE
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 4 ]]; then       # Razor-QT & Openbox
+        RecommendedOptions="2"
+    elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesume
+        RecommendedOptions="1"
+    fi
+    #
+    local SUB_OPTIONS=""        
+    if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+    fi
+    #
+    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$Last_IFS"
+    #
+    StatusBar1="INSTALL-MENU-REC"
+    StatusBar2="$RecommendedOptions"
+    #
+    while [[ 1 ]]; do
+        print_title "INSTALL-WINDOW-MANAGER-TITLE" " - https://wiki.archlinux.org/index.php/Window_Manager"
+        print_caution "${StatusBar1}" "${StatusBar2}"
+        print_this  "INSTALL-WINDOW-MANAGER-INFO-1"
+        print_this  "INSTALL-WINDOW-MANAGER-INFO-2"
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
+        #
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WINDOW-MANAGER-MENU-1"  "" ""     "INSTALL-WINDOW-MANAGER-MENU-1-I"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WINDOW-MANAGER-MENU-2"  "" "$AUR" "INSTALL-WINDOW-MANAGER-MENU-2-I"  "MenuTheme[@]"
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -1876,47 +2210,11 @@ install_desktop_environment_menu()
             case "$S_OPT" in
                 1)  # 
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_mate_now
+                    install_awesome_menu
                     ;;
                 2)  # 
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_kde_menu
-                    ;;
-                3)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_xfce_menu
-                    ;;
-                4)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_awesome_menu
-                    ;;
-                5)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_cinnamon_menu
-                    ;;
-                6)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_e17_menu
-                    ;;
-                7)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_lxde_menu
-                    ;;
-                8)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
                     install_openbox_menu
-                    ;;
-                9)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_gnome_menu
-                    ;;
-                10)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_unity_now
-                    ;;
-                11)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    install_de_extras_menu
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2617,7 +2915,7 @@ install_awesome_menu()
                     add_package "$INSTALL_RXVT_UNICODE"
                     add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
                     ;;
-                6)  # 
+                6)  # scrot
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCROT"
                     add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
@@ -2662,6 +2960,193 @@ install_awesome_menu()
     add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-AWESOME"
 }
 #}}}
+
+# -----------------------------------------------------------------------------
+# INSTALL RAZOR QT MENU {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_razor_qt_menu"
+    USAGE="install_razor_qt_menu"
+    DESCRIPTION=$(localize "INSTALL-RAZOR-QT-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-RAZOR-QT-DESC"   "Install Razor-Qt"
+    localize_info "INSTALL-RAZOR-QT-TITLE"  "RAZOR-QT"
+    localize_info "INSTALL-RAZOR-QT-INFO-1" "RAZOR-QT is a highly configurable, next generation framework window manager for X. It is very fast, extensible and licensed under the GNU GPLv2 license."
+    localize_info "INSTALL-RAZOR-QT-INFO-2" "RAZOR-QT CUSTOMIZATION"
+    localize_info "INSTALL-RAZOR-QT-REC"    "Recommended Optins"
+    #
+    localize_info "INSTALL-RAZOR-QT-MENU-1"   "smplayer"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-1"       "smplayer: "
+    localize_info "INSTALL-RAZOR-QT-MENU-2"   "vlc"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-2"       "vlc: "
+    localize_info "INSTALL-RAZOR-QT-MENU-3"   "Clementine"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-3"       "Clementine: "
+    localize_info "INSTALL-RAZOR-QT-MENU-4"   "qasmixer"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-4"       "qasmixer: "
+    localize_info "INSTALL-RAZOR-QT-MENU-5"   "Qt Image Viewers"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-5"       "Qt Image Viewers: "
+    localize_info "INSTALL-RAZOR-QT-MENU-6"   "Image Editors"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-6"       "Image Editors: easypaint-git, pencil-svn"
+    localize_info "INSTALL-RAZOR-QT-MENU-7"   "scrot" 
+    localize_info "INSTALL-RAZOR-QT-MENU-I-7"       "scrot : [Print Screen]"
+    localize_info "INSTALL-RAZOR-QT-MENU-8"   "qtfm"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-8"       "qtfm: Qt File Browser."
+    localize_info "INSTALL-RAZOR-QT-MENU-9"   "qterminal"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-9"       "qterminal: Qt Terminal"
+    localize_info "INSTALL-RAZOR-QT-MENU-10"  "qpdfview"
+    localize_info "INSTALL-RAZOR-QT-MENU-I-10"      "qpdfview: Qt PDF View"
+fi
+# -------------------------------------
+install_razor_qt_menu()
+{
+    # 4
+    local -r menu_name="INSTALL-RAZOR-QT"  # You must define Menu Name here
+    local BreakableKey="D"                 # Q=Quit, D=Done, B=Back
+    local RecommendedOptions="1-10"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    #
+    local SUB_OPTIONS=""        
+    if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+    elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+    fi
+    #
+    if [[ "$CUSTOM_DE" -eq 4 ]]; then
+        SUB_OPTIONS="$RecommendedOptions $BreakableKey"
+    fi                    
+    #
+    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$Last_IFS"
+    #
+    RAZOR-QT_INSTALLED=1
+    #
+    # Needs a WM: openbox, fwwm2, kwin, KDE without Plasma Desktop
+                    
+    #
+    #INSTALL_RAZOR_QT=""
+    #add_package "$INSTALL_RAZOR_QT"
+    #add_packagemanager "package_install \"$INSTALL_RAZOR_QT\" 'INSTALL-AWESOME'" "INSTALL-AWESOME"
+    #
+    add_aur_package "$AUR_INSTALL_RAZOR_QT"
+    add_packagemanager "aur_package_install \"$AUR_INSTALL_RAZOR_QT\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT"
+    add_packagemanager "make_dir \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/razor/session.conf' \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
+
+    add_packagemanager "$(config_xinitrc 'exec razor-session')" "CONFIG-XINITRC-RAZOR"
+    #
+    StatusBar1="INSTALL-MENU-REC"
+    StatusBar2="$RecommendedOptions"
+    #
+    while [[ 1 ]];  do
+        print_title "INSTALL-RAZOR-QT-TITLE" " - https://wiki.archlinux.org/index.php/Razor-qt"
+        print_caution "${StatusBar1}" "${StatusBar2}"
+        print_info "INSTALL-RAZOR-QT-INFO-1"
+        print_info "INSTALL-RAZOR-QT-INFO-2"
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
+        #
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-1"  "" ""     "INSTALL-RAZOR-QT-MENU-I-1"  "MenuTheme[@]" # 1  smplayer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-2"  "" ""     "INSTALL-RAZOR-QT-MENU-I-2"  "MenuTheme[@]" # 2  vlc
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-3"  "" ""     "INSTALL-RAZOR-QT-MENU-I-3"  "MenuTheme[@]" # 3  Clementine
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-4"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-4"  "MenuTheme[@]" # 4  qasmixer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-5"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-5"  "MenuTheme[@]" # 5  Qt Image Viewers
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-6"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-6"  "MenuTheme[@]" # 6  Image Editors
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-7"  "" ""     "INSTALL-RAZOR-QT-MENU-I-7"  "MenuTheme[@]" # 7  scrot
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-8"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-8"  "MenuTheme[@]" # 8  qtfm
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-9"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-9"  "MenuTheme[@]" # 9  qterminal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-10" "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-10" "MenuTheme[@]" # 10 qpdfview
+        #
+        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+        #
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        #
+        local S_OPT
+        for S_OPT in ${OPTIONS[@]}; do
+            case "$S_OPT" in
+                1)  # smplayer
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_SMPLAYER"
+                    add_packagemanager "package_install \"$INSTALL_SMPLAYER\" 'INSTALL-SMPLAYER'" "INSTALL-SMPLAYER"
+                    ;;
+                2)  # vlc
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_VLC"
+                    add_packagemanager "package_install \"$INSTALL_VLC\" 'INSTALL-VLC'" "INSTALL-VLC"
+                    ;;
+                3)  # Clementine
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_CLEMENTINE"
+                    add_packagemanager "package_install \"$INSTALL_CLEMENTINE\" 'INSTALL-CLEMENTINE'" "INSTALL-CLEMENTINE"
+                    ;;
+                4)  # qasmixer 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_aur_package "$AUR_INSTALL_QASMIXER"
+                    add_packagemanager "aur_package_install \"$AUR_INSTALL_QASMIXER\" 'AUR-INSTALL-QASMIXER'" "AUR-INSTALL-QASMIXER"
+                    ;;
+                5)  # Qt Image Viewers 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_QT_IMAGE_VIEWERS"
+                    add_packagemanager "package_install \"$INSTALL_QT_IMAGE_VIEWERS\" 'INSTALL-QT-IMAGE-VIEWERS'" "INSTALL-QT-IMAGE-VIEWERS"
+                    #
+                    add_package "$AUR_QT_IMAGE_VIEWERS"
+                    add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_VIEWERS\" 'AUR-INSTALL-QT-IMAGE-VIEWERS'" "AUR-INSTALL-QT-IMAGE-VIEWERS"
+                    ;;
+                6)  # Image Editors
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_aur_package "$AUR_QT_IMAGE_EDITORS"
+                    add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_EDITORS\" 'AUR-INSTALL-QT-IMAGE-EDITORS'" "AUR-INSTALL-QT-IMAGE-EDITORS"
+                    ;;
+                7)  # scrot
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_SCROT"
+                    add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
+                    ;;
+                8)  # qtfm
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_TINT2"
+                    add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
+                    ;;
+                9)  # qterminal
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_aur_package "$AUR_INSTALL_QTERMINAL" 
+                    add_packagemanager "aur_package_install \"$AUR_INSTALL_QTERMINAL\" 'AUR-INSTALL-QTERMINAL'" "AUR-INSTALL-QTERMINAL"
+                    ;;
+               10)  # qpdfview
+                    MenuChecks[$((S_OPT - 1))]=1
+                    add_aur_package "$AUR_QT_PDF"
+                    add_packagemanager "aur_package_install \"$AUR_QT_PDF\" 'AUR-INSTALL-QT-PDF'" "AUR-INSTALL-QT-PDF"
+                    ;;
+                *)  # Catch ALL 
+                    if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
+                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
+                            SAVED_MAIN_MENU=1
+                        fi
+                        S_OPT="$BreakableKey"
+                    else
+                        invalid_option "$S_OPT"
+                    fi
+                    ;;
+            esac
+        done
+        is_breakable "$S_OPT" "$BreakableKey"
+    done
+    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
+    # A framework for defining and tracking users, login sessions, and seats
+    # systemd-logind replaced console-kit-daemon.service
+    #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-RAZOR-QT"
+}
+#}}}
+
 # -----------------------------------------------------------------------------
 # INSTALL CINNAMON {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
@@ -2905,7 +3390,7 @@ install_e17_menu()
                     add_package "$INSTALL_RXVT_UNICODE"
                     add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
                     ;;
-                7)  # 
+                7)  # scrot
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCROT"
                     add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
@@ -2945,7 +3430,7 @@ install_e17_menu()
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_lxde_menu"
     USAGE="install_lxde_menu"
-    DESCRIPTION=$(localize "INSTALL-DUNGEON-GAMES-DESC")
+    DESCRIPTION=$(localize "INSTALL-LXDE-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
     VERSION="1.0"
@@ -2954,10 +3439,10 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-DUNGEON-GAMES-DESC"   "Install LXDE"
-    localize_info "INSTALL-DUNGEON-GAMES-TITLE"  "LXDE"
-    localize_info "INSTALL-DUNGEON-GAMES-INFO-1" "LXDE is a free and open source desktop environment for Unix and other POSIX compliant platforms, such as Linux or BSD. The goal of the project is to provide a desktop environment that is fast and energy efficient."
-    localize_info "INSTALL-DUNGEON-GAMES-INFO-2" "LXDE CUSTOMIZATION"
+    localize_info "INSTALL-LXDE-DESC"   "Install LXDE"
+    localize_info "INSTALL-LXDE-TITLE"  "LXDE"
+    localize_info "INSTALL-LXDE-INFO-1" "LXDE is a free and open source desktop environment for Unix and other POSIX compliant platforms, such as Linux or BSD. The goal of the project is to provide a desktop environment that is fast and energy efficient."
+    localize_info "INSTALL-LXDE-INFO-2" "LXDE CUSTOMIZATION"
 fi
 # -------------------------------------
 install_lxde_menu()
@@ -2983,8 +3468,10 @@ install_lxde_menu()
     IFS="$Last_IFS"
     #
     LXDE_INSTALLED=1
+    #
     add_package "$INSTALL_LXDE"
     add_packagemanager "package_install \"$INSTALL_LXDE\" 'INSTALL-LXDE'" "INSTALL-LXDE"
+    #
     add_aur_package "$AUR_INSTALL_LXDE"
     add_packagemanager "aur_package_install \"$AUR_INSTALL_LXDE\" 'AUR-INSTALL-LXDE'" "AUR-INSTALL-LXDE"
     #
@@ -2992,10 +3479,10 @@ install_lxde_menu()
     StatusBar2="$RecommendedOptions"
     #
     while [[ 1 ]]; do
-        print_title "INSTALL-DUNGEON-GAMES-TITLE" " - https://wiki.archlinux.org/index.php/lxde"
+        print_title "INSTALL-LXDE-TITLE" " - https://wiki.archlinux.org/index.php/lxde"
         print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info "INSTALL-DUNGEON-GAMES-INFO-1"
-        print_info "INSTALL-DUNGEON-GAMES-INFO-2"
+        print_info "INSTALL-LXDE-INFO-1"
+        print_info "INSTALL-LXDE-INFO-2"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior" "" "" "" "MenuTheme[@]" # 1
@@ -3053,10 +3540,31 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-OPENBOX-DESC"   "Install Openbox"
-    localize_info "INSTALL-OPENBOX-TITLE"  "OPENBOX"
-    localize_info "INSTALL-OPENBOX-INFO-1" "Openbox is a lightweight and highly configurable window manager with extensive standards support."
-    localize_info "INSTALL-OPENBOX-INFO-2" "OPENBOX CUSTOMIZATION"
+    localize_info "INSTALL-OPENBOX-DESC"      "Install Openbox"
+    localize_info "INSTALL-OPENBOX-TITLE"     "OPENBOX"
+    localize_info "INSTALL-OPENBOX-INFO-1"    "Openbox is a lightweight and highly configurable window manager with extensive standards support."
+    localize_info "INSTALL-OPENBOX-INFO-2"    "OPENBOX CUSTOMIZATION"
+    #
+    localize_info "INSTALL-OPENBOX-MENU-1"    "xcompmgr"
+    localize_info "INSTALL-OPENBOX-MENU-I-1"        "xcompmgr: 	Composite Window-effects manager for X.org"
+    localize_info "INSTALL-OPENBOX-MENU-2"    "viewnior"
+    localize_info "INSTALL-OPENBOX-MENU-I-2"        "viewnior: A simple, fast and elegant image viewer program"
+    localize_info "INSTALL-OPENBOX-MENU-3"    "gmrun"
+    localize_info "INSTALL-OPENBOX-MENU-I-3"        "gmrun: A simple program which provides a run program window"
+    localize_info "INSTALL-OPENBOX-MENU-4"    "PCManFM"
+    localize_info "INSTALL-OPENBOX-MENU-I-4"        "PCManFM: An extremely fast and lightweight file manager"
+    localize_info "INSTALL-OPENBOX-MENU-5"    "rxvt-unicode"
+    localize_info "INSTALL-OPENBOX-MENU-I-5"        "rxvt-unicode: An unicode enabled rxvt-clone terminal emulator (urxvt)"
+    localize_info "INSTALL-OPENBOX-MENU-6"    "scrot"
+    localize_info "INSTALL-OPENBOX-MENU-I-6"        "scrot: Print Screen - A simple command-line screenshot utility for X"
+    localize_info "INSTALL-OPENBOX-MENU-7"    "thunar"
+    localize_info "INSTALL-OPENBOX-MENU-I-7"        "thunar: Modern file manager for Xfce"
+    localize_info "INSTALL-OPENBOX-MENU-8"    "tint2"
+    localize_info "INSTALL-OPENBOX-MENU-I-8"        "tint2: A basic, good-looking task manager for WMs"
+    localize_info "INSTALL-OPENBOX-MENU-9"    "volwheel"
+    localize_info "INSTALL-OPENBOX-MENU-I-9"        "volwheel: Tray icon to change volume with the mouse"
+    localize_info "INSTALL-OPENBOX-MENU-10"   "xfburn"
+    localize_info "INSTALL-OPENBOX-MENU-I-10"       "xfburn: A simple CD/DVD burning tool based on libburnia libraries"
 fi
 # -------------------------------------
 install_openbox_menu() 
@@ -3065,6 +3573,20 @@ install_openbox_menu()
     local -r menu_name="INSTALL-OPENBOX"  # You must define Menu Name here
     local BreakableKey="D"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="4 6"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    #
+    if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 2 ]]; then       # KDE
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 3 ]]; then       # XFCE
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 4 ]]; then       # Razor-QT & Openbox
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesume
+        RecommendedOptions=""
+    fi
     #
     local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
@@ -3098,16 +3620,16 @@ install_openbox_menu()
         print_info  "INSTALL-OPENBOX-INFO-2"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xcompmgr"     "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior"     "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun"        "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM"      "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rxvt-unicode" "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot"        "" "" "scrot: Print Screen" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar"       "" "" "thunar: File Browser" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "tint2"        "" "" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "volwheel"     "" "" "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn"       "" "" "" "MenuTheme[@]" # 10
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-1"  "" "" "INSTALL-OPENBOX-MENU-I-1"  "MenuTheme[@]" # 1  xcompmgr
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-2"  "" "" "INSTALL-OPENBOX-MENU-I-2"  "MenuTheme[@]" # 2  viewnior
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-3"  "" "" "INSTALL-OPENBOX-MENU-I-3"  "MenuTheme[@]" # 3  gmrun
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-4"  "" "" "INSTALL-OPENBOX-MENU-I-4"  "MenuTheme[@]" # 4  PCManFM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-5"  "" "" "INSTALL-OPENBOX-MENU-I-5"  "MenuTheme[@]" # 5  rxvt-unicode
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-6"  "" "" "INSTALL-OPENBOX-MENU-I-6"  "MenuTheme[@]" # 6  scrot
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-7"  "" "" "INSTALL-OPENBOX-MENU-I-7"  "MenuTheme[@]" # 7  thunar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-8"  "" "" "INSTALL-OPENBOX-MENU-I-8"  "MenuTheme[@]" # 8  tint2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-9"  "" "" "INSTALL-OPENBOX-MENU-I-9"  "MenuTheme[@]" # 9  volwheel
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-10" "" "" "INSTALL-OPENBOX-MENU-I-10" "MenuTheme[@]" # 10 xfburn
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -3117,52 +3639,52 @@ install_openbox_menu()
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # xcompmgr
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XCOMPMGR"
                     add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR"
                     ;;
-                2)  # 
+                2)  # viewnior
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VIEWNIOR"
                     add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
                     ;;
-                3)  # 
+                3)  # gmrun
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_GMRUN"
                     add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
                     ;;
-                4)  # 
+                4)  # PCManFM
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_PCMANFM"
                     add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
                     ;;
-                5)  # 
+                5)  # rxvt-unicode
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_RXVT_UNICODE"
                     add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
                     ;;
-                6)  # 
+                6)  # scrot
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_SCROT"
                     add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
                     ;;
-                7)  # 
+                7)  # thunar
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_THUNAR"
                     add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
                     ;;
-                8)  # 
+                8)  # tint2
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_TINT2"
                     add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
                     ;;
-                9)  # 
+                9)  # volwheel
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_VOLWHEEL"
                     add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL"
                     ;;
-               10)  # 
+               10)  # xfburn
                     MenuChecks[$((S_OPT - 1))]=1
                     add_package "$INSTALL_XFBURN"
                     add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
@@ -3184,7 +3706,7 @@ install_openbox_menu()
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
     # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-OPENBOX"
+    #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-OPENBOX"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3296,6 +3818,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-UNITY-DESC"  "Install Unity"
+    localize_info "INSTALL-UNITY-TITLE" "Unity is an alternative shell for the GNOME desktop environment, developed by Canonical in its Ayatana project. It consists of several components including the Launcher, Dash, lenses, Panel, indicators, Notify OSD and Overlay Scrollbar."
     #
     localize_info "INSTALL-UNITY-CONTINUE" "Are you sure you wish to continue" 
 fi
@@ -3304,13 +3827,13 @@ install_unity_now()
 { 
     # 10
     UNITY_INSTALLED=1
+    print_title "INSTALL-UNITY-DESC" " - https://wiki.archlinux.org/index.php/Unity"
+    print_info "INSTALL-UNITY-TITLE"
     print_error "\nWARNING: EXPERIMENTAL OPTION, USE AT YOUR OWN RISK\nDo not install this if already have a DE or WM installed."
     local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "INSTALL-UNITY-CONTINUE" " " 1
     BYPASS="$Old_BYPASS" # Restroe Bypass
     [[ "$YN_OPTION" -eq 0 ]] && return 0
-    print_title "UNITY - https://wiki.archlinux.org/index.php/Unity"
-    print_info "Unity is an alternative shell for the GNOME desktop environment, developed by Canonical in its Ayatana project. It consists of several components including the Launcher, Dash, lenses, Panel, indicators, Notify OSD and Overlay Scrollbar."
     # @FIX use Add Repo function
     echo -e '\n[unity]\nServer = http://unity.xe-xe.org/$arch'             >> $MOUNTPOINT/etc/pacman.conf
     echo -e '\n[unity-extra]\nServer = http://unity.xe-xe.org/extra/$arch' >> $MOUNTPOINT/etc/pacman.conf
@@ -3420,9 +3943,9 @@ install_display_manager_menu()
                     # dbus-launch
                     add_package "$INSTALL_GDM_CONTROL"
                     add_packagemanager "package_install \"$INSTALL_GDM_CONTROL\" 'INSTALL-GDM-CONTROL'" "INSTALL-GDM-CONTROL" # One only
-                    #
-                    add_aur_package "$AUR_INSTALL_GDM"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GDM\" 'AUR-INSTALL-GDM'" "AUR-INSTALL-GDM"
+                    # gdm3setup https://aur.archlinux.org/packages/gdm3setup/ 
+                    #add_aur_package "$AUR_INSTALL_GDM"
+                    #add_packagemanager "aur_package_install \"$AUR_INSTALL_GDM\" 'AUR-INSTALL-GDM'" "AUR-INSTALL-GDM"
                     add_packagemanager "systemctl enable gdm.service" "SYSTEMD-ENABLE-GDM"
                     if [[ "$MATE_INSTALLED" -eq 1 ]]; then
                         add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
@@ -3751,9 +4274,9 @@ install_elementary_project_menu()
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # audience-bzr
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_AUDIENCE"
+                    add_aur_package "$AUR_INSTALL_EP_AUDIENCE" # gtk3
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_AUDIENCE\" 'AUR-INSTALL-EP-AUDIENCE'" "AUR-INSTALL-EP-AUDIENCE"
                     ;;
                 2)  # 
@@ -4573,10 +5096,10 @@ install_system_apps_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# INSTALL DE EXTRAS {{{
+# INSTALL GNOME DE EXTRAS MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_de_extras_menu"
-    USAGE="install_de_extras_menu"
+    NAME="install_gnome_de_extras_menu"
+    USAGE="install_gnome_de_extras_menu"
     DESCRIPTION=$(localize "INSTALL-DE-EXTRAS-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
@@ -4587,10 +5110,17 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DE-EXTRAS-DESC"  "Install DE Extras"
-    localize_info "INSTALL-DE-EXTRAS-TITLE" "Desktop Environments Extras"
+    localize_info "INSTALL-DE-EXTRAS-TITLE" "Gnome Desktop Environments Extras"
+    #
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-1"    "GNOME Icons"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I"      "GNOME Icons: awoken-icons faenza-icon-theme faenza-cupertino-icon-theme faience-icon-theme elementary-icons-bzr"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2"    "GTK Themes"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I"      "GTK Themes: gtk-theme-adwaita-cupertino gtk-theme-boomerang xfce-theme-blackbird xfce-theme-bluebird egtk-bzr xfce-theme-greybird light-themes orion-gtk-theme zukini-theme zukitwo-themes"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3"    "Unity"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I"      "Unity: Unity is an alternative shell for the GNOME desktop environment, developed by Canonical in its Ayatana project. It consists of several components including the Launcher, Dash, lenses, Panel, indicators, Notify OSD and Overlay Scrollbar. Unity used to available in two implementations: 'Unity' is the 3D accelerated version, which uses Compiz window manager and Nux toolkit; and 'Unity 2D' is a lighter alternative, which uses Metacity window manager and Qt toolkit. Unity 2D is already dropped by Canonical from Ubuntu 12.10."
 fi
 # -------------------------------------
-install_de_extras_menu()
+install_gnome_de_extras_menu()
 {
     # 11
     local -r menu_name="INSTALL-DE-EXTRAS"  # You must define Menu Name here
@@ -4615,13 +5145,16 @@ install_de_extras_menu()
     StatusBar1="INSTALL-MENU-REC"
     StatusBar2="$RecommendedOptions"
     #
+    local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
+    #
     while [[ 1 ]]; do
         print_title "INSTALL-DE-EXTRAS-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "GNOME Icons" "" "$AUR" "GNOME Icons: awoken-icons faenza-icon-theme faenza-cupertino-icon-theme faience-icon-theme elementary-icons-bzr" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "GTK Themes"  "" "$AUR" "GTK Themes: gtk-theme-adwaita-cupertino gtk-theme-boomerang xfce-theme-blackbird xfce-theme-bluebird egtk-bzr xfce-theme-greybird light-themes orion-gtk-theme zukini-theme zukitwo-themes" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I" "MenuThemeWarn[@]"
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -4638,6 +5171,10 @@ install_de_extras_menu()
                 2)  # 
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gtk_themes_menu
+                    ;;
+                3)  # 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    install_unity_now
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6665,7 +7202,7 @@ get_network_manager_menu()
 # -----------------------------------------------------------------------------
 # INSTALL NETWORK MANAGER {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_network_manager"
+    NAME="install_network_manager_now"
     USAGE=$(localize "INSTALL-NETWORK-MANAGER-USAGE")
     DESCRIPTION=$(localize "INSTALL-NETWORK-MANAGER-DESC")
     NOTES=$(localize "INSTALL-NETWORK-MANAGER-NOTES")
@@ -6676,17 +7213,16 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-NETWORK-MANAGER-USAGE" "install_network_manager"
+    localize_info "INSTALL-NETWORK-MANAGER-USAGE" "install_network_manager_now"
     localize_info "INSTALL-NETWORK-MANAGER-DESC"  "Install Network Manager"
     localize_info "INSTALL-NETWORK-MANAGER-NOTES" "None."
     localize_info "INSTALL-NETWORK-MANAGER-WARN"  "No Network Manager Installed."
 fi
 # -------------------------------------
-install_network_manager()
+install_network_manager_now()
 {
     # 1
     # @FIX use 
-    get_network_manager_menu
     if [[ "$NETWORK_MANAGER" == "networkmanager" ]]; then
         if [[ "$KDE_INSTALLED" -eq 1 ]]; then
             add_package "$INSTALL_NETWORKMANAGER_KDE"
@@ -8283,6 +8819,9 @@ install_graphics_apps_menu()
                     ;;
                 6)  # 
                     MenuChecks[$((S_OPT - 1))]=1
+                    add_package "$INSTALL_GIMP"
+                    add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP"
+                    #
                     add_aur_package "$AUR_INSTALL_GIMP_PLUGINS"
                     add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS"
                     ;;
@@ -8762,6 +9301,70 @@ install_science()
 }
 #}}}
 # -----------------------------------------------------------------------------
+# INSTALL VIDEO CARD NOW {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_video_card_now"
+    USAGE="install_video_card_now"
+    DESCRIPTION=$(localize "INSTALL-VIDEO-CARD-NOW-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-VIDEO-CARD-NOW-DESC"   "Install Video Card"
+    localize_info "INSTALL-VIDEO-CARD-NOW-WARN"   "No Video Card installed"
+fi
+# -------------------------------------
+install_video_card_now()
+{
+    print_title "INSTALL-VIDEO-CARD-NOW-DESC"
+    echo ''
+    #
+    if [[ "$VIDEO_CARD" -eq 1 ]]; then    # NVIDIA
+        #refresh_pacman
+        #TEMP=$(pacman -Qe | grep xf86-video | awk '{print $1}')
+        #if [[ -n "$TEMP" ]]; then
+        #    add_packagemanager "package_remove \"$TEMP\"" "REMOVE-NVIDIA-XF86-VIDEO" # 
+        #fi
+        #
+        add_packagemanager "TEMP=\$(pacman -Qe | grep xf86-video | awk '{print \$1}'); if [[ -n \"\$TEMP\" ]]; then package_remove \"\$TEMP\" \"REMOVE-NVIDIA-XF86-VIDEO-LIVE\"; fi" "REMOVE-NVIDIA-XF86-VIDEO"
+        #
+        add_packagemanager "package_remove 'libgl'" "REMOVE-NVIDIA"
+        add_package "$INSTALL_NVIDIA"
+        add_packagemanager "package_install \"$INSTALL_NVIDIA\" 'INSTALL-NVIDIA'" "INSTALL-NVIDIA"
+        add_packagemanager "nvidia-xconfig" "RUN-NVIDIA-XCONFIG"
+    elif [[ "$VIDEO_CARD" -eq 2 ]]; then    # Nouveau
+        add_package "$INSTALL_NOUVEAU"
+        add_packagemanager "package_install \"$INSTALL_NOUVEAU\" 'INSTALL-NOUVEAU'" "INSTALL-NOUVEAU"
+        add_module "nouveau" "MODULE-NOUVEAU"
+    elif [[ "$VIDEO_CARD" -eq 3 ]]; then    # Intel
+        add_package "$INSTALL_INTEL"
+        add_packagemanager "package_install \"$INSTALL_INTEL\" 'INSTALL-INTEL'" "INSTALL-INTEL"
+    elif [[ "$VIDEO_CARD" -eq 4 ]]; then    # ATI
+        add_package "$INSTALL_ATI"
+        add_packagemanager "package_install \"$INSTALL_ATI\" 'INSTALL-ATI'" "INSTALL-ATI"
+        add_module "radeon" "MODULE-RADEON"
+    elif [[ "$VIDEO_CARD" -eq 5 ]]; then    # Vesa
+        add_package "$INSTALL_VESA"
+        add_packagemanager "package_install \"$INSTALL_VESA\" 'INSTALL-VESA'" "INSTALL-VESA"
+    elif [[ "$VIDEO_CARD" -eq 6 ]]; then    # Virtualbox
+        add_package "$INSTALL_VIRTUALBOX"
+        add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX"
+        add_module "vboxguest" "MODULE-VIRUALBOX-GUEST"
+        add_module "vboxsf"    "MODULE-VITRUALBOX-SF"
+        add_module "vboxvideo" "MODULE-VIRTUALBOX-VIDEO"
+        add_user_group "vboxsf"
+    else
+        write_error "INSTALL-VIDEO-CARD-NOW-WARN" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+    #
+    if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+}
+#}}}
+# -----------------------------------------------------------------------------
 # INSTALL VIDEO CARDS {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_video_cards_menu"
@@ -8850,128 +9453,100 @@ install_video_cards_menu()
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)  # nVidia
-                    if [[ "$1" -eq 1 ]]; then
+                    #if [[ "$1" -eq 1 ]]; then
                         MenuChecks[$((SS_OPT - 1))]=1
                         VIDEO_CARD=1 # 1 NVIDIA
-                        #refresh_pacman
-                        #TEMP=$(pacman -Qe | grep xf86-video | awk '{print $1}')
-                        #if [[ -n "$TEMP" ]]; then
-                        #    add_packagemanager "package_remove \"$TEMP\"" "REMOVE-NVIDIA-XF86-VIDEO" # 
-                        #fi
-                        #
-                        add_packagemanager "TEMP=\$(pacman -Qe | grep xf86-video | awk '{print \$1}'); if [[ -n \"\$TEMP\" ]]; then package_remove \"\$TEMP\" \"REMOVE-NVIDIA-XF86-VIDEO-LIVE\"; fi" "REMOVE-NVIDIA-XF86-VIDEO"
-                        #
-                        add_packagemanager "package_remove 'libgl'" "REMOVE-NVIDIA"
-                        add_package "$INSTALL_NVIDIA"
-                        add_packagemanager "package_install \"$INSTALL_NVIDIA\" 'INSTALL-NVIDIA'" "INSTALL-NVIDIA"
-                        add_packagemanager "nvidia-xconfig" "RUN-NVIDIA-XCONFIG"
                         SS_OPT="$BreakableKey"
-                    else
-                        MenuChecks[$((SS_OPT - 1))]=2
-                        VIDEO_CARD=7 # Set to skip; you must select video card next
-                        remove_package "$INSTALL_NVIDIA"
-                        remove_packagemanager "REMOVE-NVIDIA"
-                        remove_packagemanager "INSTALL-NVIDIA"
-                        remove_packagemanager "RUN-NVIDIA-XCONFIG"
-                    fi
+                    #else
+                    #    MenuChecks[$((SS_OPT - 1))]=2
+                    #    VIDEO_CARD=7 # Set to skip; you must select video card next
+                    #    remove_package "$INSTALL_NVIDIA"
+                    #    remove_packagemanager "REMOVE-NVIDIA"
+                    #    remove_packagemanager "INSTALL-NVIDIA"
+                    #    remove_packagemanager "RUN-NVIDIA-XCONFIG"
+                    #fi
                     SS_OPT="$BreakableKey"
                     break
                     ;;
                 2)  # Nouveau
-                    if [[ "$1" -eq 1 ]]; then
+                    #if [[ "$1" -eq 1 ]]; then
                         MenuChecks[$((SS_OPT - 1))]=1
                         VIDEO_CARD=2 # 2 NOUVEAU
-                        add_package "$INSTALL_NOUVEAU"
-                        add_packagemanager "package_install \"$INSTALL_NOUVEAU\" 'INSTALL-NOUVEAU'" "INSTALL-NOUVEAU"
-                        add_module "nouveau" "MODULE-NOUVEAU"
                         SS_OPT="$BreakableKey"
-                    else
-                        MenuChecks[$((SS_OPT - 1))]=2
-                        VIDEO_CARD=7 # Set to skip; you must select video card next
-                        remove_module "MODULE-NOUVEAU"
-                        remove_package "$INSTALL_NOUVEAU"
-                        remove_packagemanager "INSTALL-NOUVEAU"
-                    fi
+                    #else
+                    #    MenuChecks[$((SS_OPT - 1))]=2
+                    #    VIDEO_CARD=7 # Set to skip; you must select video card next
+                    #    remove_module "MODULE-NOUVEAU"
+                    #    remove_package "$INSTALL_NOUVEAU"
+                    #    remove_packagemanager "INSTALL-NOUVEAU"
+                    #fi
                     SS_OPT="$BreakableKey"
                     break
                     ;;
                 3)  # Intel
-                    if [[ "$1" -eq 1 ]]; then
+                    #if [[ "$1" -eq 1 ]]; then
                         MenuChecks[$((SS_OPT - 1))]=1
                         VIDEO_CARD=3 # 3 INTEL
-                        add_package "$INSTALL_INTEL"
-                        add_packagemanager "package_install \"$INSTALL_INTEL\" 'INSTALL-INTEL'" "INSTALL-INTEL"
                         SS_OPT="$BreakableKey"
-                    else
-                        MenuChecks[$((SS_OPT - 1))]=2
-                        VIDEO_CARD=7 # Set to skip; you must select video card next
-                        remove_package "$INSTALL_INTEL"
-                        remove_packagemanager "INSTALL-INTEL"
-                    fi
+                    #else
+                    #    MenuChecks[$((SS_OPT - 1))]=2
+                    #    VIDEO_CARD=7 # Set to skip; you must select video card next
+                    #    remove_package "$INSTALL_INTEL"
+                    #    remove_packagemanager "INSTALL-INTEL"
+                    #fi
                     SS_OPT="$BreakableKey"
                     break
                     ;;
                 4)  # ATI
-                    if [[ "$1" -eq 1 ]]; then
+                    #if [[ "$1" -eq 1 ]]; then
                         MenuChecks[$((SS_OPT - 1))]=1
                         VIDEO_CARD=4 # 4 ATI
-                        add_package "$INSTALL_ATI"
-                        add_packagemanager "package_install \"$INSTALL_ATI\" 'INSTALL-ATI'" "INSTALL-ATI"
-                        add_module "radeon" "MODULE-RADEON"
                         SS_OPT="$BreakableKey"
-                    else
-                        MenuChecks[$((SS_OPT - 1))]=2
-                        VIDEO_CARD=7 # Set to skip; you must select video card next
-                        remove_module "MODULE-RADEON"
-                        remove_package "$INSTALL_ATI"
-                        remove_packagemanager "INSTALL-ATI"
-                    fi
+                    #else
+                    #    MenuChecks[$((SS_OPT - 1))]=2
+                    #    VIDEO_CARD=7 # Set to skip; you must select video card next
+                    #    remove_module "MODULE-RADEON"
+                    #    remove_package "$INSTALL_ATI"
+                    #    remove_packagemanager "INSTALL-ATI"
+                    #fi
                     SS_OPT="$BreakableKey"
                     break
                     ;;
                 5)  # Vesa
-                    if [[ "$1" -eq 1 ]]; then
+                    #if [[ "$1" -eq 1 ]]; then
                         MenuChecks[$((SS_OPT - 1))]=1
                         VIDEO_CARD=5 # 5 VESA
-                        add_package "$INSTALL_VESA"
-                        add_packagemanager "package_install \"$INSTALL_VESA\" 'INSTALL-VESA'" "INSTALL-VESA"
                         SS_OPT="$BreakableKey"
-                    else
-                        MenuChecks[$((SS_OPT - 1))]=2
-                        VIDEO_CARD=7 # Set to skip; you must select video card next
-                        remove_package "$INSTALL_VESA"
-                        remove_packagemanager "INSTALL-VESA"
-                    fi
+                    #else
+                    #    MenuChecks[$((SS_OPT - 1))]=2
+                    #    VIDEO_CARD=7 # Set to skip; you must select video card next
+                    #    remove_package "$INSTALL_VESA"
+                    #    remove_packagemanager "INSTALL-VESA"
+                    #fi
                     SS_OPT="$BreakableKey"
                     break
                     ;;
                 6)  # VIRTUALBOX
-                    if [[ "$1" -eq 1 ]]; then
+                    #if [[ "$1" -eq 1 ]]; then
                         MenuChecks[$((SS_OPT - 1))]=1
                         VIDEO_CARD=6 # 6 VIRTUALBOX
-                        add_package "$INSTALL_VIRTUALBOX"
-                        add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX"
-                        add_module "vboxguest" "MODULE-VIRUALBOX-GUEST"
-                        add_module "vboxsf"    "MODULE-VITRUALBOX-SF"
-                        add_module "vboxvideo" "MODULE-VIRTUALBOX-VIDEO"
-                        add_user_group "vboxsf"
                         SS_OPT="$BreakableKey"
-                    else
-                        MenuChecks[$((SS_OPT - 1))]=2
-                        VIDEO_CARD=7 # Set to skip; you must select video card next
-                        remove_user_group "vboxsf"
-                        remove_module "MODULE-VIRUALBOX-GUEST"
-                        remove_module "MODULE-VITRUALBOX-SF"
-                        remove_module "MODULE-VIRTUALBOX-VIDEO"
-                        remove_package "$INSTALL_VIRTUALBOX"
-                        remove_packagemanager "INSTALL-VIRTUALBOX"
-                    fi
+                    #else
+                    #    MenuChecks[$((SS_OPT - 1))]=2
+                    #    VIDEO_CARD=7 # Set to skip; you must select video card next
+                    #    remove_user_group "vboxsf"
+                    #    remove_module "MODULE-VIRUALBOX-GUEST"
+                    #    remove_module "MODULE-VITRUALBOX-SF"
+                    #    remove_module "MODULE-VIRTUALBOX-VIDEO"
+                    #    remove_package "$INSTALL_VIRTUALBOX"
+                    #    remove_packagemanager "INSTALL-VIRTUALBOX"
+                    #fi
                     SS_OPT="$BreakableKey"
                     break
                     ;;
                 7)  # SKIP
                     MenuChecks[$((SS_OPT - 1))]=1
-                    VIDEO_CARD=7 # 7 SKIP
+                    VIDEO_CARD=7 # 7 SKIP, No Video Card Installed
                     SS_OPT="$BreakableKey"
                     break
                     ;;
@@ -8994,12 +9569,12 @@ install_video_cards_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# TEST INSTALL {{{
+# TEST INSTALLATION {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="test_install"
-    USAGE="test_install"
-    DESCRIPTION=$(localize "TEST-INSTALL-DESC")
-    NOTES=$(localize "TEST-INSTALL-NOTES")
+    NAME="test_installation"
+    USAGE="test_installation"
+    DESCRIPTION=$(localize "TEST-INSTALLATION-DESC")
+    NOTES=$(localize "TEST-INSTALLATION-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
@@ -9007,45 +9582,46 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "TEST-INSTALL-DESC"           "Test Install"
-    localize_info "TEST-INSTALL-NOTES"          "None."
+    localize_info "TEST-INSTALLATION-DESC"           "Test Install"
+    localize_info "TEST-INSTALLATION-NOTES"          "None."
     #
-    localize_info "TEST-INSTALL-INFO"           "Test Install"
-    localize_info "TEST-INSTALL-CORE"           "Testing Core Packages."
-    localize_info "TEST-INSTALL-AUR"            "Testing AUR Packages."
-    localize_info "TEST-INSTALL-CORE-INSTALLED" "Core Package Installed"
-    localize_info "TEST-INSTALL-AUR-INSTALLED"  "AUR Package Installed"
-    localize_info "TEST-INSTALL-CORE-WARN"      "pacman Did Not find Core Package:"
-    localize_info "TEST-INSTALL-AUR-WARN"       "pacman Did Not find AUR Package:"
-    localize_info "TEST-INSTALL-LOG"            "pacman Install Error Log."
+    localize_info "TEST-INSTALLATION-INFO"           "Test Install"
+    localize_info "TEST-INSTALLATION-CORE"           "Testing Core Packages."
+    localize_info "TEST-INSTALLATION-AUR"            "Testing AUR Packages."
+    localize_info "TEST-INSTALLATION-CORE-INSTALLED" "Core Package Installed"
+    localize_info "TEST-INSTALLATION-AUR-INSTALLED"  "AUR Package Installed"
+    localize_info "TEST-INSTALLATION-CORE-WARN"      "pacman Did Not find Core Package:"
+    localize_info "TEST-INSTALLATION-AUR-WARN"       "pacman Did Not find AUR Package:"
+    localize_info "TEST-INSTALLATION-LOG"            "pacman Install Error Log."
 fi
 # -------------------------------------
-test_install()
+test_installation()
 {
     # @FIX how to test now?
-    print_info "TEST-INSTALL-INFO"    
+    print_title "TEST-INSTALLATION-DESC"
+    print_info "TEST-INSTALLATION-INFO"    
     #
     make_dir "$LOG_PATH/ssp/"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    echo "# $(localize "TEST-INSTALL-LOG"): $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "${LOG_PATH}/ssp/0-failures.txt" # Truncate file
+    echo "# $(localize "TEST-INSTALLATION-LOG"): $SCRIPT_NAME Version: $SCRIPT_VERSION on $DATE_TIME." > "${LOG_PATH}/ssp/0-failures.txt" # Truncate file
     echo "# *** Core ***" >> "${LOG_PATH}/ssp/0-failures.txt"
-    print_info "TEST-INSTALL-CORE"    
+    print_info "TEST-INSTALLATION-CORE"    
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if check_package "${PACKAGES[$i]}" ; then
-            print_info "TEST-INSTALL-CORE-INSTALLED" ": ${PACKAGES[$i]}"
+            print_info "TEST-INSTALLATION-CORE-INSTALLED" ": ${PACKAGES[$i]}"
         else
-            print_error "TEST-INSTALL-CORE-WARN" ": ${PACKAGES[$i]}"
+            print_error "TEST-INSTALLATION-CORE-WARN" ": ${PACKAGES[$i]}"
             echo "${PACKAGES[$i]}" >> "${LOG_PATH}/ssp/0-failures.txt"
         fi
     done
-    print_info "TEST-INSTALL-AUR"    
+    print_info "TEST-INSTALLATION-AUR"    
     echo "# *** AUR ***" >> "${LOG_PATH}/ssp/0-failures.txt"
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if check_package "${AUR_PACKAGES[$i]}" ; then
-            print_info "TEST-INSTALL-AUR-INSTALLED" ": ${AUR_PACKAGES[$i]}"
+            print_info "TEST-INSTALLATION-AUR-INSTALLED" ": ${AUR_PACKAGES[$i]}"
         else
-            print_error "TEST-INSTALL-AUR-WARN" ": ${AUR_PACKAGES[$i]}"
+            print_error "TEST-INSTALLATION-AUR-WARN" ": ${AUR_PACKAGES[$i]}"
             echo "${AUR_PACKAGES[$i]}" >> "${LOG_PATH}/ssp/0-failures.txt"
         fi
     done
@@ -9053,12 +9629,12 @@ test_install()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# REINSTALL {{{
+# REINSTALLATION {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="reinstall"
-    USAGE="reinstall"
-    DESCRIPTION=$(localize "REINSTALL-DESC")
-    NOTES=$(localize "REINSTALL-NOTES")
+    NAME="reinstallation"
+    USAGE="reinstallation"
+    DESCRIPTION=$(localize "REINSTALLATION-DESC")
+    NOTES=$(localize "REINSTALLATION-NOTES")
     AUTHOR="Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
@@ -9066,41 +9642,42 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "REINSTALL-DESC"           "Re-Install all Packages"
-    localize_info "REINSTALL-NOTES"          "None."
+    localize_info "REINSTALLATION-DESC"           "Re-Install all Packages"
+    localize_info "REINSTALLATION-NOTES"          "None."
     #
-    localize_info "REINSTALL-INFO"           "Reinstall"
-    localize_info "REINSTALL-CORE"           "Retry Core Packages."
-    localize_info "REINSTALL-AUR"            "Retry AUR Packages."
-    localize_info "REINSTALL-CORE-INSTALLED" "Core Package Installed"
-    localize_info "REINSTALL-AUR-INSTALLED"  "AUR Package Installed"
-    localize_info "REINSTALL-CORE-WARN"      "pacman Did Not find Core Package:"
-    localize_info "REINSTALL-AUR-WARN"       "pacman Did Not find AUR Package:"
+    localize_info "REINSTALLATION-INFO"           "Reinstall"
+    localize_info "REINSTALLATION-CORE"           "Retry Core Packages."
+    localize_info "REINSTALLATION-AUR"            "Retry AUR Packages."
+    localize_info "REINSTALLATION-CORE-INSTALLED" "Core Package Installed"
+    localize_info "REINSTALLATION-AUR-INSTALLED"  "AUR Package Installed"
+    localize_info "REINSTALLATION-CORE-WARN"      "pacman Did Not find Core Package:"
+    localize_info "REINSTALLATION-AUR-WARN"       "pacman Did Not find AUR Package:"
 fi
 # -------------------------------------
-reinstall()
+reinstallation()
 {
     # @FIX how to test now?
-    print_info "REINSTALL-INFO"    
+    print_title "REINSTALLATION-DESC"
+    print_info "REINSTALLATION-INFO"    
     #
-    print_info "REINSTALL-CORE"    
+    print_info "REINSTALLATION-CORE"    
     local -i total="${#PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if check_package "${PACKAGES[$i]}" ; then
-            print_info "REINSTALL-CORE-INSTALLED" ": ${PACKAGES[$i]}"
+            print_info "REINSTALLATION-CORE-INSTALLED" ": ${PACKAGES[$i]}"
         else
-            print_error "REINSTALL-CORE-WARN" ": ${PACKAGES[$i]}"
-            install_package "${PACKAGES[$i]}" "REINSTALL-CORE-PACKAGE-$i"
+            print_error "REINSTALLATION-CORE-WARN" ": ${PACKAGES[$i]}"
+            install_package "${PACKAGES[$i]}" "REINSTALLATION-CORE-PACKAGE-$i"
         fi
     done
-    print_info "REINSTALL-AUR"    
+    print_info "REINSTALLATION-AUR"    
     local -i total="${#AUR_PACKAGES[@]}"
     for (( i=0; i<${total}; i++ )); do
         if check_package "${AUR_PACKAGES[$i]}" ; then
-            print_info "REINSTALL-AUR-INSTALLED" ": ${AUR_PACKAGES[$i]}"
+            print_info "REINSTALLATION-AUR-INSTALLED" ": ${AUR_PACKAGES[$i]}"
         else
-            print_error "REINSTALL-AUR-WARN" ": ${AUR_PACKAGES[$i]}"
-            aur_package_install "${AUR_PACKAGES[$i]}" "REINSTALL-AUR-PACKAGE-$i"
+            print_error "REINSTALLATION-AUR-WARN" ": ${AUR_PACKAGES[$i]}"
+            aur_package_install "${AUR_PACKAGES[$i]}" "REINSTALLATION-AUR-PACKAGE-$i"
         fi
     done
     if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -9121,7 +9698,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-SOFTWARE-LIVE-DESC"  "Test functions out for Developers"
-    localize_info "INSTALL-SOFTWARE-LIVE-NOTES" "Calls finish 2, so exit 0 after calling this."
+    localize_info "INSTALL-SOFTWARE-LIVE-NOTES" "Calls finish 2, so exit 0 after calling this. All the Custom scripts should be writen to Package Manager, so after testing, move them there, only allow custom scripts in testing mode only."
     #
     localize_info "INSTALL-SOFTWARE-LIVE-TITLE"  "Arch Linux Software Installation"
     localize_info "INSTALL-SOFTWARE-LIVE-INFO-1" "Configure Pacman Package Signing..."
@@ -9416,11 +9993,16 @@ install_software_live()
         if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "CONFIG_ORPHAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
     #
-    #reinstall
+    if [[ "$REINSTALL" -eq 1 ]]; then
+        reinstallation
+    fi
     #
-    test_install    
+    if [[ "$TEST_INSTALL" -eq 1 ]]; then
+        test_installation    
+    fi
     #
     finish 2
+    exit 0
 }
 #}}}
 # -----------------------------------------------------------------------------
