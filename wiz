@@ -23,19 +23,22 @@ else
     echo ""
 fi
 
-# Wizard
+# Wizard API Script for core Interface
 if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
-    declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
-    declare LOCALIZED_FILE="arch-wizard.sh"
-    export TEXTDOMAINDIR="$LOCALIZED_PATH"  # declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
-    export TEXTDOMAIN="$LOCALIZED_FILE"     # declare LOCALIZED_FILE="wizard.sh"
-    declare -i RUN_LOCALIZER=0              # Localization of all script tags to support language
-    declare -i RUN_HELP=0                   # Create Help.html
-    declare -i RUN_TEST=0                   # 0=Disable, 1=Run, 2=Run Extended Test
-    declare -i AUTOMAN=0                    # Automatically install from saved settings
-    declare -i DETECTED_RUN_MODE=0          # Detected Run Mode
-    declare -i RUNTIME_MODE=1               # 1 = Boot Mode, 2 = Live
-    declare -i DRIVE_FORMATED=0
+    declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale" # Where the po.langage file goes -> Edit this line as needed for project
+    declare LOCALIZED_FILE="arch-wizard.sh"                # Name to call the Langage File referanced above -> Edit this line as needed for project
+    #
+    export TEXTDOMAINDIR="$LOCALIZED_PATH"                 # Multilingual Langage File Path -> from above: declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
+    export TEXTDOMAIN="$LOCALIZED_FILE"                    # Multilingual Langage File Name -> from above: declare LOCALIZED_FILE="wizard.sh"
+    declare -i RUN_LOCALIZER=0                             # Localization of all script tags to support language
+    declare -i RUN_HELP=0                                  # Create Help.html
+    declare -i RUN_TEST=0                                  # 0=Disable, 1=Run, 2=Run Extended Test
+    declare -i AUTOMAN=0                                   # Automatically install from saved settings
+    declare -i DETECTED_RUN_MODE=0                         # Detected Run Mode
+    declare -i RUNTIME_MODE=1                              # 1 = Boot Mode, 2 = Live
+    declare -i DRIVE_FORMATED=0                            # Is Target Drive Formated yet
+    declare DATE_TIME=`date +"%d-%b-%Y @ %r"`              # 21-Jan-2013 @ 01:25:29 PM
+    declare LOG_DATE_TIME=$(date +"%d-%b-%Y-T-%H-%M")      # Day-Mon-YYYY-T-HH-MM: 21-Jan-2013-T-13-24
     if [ -d "/home/arch/" ]; then
         DETECTED_RUN_MODE=1
         RUNTIME_MODE=1
@@ -70,6 +73,13 @@ if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
         fi
         if [[ "$1" == "-a" ]]; then
             AUTOMAN=1
+        fi
+        if [[ "$1" == "-d" ]]; then
+            mv -Rv "${FULL_SCRIPT_PATH}/var/" "${FULL_SCRIPT_PATH}/Archive/${LOG_DATE_TIME}/var/" 
+            cp -Rfv "/var/log/" "${FULL_SCRIPT_PATH}/var/" 
+            chown -R jflesher:jflesher "${FULL_SCRIPT_PATH}"
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            exit 0
         fi
     fi
     # change to project needs
