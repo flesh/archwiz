@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="21 Jan 2013 16:33"
+# LAST_UPDATE="23 Jan 2013 16:33"
 # SCRIPT_VERSION="1.0.0.a"
 #
 # THINGS TO DO
@@ -21,6 +21,8 @@ declare INSTALL_DEVICE='sda'
 declare SCRIPT_DEVICE='sdb1'
 #
 declare AUR="Arch User Repository (AUR)"
+declare MAYBE_AUR="May Use AUR"
+declare SOME_AUR="Some AUR"
 declare -i PACMAN_OPTIMIZER=0
 declare -i PACMAN_REPO_TYPE=1 # 0=None, 1=Server, 2=Client
 declare -i INSTALL_NO_INTERNET=0
@@ -35,6 +37,8 @@ declare -i GNOME_INSTALL=0                         #
 declare -i XFCE_INSTALLED=0                        #
 declare -i E17_INSTALLED=0                         #
 declare -i KDE_INSTALLED=0                         #
+declare -i QT_INSTALL=0                            # Qt Installation: KDE, Razor
+declare -i RAZOR_QT_INSTALLED=0                    # Razor-Qt
 declare -i LXDE_INSTALLED=0                        #
 declare -i OPENBOX_INSTALLED=0                     #
 declare -i AWESOME_INSTALLED=0                     #
@@ -160,6 +164,7 @@ declare LANGUAGE_HS="en"
 declare LANGUAGE_AS="en"
 declare LANGUAGE_KDE="en_gb"
 declare LANGUAGE_FF="en-us" # af ak ar as ast be bg bn-bd bn-in br bs ca cs csb cy da de el en-gb en-us en-za eo es-ar es-cl es-es es-mx et eu fa ff fi fr fy-nl ga-ie gd gl gu-in he hi-in hr hu hy-am id is it ja kk km kn ko ku lg lij lt lv mai mk ml mr nb-no nl nn-no nso or pa-in pl pt-br pt-pt rm ro ru si sk sl son sq sr sv-se ta ta-lk te th tr uk vi zh-cn zh-tw zu
+declare LANGUAGE_CALLIGRA="en"
 declare KEYBOARD="us" # used to drill down into more specific layouts for some; not the same as KEYMAP necessarily  
 declare KEYMAP="us"
 declare ZONE="America"
@@ -523,6 +528,22 @@ set_language()
         LANGUAGE_LO=`echo $LANGUAGE | sed 's/_/-/'`
     else
         LANGUAGE_LO=`echo $LANGUAGE | cut -d\_ -f1`
+    fi
+    #}}}
+    # CALLIGRA #{{{ 
+    LANGUAGE_CALLIGRA="${LANGUAGE:0:2}"
+    if [[ "$LANGUAGE" == 'pt_br' ]]; then
+        LANGUAGE_CALLIGRA='pt_br' # Portugese
+    else
+        LANGUAGE_CALLIGRA='pt' # Brazilian Portugese
+    fi
+    if [[ "$LANGUAGE" == 'zh_cn' ]]; then
+        LANGUAGE_CALLIGRA='zh_cn'  # Simplified Chinese
+    else
+        LANGUAGE_CALLIGRA='zh_tw'  # Traditional Chinese
+    fi
+    if [[ "${LANGUAGE:0:2}" == 'en' ]]; then
+        LANGUAGE_CALLIGRA='en_gb' # British
     fi
     #}}}
 }
@@ -1991,7 +2012,7 @@ choose_aurhelper()
     print_error "CHOOSE-AUR-HELPER-INFO-6"
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "CHOOSE-AUR-HELPER-CHANGE" "$AUR_HELPER" 0
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
         print_info "CHOOSE-AUR-HELPER-SELECT"
@@ -2119,7 +2140,7 @@ configure_mirrorlist()
         print_info "CONFIGURE-MIRRORLIST-FOUND" ": ${FULL_SCRIPT_PATH}"
         Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
         read_input_yn "Use-Mirrorlist" "${FULL_SCRIPT_PATH}/mirrorlist" 1
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        BYPASS="$Old_BYPASS" # Restore Bypass
         if [[ "YN_OPTION" -eq 1 ]]; then
             CUSTOM_MIRRORLIST=1
         fi
@@ -2292,7 +2313,7 @@ custom_nameservers()
             break
         fi
     done
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2322,7 +2343,7 @@ get_flesh()
     print_info "GET-FLESH-INFO"
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-FLESH-INSTALL" " " 1
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         FLESH=1
     else
@@ -2415,7 +2436,7 @@ add_custom_repositories()
     fi
     # pacstrap will overwrite pacman.conf so copy it to temp 
     copy_file "${MOUNTPOINT}/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2558,7 +2579,7 @@ edit_disk()
     # @FIX add SSD optimization
     print_info "EDIT-DISK-INFO-2"
     read_input_yn "EDIT-DISK-IS-SSD-DISK" " " 0
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         IS_SSD=1
     else
@@ -2586,7 +2607,7 @@ fi
 # -------------------------------------
 show_packmanager()
 {
-    total="${#PACKMANAGER[@]}"
+    local -i total="${#PACKMANAGER[@]}"
     for (( index=0; index<${total}; index++ )); do
         # @FIX more; figure out how many lines to show
         echo -e "${PACKMANAGER[$index]}"
@@ -2699,13 +2720,13 @@ show_software()
         print_this "SHOW-SOFTWARE-INFO-4"
         print_this "SHOW-SOFTWARE-INFO-5"
         read_input_yn "SHOW-SOFTWARE-NEW-CONFIG" " " 0
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        BYPASS="$Old_BYPASS" # Restore Bypass
         if [[ "$YN_OPTION" -eq 1 ]]; then
             clear_software 1
             install_menu
         fi
     else
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        BYPASS="$Old_BYPASS" # Restore Bypass
         clear_software 1
         install_menu
     fi
@@ -2796,7 +2817,7 @@ show_last_config()
         show_last_config
         pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2905,7 +2926,7 @@ get_install_mode()
     else
         RUNTIME_MODE=1
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3021,6 +3042,11 @@ verify_config()
         fi
     fi
     if [[ "$1" -eq 2 ]]; then # Live Mode
+        if [ -f /usr/bin/gnome-autogen.sh ]; then
+            if ! is_string_in_file "/usr/bin/gnome-autogen.sh" "automake-$AUTOMAKE" ; then # Only make changes once
+                copy_file 'gnome-autogen.sh' '/usr/bin/gnome-autogen.sh' "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            fi
+        fi
         if [ -d "${FULL_SCRIPT_PATH}/etc/" ]; then
             print_info "VERIFY-CONFIG-FOLDER-ETC-HOLDS"
             read_input_yn "VERIFY-CONFIG-COPY-FOLDER" " " 1
@@ -3032,7 +3058,7 @@ verify_config()
     fi
     print_info "VERIFY-CONFIG-CONFIG-COMPLETED"
     pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) -> $LINENO"
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     return 0
 }
 #}}}
@@ -4279,8 +4305,9 @@ add_packagemanager()
         else
             PACKMANAGER_NAME[${#PACKMANAGER_NAME[*]}]="$2"
         fi
+        return 0
     fi
-    return 0
+    return 1
 }
 # -------------------------------------
 if [[ "$RUN_TEST" -eq 1 ]]; then
@@ -4733,8 +4760,8 @@ configure_user_account()
         print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Nano..."
         sed -i '/EDITOR/s/vim/nano/' "/home/${USERNAME}/.bashrc"
         sed -i '/VISUAL/s/vim/nano/' "/home/${USERNAME}/.bashrc"
-        sed -i '/EDITOR/s/vim/nano/' ~/.bashrc
-        sed -i '/VISUAL/s/vim/nano/' ~/.bashrc
+        sed -i '/EDITOR/s/vim/nano/' ~/.bashrc # root
+        sed -i '/VISUAL/s/vim/nano/' ~/.bashrc # root
     elif [[ "$EDITOR" == "vim" ]]; then
         print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Vim..."
         # VIM
@@ -4743,14 +4770,14 @@ configure_user_account()
         print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Joe..."
         sed -i '/EDITOR/s/vim/joe/' "/home/${USERNAME}/.bashrc"
         sed -i '/VISUAL/s/vim/joe/' "/home/${USERNAME}/.bashrc"
-        sed -i '/EDITOR/s/vim/joe/' ~/.bashrc
-        sed -i '/VISUAL/s/vim/joe/' ~/.bashrc
+        sed -i '/EDITOR/s/vim/joe/' ~/.bashrc # root
+        sed -i '/VISUAL/s/vim/joe/' ~/.bashrc # root
     elif [[ "$EDITOR" == "emacs" ]]; then
         print_this "CONFIGURE-USER-ACCOUNT-CONFIG" " Emacs..."
         sed -i '/EDITOR/s/vim/emacs\ -nw/' "/home/${USERNAME}/.bashrc"
         sed -i '/VISUAL/s/vim/emacs\ -nw/' "/home/${USERNAME}/.bashrc"
-        sed -i '/EDITOR/s/vim/emacs\ -nw/' ~/.bashrc
-        sed -i '/VISUAL/s/vim/emacs\ -nw/' ~/.bashrc
+        sed -i '/EDITOR/s/vim/emacs\ -nw/' ~/.bashrc # root
+        sed -i '/VISUAL/s/vim/emacs\ -nw/' ~/.bashrc # root
     fi
     #    
     make_dir "/home/${USERNAME}/Downloads" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -4922,7 +4949,7 @@ get_fstab_config()
     done
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-FSTAB-CONFIG-EDIT" " " 0
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         FSTAB_EDIT=1
     fi
@@ -5060,7 +5087,7 @@ get_hostname()
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "GET-HOSTNAME-DEFAULT" "$CONFIG_HOSTNAME"
     CONFIG_HOSTNAME="$OPTION"
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 
@@ -5095,10 +5122,17 @@ abort_install()
     if [[ "$1" -eq 1 ]]; then
         print_info    "ABORT-INSTALL-INFO-1"
         print_error "ABORT-INSTALL-ERROR"
-        copy_dir   "${FULL_SCRIPT_PATH}/etc/"        ${MOUNTPOINT}/root/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_files "${CONFIG_PATH}/" "db"          ${MOUNTPOINT}/root/CONFIG/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_files "$LOG_PATH/"      "log"         ${MOUNTPOINT}/root/LOG/    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh" ${MOUNTPOINT}/root/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_dir    "${FULL_SCRIPT_PATH}/etc/"           ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files  "${CONFIG_PATH}/"    "db"            ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/CONFIG/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files  "$LOG_PATH/"         "log"           ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/LOG/    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/wiz"            ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/wizard.sh"      ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/arch-wiz.sh"    ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/common-wiz.sh"  ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/package-wiz.sh" ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/packages.sh"    ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        # 
+        chown -R "${USERNAME}:${USERNAME}" "${MOUNTPOINT}/${MOUNTPOINT}/home/${USERNAME}"
     else
         print_info "ABORT-INSTALL-INFO-2"
     fi
@@ -5150,15 +5184,17 @@ finish()
     if [[ "$1" -eq 1 ]]; then # Boot Mode
         print_info  "FINISH-INFO-4"
         print_error "FINISH-ERROR"
-        copy_dir    "${FULL_SCRIPT_PATH}/etc/"           ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_files  "${CONFIG_PATH}/" "db"               ${MOUNTPOINT}/${USERNAME}/CONFIG/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_files  "$LOG_PATH/"      "log"              ${MOUNTPOINT}/${USERNAME}/LOG/    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file   "${FULL_SCRIPT_PATH}/wiz"            ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file   "${FULL_SCRIPT_PATH}/wizard.sh"      ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file   "${FULL_SCRIPT_PATH}/arch-wiz.sh"    ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file   "${FULL_SCRIPT_PATH}/common-wiz.sh"  ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file   "${FULL_SCRIPT_PATH}/package-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        copy_file   "${FULL_SCRIPT_PATH}/packages.sh"    ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_dir    "${FULL_SCRIPT_PATH}/etc/"           ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files  "${CONFIG_PATH}/"    "db"            ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/CONFIG/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_files  "$LOG_PATH/"         "log"           ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/LOG/    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/wiz"            ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/wizard.sh"      ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/arch-wiz.sh"    ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/common-wiz.sh"  ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/package-wiz.sh" ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        copy_file   "${FULL_SCRIPT_PATH}/packages.sh"    ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        # 
+        chown -R "${USERNAME}:${USERNAME}" "${MOUNTPOINT}/${MOUNTPOINT}/home/${USERNAME}"
     else # Live Mode
         print_info "FINISH-INFO-5"
         system_upgrade
@@ -5200,7 +5236,7 @@ finish()
     if [[ "$YN_OPTION" -eq 1 ]]; then
         reboot
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     exit 0
 }
 #}}}
@@ -5276,7 +5312,7 @@ set_log_drive()
         read_input_default "Device-Script-running" "$SCRIPT_DEVICE"
         SCRIPT_DEVICE="$OPTION"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ -b "/dev/$SCRIPT_DEVICE" ]]; then
         print_info "Copying-Device" "/dev/$SCRIPT_DEVICE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         write_log  "Copying-Device" "/dev/$SCRIPT_DEVICE : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
@@ -5540,7 +5576,7 @@ get_boot_type()
                     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
                     read_input_default "GET-BOOT-TYPE-DEFAULT" "2M"
                     BIOS_SIZE="$OPTION"
-                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    BYPASS="$Old_BYPASS" # Restore Bypass
                     break
                     ;;
                 2)
@@ -5629,7 +5665,7 @@ get_boot_type()
     elif [[ "$UEFI" -eq 1 ]]; then  # BIOS=1
         get_bios_size    # BOOT_SYSTEM_TYPE and BIOS_SIZE
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5679,7 +5715,7 @@ get_boot_partition()
         read_input_default "GET-BOOT-PARTITION-BOOT-SIZE" "100M"
         BOOT_SIZE="$OPTION"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5761,7 +5797,7 @@ get_swap_partition()
         read_input_default "GET-SWAP-PARTITION-SIZE" "$SWAP_SIZE"
         SWAP_SIZE="$OPTION"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5824,7 +5860,7 @@ get_home_partition()
         get_format_system # Ask for Format Type
         HOME_FORMAT="$OPTION"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5887,7 +5923,7 @@ get_var_partition()
         get_format_system # Ask for Format Type
         VAR_FORMAT="$OPTION"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -5989,7 +6025,7 @@ get_tmp_partition()
         get_format_system # Ask for Format Type
         TMP_FORMAT="$OPTION"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -6035,7 +6071,7 @@ get_root_size()
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "GET-ROOT-SIZE-SIZE" "0"
     ROOT_SIZE="$OPTION"
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     get_root_format
 }
 #}}}
@@ -6126,7 +6162,7 @@ static_ip()
             break
         fi
     done    
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
