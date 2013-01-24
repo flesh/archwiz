@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="18 Jan 2013 16:33"
+# LAST_UPDATE="22 Jan 2013 16:33"
 #
 declare ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
@@ -27,6 +27,7 @@ fi
 if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
     declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale" # Where the po.langage file goes -> Edit this line as needed for project
     declare LOCALIZED_FILE="arch-wizard.sh"                # Name to call the Langage File referanced above -> Edit this line as needed for project
+    declare AUTOMAKE="1.13"                                # automake version 
     #
     export TEXTDOMAINDIR="$LOCALIZED_PATH"                 # Multilingual Langage File Path -> from above: declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
     export TEXTDOMAIN="$LOCALIZED_FILE"                    # Multilingual Langage File Name -> from above: declare LOCALIZED_FILE="wizard.sh"
@@ -227,6 +228,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CONFIG-MENU-WEB-SERVER"         "Web Server"
     localize_info "CONFIG-MENU-FLESH"              "Flesh"
     localize_info "CONFIG-MENU-LOGS"               "LOGS"
+    localize_info "CONFIG-MENU-EXPORT"             "Export Scripts"
     localize_info "CONFIG-MENU-RETURN"             "Return"
     # Menu Description Localization
     localize_info "CONFIG-MENU-DESC-CREATE"        "Create all Configuration files"
@@ -237,6 +239,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CONFIG-MENU-DESC-WEB-SERVER"    "Web Server Configuration"
     localize_info "CONFIG-MENU-DESC-FLESH"         "Flesh Configuration Files"
     localize_info "CONFIG-MENU-DESC-LOGS"          "Copy LOGS and Configuration Files"
+    localize_info "CONFIG-MENU-DESC-EXPORT"        "Export Scripts so you can Import them into a Live System, used after you have already Installed Step 2."
     localize_info "CONFIG-MENU-DESC-RETURN"        "Return to Main Menu"
     # Status bar Localization
     localize_info "Make-Choose"                    "Make a Choose:"
@@ -248,6 +251,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CONFIG-MENU-SB-WEB-SERVER"      "Web Server Completed."
     localize_info "CONFIG-MENU-SB-FLESH"           "Flesh Completed"
     localize_info "CONFIG-MENU-SB-LOGS"            "Logs Copy Completed"
+    localize_info "CONFIG-MENU-SB-EXPORT"          "Scrips Exported"
     # Title Localization
     localize_info "CONFIG-MENU-TITLE"  "Configuration Menu"
     # Localization
@@ -291,6 +295,7 @@ config_menu()
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-WEB-SERVER"        "" "" "CONFIG-MENU-DESC-WEB-SERVER"    "MenuTheme[@]"   
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-FLESH"             "" "" "CONFIG-MENU-DESC-FLESH"         "MenuTheme[@]"   
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-LOGS"              "" "" "CONFIG-MENU-DESC-LOGS"          "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EXPORT"            "" "" "CONFIG-MENU-DESC-EXPORT"        "MenuTheme[@]"   
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RETURN"            "" "" "CONFIG-MENU-DESC-RETURN"        "MenuTheme[@]"   
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
@@ -414,7 +419,7 @@ config_menu()
                     pause_function "/etc/vconsole.conf $LINENO"
 
                     StatusBar1=$(localize "CONFIG-MENU-SB-EDIT")
-                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    BYPASS="$Old_BYPASS" # Restore Bypass
                     break
                     ;;
                 3)  # Backup Config
@@ -452,7 +457,14 @@ config_menu()
                     copy_dir "/var/log/" "${FULL_SCRIPT_PATH}/var/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                     break;
                     ;;
-                9)  # Return; same as Quit
+                9)  # Export Scirpts
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-EXPORT")
+                    echo "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" > "${FULL_SCRIPT_PATH}/export.sh"
+                    echo "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" >> "${FULL_SCRIPT_PATH}/export.sh"
+                    break;
+                    ;;
+               10)  # Return; same as Quit
                     MenuChecks[$((S_OPT - 1))]=1
                     S_OPT="$BreakableKey"
                     break;
@@ -631,7 +643,7 @@ main_menu()
                     fi        
                     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
                     read_input_yn "MAIN-MENU-WIZARD" "" 1
-                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    BYPASS="$Old_BYPASS" # Restore Bypass
                     if [[ "$YN_OPTION" -eq 1 ]]; then
                         run_install_wizzard
                         exit 0
@@ -675,7 +687,7 @@ main_menu()
                     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
                     print_this "MAIN-MENU-EXTENDED-DESC"
                     read_input_yn "MAIN-MENU-EXTENDED" "" 0
-                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    BYPASS="$Old_BYPASS" # Restore Bypass
                     if [[ "$YN_OPTION" -eq 0 ]]; then
                         DEBUGGING=1
                     else
