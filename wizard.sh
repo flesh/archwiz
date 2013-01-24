@@ -36,7 +36,7 @@ declare -i ETH0_ACTIVE=0
 declare -i ETH1_ACTIVE=0
 declare -i ETH2_ACTIVE=0
 #
-declare USERNAME='archlinux'
+declare USERNAME=$(whoami)
 declare USERPASSWD='archlinux'
 declare ROOTPASSWD='archlinux'
 # 
@@ -242,6 +242,7 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
 fi
 # -----------------------------------------------------------------------------
 declare -i ARR_INDEX=0
+declare SearchMyArray=""
 #
 # IS IN ARRAY {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
@@ -282,6 +283,107 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
 fi
 #}}}
 # -----------------------------------------------------------------------------
+#
+# IS NEEDLE IN HAYSTACK {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="is_needle_in_haystack"
+    USAGE=$(gettext -s "IS-NEEDLE-IN-HAYSTACK-USAGE")
+    DESCRIPTION=$(gettext -s "IS-NEEDLE-IN-HAYSTACK-DESC")
+    NOTES=$(gettext -s "IS-NEEDLE-IN-HAYSTACK-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="22 Jan 2013"
+    REVISION="22 Jan 2013"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
+is_needle_in_haystack()
+{
+    local -i SearchResults=0
+    case $2 in # Haystack
+        "$1") SearchResults=1 ;; # Match Exact Haystack String
+       "$1"*) SearchResults=2 ;; # Match Beginning of Haystack String
+       *"$1") SearchResults=3 ;; # Match End of Haystack String
+      *"$1"*) SearchResults=4 ;; # Needle String can be anywhere in the Haystack String
+    esac
+    if [[ "$SearchResults" -eq "$3" ]]; then # SearchResults=0-4
+        return 0
+    else
+        if [[ "$3" -ge "5" ]]; then                     # Anywhere in String
+            if [[ "$SearchResults" -ne "0" && "$3" -ne "6" ]]; then # SearchResults=0-4 - 0=No Found
+                if [[ "$RUN_TEST" -eq 3 ]]; then echo "SearchResults=$SearchResults return at line $LINENO"; fi
+                return 0
+            else                                            # Check it like its an Array
+                local -a MyNeedle=( $(echo $1) )            # Create an Array from the Needle
+                local -a Haystack=( $(echo $2) )            # Create an Array from the Haystack
+                local -i MyNeedleTotal="${#MyNeedle[@]}";   # 1 or Greater
+                local -i HaystackTotal="${#Haystack[@]}";   # 1 or Greater
+                local -i index=0;                           # Index
+                local -i HayStackIndex=0;                   # Index
+                local -i count=0                            # count how many times we find it
+                local -a FoundIndex=()                      #
+                trak=0
+                if [[ "$3" -eq "5" ]]; then                 # Anywhere Exactly in String: Haystack=1ABS 2ABS 1POS 2POS and Needle=ABS POS, 
+                    for (( HayStackIndex=0; HayStackIndex<${HaystackTotal}; HayStackIndex++ )); do
+                        ((trak++))
+                        for (( index=0; index<${MyNeedleTotal}; index++ )); do
+                            local -i SearchResults=0
+                            case ${Haystack[$HayStackIndex]} in # Haystack Array
+                                "${MyNeedle[$index]}") SearchResults=1 ;; # Match Exact Haystack String
+                               "${MyNeedle[$index]}"*) SearchResults=2 ;; # Match Beginning of Haystack String
+                               *"${MyNeedle[$index]}") SearchResults=3 ;; # Match End of Haystack String
+                              *"${MyNeedle[$index]}"*) SearchResults=4 ;; # Needle String can be anywhere in the Haystack String
+                            esac
+                            if [[ "$SearchResults" -ne "0" ]]; then # SearchResults=0-4 - 0=No Found
+                                if [[ "${#FoundIndex[@]}" -eq 0 ]]; then
+                                    if [[ "$RUN_TEST" -eq 3 ]]; then echo "5. Needle=${MyNeedle[$index]} | SearchResults=$SearchResults | index=$index"; fi
+                                    array_push "FoundIndex" "$index" 
+                                    ((count++))
+                                else
+                                    if ! is_in_array "FoundIndex[@]" "$index" ; then
+                                        if [[ "$RUN_TEST" -eq 3 ]]; then echo "5. Needle=${MyNeedle[$index]} | SearchResults=$SearchResults | index=$index"; fi
+                                        array_push "FoundIndex" "$index" 
+                                        ((count++))
+                                    fi
+                                fi
+                            fi
+                        done
+                    done
+                    if [[ "$RUN_TEST" -eq 3 ]]; then echo "count=$count and MyNeedleTotal=$MyNeedleTotal"; fi
+                    if [[ "$count" -eq "$MyNeedleTotal" ]]; then   # Keep in mind that we need another
+                        return 0
+                    else
+                        return 1
+                    fi                
+                else
+                    for (( index=0; index<${MyNeedleTotal}; index++ )); do
+                        if is_in_array "Haystack[@]" "${MyNeedle[$index]}" ; then
+                            if [[ "$RUN_TEST" -eq 3 ]]; then echo "Found ${MyNeedle[$index]}"; fi
+                            if [[ "$3" -eq "6" ]]; then        # Anywhere Exactly in String: Haystack=12 13 and Needle=1 3, 
+                                if [[ "$RUN_TEST" -eq 3 ]]; then echo "6. Needle=${MyNeedle[$index]} | SearchResults=$SearchResults | ARR_INDEX=$ARR_INDEX"; fi
+                                ((count++))
+                            fi
+                        else
+                            if [[ "$RUN_TEST" -eq 3 ]]; then echo "Not Found ${MyNeedle[$index]}"; fi
+                        fi
+                    done
+                    if [[ "$RUN_TEST" -eq 3 ]]; then echo "count=$count and MyNeedleTotal=$MyNeedleTotal"; fi
+                    if [[ "$count" -eq "$MyNeedleTotal" ]]; then   # Keep in mind that we need another
+                        return 0
+                    else
+                        return 1
+                    fi                
+                fi
+            fi
+        else
+            return 1
+        fi
+    fi
+    return 1 # We should never make it, but if we do, its an error
+}
+#}}}
+# -----------------------------------------------------------------------------
+#
 # LOAD 2D ARRAY {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="load_2d_array"
@@ -1306,71 +1408,6 @@ show_users()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# SET DEBUGGING MODE {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="set_debugging_mode"
-    USAGE=$(localize "SET-DEBUGGING-MODE-USAGE")
-    DESCRIPTION=$(localize "SET-DEBUGGING-MODE-DESC")
-    NOTES=$(localize "SET-DEBUGGING-MODE-NOTES")
-    AUTHOR="Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
-    localize_info "SET-DEBUGGING-MODE-USAGE" "set_debugging_mode 1->(1=Boot, 2=Live) 2->(&#36;LINENO)"
-    localize_info "SET-DEBUGGING-MODE-DESC"  "Set Debugging Mode: also checks for Internet Connection."
-    localize_info "SET-DEBUGGING-MODE-NOTES" "Fill try to Repair Internet Connection. Only sets Debugging switch if DEBUGGING is set to 1."
-    #
-    localize_info "SET-DEBUGGING-MODE-TITLE"         "Starting setup..."
-    localize_info "SET-DEBUGGING-MODE-INTERNET-UP"   "Internet is Up!"
-    localize_info "SET-DEBUGGING-MODE-TRIED-TO-FIX"  "I tried to fix Network, I will test it again, if it fails, first try to re-run this script over, if that fails, try Network Troubleshooting."
-    localize_info "SET-DEBUGGING-MODE-TRY-AGAIN"     "trying again in 13 seconds..."
-    localize_info "SET-DEBUGGING-MODE-INTERNET-DOWN" "Internet is Down: Internet is Down, this script requires an Internet Connection, fix and retry; try Network Troubleshooting; first try to rerun this script, I did try to fix this. Select Install with No Internet Connection option."
-    localize_info "SET-DEBUGGING-MODE-NO-INTERNET"   "No Internet Install Set; if it fails; you must establish an Internet connection first; try Network Troubleshooting."
-    localize_info "SET-DEBUGGING-MODE-WARN-1"        "Debug Mode will insert a Pause Function at critical functions and give you some information about how the script is running, it also may set other variables and run more test."
-    localize_info "SET-DEBUGGING-MODE-WARN-2"        "Debugging is set on, if set -o nounset or set -u, you may get unbound errors that need to be fixed."
-    localize_info "BOOT-MODE-DETECTED"               "Boot Mode Detected."
-    localize_info "LIVE-MODE-DETECTED"               "Live Mode Detected."
-fi
-# -------------------------------------
-set_debugging_mode()
-{
-    if [[ "$SET_DEBUGGING" -eq 0 ]]; then
-        SET_DEBUGGING=1 # So we only run this once.
-    else
-        return 0        
-    fi
-    print_title "SET-DEBUGGING-MODE-TITLE"
-    print_info "$TEXT_SCRIPT_ID"
-    if is_internet ; then
-        print_info "SET-DEBUGGING-MODE-INTERNET-UP"
-    else
-        fix_network
-        print_error "SET-DEBUGGING-MODE-TRIED-TO-FIX"
-        print_this "SET-DEBUGGING-MODE-TRY-AGAIN"
-        sleep 13
-        if ! is_internet ; then
-            write_error "SET-DEBUGGING-MODE-INTERNET-DOWN" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            print_error "SET-DEBUGGING-MODE-INTERNET-DOWN" 
-            if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
-                INSTALL_NO_INTERNET=1
-                print_error "SET-DEBUGGING-MODE-NO-INTERNET"
-            fi
-            pause_function "set_debugging_mode $1 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-        fi
-    fi
-    if [[ "$DEBUGGING" -eq 1 ]]; then
-        #set -u
-        set -o nounset 
-        print_error "SET-DEBUGGING-MODE-WARN-1"
-        print_error "SET-DEBUGGING-MODE-WARN-2"
-        pause_function "set_debugging_mode $1 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    fi
-}
-#}}}
-# -----------------------------------------------------------------------------
 # DEVICE LIST {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="device_list"
@@ -1677,8 +1714,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "READ-INPUT-OPTIONS-DESC"    "Read Keyboard Input Options:  String of values: 1 2 3 or 1-3 or 1,2,3"
     localize_info "READ-INPUT-OPTIONS-NOTES"   "AUTOMAN, INSTALL_WIZARD and BYPASS to easily configure default values, hit 'r' to run Recommended Options."
     localize_info "READ-INPUT-OPTIONS-OPTIONS" "Use Options"
-    localize_info "READ-INPUT-OPTIONS-IT-1"    "read_input_options Removed Dupplicates"
-    localize_info "READ-INPUT-OPTIONS-IT-2"    "read_input_options Return Array"
+    localize_info "READ-INPUT-OPTIONS-IT-1"    "read_input_options Return Array"
+    localize_info "READ-INPUT-OPTIONS-IT-2"    "read_input_options Removed Dupplicates"
 fi
 # -------------------------------------
 read_input_options()
@@ -1732,18 +1769,18 @@ read_input_options()
     done
     OPTIONS=( $(echo "${packages_opt[@]}" | tr '[:upper:]' '[:lower:]') )
     if [[ "$RUN_TEST" -eq 2 ]]; then
-        print_test "READ-INPUT-OPTIONS-OPTIONS" "$1"
+        print_test "READ-INPUT-OPTIONS-OPTIONS" "$1" # Use Options Passed in as is
     fi
     if [[ "$RUN_TEST" -eq 2 ]]; then
-        print_test "READ-INPUT-OPTIONS-IT-2" ":"
+        print_test "READ-INPUT-OPTIONS-IT-1" ":" # read_input_options Return Array
         print_array "OPTIONS[@]"
     fi
     IFS=$'\t\n';
     OPTIONS=( $(remove_array_duplicates "OPTIONS[@]") )
     IFS=" ";
     if [[ "$RUN_TEST" -eq 2 ]]; then
-        print_test "READ-INPUT-OPTIONS-IT-1" ":"
-        print_array "MyArray[@]"
+        print_test "READ-INPUT-OPTIONS-IT-2" ":" # read_input_options Removed Dupplicates
+        print_array "OPTIONS[@]"
     fi
     IFS="$OLD_IFS"
     #debugger 0
@@ -2934,7 +2971,7 @@ fi
 add_menu_item()
 { 
     if [[ "$#" -ne "8" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
-    # 1. Checkbox List Array
+    # 1. Checkbox List Array -> 0 based Array
     # 2. Menu Array
     # 3. Info-Array
     # 4. Menu Description (In White)
@@ -2947,32 +2984,33 @@ add_menu_item()
     
     #local -a checkbox_array=("${!1}")  # Checkbox List Array 
     #echo "checkbox_array=${checkbox_array[@]}"
-    eval "total_checkbox=\${#$1[@]}"
+    eval "total_checkbox=\${#$1[@]}" # Checkbox_List_Array = 0 First Time
     if [[ "$total_checkbox" -eq 0 ]]; then
-        array_push "$1" "0"
+        array_push "$1" "0" # First Time we Create a Blank Checkbox Array; this means that a Save menu has not been Restored; so set it to 0
         total_checkbox=1
     fi
-    eval "total=\${#$2[@]}"
+    eval "total=\${#$2[@]}" # Menu_Array = 0 First Time; we push results into it
     #    
-    if [[ "$total" -ge "$total_checkbox"  ]]; then
+    if [[ "$total" -ge "$total_checkbox" ]]; then # First time total=0 and total_checkbox=1, Second time total=1 and total_checkbox=1, so we need to push a new chechbox, since we will push another menu item
         array_push "$1" "0"
+        ((total_checkbox++))
     fi
     #
-    eval "cba=\${$1[$total]}"
+    eval "cba=\${$1[$total]}" # First time=0, Second time=1...
     #
-    if [[ -z "${cba}" ]]; then
+    if [[ -z "$cba" ]]; then
         cba=0
         if [[ "$RUN_TEST" -eq 2 ]]; then
             print_error "add_menu_item checkbox null value is wrong! Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
         write_error "add_menu_item checkbox null value is wrong! Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
-    if ! is_number "${cba}" ; then
-        cba=0
+    if ! is_number "$cba" ; then
         if [[ "$RUN_TEST" -eq 2 ]]; then
-            print_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "add_menu_item checkbox value is wrong! total=$total cba=$cba Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         fi
-        write_error "add_menu_item checkbox value is wrong! total=$total Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        write_error "add_menu_item checkbox value is wrong! total=$total cba=$cba Menu Description: $4 " "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        cba=0
     fi
     #
     local -a arrayTheme=("${!8}")     # Theme Array 
@@ -3661,6 +3699,71 @@ if [[ "$RUN_TEST" -eq 1 ]]; then
 fi
 #}}}
 # -----------------------------------------------------------------------------
+# SET DEBUGGING MODE {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="set_debugging_mode"
+    USAGE=$(localize "SET-DEBUGGING-MODE-USAGE")
+    DESCRIPTION=$(localize "SET-DEBUGGING-MODE-DESC")
+    NOTES=$(localize "SET-DEBUGGING-MODE-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
+    localize_info "SET-DEBUGGING-MODE-USAGE" "set_debugging_mode 1->(1=Boot, 2=Live) 2->(&#36;LINENO)"
+    localize_info "SET-DEBUGGING-MODE-DESC"  "Set Debugging Mode: also checks for Internet Connection."
+    localize_info "SET-DEBUGGING-MODE-NOTES" "Fill try to Repair Internet Connection. Only sets Debugging switch if DEBUGGING is set to 1."
+    #
+    localize_info "SET-DEBUGGING-MODE-TITLE"         "Starting setup..."
+    localize_info "SET-DEBUGGING-MODE-INTERNET-UP"   "Internet is Up!"
+    localize_info "SET-DEBUGGING-MODE-TRIED-TO-FIX"  "I tried to fix Network, I will test it again, if it fails, first try to re-run this script over, if that fails, try Network Troubleshooting."
+    localize_info "SET-DEBUGGING-MODE-TRY-AGAIN"     "trying again in 13 seconds..."
+    localize_info "SET-DEBUGGING-MODE-INTERNET-DOWN" "Internet is Down: Internet is Down, this script requires an Internet Connection, fix and retry; try Network Troubleshooting; first try to rerun this script, I did try to fix this. Select Install with No Internet Connection option."
+    localize_info "SET-DEBUGGING-MODE-NO-INTERNET"   "No Internet Install Set; if it fails; you must establish an Internet connection first; try Network Troubleshooting."
+    localize_info "SET-DEBUGGING-MODE-WARN-1"        "Debug Mode will insert a Pause Function at critical functions and give you some information about how the script is running, it also may set other variables and run more test."
+    localize_info "SET-DEBUGGING-MODE-WARN-2"        "Debugging is set on, if set -o nounset or set -u, you may get unbound errors that need to be fixed."
+    localize_info "BOOT-MODE-DETECTED"               "Boot Mode Detected."
+    localize_info "LIVE-MODE-DETECTED"               "Live Mode Detected."
+fi
+# -------------------------------------
+set_debugging_mode()
+{
+    if [[ "$SET_DEBUGGING" -eq 0 ]]; then
+        SET_DEBUGGING=1 # So we only run this once.
+    else
+        return 0        
+    fi
+    print_title "SET-DEBUGGING-MODE-TITLE"
+    print_info "$TEXT_SCRIPT_ID"
+    if is_internet ; then
+        print_info "SET-DEBUGGING-MODE-INTERNET-UP"
+    else
+        fix_network
+        print_error "SET-DEBUGGING-MODE-TRIED-TO-FIX"
+        print_this "SET-DEBUGGING-MODE-TRY-AGAIN"
+        sleep 13
+        if ! is_internet ; then
+            write_error "SET-DEBUGGING-MODE-INTERNET-DOWN" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            print_error "SET-DEBUGGING-MODE-INTERNET-DOWN" 
+            if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
+                INSTALL_NO_INTERNET=1
+                print_error "SET-DEBUGGING-MODE-NO-INTERNET"
+            fi
+            pause_function "set_debugging_mode $1 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        fi
+    fi
+    if [[ "$DEBUGGING" -eq 1 ]]; then
+        #set -u
+        set -o nounset 
+        print_error "SET-DEBUGGING-MODE-WARN-1"
+        print_error "SET-DEBUGGING-MODE-WARN-2"
+        pause_function "set_debugging_mode $1 : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
+}
+#}}}
+# -----------------------------------------------------------------------------
 # GET COUNTRY CODES {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="country_list"
@@ -3773,7 +3876,7 @@ get_country_codes()
     #
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_default "GET-COUNTRY-CODES-INPUT" "${LOCALE#*_}"
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     COUNTRY_CODE=`echo "$OPTION" | tr '[:lower:]' '[:upper:]'`  # Upper case only
     COUNTRY="${COUNTRIES[$(get_index "COUNTRY_CODES[@]" "$COUNTRY_CODE")]}"
 }   
@@ -3806,7 +3909,7 @@ get_country_code()
         get_country_codes
         read_input_yn "GET-COUNTRY-CODE-CONFIRM" "$COUNTRY_CODE" 1 # Returns YN_OPTION
     done
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     OPTION="$COUNTRY_CODE"
 }   
 #}}}
@@ -4042,7 +4145,7 @@ get_locale()
             break;
         fi
     done
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }    
 #}}}
 # -----------------------------------------------------------------------------
@@ -4392,7 +4495,7 @@ network_troubleshooting()
                     read_input_data "NETWORK-TROUBLESHOOTING-RD-1" # Enter IP Address
                     IP_ADDRESS="$OPTION"
                     read_input_data "NETWORK-TROUBLESHOOTING-RD-2"
-                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    BYPASS="$Old_BYPASS" # Restore Bypass
                     IP_MASK="$OPTION"
                     ip addr add "${IP_ADDRESS}/${IP_MASK}" dev "$NIC_DEV"
                     pause_function "network_troubleshooting $LINENO"
@@ -4403,7 +4506,7 @@ network_troubleshooting()
                     # Add Static Gateway
                     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
                     read_input_data "NETWORK-TROUBLESHOOTING-RD-3"
-                    BYPASS="$Old_BYPASS" # Restroe Bypass
+                    BYPASS="$Old_BYPASS" # Restore Bypass
                     IP_ADDRESS="$OPTION"
                     ip route add default via "$IP_ADDRESS"
                     pause_function "network_troubleshooting $LINENO"
@@ -4550,7 +4653,7 @@ configure_keymap()
     else
         KEYMAP="us"
     fi
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -4588,7 +4691,7 @@ get_editor()
     print_this "GET-EDITOR-EDITORS" ": ${EDITORS[*]}"
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "GET-EDITOR-DEFAULT" "$EDITOR" 0
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         PS3="$prompt1"
         print_this "GET-EDITOR-SELECT"
@@ -4734,7 +4837,7 @@ configure_timezone()
         settimezone
         read_input_yn "CONFIGURE-TIMEZONE-CONFIRM" "($ZONE/$SUBZONE)" 1
     done
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$RUNTIME_MODE" -eq 2 ]]; then # Live Mode
         if [[ "$DRIVE_FORMATED" -eq 1 ]]; then
             touch ${MOUNTPOINT}/etc/timezone
@@ -4785,6 +4888,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "IS-IN-ARRAY-USAGE" "is_in_array 1->(Array{@}) 2->(Search)"
     localize_info "IS-IN-ARRAY-DESC"  "Is Search in Array{@}; return true (0) if found"
     localize_info "IS-IN-ARRAY-NOTES" "Use of Global ARR_INDEX can be used in array index: if is_in_array 'Array{@}' 'Search' ; then MyArray{ARR_INDEX}=1 ; fi; much like get_index; which bombs on not found; takes more code to write it."
+    # Help file Localization 
+    localize_info "IS-NEEDLE-IN-HAYSTACK-USAGE" "is_needle_in_haystack 1->(Needle to search in Haystack) 2->(Haystack to search in) 3->(Type of Seach: 1=Exact, 2=Beginning, 3=End, 4=Middle, 5=Anywhere)"
+    localize_info "IS-NEEDLE-HAYSTACK-DESC"  "Search for a Needle in the Haystack"
+    localize_info "IS-NEEDLE-HAYSTACK-NOTES" "None."
     # Help file Localization
     localize_info "LOAD-2D-ARRAY-DESC"    "Load a saved 2D Array from Disk"
     localize_info "LOAD-2D-ARRAY-NOTES"   "This Function Expects a file, bombs if not found."
@@ -4909,12 +5016,12 @@ if [[ "$RUN_TEST" -eq 2 ]]; then
         local BreakableKey="Q"         # Q=Quit, D=Done, B=Back
         local RecommendedOptions="1-3" # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
         #
-        local SUB_OPTIONS=""        
         if [[ "$INSTALL_WIZARD" -eq 1 ]]; then
-            SUB_OPTIONS="1-7 $BreakableKey"
+            RecommendedOptions="$RecommendedOptions 6 6"
         elif [[ "$AUTOMAN" -eq 1 ]]; then
-            SUB_OPTIONS="1-3 7 7 $BreakableKey"
+            RecommendedOptions="$RecommendedOptions 7 7"
         fi
+        RecommendedOptions="$RecommendedOptions $BreakableKey"
         #
         OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
         local -a MenuChecks=( $(create_data_array 0 0 ) )
@@ -4944,8 +5051,8 @@ if [[ "$RUN_TEST" -eq 2 ]]; then
             #
             print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
             #
-            read_input_options "$SUB_OPTIONS" "$BreakableKey"
-            SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+            read_input_options "$RecommendedOptions" "$BreakableKey"
+            RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
             #            
             for S_OPT in ${OPTIONS[@]}; do
                 case "$S_OPT" in
@@ -5038,5 +5145,47 @@ if [[ "$RUN_TEST" -eq 2 ]]; then
     INSTALL_WIZARD=0
     print_this "READ-INPUT-OPTIONS-TEST-3" "AUTOMAN=$AUTOMAN and INSTALL_WIZARD=$INSTALL_WIZARD"
     test_read_input_options
+fi
+# -------------------------------------
+if [[ "$RUN_TEST" -eq 1 ]]; then
+    HayStack="1 2 3 4 5"
+    Needle="1 2 3 4 5" # 1=Exact     : 1 2 3 4 5 
+    if $(is_needle_in_haystack "$Needle" "$HayStack" 1) ; then # 1=Exact
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+    Needle="1"         # 2=Beginning : 1, 1 2 3 4, 1 2 3, 1 2
+    if $(is_needle_in_haystack "$Needle" "$HayStack" 2) ; then # 2=Beginning
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+    Needle="5"         # 3=End       : 5, 2 3 4 5, 3 4 5, 4 5
+    if $(is_needle_in_haystack "$Needle" "$HayStack" 3) ; then # 3=End
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+    Needle="3"         # 4=Middle    : 2 3, 2 3 4, 3 4, 3, 4
+    if $(is_needle_in_haystack "$Needle" "$HayStack" 4) ; then # 4=Middle
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+    HayStack="1ABS 2ABS 1POS 2POS"
+    Needle="ABS POS"       # 5=Anywhere  : 1 5, 5 1, 1 2 3 5, 2 1 3 4 5, ...
+    if $(is_needle_in_haystack "$Needle" "$HayStack" 5) ; then # 5=Anywhere
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
+    HayStack="1 4 5 12 3 15"
+    Needle="1 3"       # 6=Anywhere Exactly  : Not found
+    if $(is_needle_in_haystack "$Needle" "$HayStack" 6) ; then # 6=Anywhere Exactly
+        echo -e "\t${BBlue}$(gettext -s "TEST-FUNCTION-PASSED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    else
+        echo -e "\t${BRed}$(gettext -s "TEST-FUNCTION-FAILED")  is_needle_in_haystack @ $(basename $BASH_SOURCE) : $LINENO${White}"
+    fi
 fi
 # ************************************* END OF SCRIPT *************************
