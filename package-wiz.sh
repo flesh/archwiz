@@ -136,16 +136,17 @@ install_menu()
     local BreakableKey="Q"             # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -191,9 +192,9 @@ install_menu()
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restore Bypass
         #
         local OPT
         for OPT in ${OPTIONS[@]}; do
@@ -408,7 +409,7 @@ run_install_wizzard()
     install_type_menu
     local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "INSTALL-WIZARD-MENU-BASIC" " " 1 # 
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         INSTALL_NFS=0
         INSTALL_SAMBA=0
@@ -515,15 +516,15 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-TYPE-NOTES"  "NONE"
     localize_info "INSTALL-TYPE-TITLE"  "Type of Installation:"
     #
-    localize_info "INSTALL-TYPE-MENU-0" "Normal"
-    localize_info "INSTALL-TYPE-MENU-1" "Gamer"
-    localize_info "INSTALL-TYPE-MENU-2" "Professional"
-    localize_info "INSTALL-TYPE-MENU-3" "Programmer"
+    localize_info "INSTALL-TYPE-MENU-1"   "Normal"
+    localize_info "INSTALL-TYPE-MENU-I-1"       "Normal: Minimal well rounded Applications."
+    localize_info "INSTALL-TYPE-MENU-2"   "Gamer"
+    localize_info "INSTALL-TYPE-MENU-I-2"       "Gamer: Normal plus a lot of games."
+    localize_info "INSTALL-TYPE-MENU-3"   "Professional"
+    localize_info "INSTALL-TYPE-MENU-I-3"       "Professional: Normal plus Video and Audio Applications."
+    localize_info "INSTALL-TYPE-MENU-4"   "Programmer"
+    localize_info "INSTALL-TYPE-MENU-I-4"       "Programmer: Professional plus some important Programming Applications"
     # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
-    localize_info "INSTALL-TYPE-MENU-INFO-0" "Normal: Minimal well rounded Applications."
-    localize_info "INSTALL-TYPE-MENU-INFO-1" "Gamer: Normal plus a lot of games."
-    localize_info "INSTALL-TYPE-MENU-INFO-2" "Professional: Normal plus Video and Audio Applications."
-    localize_info "INSTALL-TYPE-MENU-INFO-3" "Programmer: Professional plus some important Programming Applications"
 fi
 # -------------------------------------
 install_type_menu()
@@ -532,16 +533,17 @@ install_type_menu()
     local BreakableKey="D"             # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -555,17 +557,17 @@ install_type_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-0" "" "" "INSTALL-TYPE-MENU-INFO-0" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-1" "" "" "INSTALL-TYPE-MENU-INFO-1" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-2" "" "" "INSTALL-TYPE-MENU-INFO-2" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-3" "" "" "INSTALL-TYPE-MENU-INFO-3" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-1" "" "" "INSTALL-TYPE-MENU-I-1" "MenuTheme[@]" # Normal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-2" "" "" "INSTALL-TYPE-MENU-I-2" "MenuTheme[@]" # Gamer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-3" "" "" "INSTALL-TYPE-MENU-I-3" "MenuTheme[@]" # Professional
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-4" "" "" "INSTALL-TYPE-MENU-I-4" "MenuTheme[@]" # Programmer
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restore Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -631,17 +633,17 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-CUSTOM-DE-TITLE"  "Custom Desktop Menu:"
     #
     localize_info "INSTALL-CUSTOM-DE-MENU-1"   "Mate"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-1"      "Mate: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-1"      "Mate: The MATE Desktop Environment is a fork of GNOME 2 that aims to provide an attractive and intuitive desktop to Linux users using traditional metaphors"
     localize_info "INSTALL-CUSTOM-DE-MENU-2"   "KDE"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-2"      "KDE: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-2"      "KDE: The KDE Software Compilation is the set of libraries, workspaces, and applications produced by KDE that share this common heritage, and continue to use the synchronized release cycle."
     localize_info "INSTALL-CUSTOM-DE-MENU-3"   "XFCE"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-3"      "XFCE: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-3"      "XFCE: Xfce embodies the traditional UNIX philosophy of modularity and re-usability."
     localize_info "INSTALL-CUSTOM-DE-MENU-4"   "Razor-QT & Openbox"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-4"      "Razor-QT & Openbox: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-4"      "Razor-QT & Openbox: Razor-qt is an advanced, easy-to-use, and fast toolbox-like desktop environment, which is, like KDE, based on Qt technologies. "
     localize_info "INSTALL-CUSTOM-DE-MENU-5"   "Cinnamon"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-5"      "Cinnamon: "
-    localize_info "INSTALL-CUSTOM-DE-MENU-6"   "Awesume"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-6"      "Awesume: "
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-5"      "Cinnamon: Cinnamon is a Linux desktop which provides advanced innovative features and a traditional user experience."
+    localize_info "INSTALL-CUSTOM-DE-MENU-6"   "Awesome"
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-6"      "Awesome: awesome is a highly configurable, next generation framework window manager for X."
 fi
 # -------------------------------------
 install_custom_de_menu()
@@ -650,16 +652,17 @@ install_custom_de_menu()
     local BreakableKey="D"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions="4"            # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -683,9 +686,9 @@ install_custom_de_menu()
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restore Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -720,7 +723,7 @@ install_custom_de_menu()
                     CUSTOM_DE=5
                     break;
                     ;;
-                6)  # Awesume
+                6)  # Awesome
                     MenuChecks[$((S_OPT - 1))]=1
                     CUSTOM_DE=6
                     S_OPT="$BreakableKey"
@@ -767,7 +770,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-BASICS-MENU-1"    "NFS"
     localize_info "INSTALL-BASICS-MENU-I-1"      "NFS allowing a user on a client computer to access files over a network in a manner similar to how local storage is accessed."
     localize_info "INSTALL-BASICS-MENU-2"    "SAMBA"
-    localize_info "INSTALL-BASICS-MENU-I-2"      ""
+    localize_info "INSTALL-BASICS-MENU-I-2"      "SAMBA: SAMBA is a re-implementation of the SMB/CIFS networking protocol, it facilitates file and printer sharing among Linux and Windows systems as an alternative to NFS. https://wiki.archlinux.org/index.php/Samba"
     localize_info "INSTALL-BASICS-MENU-3"    "Laptop Mode Tools"
     localize_info "INSTALL-BASICS-MENU-I-3"      "Laptop Mode Tools is a laptop power saving package for Linux systems. It is the primary way to enable the Laptop Mode feature of the Linux kernel, which lets your hard drive spin down. In addition, it allows you to tweak a number of other power-related settings using a simple configuration file. - https://wiki.archlinux.org/index.php/Laptop_Mode_Tools"
     localize_info "INSTALL-BASICS-MENU-4"    "Preload"
@@ -838,16 +841,17 @@ install_basics_menu()
         RecommendedOptions="$RecommendedOptions 12"
     fi
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     StatusBar1="INSTALL-BASICS-MENU-REC"
     StatusBar2="$RecommendedOptions"
@@ -877,115 +881,117 @@ install_basics_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restore Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # NFS
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_NFS=1
                         StatusBar1="INSTALL-BASICS-MENU-1"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_NFS=0
-                        StatusBar1="INSTALL-BASICS-MENU-1"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_NFS=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-1"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 2)  # SAMBA
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_SAMBA=1
                         StatusBar1="INSTALL-BASICS-MENU-2"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_SAMBA=0
-                        StatusBar1="INSTALL-BASICS-MENU-2"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_SAMBA=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-2"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 3)  # Laptop Mode Tools
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_LMT=1
                         StatusBar1="INSTALL-BASICS-MENU-3"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_LMT=0
-                        StatusBar1="INSTALL-BASICS-MENU-3"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_LMT=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-3"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 4)  # Preload
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_PRELOAD=1
                         StatusBar1="INSTALL-BASICS-MENU-4"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_PRELOAD=0
-                        StatusBar1="INSTALL-BASICS-MENU-4"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_PRELOAD=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-4"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 5)  # Zram
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_ZRAM=1
                         StatusBar1="INSTALL-BASICS-MENU-5"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_ZRAM=0
-                        StatusBar1="INSTALL-BASICS-MENU-5"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_ZRAM=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-5"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 6)  # Tor
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_TOR=1
                         StatusBar1="INSTALL-BASICS-MENU-6"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_TOR=0
-                        StatusBar1="INSTALL-BASICS-MENU-6"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_TOR=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-6"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 7)  # CUPS
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_CUPS=1
                         StatusBar1="INSTALL-BASICS-MENU-7"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_CUPS=0
-                        StatusBar1="INSTALL-BASICS-MENU-7"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_CUPS=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-7"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 8)  # USB 3G MODEM
-                    if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
+                    #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALL_USB_MODEM=1
                         StatusBar1="INSTALL-BASICS-MENU-8"
                         StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
-                    else
-                        MenuChecks[$((S_OPT - 1))]=2
-                        INSTALL_USB_MODEM=0
-                        StatusBar1="INSTALL-BASICS-MENU-8"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
-                    fi
+                    #else
+                    #    MenuChecks[$((S_OPT - 1))]=2
+                    #    INSTALL_USB_MODEM=0
+                    #    StatusBar1="INSTALL-BASICS-MENU-8"
+                    #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                    #fi
                     ;;
                 9)  # Addition Firmwares
                     install_additional_firmwares_menu 1
@@ -1086,9 +1092,9 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-BASIC-SETUP-USAGE" "install_basic_setup 1->(1=Install, 2=Remove)"
-    localize_info "INSTALL-BASIC-SETUP-DESC"  "Install Basic Packages"
-    localize_info "INSTALL-BASIC-SETUP-NOTES" "NONE"
+    localize_info "INSTALL-BASIC-SETUP-USAGE"           "install_basic_setup 1->(1=Install, 2=Remove)"
+    localize_info "INSTALL-BASIC-SETUP-DESC"            "Install Basic Packages"
+    localize_info "INSTALL-BASIC-SETUP-NOTES"           "NONE"
     #
     localize_info "INSTALL-BASIC-SETUP-TITLE"           "The Following will be installed by Default."
     localize_info "INSTALL-BASIC-SETUP-INFO-SYSTEMD"    "SYSTEMD"
@@ -1106,10 +1112,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-BASIC-SETUP-SSH-1"           "SSH"
     localize_info "INSTALL-BASIC-SETUP-SSH-2"           "Secure Shell (SSH) is a network protocol that allows data to be exchanged over a secure channel between two computers."
     #
-    localize_info "INSTALL-BASIC-SETUP-XORG-TITLE"   "XORG"
-    localize_info "INSTALL-BASIC-SETUP-XORG-INFO-1"  "Xorg is the public, open-source implementation of the X window system version 11."
-    localize_info "INSTALL-BASIC-SETUP-XORG-INFO-2"  "Installing X-Server (req. for Desktop Environment, GPU Drivers, Keyboardlayout,...)"
-    localize_info "INSTALL-BASIC-SETUP-XORG-SELECT"  "Select keyboard layout:"
+    localize_info "INSTALL-BASIC-SETUP-XORG-TITLE"      "XORG"
+    localize_info "INSTALL-BASIC-SETUP-XORG-INFO-1"     "Xorg is the public, open-source implementation of the X window system version 11."
+    localize_info "INSTALL-BASIC-SETUP-XORG-INFO-2"     "Installing X-Server (req. for Desktop Environment, GPU Drivers, Keyboardlayout,...)"
+    localize_info "INSTALL-BASIC-SETUP-XORG-SELECT"     "Select keyboard layout:"
 fi
 # -------------------------------------
 install_basic_setup()
@@ -1159,53 +1165,63 @@ install_basic_setup()
     print_title "INSTALL-BASIC-SETUP-TITLE"
     print_info  "INSTALL-BASIC-SETUP-INFO-SYSTEMD" " - https://wiki.archlinux.org/index.php/Systemd"
     print_info  "INSTALL-BASIC-SETUP-INFO-SYSTEMD-1"
-    add_package        "$INSTALL_SYSTEMD"
-    add_packagemanager "package_install \"$INSTALL_SYSTEMD\" 'INSTALL-SYSTEMD'" "INSTALL-SYSTEMD"
-    add_aur_package    "$AUR_INSTALL_SYSTEMD"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_SYSTEMD\" 'AUR-INSTALL-SYSTEMD'" "AUR-INSTALL-SYSTEMD"
-    add_packagemanager "systemctl enable cronie.service" "SYSTEMD-ENABLE-SYSTEMD"
+    if add_packagemanager "package_install \"$INSTALL_SYSTEMD\" 'INSTALL-SYSTEMD'" "INSTALL-SYSTEMD" ; then
+        add_package        "$INSTALL_SYSTEMD"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SYSTEMD\" 'AUR-INSTALL-SYSTEMD'" "AUR-INSTALL-SYSTEMD" ; then
+        add_aur_package    "$AUR_INSTALL_SYSTEMD"
+        add_packagemanager "systemctl enable cronie.service" "SYSTEMD-ENABLE-SYSTEMD"
+    fi
     # BASH-TOOLS
     print_info "INSTALL-BASIC-SETUP-INFO-BASH-TOOLS" " - https://wiki.archlinux.org/index.php/Bash"
-    add_package        "$INSTALL_BASH_TOOLS"
-    add_packagemanager "package_install \"$INSTALL_BASH_TOOLS\" 'INSTALL-BASH-TOOLS'" "INSTALL-BASH-TOOLS"
-    add_packagemanager "systemctl enable ntpd.service" "SYSTEMD-ENABLE-BASH-TOOLS"
+    if add_packagemanager "package_install \"$INSTALL_BASH_TOOLS\" 'INSTALL-BASH-TOOLS'" "INSTALL-BASH-TOOLS" ; then
+        add_package        "$INSTALL_BASH_TOOLS"
+        add_packagemanager "systemctl enable ntpd.service" "SYSTEMD-ENABLE-BASH-TOOLS"
+    fi
     # ARCHIVE-TOOLS
     print_info "INSTALL-BASIC-SETUP-ARCHIVE-TOOLS"
-    add_aur_package    "$AUR_INSTALL_ARCHIVE_TOOLS"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_ARCHIVE_TOOLS\" 'AUR-INSTALL-ARCHIVE-TOOLS'" "AUR-INSTALL-ARCHIVE-TOOLS"
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ARCHIVE_TOOLS\" 'AUR-INSTALL-ARCHIVE-TOOLS'" "AUR-INSTALL-ARCHIVE-TOOLS" ; then
+        add_aur_package    "$AUR_INSTALL_ARCHIVE_TOOLS"
+    fi
     # AVAHI   
     print_info "INSTALL-BASIC-SETUP-INFO-AVAHI" " - https://wiki.archlinux.org/index.php/Avahi"
     print_info "INSTALL-BASIC-SETUP-INFO-AVAHI-1"
-    add_package "$INSTALL_AVAHI"
-    add_packagemanager "package_install \"$INSTALL_AVAHI\" 'INSTALL-AVAHI'" "INSTALL-AVAHI"
-    add_packagemanager "systemctl enable avahi-daemon.service avahi-dnsconfd.service" "SYSTEMD-ENABLE-AVAHI"
+    if add_packagemanager "package_install \"$INSTALL_AVAHI\" 'INSTALL-AVAHI'" "INSTALL-AVAHI" ; then
+        add_package "$INSTALL_AVAHI"
+        add_packagemanager "systemctl enable avahi-daemon.service avahi-dnsconfd.service" "SYSTEMD-ENABLE-AVAHI"
+    fi
     # ACPI
     print_info "INSTALL-BASIC-SETUP-INFO-ACPI" " - https://wiki.archlinux.org/index.php/ACPI_modules"
     print_info "INSTALL-BASIC-SETUP-ACPI-1"
-    add_package "$INSTALL_ACPI"
-    add_packagemanager "package_install \"$INSTALL_ACPI\" 'INSTALL-ACPI'" "INSTALL-ACPI"
-    add_packagemanager "systemctl enable acpid.service" "SYSTEMD-ENABLE-ACPI"
+    if add_packagemanager "package_install \"$INSTALL_ACPI\" 'INSTALL-ACPI'" "INSTALL-ACPI" ; then
+        add_package "$INSTALL_ACPI"
+        add_packagemanager "systemctl enable acpid.service" "SYSTEMD-ENABLE-ACPI"
+    fi
     # ALSA
     print_info "INSTALL-BASIC-SETUP-ALSA" " - https://wiki.archlinux.org/index.php/Alsa"
     print_info "INSTALL-BASIC-SETUP-ALSA-1"
-    add_package        "$INSTALL_ALSA"
-    add_packagemanager "package_install \"$INSTALL_ALSA\" 'INSTALL-ALSA'" "INSTALL-ALSA"
-    add_module         "snd-usb-audio" "INSTALL-ALSA"
-    add_packagemanager "systemctl enable alsa-store.service alsa-restore.service" "SYSTEMD-ENABLE-ALSA" # @FIX does this need to be called?
+    if add_packagemanager "package_install \"$INSTALL_ALSA\" 'INSTALL-ALSA'" "INSTALL-ALSA" ; then
+        add_package        "$INSTALL_ALSA"
+        add_module         "snd-usb-audio" "INSTALL-ALSA"
+        add_packagemanager "systemctl enable alsa-store.service alsa-restore.service" "SYSTEMD-ENABLE-ALSA" # @FIX does this need to be called?
+    fi
     # NTFS   
     print_info "INSTALL-BASIC-SETUP-NTFS-1" " - https://wiki.archlinux.org/index.php/File_Systems"
     print_info "INSTALL-BASIC-SETUP-NTFS-2"
-    add_package        "$INSTALL_NTFS"
-    add_packagemanager "package_install \"$INSTALL_NTFS\" 'INSTALL-NTFS'" "INSTALL-NTFS"
-    add_module         "fuse" "INSTALL-NTFS"
+    if add_packagemanager "package_install \"$INSTALL_NTFS\" 'INSTALL-NTFS'" "INSTALL-NTFS" ; then
+        add_package        "$INSTALL_NTFS"
+        add_module         "fuse" "INSTALL-NTFS"
+    fi
     # SSH
     print_info "INSTALL-BASIC-SETUP-SSH-1" " - https://wiki.archlinux.org/index.php/Ssh"
     print_info "INSTALL-BASIC-SETUP-SSH-2"
-    add_package "$INSTALL_SSH"
-    add_packagemanager "package_install \"$INSTALL_SSH\" 'INSTALL-SSH'" "INSTALL-SSH"
-    add_aur_package    "$AUR_INSTALL_SSH"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_SSH\" 'AUR-INSTALL-SSH'" "AUR-INSTALL-SSH"
-    add_packagemanager "systemctl enable sshd.service" "SYSTEMD-ENABLE-SSH"
+    if add_packagemanager "package_install \"$INSTALL_SSH\" 'INSTALL-SSH'" "INSTALL-SSH" ; then
+        add_package "$INSTALL_SSH"
+        add_packagemanager "systemctl enable sshd.service" "SYSTEMD-ENABLE-SSH"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SSH\" 'AUR-INSTALL-SSH'" "AUR-INSTALL-SSH" ; then
+        add_aur_package    "$AUR_INSTALL_SSH"
+    fi
     CONFIG_SSH=1
     # https://wiki.archlinux.org/index.php/Systemd
     add_packagemanager "systemctl enable systemd-readahead-collect systemd-readahead-replay" "SYSTEMD-ENABLE-READAHEAD"
@@ -1213,18 +1229,19 @@ install_basic_setup()
     print_info "INSTALL-BASIC-SETUP-XORG-TITLE" " - https://wiki.archlinux.org/index.php/Xorg"
     print_this "INSTALL-BASIC-SETUP-XORG-INFO-1"
     print_this "INSTALL-BASIC-SETUP-XORG-INFO-2"
-    add_package        "$INSTALL_XORG"
-    add_packagemanager "package_install \"$INSTALL_XORG\" 'INSTALL-XORG'" "INSTALL-XORG"
-    CONFIG_XORG=1
-    # @FIX point to function or set var
-    if [[ "$LANGUAGE" == 'es_ES' ]]; then
-        local -a KBLAYOUT=("es" "latam");
-        PS3="$prompt1"
-        print_info "INSTALL-BASIC-SETUP-XORG-SELECT"
-        select KBRD in "${KBLAYOUT[@]}"; do
-            KEYBOARD="$KBRD"
-        done
-    fi    
+    if add_packagemanager "package_install \"$INSTALL_XORG\" 'INSTALL-XORG'" "INSTALL-XORG"; then
+        add_package        "$INSTALL_XORG"
+        CONFIG_XORG=1
+        # @FIX point to function or set var
+        if [[ "$LANGUAGE" == 'es_ES' ]]; then
+            local -a KBLAYOUT=("es" "latam");
+            PS3="$prompt1"
+            print_info "INSTALL-BASIC-SETUP-XORG-SELECT"
+            select KBRD in "${KBLAYOUT[@]}"; do
+                KEYBOARD="$KBRD"
+            done
+        fi    
+    fi
     #
     if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
@@ -1262,8 +1279,9 @@ install_usb_modem_now()
     if [[ "$INSTALL_USB_MODEM" -eq 1 ]]; then
         print_title "INSTALL-USB-3G-MODEM-TITLE" " - https://wiki.archlinux.org/index.php/USB_3G_Modem"
         print_info  "INSTALL-USB-3G-MODEM-INFO"
-        add_package "$INSTALL_USB_3G_MODEM"
-        add_packagemanager "package_install \"$INSTALL_USB_3G_MODEM\" 'INSTALL-USB-3G-MODEM'" "INSTALL-USB-3G-MODEM"
+        if add_packagemanager "package_install \"$INSTALL_USB_3G_MODEM\" 'INSTALL-USB-3G-MODEM'" "INSTALL-USB-3G-MODEM"; then
+            add_package "$INSTALL_USB_3G_MODEM"
+        fi        
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -1301,9 +1319,10 @@ install_git_tor_now()
     if [[ "$INSTALL_TOR" -eq 1 ]]; then
         print_title "INSTALL-GIT-TOR-TITLE" " - https://wiki.archlinux.org/index.php/Tor"
         print_info  "INSTALL-GIT-TOR-INFO"
-        add_package "$INSTALL_GIT_TOR"
-        add_packagemanager "package_install \"$INSTALL_GIT_TOR\" 'INSTALL-GIT-TOR'" "INSTALL-GIT-TOR"
-        add_packagemanager "systemctl enable tor.service privoxy.service" "SYSTEMD-ENABLE-GIT-TOR"
+        if add_packagemanager "package_install \"$INSTALL_GIT_TOR\" 'INSTALL-GIT-TOR'" "INSTALL-GIT-TOR"; then
+            add_package "$INSTALL_GIT_TOR"
+            add_packagemanager "systemctl enable tor.service privoxy.service" "SYSTEMD-ENABLE-GIT-TOR"
+        fi
         CONFIG_TOR=1
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
@@ -1342,9 +1361,10 @@ install_nfs_now()
     if [[ "$INSTALL_NFS" -eq 1 ]]; then
         print_title "INSTALL-NFS-TITLE" " - https://wiki.archlinux.org/index.php/Nfs"
         print_info  "INSTALL-NFS-INFO"
-        add_package "$INSTALL_NFS_PACKAGES"
-        add_packagemanager "package_install \"$INSTALL_NFS_PACKAGES\" 'INSTALL-NFS'" "INSTALL-NFS"
-        add_packagemanager "systemctl enable rpc-statd.service" "SYSTEMD-ENABLE-NFS"
+        if add_packagemanager "package_install \"$INSTALL_NFS_PACKAGES\" 'INSTALL-NFS'" "INSTALL-NFS" ; then
+            add_package "$INSTALL_NFS_PACKAGES"
+            add_packagemanager "systemctl enable rpc-statd.service" "SYSTEMD-ENABLE-NFS"
+        fi
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -1384,10 +1404,11 @@ install_samba_now()
     if [[ "$INSTALL_SAMBA" -eq 1 ]]; then
         print_title "INSTALL-SAMBA-TITLE" " - https://wiki.archlinux.org/index.php/Samba"
         print_info  "INSTALL-SAMBA-INFO"
-        add_package "$INSTALL_SAMBA_PACKAGES"
-        add_packagemanager "package_install \"$INSTALL_SAMBA_PACKAGES\" 'INSTALL-SAMBA'" "INSTALL-SAMBA"
-        add_packagemanager "copy_file '/etc/samba/smb.conf.default' '/etc/samba/smb.conf' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"" "COPY-CONFIG-SAMBA"
-        add_packagemanager "systemctl enable smbd smbnetfs nmbd winbindd.service" "SYSTEMD-ENABLE-SAMBA"
+        if add_packagemanager "package_install \"$INSTALL_SAMBA_PACKAGES\" 'INSTALL-SAMBA'" "INSTALL-SAMBA" ; then
+            add_package "$INSTALL_SAMBA_PACKAGES"
+            add_packagemanager "copy_file '/etc/samba/smb.conf.default' '/etc/samba/smb.conf' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"" "COPY-CONFIG-SAMBA"
+            add_packagemanager "systemctl enable smbd smbnetfs nmbd winbindd.service" "SYSTEMD-ENABLE-SAMBA"
+        fi
         # installing samba will overwrite /etc/samba/smb.conf so copy it to temp 
         copy_file "/etc/samba/smb.conf" "${FULL_SCRIPT_PATH}/etc/samba/smb.conf" "$LINENO"
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
@@ -1427,9 +1448,10 @@ install_preload_now()
     if [[ "$INSTALL_PRELOAD" -eq 1 ]]; then
         print_title "INSTALL-PRELOAD-TITLE" " - https://wiki.archlinux.org/index.php/Preload"
         print_info  "INSTALL-PRELOAD-INFO"
-        add_package "$INSTALL_PRELOAD_PACKAGES"
-        add_packagemanager "package_install \"$INSTALL_PRELOAD_PACKAGES\" 'INSTALL-PRELOAD'" "INSTALL-PRELOAD"
-        add_packagemanager "systemctl enable preload.service" "SYSTEMD-ENABLE-PRELOAD"
+        if add_packagemanager "package_install \"$INSTALL_PRELOAD_PACKAGES\" 'INSTALL-PRELOAD'" "INSTALL-PRELOAD" ; then
+            add_package "$INSTALL_PRELOAD_PACKAGES"
+            add_packagemanager "systemctl enable preload.service" "SYSTEMD-ENABLE-PRELOAD"
+        fi
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -1468,9 +1490,10 @@ install_zram_now()
     if [[ "$INSTALL_ZRAM" -eq 1 ]]; then
         print_title "INSTALL-ZRAM-TITLE" " - https://wiki.archlinux.org/index.php/Maximizing_Performance"
         print_info  "INSTALL-ZRAM-INFO" 
-        add_aur_package "$AUR_INSTALL_ZRAM"
-        add_packagemanager "aur_package_install \"$AUR_INSTALL_ZRAM\" 'AUR-INSTALL-ZRAM'" "AUR-INSTALL-ZRAM"
-        add_packagemanager "systemctl enable zram.service" "SYSTEMD-ENABLE-ZRAM"
+        if add_packagemanager "aur_package_install \"$AUR_INSTALL_ZRAM\" 'AUR-INSTALL-ZRAM'" "AUR-INSTALL-ZRAM" ; then
+            add_aur_package "$AUR_INSTALL_ZRAM"
+            add_packagemanager "systemctl enable zram.service" "SYSTEMD-ENABLE-ZRAM"
+        fi
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -1509,9 +1532,10 @@ install_laptop_mode_tools_now()
     if [[ "$INSTALL_LMT" -eq 1 ]]; then
         print_title "INSTALL-LAPTOP-MODE-TOOLS-TITLE" "- https://wiki.archlinux.org/index.php/Laptop_Mode_Tools"
         print_info  "INSTALL-LAPTOP-MODE-TOOLS-INFO"
-        add_package        "$INSTALL_LAPTOP_MODE_TOOLS"
-        add_packagemanager "package_install \"$INSTALL_LAPTOP_MODE_TOOLS\" 'INSTALL-LAPTOP-MODE-TOOLS'" "INSTALL-LAPTOP-MODE-TOOLS"
-        add_packagemanager "systemctl enable laptop-mode-tools.service" "SYSTEMD-ENABLE-LAPTOP-MODE-TOOLS"
+        if add_packagemanager "package_install \"$INSTALL_LAPTOP_MODE_TOOLS\" 'INSTALL-LAPTOP-MODE-TOOLS'" "INSTALL-LAPTOP-MODE-TOOLS" ; then
+            add_package        "$INSTALL_LAPTOP_MODE_TOOLS"
+            add_packagemanager "systemctl enable laptop-mode-tools.service" "SYSTEMD-ENABLE-LAPTOP-MODE-TOOLS"
+        fi
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -1534,9 +1558,9 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-CUPS-DESC"  "Install Cups."
     localize_info "INSTALL-CUPS-NOTES" "None."
     #
-    localize_info "INSTALL-CUPS-YN" "Install CUPS - AKA Common Unix Printing System" 
+    localize_info "INSTALL-CUPS-YN"    "Install CUPS - AKA Common Unix Printing System" 
     localize_info "INSTALL-CUPS-TITLE" "CUPS - AKA Common Unix Printing System" 
-    localize_info "INSTALL-CUPS-INFO" "CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS® X and other UNIX®-like operating systems." 
+    localize_info "INSTALL-CUPS-INFO"  "CUPS is the standards-based, open source printing system developed by Apple Inc. for Mac OS® X and other UNIX®-like operating systems." 
 fi
 # -------------------------------------
 install_cups_now()
@@ -1552,8 +1576,9 @@ install_cups_now()
         print_title "INSTALL-CUPS-TITLE" " - https://wiki.archlinux.org/index.php/Cups"
         print_info  "INSTALL-CUPS-INFO"
         add_package "$INSTALL_CUPS_PACK"
-        add_packagemanager "package_install \"$INSTALL_CUPS_PACK\" 'INSTALL-CUPS'" "INSTALL-CUPS"
-        add_packagemanager "systemctl enable cups.service" "SYSTEMD-ENABLE-CUPS"
+        if add_packagemanager "package_install \"$INSTALL_CUPS_PACK\" 'INSTALL-CUPS'" "INSTALL-CUPS" ; then
+            add_packagemanager "systemctl enable cups.service" "SYSTEMD-ENABLE-CUPS"
+        fi
         if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     fi
 }
@@ -1579,8 +1604,29 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ADDITIONAL-FIRMWARE-TITLE"   "INSTALL ADDITIONAL FIRMWARES"
     localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO"    "alsa-firmware, ipw2100-fw, ipw2200-fw, b43-firmware, b43-firmware-legacy, broadcom-wl, zd1211-firmware, bluez-firmware, libffado, libraw1394, sane-gt68xx-firmware"
     localize_info "INSTALL-ADDITIONAL-FIRMWARE-INSTALL" "Install additional firmwares (Audio,Bluetooth,Scanner,Wireless)"
-    localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-9"  "libffado: (Fireware Audio Devices)"
-    localize_info "INSTALL-ADDITIONAL-FIRMWARE-INFO-10" "libraw1394: (IEEE1394 Driver)"
+    #
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-1"    "alsa-firmware"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-1"        "alsa-firmware: ALSA firmware package"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-2"    "ipw2100-fw"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-2"        "ipw2100-fw: Intel Centrino Drivers firmware for IPW2100"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-3"    "ipw2200-fw"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-3"        "ipw2200-fw: Firmware for the Intel PRO/Wireless 2200BG"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-4"    "b43-firmware"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-4"        "b43-firmware: Firmware for Broadcom B43 wireless networking chips"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-5"    "b43-firmware-legacy"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-5"        "b43-firmware-legacy: Firmware for legacy Broadcom B43 wireless networking chips"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-6"    "broadcom-wl"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-6"        "broadcom-wl: Broadcom 802.11abgn hybrid Linux networking device driver"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-7"    "zd1211-firmware"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-7"        "zd1211-firmware: Firmware for the in-kernel26 zd1211rw wireless driver"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-8"    "bluez-firmware"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-8"        "bluez-firmware: Firmwares for Broadcom BCM203x and STLC2300 Bluetooth chips"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-9"    "libffado"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-9"        "libffado: Driver for FireWire audio devices"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-10"   "libraw1394"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-10"       "libraw1394: Provides an API to the Linux IEEE1394 (FireWire) driver"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-11"   "sane-gt68xx-firmware"
+    localize_info "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-11"       "sane-gt68xx-firmware: gt68xx-based scanners firmwares"
 fi
 # -------------------------------------
 install_additional_firmwares_menu()
@@ -1590,16 +1636,17 @@ install_additional_firmwares_menu()
     local BreakableKey="D"                            # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""                       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -1609,7 +1656,7 @@ install_additional_firmwares_menu()
     print_info  "INSTALL-ADDITIONAL-FIRMWARE-INFO"
     local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "INSTALL-ADDITIONAL-FIRMWARE-INSTALL" " " 0
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         #
         StatusBar1="INSTALL-MENU-REC"
@@ -1619,24 +1666,24 @@ install_additional_firmwares_menu()
             print_caution "${StatusBar1}" "${StatusBar2}"
             local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
             #
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "alsa-firmware"        "" ""     "" "MenuTheme[@]" # 1
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ipw2100-fw"           "" ""     "" "MenuTheme[@]" # 2
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ipw2200-fw"           "" ""     "" "MenuTheme[@]" # 3
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "b43-firmware"         "" "$AUR" "" "MenuTheme[@]" # 4
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "b43-firmware-legacy"  "" "$AUR" "" "MenuTheme[@]" # 5
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "broadcom-wl"          "" "$AUR" "" "MenuTheme[@]" # 6
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "zd1211-firmware"      "" ""     "" "MenuTheme[@]" # 7
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "bluez-firmware"       "" ""     "" "MenuTheme[@]" # 8
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "libffado"             "" ""     "INSTALL-ADDITIONAL-FIRMWARE-INFO-9"  "MenuTheme[@]" # 9
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "libraw1394"           "" ""     "INSTALL-ADDITIONAL-FIRMWARE-INFO-10" "MenuTheme[@]" # 10
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "sane-gt68xx-firmware" "" ""     "" "MenuTheme[@]" # 11
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-1"  "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-1"  "MenuTheme[@]" #  1 alsa-firmware
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-2"  "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-2"  "MenuTheme[@]" #  2 ipw2100-fw
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-3"  "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-3"  "MenuTheme[@]" #  3 ipw2200-fw
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-4"  "" "$AUR" "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-4"  "MenuTheme[@]" #  4 b43-firmware
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-5"  "" "$AUR" "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-5"  "MenuTheme[@]" #  5 b43-firmware-legacy
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-6"  "" "$AUR" "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-6"  "MenuTheme[@]" #  6 broadcom-wl
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-7"  "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-7"  "MenuTheme[@]" #  7 zd1211-firmware
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-8"  "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-8"  "MenuTheme[@]" #  8 bluez-firmware
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-9"  "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-9"  "MenuTheme[@]" #  9 libffado
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-10" "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-10" "MenuTheme[@]" # 10 libraw1394
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ADDITIONAL-FIRMWARE-MENU-11" "" ""     "INSTALL-ADDITIONAL-FIRMWARE-MENU-I-11" "MenuTheme[@]" # 11 sane-gt68xx-firmware
             #
             print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
             #
             local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-            read_input_options "$SUB_OPTIONS" "$BreakableKey"
-            SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-            BYPASS="$Old_BYPASS" # Restroe Bypass
+            read_input_options "$RecommendedOptions" "$BreakableKey"
+            RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+            BYPASS="$Old_BYPASS" # Restore Bypass
             #
             local S_OPT
             for S_OPT in ${OPTIONS[@]}; do
@@ -1644,8 +1691,9 @@ install_additional_firmwares_menu()
                     1)  # alsa-firmware
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_ALSA_FIRMWARE"
-                            add_packagemanager "package_install \"$INSTALL_ALSA_FIRMWARE\" 'INSTALL-ALSA-FIRMWARE'" "INSTALL-ALSA-FIRMWARE"
+                            if add_packagemanager "package_install \"$INSTALL_ALSA_FIRMWARE\" 'INSTALL-ALSA-FIRMWARE'" "INSTALL-ALSA-FIRMWARE" ; then
+                                add_package "$INSTALL_ALSA_FIRMWARE"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$INSTALL_ALSA_FIRMWARE"
@@ -1657,8 +1705,9 @@ install_additional_firmwares_menu()
                     2)  # ipw2100-fw
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_IPW2100_FW"
-                            add_packagemanager "package_install \"$INSTALL_IPW2100_FW\" 'INSTALL-IPW2100-FW'" "INSTALL-IPW2100-FW"
+                            if add_packagemanager "package_install \"$INSTALL_IPW2100_FW\" 'INSTALL-IPW2100-FW'" "INSTALL-IPW2100-FW" ; then
+                                add_package "$INSTALL_IPW2100_FW"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$INSTALL_IPW2100_FW"
@@ -1670,8 +1719,9 @@ install_additional_firmwares_menu()
                     3)  # ipw2200-fw 
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_IPW2200_FW"
-                            add_packagemanager "package_install \"$INSTALL_IPW2200_FW\" 'INSTALL-IPW2200-FW'" "INSTALL-IPW2200-FW"
+                            if add_packagemanager "package_install \"$INSTALL_IPW2200_FW\" 'INSTALL-IPW2200-FW'" "INSTALL-IPW2200-FW" ; then
+                                add_package "$INSTALL_IPW2200_FW"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$INSTALL_IPW2200_FW"
@@ -1683,8 +1733,9 @@ install_additional_firmwares_menu()
                     4)  # b43-firmware
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_aur_package "$AUR_INSTALL_B43_FIRMWARE"
-                            add_packagemanager "aur_package_install \"$AUR_INSTALL_B43_FIRMWARE\" 'AUR-INSTALL-B43-FIRMWARE'" "AUR-INSTALL-B43-FIRMWARE"
+                            if add_packagemanager "aur_package_install \"$AUR_INSTALL_B43_FIRMWARE\" 'AUR-INSTALL-B43-FIRMWARE'" "AUR-INSTALL-B43-FIRMWARE" ; then
+                                add_aur_package "$AUR_INSTALL_B43_FIRMWARE"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$AUR_INSTALL_B43_FIRMWARE"
@@ -1696,8 +1747,9 @@ install_additional_firmwares_menu()
                     5)  # b43-firmware-legacy
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_aur_package "$AUR_INSTALL_B43_FIRMWARE_LEGACY"
-                            add_packagemanager "aur_package_install \"$AUR_INSTALL_B43_FIRMWARE_LEGACY\" 'AUR-INSTALL-B43-FIRMWARE-LEGACY'" "AUR-INSTALL-B43-FIRMWARE-LEGACY"
+                            if add_packagemanager "aur_package_install \"$AUR_INSTALL_B43_FIRMWARE_LEGACY\" 'AUR-INSTALL-B43-FIRMWARE-LEGACY'" "AUR-INSTALL-B43-FIRMWARE-LEGACY" ; then
+                                add_aur_package "$AUR_INSTALL_B43_FIRMWARE_LEGACY"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$AUR_INSTALL_B43_FIRMWARE_LEGACY"
@@ -1709,8 +1761,9 @@ install_additional_firmwares_menu()
                     6)  # broadcom-wl
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_aur_package "$AUR_INSTALL_BROADCOM_WL"
-                            add_packagemanager "aur_package_install \"$AUR_INSTALL_BROADCOM_WL\" 'AUR-INSTALL-BROADCOM-WL'" "AUR-INSTALL-BROADCOM-WL"
+                            if add_packagemanager "aur_package_install \"$AUR_INSTALL_BROADCOM_WL\" 'AUR-INSTALL-BROADCOM-WL'" "AUR-INSTALL-BROADCOM-WL" ; then
+                                add_aur_package "$AUR_INSTALL_BROADCOM_WL"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$AUR_INSTALL_BROADCOM_WL"
@@ -1722,8 +1775,9 @@ install_additional_firmwares_menu()
                     7)  # zd1211-firmware
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_ZD1211_FIRMWARE"
-                            add_packagemanager "package_install \"$INSTALL_ZD1211_FIRMWARE\" 'INSTALL-ZD1211-FIRMWARE'" "INSTALL-ZD1211-FIRMWARE"
+                            if add_packagemanager "package_install \"$INSTALL_ZD1211_FIRMWARE\" 'INSTALL-ZD1211-FIRMWARE'" "INSTALL-ZD1211-FIRMWARE" ; then
+                                add_package "$INSTALL_ZD1211_FIRMWARE"
+                            fi                    
                         else
                             remove_package "$INSTALL_ZD1211_FIRMWARE"
                             MenuChecks[$((S_OPT - 1))]=2
@@ -1735,8 +1789,9 @@ install_additional_firmwares_menu()
                     8)  # bluez-firmware
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_BLUEZ_FIREWARE"
-                            add_packagemanager "package_install \"$INSTALL_BLUEZ_FIREWARE\" 'INSTALL-BLUEZ-FIREWARE'" "INSTALL-BLUEZ-FIREWARE"
+                            if add_packagemanager "package_install \"$INSTALL_BLUEZ_FIREWARE\" 'INSTALL-BLUEZ-FIREWARE'" "INSTALL-BLUEZ-FIREWARE" ; then
+                                add_package "$INSTALL_BLUEZ_FIREWARE"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$INSTALL_BLUEZ_FIREWARE"
@@ -1748,8 +1803,9 @@ install_additional_firmwares_menu()
                     9)  # libffado
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_LIBFFADO"
-                            add_packagemanager "package_install \"$INSTALL_LIBFFADO\" 'INSTALL-LIBFFADO'" "INSTALL-LIBFFADO"
+                            if add_packagemanager "package_install \"$INSTALL_LIBFFADO\" 'INSTALL-LIBFFADO'" "INSTALL-LIBFFADO" ; then
+                                add_package "$INSTALL_LIBFFADO"
+                            fi                    
                         else
                             remove_package "$INSTALL_LIBFFADO"
                             MenuChecks[$((S_OPT - 1))]=2
@@ -1761,8 +1817,9 @@ install_additional_firmwares_menu()
                    10)  # libraw1394
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_LIBRAW1394"
-                            add_packagemanager "package_install \"$INSTALL_LIBRAW1394\" 'INSTALL-LIBRAW1394'" "INSTALL-LIBRAW1394"
+                            if add_packagemanager "package_install \"$INSTALL_LIBRAW1394\" 'INSTALL-LIBRAW1394'" "INSTALL-LIBRAW1394" ; then
+                                add_package "$INSTALL_LIBRAW1394"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$INSTALL_LIBRAW1394"
@@ -1774,8 +1831,9 @@ install_additional_firmwares_menu()
                    11)  # sane-gt68xx-firmware
                         if [[ "$1" -eq 1 ]]; then
                             MenuChecks[$((S_OPT - 1))]=1
-                            add_package "$INSTALL_SANE_GT68XX_FIRMWARE"
-                            add_packagemanager "package_install \"$INSTALL_SANE_GT68XX_FIRMWARE\" 'INSTALL-SANE-GT68XX-FIRMWARE'" "INSTALL-SANE-GT68XX-FIRMWARE"
+                            if add_packagemanager "package_install \"$INSTALL_SANE_GT68XX_FIRMWARE\" 'INSTALL-SANE-GT68XX-FIRMWARE'" "INSTALL-SANE-GT68XX-FIRMWARE" ; then
+                                add_package "$INSTALL_SANE_GT68XX_FIRMWARE"
+                            fi                    
                         else
                             MenuChecks[$((S_OPT - 1))]=2
                             remove_package "$INSTALL_SANE_GT68XX_FIRMWARE"
@@ -1827,8 +1885,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-KERNEL-MENU-I-1"     "Long term support (LTS) Linux kernel and modules from the [core] repository."
     localize_info "INSTALL-KERNEL-MENU-2"   "ZEN"
     localize_info "INSTALL-KERNEL-MENU-I-2"     "The Zen Kernel is a the result of a collaborative effort of kernel hackers to provide the best Linux kernel possible for every day systems. https://github.com/damentz/zen-kernel?"
-    localize_info "INSTALL-KERNEL-MENU-3"   ""
-    localize_info "INSTALL-KERNEL-MENU-I-3"     ""
+    #localize_info "INSTALL-KERNEL-MENU-3"   ""
+    #localize_info "INSTALL-KERNEL-MENU-I-3"     ""
 fi
 # -------------------------------------
 install_kernel_menu()
@@ -1837,16 +1895,17 @@ install_kernel_menu()
     local BreakableKey="D"               # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -1860,29 +1919,32 @@ install_kernel_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-0" "" "" "INSTALL-TYPE-MENU-I-0" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-1" "" "" "INSTALL-TYPE-MENU-I-1" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-2" "" "" "INSTALL-TYPE-MENU-I-2" "MenuTheme[@]"
-        #add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-3" "" "" "INSTALL-TYPE-MENU-I-3" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-0" "" "" "INSTALL-TYPE-MENU-I-0" "MenuTheme[@]" # Liquorix
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-1" "" "" "INSTALL-TYPE-MENU-I-1" "MenuTheme[@]" # LTS
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-2" "" "" "INSTALL-TYPE-MENU-I-2" "MenuTheme[@]" # ZEN
+        #add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-TYPE-MENU-3" "" "" "INSTALL-TYPE-MENU-I-3" "MenuTheme[@]" # 
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # Liquorix
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package        "$INSTALL_LIQURIX"
-                    add_packagemanager "package_install \"$INSTALL_LIQURIX\" 'INSTALL-LIQURIX'" "INSTALL-LIQURIX"
+                    if add_packagemanager "package_install \"$INSTALL_LIQURIX\" 'INSTALL-LIQURIX'" "INSTALL-LIQURIX" ; then
+                        add_package        "$INSTALL_LIQURIX"
+                    fi
                     #
-                    add_aur_package    "$AUR_INSTALL_LIQURIX"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX\" 'AUR-INSTALL-LIQURIX'" "AUR-INSTALL-LIQURIX"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX\" 'AUR-INSTALL-LIQURIX'" "AUR-INSTALL-LIQURIX" ; then
+                        add_aur_package    "$AUR_INSTALL_LIQURIX"
+                    fi
                     if [[ "$VIDEO_CARD" -eq 1 ]]; then    # nVidia for Liqurix
-                        add_aur_package    "$AUR_INSTALL_LIQURIX_NVIDIA"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX_NVIDIA\" 'AUR-INSTALL-LIQURIX-NVIDIA'" "AUR-INSTALL-LIQURIX-NVIDIA"
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_LIQURIX_NVIDIA\" 'AUR-INSTALL-LIQURIX-NVIDIA'" "AUR-INSTALL-LIQURIX-NVIDIA" ; then
+                            add_aur_package    "$AUR_INSTALL_LIQURIX_NVIDIA"
+                        fi
                     fi
                     # @FIX too many other things to do
                     S_OPT="$BreakableKey"
@@ -1890,15 +1952,17 @@ install_kernel_menu()
                     ;;
                 2)  # linux-lts 
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package        "$INSTALL_LTS"
-                    add_packagemanager "package_install \"$INSTALL_LTS\" 'INSTALL-LTS'" "INSTALL-LTS"
+                    if add_packagemanager "package_install \"$INSTALL_LTS\" 'INSTALL-LTS'" "INSTALL-LTS" ; then
+                        add_package        "$INSTALL_LTS"
+                    fi
                     S_OPT="$BreakableKey"
                     break;
                     ;;
                 3)  # linux-zen 
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package    "$AUR_INSTALL_ZEN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEN\" 'AUR-INSTALL-ZEN'" "AUR-INSTALL-ZEN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEN\" 'AUR-INSTALL-ZEN'" "AUR-INSTALL-ZEN" ; then
+                        add_aur_package    "$AUR_INSTALL_ZEN"
+                    fi
                     S_OPT="$BreakableKey"
                     break;
                     ;;
@@ -2004,20 +2068,21 @@ install_desktop_environment_menu()
         RecommendedOptions="4 10"
     elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
         RecommendedOptions="5"
-    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesume
+    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesome
         RecommendedOptions="10"
     fi
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -2047,9 +2112,9 @@ install_desktop_environment_menu()
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restore Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -2136,7 +2201,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-WINDOW-MANAGER-MENU-1"    "Awesome"
     localize_info "INSTALL-WINDOW-MANAGER-MENU-1-I"      "Awesome: awesome is a highly configurable, next generation framework window manager for X. It is very fast, extensible and licensed under the GNU GPLv2 license. Configured in Lua, it has a system tray, information bar, and launcher built in. There are extensions available to it written in Lua. Awesome uses XCB as opposed to Xlib, which may result in a speed increase. Awesome has other features as well, such as an early replacement for notification-daemon, a right-click menu similar to that of the *box window managers, and many other things."
     localize_info "INSTALL-WINDOW-MANAGER-MENU-2"    "OpenBox"
-    localize_info "INSTALL-WINDOW-MANAGER-MENU-2-I"      "OpenBox"
+    localize_info "INSTALL-WINDOW-MANAGER-MENU-2-I"      "OpenBox: Openbox is a lightweight and highly configurable window manager with extensive standards support. Its features are documented at the official website. This article pertains to installing Openbox under Arch Linux."
     #
     localize_info "INSTALL-WINDOW-MANAGER-REC"       "Recommended Options"
     #
@@ -2166,20 +2231,21 @@ install_window_manager_menu()
         RecommendedOptions="2"
     elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
         RecommendedOptions=""
-    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesume
+    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesome
         RecommendedOptions="1"
     fi
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -2195,24 +2261,24 @@ install_window_manager_menu()
         print_this  "INSTALL-WINDOW-MANAGER-INFO-2"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WINDOW-MANAGER-MENU-1"  "" ""     "INSTALL-WINDOW-MANAGER-MENU-1-I"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WINDOW-MANAGER-MENU-2"  "" "$AUR" "INSTALL-WINDOW-MANAGER-MENU-2-I"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WINDOW-MANAGER-MENU-1"  "" ""     "INSTALL-WINDOW-MANAGER-MENU-1-I"  "MenuTheme[@]" # Awesome
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WINDOW-MANAGER-MENU-2"  "" "$AUR" "INSTALL-WINDOW-MANAGER-MENU-2-I"  "MenuTheme[@]" # OpenBox
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS"  # Restore Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Awesome
                     MenuChecks[$((S_OPT - 1))]=1
                     install_awesome_menu
                     ;;
-                2)  # 
+                2)  # OpenBox
                     MenuChecks[$((S_OPT - 1))]=1
                     install_openbox_menu
                     ;;
@@ -2271,11 +2337,12 @@ install_mate_now()
     GNOME_INSTALL=1
     add_taskmanager "add_repo \"mate\" \"http://repo.mate-desktop.org/archlinux/\" \"Optional TrustedOnly\" 1" "ADD-REPO-MATE"
     add_packagemanager "package_remove 'zenity'" "REMOVE-MATE" # mate replacement
-    add_package        "$INSTALL_MATE"
-    add_packagemanager "package_install \"$INSTALL_MATE\" 'INSTALL-MATE'" "INSTALL-MATE"
-    add_packagemanager "systemctl enable polkit.service"          "SYSTEMD-ENABLE-MATE-3"
-    add_packagemanager "systemctl enable accounts-daemon.service" "SYSTEMD-ENABLE-MATE-1"
-    add_packagemanager "systemctl enable upower.service"          "SYSTEMD-ENABLE-MATE-2"
+    if add_packagemanager "package_install \"$INSTALL_MATE\" 'INSTALL-MATE'" "INSTALL-MATE" ; then
+        add_package        "$INSTALL_MATE"
+        add_packagemanager "systemctl enable polkit.service"          "SYSTEMD-ENABLE-MATE-3"
+        add_packagemanager "systemctl enable accounts-daemon.service" "SYSTEMD-ENABLE-MATE-1"
+        add_packagemanager "systemctl enable upower.service"          "SYSTEMD-ENABLE-MATE-2"
+    fi
     # polkit.service
     # systemd-logind replaced console-kit-daemon.service
     # pacstrap will overwrite pacman.conf so copy it to temp 
@@ -2298,8 +2365,25 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-KDE-DESC"    "Install KDE"
-    localize_info "INSTALL-KDE-TITLE"   "KDE CUSTOMIZATION"
+    localize_info "INSTALL-KDE-TITLE"   "KDE Customization"
     localize_info "INSTALL-KDE-INFO-1"  "KDE is an international free software community producing an integrated set of cross-platform applications designed to run on Linux, FreeBSD, Microsoft Windows, Solaris and Mac OS X systems. It is known for its Plasma Desktop, a desktop environment provided as the default working environment on many Linux distributions."
+    #
+    localize_info "INSTALL-KDE-MENU-1"   "apper"
+    localize_info "INSTALL-KDE-MENU-I-1"        "apper: KDE tools for PackageKit"
+    localize_info "INSTALL-KDE-MENU-2"   "bangarang"
+    localize_info "INSTALL-KDE-MENU-I-2"        "bangarang: Simple KDE media player."
+    localize_info "INSTALL-KDE-MENU-3"   "choqok"
+    localize_info "INSTALL-KDE-MENU-I-3"        "choqok: A Twitter/identi.ca/laconica client for KDE"
+    localize_info "INSTALL-KDE-MENU-4"   "digikam"
+    localize_info "INSTALL-KDE-MENU-I-4"        "digikam: Digital photo management application for KDE"
+    localize_info "INSTALL-KDE-MENU-5"   "k3b"
+    localize_info "INSTALL-KDE-MENU-I-5"        "k3b: Feature-rich and easy to handle CD burning application"
+    localize_info "INSTALL-KDE-MENU-6"   "rosa-icons"
+    localize_info "INSTALL-KDE-MENU-I-6"        "rosa-icons: ROSA icons theme."
+    localize_info "INSTALL-KDE-MENU-7"   "Plasma Themes"
+    localize_info "INSTALL-KDE-MENU-I-7"        "Plasma Themes: caledonia-bundle, plasma-theme-rosa, ronak-plasmatheme"
+    localize_info "INSTALL-KDE-MENU-8"   "yakuake"
+    localize_info "INSTALL-KDE-MENU-I-8"        "yakuake: A drop-down terminal emulator based on KDE konsole technology"
 fi
 # -------------------------------------
 install_kde_menu()
@@ -2309,36 +2393,42 @@ install_kde_menu()
     local BreakableKey="D"            # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 5 7"  # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    add_package "$INSTALL_KDE"
-    add_packagemanager "package_install \"$INSTALL_KDE\" 'INSTALL-KDE'" "INSTALL-KDE" # "kde-telepathy telepathy"
-    if [[ "$PHONON" -eq 0 ]]; then
-        add_package "$INSTALL_PHONON"
-        add_packagemanager "package_install \"$INSTALL_PHONON\" 'INSTALL-PHONON'" "INSTALL-PHONON" 
-    else
-        add_package "$INSTALL_PHONON_VLC"
-        add_packagemanager "package_install \"$INSTALL_PHONON_VLC\" 'INSTALL-PHONON_VLC'" "INSTALL-PHONON_VLC" 
+    if add_packagemanager "package_install \"$INSTALL_KDE\" 'INSTALL-KDE'" "INSTALL-KDE" ; then # "kde-telepathy telepathy"
+        add_package "$INSTALL_KDE"
     fi
-    #add_packagemanager "package_remove 'kdemultimedia-kscd kdemultimedia-juk'" "REMOVE-KDE"
-    add_aur_package "$AUR_INSTALL_KDE"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_KDE\" 'AUR-INSTALL-KDE'" "AUR-INSTALL-KDE"
+    if [[ "$PHONON" -eq 0 ]]; then
+        if add_packagemanager "package_install \"$INSTALL_PHONON\" 'INSTALL-PHONON'" "INSTALL-PHONON"  ; then
+            add_package "$INSTALL_PHONON"
+        fi
+    else
+        if add_packagemanager "package_install \"$INSTALL_PHONON_VLC\" 'INSTALL-PHONON_VLC'" "INSTALL-PHONON_VLC" ; then
+            add_package "$INSTALL_PHONON_VLC"
+        fi
+    fi
+    #if add_packagemanager "package_remove 'kdemultimedia-kscd kdemultimedia-juk'" "REMOVE-KDE"
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_KDE\" 'AUR-INSTALL-KDE'" "AUR-INSTALL-KDE" ; then
+        add_aur_package "$AUR_INSTALL_KDE"
+    fi
     #
     CONFIG_KDE=1
     KDE_INSTALLED=1
+    QT_INSTALL=1
     # Application development toolkit for controlling system-wide privileges
     # Abstraction for enumerating power devices, listening to device events and querying history and statistics
     # A framework for defining and tracking users, login sessions, and seats
@@ -2354,64 +2444,73 @@ install_kde_menu()
         print_info "INSTALL-KDE-INFO-1"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "apper"         "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "bangarang"     "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "choqok"        "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "digikam"       "" ""     "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "k3b"           "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rosa-icons"    "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Plasma Themes" "" ""     "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "yakuake"       "" ""     "" "MenuTheme[@]" # 8
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-1" "" ""     "INSTALL-KDE-MENU-I-1" "MenuTheme[@]" # 1 apper
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-2" "" "$AUR" "INSTALL-KDE-MENU-I-2" "MenuTheme[@]" # 2 bangarang
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-3" "" ""     "INSTALL-KDE-MENU-I-3" "MenuTheme[@]" # 3 choqok
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-4" "" ""     "INSTALL-KDE-MENU-I-4" "MenuTheme[@]" # 4 digikam
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-5" "" ""     "INSTALL-KDE-MENU-I-5" "MenuTheme[@]" # 5 k3b
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-6" "" "$AUR" "INSTALL-KDE-MENU-I-6" "MenuTheme[@]" # 6 rosa-icons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-7" "" ""     "INSTALL-KDE-MENU-I-7" "MenuTheme[@]" # 7 Plasma Themes
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-KDE-MENU-8" "" ""     "INSTALL-KDE-MENU-I-8" "MenuTheme[@]" # 8 yakuake
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #        
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # apper
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_APPER"
-                    add_packagemanager "package_install \"$INSTALL_APPER\" 'INSTALL-APPER'" "INSTALL-APPER"
+                    if add_packagemanager "package_install \"$INSTALL_APPER\" 'INSTALL-APPER'" "INSTALL-APPER" ; then
+                        add_package "$INSTALL_APPER"
+                    fi
                     ;;
-                2)  # 
+                2)  # bangarang
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_BANGARANG"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_BANGARANG\" 'AUR-INSTALL-BANGARANG'" "AUR-INSTALL-BANGARANG"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_BANGARANG\" 'AUR-INSTALL-BANGARANG'" "AUR-INSTALL-BANGARANG" ; then
+                        add_aur_package "$AUR_INSTALL_BANGARANG"
+                    fi
                     ;;
-                3)  # 
+                3)  # choqok
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_CHOQOK"
-                    add_packagemanager "package_install \"$INSTALL_CHOQOK\" 'INSTALL-CHOQOK'" "INSTALL-CHOQOK"
+                    if add_packagemanager "package_install \"$INSTALL_CHOQOK\" 'INSTALL-CHOQOK'" "INSTALL-CHOQOK" ; then
+                        add_package "$INSTALL_CHOQOK"
+                    fi
                     ;;
-                4)  # 
+                4)  # digikam
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_DIGIKAM"
-                    add_packagemanager "package_install \"$INSTALL_DIGIKAM\" 'INSTALL-DIGIKAM'" "INSTALL-DIGIKAM"
+                    if add_packagemanager "package_install \"$INSTALL_DIGIKAM\" 'INSTALL-DIGIKAM'" "INSTALL-DIGIKAM" ; then
+                        add_package "$INSTALL_DIGIKAM"
+                    fi
                     ;;
-                5)  # 
+                5)  # k3b
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_K3B"
-                    add_packagemanager "package_install \"$INSTALL_K3B\" 'INSTALL-K3B'" "INSTALL-K3B"
+                    if add_packagemanager "package_install \"$INSTALL_K3B\" 'INSTALL-K3B'" "INSTALL-K3B" ; then
+                        add_package "$INSTALL_K3B"
+                    fi
                     ;;
-                6)  # 
+                6)  # rosa-icons
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ROSA_ICONS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_ICONS\" 'AUR-INSTALL-ROSA-ICONS'" "AUR-INSTALL-ROSA-ICONS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_ICONS\" 'AUR-INSTALL-ROSA-ICONS'" "AUR-INSTALL-ROSA-ICONS" ; then
+                        add_aur_package "$AUR_INSTALL_ROSA_ICONS"
+                    fi
                     ;;
-                7)  # 
+                7)  # Plasma Themes
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_PLASMA_THEMES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_PLASMA_THEMES\" 'AUR-INSTALL-PLASMA-THEMES'" "AUR-INSTALL-PLASMA-THEMES"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_PLASMA_THEMES\" 'AUR-INSTALL-PLASMA-THEMES'" "AUR-INSTALL-PLASMA-THEMES" ; then
+                        add_aur_package "$AUR_INSTALL_PLASMA_THEMES"
+                    fi
                     ;;
-                8)  # 
+                8)  # yakuake
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_YAKUAKE"
-                    add_packagemanager "package_install \"$INSTALL_YAKUAKE\" 'INSTALL-YAKUAKE'" "INSTALL-YAKUAKE"
-                    add_aur_package "$AUR_INSTALL_YAKUAKE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_YAKUAKE\" 'AUR-INSTALL-YAKUAKE'" "AUR-INSTALL-YAKUAKE"
+                    if add_packagemanager "package_install \"$INSTALL_YAKUAKE\" 'INSTALL-YAKUAKE'" "INSTALL-YAKUAKE" ; then
+                        add_package "$INSTALL_YAKUAKE"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_YAKUAKE\" 'AUR-INSTALL-YAKUAKE'" "AUR-INSTALL-YAKUAKE" ; then
+                        add_aur_package "$AUR_INSTALL_YAKUAKE"
+                    fi
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2444,14 +2543,27 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "CONFIGURE-GNOME-DESC"   "Install Gnome"
-    localize_info "CONFIGURE-GNOME-NOTES"  "None."
-    localize_info "CONFIGURE-GNOME-TITLE"  "GNOME CUSTOMIZATION"
+    localize_info "CONFIGURE-GNOME-DESC"      "Install Gnome"
+    localize_info "CONFIGURE-GNOME-NOTES"     "None."
+    localize_info "CONFIGURE-GNOME-TITLE"     "GNOME CUSTOMIZATION"
     #
-    localize_info "CONFIGURE-GNOME-TITLE"  "GNOME"
-    localize_info "CONFIGURE-GNOME-INFO-1" "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
-    localize_info "CONFIGURE-GNOME-INFO-2" "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
-    localize_info "CONFIGURE-GNOME-INFO-3" "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
+    localize_info "CONFIGURE-GNOME-TITLE"     "GNOME"
+    localize_info "CONFIGURE-GNOME-INFO-1"    "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
+    localize_info "CONFIGURE-GNOME-INFO-2"    "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
+    localize_info "CONFIGURE-GNOME-INFO-3"    "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
+    #
+    localize_info "CONFIGURE-GNOME-MENU-1"    "GNOME Shell Extensions"
+    localize_info "CONFIGURE-GNOME-MENU-I-1"        "GNOME Shell Extensions: Sub Menu: User-created extensions for the GNOME Shell environment"
+    localize_info "CONFIGURE-GNOME-MENU-2"    "GNOME Shell Themes"
+    localize_info "CONFIGURE-GNOME-MENU-I-2"        "GNOME Shell Themes: Sub Menu"
+    localize_info "CONFIGURE-GNOME-MENU-3"    "GNOME Packagekit"
+    localize_info "CONFIGURE-GNOME-MENU-I-3"        "GNOME Packagekit: Collection of graphical tools for PackageKit to be used in the GNOME desktop"
+    localize_info "CONFIGURE-GNOME-MENU-4"    "activity-journal"
+    localize_info "CONFIGURE-GNOME-MENU-I-4"        "activity-journal: Tool for easily browsing and finding files on your computer using the Zeitgeist engine"
+    localize_info "CONFIGURE-GNOME-MENU-5"    "activity-log-manager"
+    localize_info "CONFIGURE-GNOME-MENU-I-5"        "activity-log-manager: A graphical user interface which lets you easily control what gets logged by Zeitgeist"
+    localize_info "CONFIGURE-GNOME-MENU-6"    "gloobus-sushi-bzr"
+    localize_info "CONFIGURE-GNOME-MENU-I-6"        "gloobus-sushi-bzr: GloobusPreview replacement for Gnome Sushi"
 fi
 # -------------------------------------
 install_gnome_menu()
@@ -2461,19 +2573,20 @@ install_gnome_menu()
     local BreakableKey="D"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-5"      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
     #
     GNOME_INSTALLED=1
     CONFIG_GNOME=1
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -2483,8 +2596,18 @@ install_gnome_menu()
     print_info  "CONFIGURE-GNOME-INFO-1"
     print_info  "CONFIGURE-GNOME-INFO-2"
     print_info  "CONFIGURE-GNOME-INFO-3"
-    add_package "$INSTALL_GNOME" 
-    add_packagemanager "package_install \"$INSTALL_GNOME\" 'INSTALL-GNOME'" "INSTALL-GNOME"
+    if add_packagemanager "package_install \"$INSTALL_GNOME\" 'INSTALL-GNOME'" "INSTALL-GNOME" ; then
+        add_package "$INSTALL_GNOME" 
+        #Gnome Display Manager (a reimplementation of xdm)
+        #D-Bus interface for user account query and manipulation
+        #Application development toolkit for controlling system-wide privileges
+        #Abstraction for enumerating power devices, listening to device events and querying history and statistics
+        #A framework for defining and tracking users, login sessions, and seats
+        # polkit.service
+        # systemd-logind replaced console-kit-daemon.service
+        add_packagemanager "systemctl enable accounts-daemon.service" "SYSTEMD-ENABLE-GNOME-1"
+        add_packagemanager "systemctl upower.service" "SYSTEMD-ENABLE-GNOME-2"
+    fi
     # telepathy
     #
     StatusBar1="INSTALL-MENU-REC"
@@ -2495,18 +2618,18 @@ install_gnome_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "GNOME Shell Extensions" "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "GNOME Shell Themes"     "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "GNOME Packagekit"       "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "activity-journal"       "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "activity-log-manager"   "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gloobus-sushi-bzr"      "" "$AUR" "" "MenuTheme[@]" # 6
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-1" "MenuTheme[@]" # 1 GNOME Shell Extensions
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" ""     "CONFIGURE-GNOME-MENU-I-2" "MenuTheme[@]" # 2 GNOME Shell Themes
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" ""     "CONFIGURE-GNOME-MENU-I-3" "MenuTheme[@]" # 3 GNOME Packagekit
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-4" "MenuTheme[@]" # 4 activity-journal 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-5" "MenuTheme[@]" # 5 activity-log-manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-6" "MenuTheme[@]" # 6 gloobus-sushi-bzr
         #
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -2521,23 +2644,27 @@ install_gnome_menu()
                     ;;
                 3)  # GNOME Packagekit
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GNOME_PACKAGEKIT"
-                    add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT"
+                    if add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT" ; then
+                        add_package "$INSTALL_GNOME_PACKAGEKIT"
+                    fi
                     ;;
                 4)  # activity-journal
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL'" "AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL'" "AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL"
+                    fi
                     ;;
                 5)  # activity-log-manager
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER'" "AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER'" "AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER"
+                    fi
                     ;;
                 6)  # gloobus-sushi-bzr
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS\" 'AUR-INSTALL-GNOME-CUSTOM-GLOOBUS'" "AUR-INSTALL-GNOME-CUSTOM-GLOOBUS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS\" 'AUR-INSTALL-GNOME-CUSTOM-GLOOBUS'" "AUR-INSTALL-GNOME-CUSTOM-GLOOBUS" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS"
+                    fi
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2554,14 +2681,6 @@ install_gnome_menu()
         is_breakable "$S_OPT" "$BreakableKey"
     done
     #}}}
-    #Gnome Display Manager (a reimplementation of xdm)
-    #D-Bus interface for user account query and manipulation
-    #Application development toolkit for controlling system-wide privileges
-    #Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    #A framework for defining and tracking users, login sessions, and seats
-    # polkit.service
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable accounts-daemon.service upower.service" "SYSTEMD-ENABLE-GNOME"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2578,7 +2697,26 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-DESC"   "Install Gnomeshell Extensions"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-DESC"     "Install Gnomeshell Extensions"
+    #
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-1"   "disper"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-1"      "disper: An on-the-fly display switch utility, intended to be used on laptops, especially with nVidia cards."
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-2"   "gpaste"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-2"      "gpaste: Clipboard management system with a gnome-shell extension"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-3"   "mediaplayer"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-3"      "mediaplayer: A mediaplayer indicator for the Gnome Shell"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-4"   "noa11y"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-4"      "noa11y: A gnome-shell extension to remove the accessibility icon from the panel"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-5"   "pomodoro"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-5"      "pomodoro: GNOME Shell extension for pomodoro technique."
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-6"   "System-monitor-applet"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-6"      "System-monitor-applet: System monitor extension for Gnome-Shell (display mem swap cpu usage)"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-7"   "user-theme"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-7"      "user-theme: Allows a custom shell theme to be loaded."
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-8"   "weather"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-8"      "weather: A GNOME Shell extension for displaying weather notifications"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-9"   "gtile"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-9"      "gtile: A GNOME Shell Extension to tile your windows as you like. It even supports multiscreen"
 fi
 # -------------------------------------
 install_gnome_menushell_extensions_menu()
@@ -2587,16 +2725,17 @@ install_gnome_menushell_extensions_menu()
     local BreakableKey="B"                              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-3 7 8"                  # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 9 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 9"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -2610,68 +2749,77 @@ install_gnome_menushell_extensions_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "disper"                "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gpaste"                "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "mediaplayer"           "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "noa11y"                "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "pomodoro"              "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "System-monitor-applet" "" "" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "user-theme"            "" "" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "weather"               "" "" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gtile"                 "" "" "" "MenuTheme[@]" # 9
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-1" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-1" "MenuTheme[@]" # 1 disper
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-2" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-2" "MenuTheme[@]" # 2 gpaste
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-3" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-3" "MenuTheme[@]" # 3 mediaplayer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-4" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-4" "MenuTheme[@]" # 4 noa11y
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-5" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-5" "MenuTheme[@]" # 5 pomodoro
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-6" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-6" "MenuTheme[@]" # 6 System-monitor-applet
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-7" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-7" "MenuTheme[@]" # 7 user-theme
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-8" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-8" "MenuTheme[@]" # 8 weather
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-9" "" "$AUR" "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-9" "MenuTheme[@]" # 9 gtile
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # disper
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_DISPER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_DISPER\" 'AUR-INSTALL-GSHELL-DISPER'" "AUR-INSTALL-GSHELL-DISPER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_DISPER\" 'AUR-INSTALL-GSHELL-DISPER'" "AUR-INSTALL-GSHELL-DISPER" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_DISPER"
+                    fi
                     ;;
-                2)  # 
+                2)  # gpaste
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_GPASTE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GPASTE\" 'AUR-INSTALL-GSHELL-GPASTE'" "AUR-INSTALL-GSHELL-GPASTE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GPASTE\" 'AUR-INSTALL-GSHELL-GPASTE'" "AUR-INSTALL-GSHELL-GPASTE" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_GPASTE"
+                    fi
                     ;;
-                3)  # 
+                3)  # mediaplayer
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_MEDIAPLAYER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_MEDIAPLAYER\" 'AUR-INSTALL-GSHELL-MEDIAPLAYER'" "AUR-INSTALL-GSHELL-MEDIAPLAYER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_MEDIAPLAYER\" 'AUR-INSTALL-GSHELL-MEDIAPLAYER'" "AUR-INSTALL-GSHELL-MEDIAPLAYER" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_MEDIAPLAYER"
+                    fi
                     ;;
-                4)  # 
+                4)  # noa11y
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_NOA11Y"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_NOA11Y\" 'AUR-INSTALL-GSHELL-NOA11Y'" "AUR-INSTALL-GSHELL-NOA11Y"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_NOA11Y\" 'AUR-INSTALL-GSHELL-NOA11Y'" "AUR-INSTALL-GSHELL-NOA11Y" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_NOA11Y"
+                    fi
                     ;;
-                5)  # 
+                5)  # pomodoro
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_POMODORO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_POMODORO\" 'AUR-INSTALL-GSHELL-POMODORO'" "AUR-INSTALL-GSHELL-POMODORO"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_POMODORO\" 'AUR-INSTALL-GSHELL-POMODORO'" "AUR-INSTALL-GSHELL-POMODORO" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_POMODORO"
+                    fi
                     ;;
-                6)  # 
+                6)  # System-monitor-applet
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_SYSTEM_MONITOR"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_SYSTEM_MONITOR\" 'AUR-INSTALL-GSHELL-SYSTEM-MONITOR'" "AUR-INSTALL-GSHELL-SYSTEM-MONITOR"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_SYSTEM_MONITOR\" 'AUR-INSTALL-GSHELL-SYSTEM-MONITOR'" "AUR-INSTALL-GSHELL-SYSTEM-MONITOR" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_SYSTEM_MONITOR"
+                    fi
                     ;;
-                7)  # 
+                7)  # user-theme
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_USER_THEME"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_USER_THEME\" 'AUR-INSTALL-GSHELL-USER-THEME'" "AUR-INSTALL-GSHELL-USER-THEME"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_USER_THEME\" 'AUR-INSTALL-GSHELL-USER-THEME'" "AUR-INSTALL-GSHELL-USER-THEME" ; then
+                        add_aur_package "$AUR_INSTALL_USER_THEME"
+                    fi
                     ;;
-                8)  # 
+                8)  # weather
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_WEATHER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_WEATHER\" 'AUR-INSTALL-GSHELL-WEATHER'" "AUR-INSTALL-GSHELL-WEATHER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_WEATHER\" 'AUR-INSTALL-GSHELL-WEATHER'" "AUR-INSTALL-GSHELL-WEATHER" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_WEATHER"
+                    fi
                     ;;
-                9)  # 
+                9)  # gtile
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_GTILE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GTILE\" 'AUR-INSTALL-GSHELL-GTILE'" "AUR-INSTALL-GSHELL-GTILE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GTILE\" 'AUR-INSTALL-GSHELL-GTILE'" "AUR-INSTALL-GSHELL-GTILE" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_GTILE"
+                    fi
                     ;;
                 *)  # Catch ALL 
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2706,6 +2854,19 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-GNOMESHELL-THEMES-DESC"   "Install Gnomeshell Themes"
+    #
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-1"   "default-mod"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-I-1"       "default-mod: A GNOME Shell theme based on the stock GTK theme. gnome-shell-theme-default-mod"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-2"   "dark-shine"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-I-2"       "dark-shine: Dark variant of the shine theme. gnome-shell-theme-dark-shine"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-3"   "elegance"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-I-3"       "elegance: A clean and elegant HUD theme for Gnome Shell 3.6. gnome-shell-theme-elegance"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-4"   "eos"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-I-4"       "eos: This is a GNOME Shell theme based on the Elementary GTK2 theme. gnome-shell-theme-eos"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-5"   "frieze"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-I-5"       "frieze: Gnome Shell + GDM Theme. gnome-shell-theme-frieze"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-6"   "google"
+    localize_info "INSTALL-GNOMESHELL-THEMES-MENU-I-6"       "google: A Gnome-Shell theme by plaidcounty, based on the Google color schema. gnome-shell-theme-google"
 fi
 # -------------------------------------
 install_gnome_menushell_themes_menu()
@@ -2714,16 +2875,17 @@ install_gnome_menushell_themes_menu()
     local BreakableKey="B"                          # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-6"                  # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -2737,50 +2899,56 @@ install_gnome_menushell_themes_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "default-mod" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "dark-shine"  "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "elegance"    "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "eos"         "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "frieze"      "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "google+"     "" "" "" "MenuTheme[@]" # 6
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-THEMES-MENU-1" "" "$AUR" "INSTALL-GNOMESHELL-THEMES-MENU-I-1" "MenuTheme[@]" # 1 default-mod
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-THEMES-MENU-2" "" "$AUR" "INSTALL-GNOMESHELL-THEMES-MENU-I-2" "MenuTheme[@]" # 2 dark-shine
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-THEMES-MENU-3" "" "$AUR" "INSTALL-GNOMESHELL-THEMES-MENU-I-3" "MenuTheme[@]" # 3 elegance
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-THEMES-MENU-4" "" "$AUR" "INSTALL-GNOMESHELL-THEMES-MENU-I-4" "MenuTheme[@]" # 4 eos
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-THEMES-MENU-5" "" "$AUR" "INSTALL-GNOMESHELL-THEMES-MENU-I-5" "MenuTheme[@]" # 5 frieze
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOMESHELL-THEMES-MENU-6" "" "$AUR" "INSTALL-GNOMESHELL-THEMES-MENU-I-6" "MenuTheme[@]" # 6 google
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # default-mod
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DEFAULT"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DEFAULT\" 'AUR-INSTALL-GSHELL-THEMES-DEFAULT'" "AUR-INSTALL-GSHELL-THEMES-DEFAULT"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DEFAULT\" 'AUR-INSTALL-GSHELL-THEMES-DEFAULT'" "AUR-INSTALL-GSHELL-THEMES-DEFAULT" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DEFAULT"
+                    fi
                     ;;
-                2)  # 
+                2)  # dark-shine
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE\" 'AUR-INSTALL-GSHELL-THEMES-DARK-SHINE'" "AUR-INSTALL-GSHELL-THEMES-DARK-SHINE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE\" 'AUR-INSTALL-GSHELL-THEMES-DARK-SHINE'" "AUR-INSTALL-GSHELL-THEMES-DARK-SHINE" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE"
+                    fi
                     ;;
-                3)  # 
+                3)  # elegance
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_THEMES_ELEGANCE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_ELEGANCE\" 'AUR-INSTALL-GSHELL-THEMES-ELEGANCE'" "AUR-INSTALL-GSHELL-THEMES-ELEGANCE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_ELEGANCE\" 'AUR-INSTALL-GSHELL-THEMES-ELEGANCE'" "AUR-INSTALL-GSHELL-THEMES-ELEGANCE" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_THEMES_ELEGANCE"
+                    fi
                     ;;
-                4)  # 
+                4)  # eos
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_THEMES_EOS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_EOS\" 'AUR-INSTALL-GSHELL-THEMES-EOS'" "AUR-INSTALL-GSHELL-THEMES-EOS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_EOS\" 'AUR-INSTALL-GSHELL-THEMES-EOS'" "AUR-INSTALL-GSHELL-THEMES-EOS" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_THEMES_EOS"
+                    fi
                     ;;
-                5)  # 
+                5)  # frieze
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_THEMES_FRIEZE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_FRIEZE\" 'AUR-INSTALL-GSHELL-THEMES-FRIEZE'" "AUR-INSTALL-GSHELL-THEMES-FRIEZE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_FRIEZE\" 'AUR-INSTALL-GSHELL-THEMES-FRIEZE'" "AUR-INSTALL-GSHELL-THEMES-FRIEZE" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_THEMES_FRIEZE"
+                    fi
                     ;;
-                6)  # 
+                6)  # gnome-shell-theme-google
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GSHELL_THEMES_GOOGLE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_GOOGLE\" 'AUR-INSTALL-GSHELL-THEMES-GOOGLE'" "AUR-INSTALL-GSHELL-THEMES-GOOGLE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_GOOGLE\" 'AUR-INSTALL-GSHELL-THEMES-GOOGLE'" "AUR-INSTALL-GSHELL-THEMES-GOOGLE" ; then
+                        add_aur_package "$AUR_INSTALL_GSHELL_THEMES_GOOGLE"
+                    fi
                     ;;
                 *)  # Catch ALL 
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2818,7 +2986,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-AWESOME-TITLE"  "AWESOME"
     localize_info "INSTALL-AWESOME-INFO-1" "awesome is a highly configurable, next generation framework window manager for X. It is very fast, extensible and licensed under the GNU GPLv2 license."
     localize_info "INSTALL-AWESOME-INFO-2" "AWESOME CUSTOMIZATION"
-    localize_info "INSTALL-AWESOME-REC"    "Recommended Optins"
+    localize_info "INSTALL-AWESOME-REC"    "Recommended Options"
+    #
 fi
 # -------------------------------------
 install_awesome_menu()
@@ -2828,16 +2997,17 @@ install_awesome_menu()
     local BreakableKey="D"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="4 6"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 3 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-14"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 3 7 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 1-14"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -2855,90 +3025,279 @@ install_awesome_menu()
     # https://aur.archlinux.org/packages.php?ID=49949 awesome-themes-git
     # https://github.com/mikar/awesome-themes 2 years old
     #
-    add_package "$INSTALL_AWESOME"
-    add_packagemanager "package_install \"$INSTALL_AWESOME\" 'INSTALL-AWESOME'" "INSTALL-AWESOME"
-    add_aur_package "$AUR_INSTALL_AWESOME"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_AWESOME\" 'AUR-INSTALL-AWESOME'" "AUR-INSTALL-AWESOME"
-    add_packagemanager "make_dir \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/awesome/rc.lua' \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
+    if add_packagemanager "package_install \"$INSTALL_AWESOME\" 'INSTALL-AWESOME'" "INSTALL-AWESOME" ; then
+        add_package "$INSTALL_AWESOME"
+        # Abstraction for enumerating power devices, listening to device events and querying history and statistics
+        # A framework for defining and tracking users, login sessions, and seats
+        # systemd-logind replaced console-kit-daemon.service
+        "systemctl enable upower.service" "SYSTEMD-ENABLE-AWESOME"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_AWESOME\" 'AUR-INSTALL-AWESOME'" "AUR-INSTALL-AWESOME" ; then
+        add_aur_package "$AUR_INSTALL_AWESOME"
+        add_packagemanager "make_dir \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/awesome/rc.lua' \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
+    fi
+    #
+    install_common_apps_menu "$RecommendedOptions"
+}
+#}}}
+# -----------------------------------------------------------------------------
+# INSTALL OPENBOX {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_openbox_menu"
+    USAGE="install_openbox_menu"
+    DESCRIPTION=$(localize "INSTALL-OPENBOX-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-OPENBOX-DESC"      "Install Openbox"
+    localize_info "INSTALL-OPENBOX-TITLE"     "OPENBOX"
+    localize_info "INSTALL-OPENBOX-INFO-1"    "Openbox is a lightweight and highly configurable window manager with extensive standards support."
+    localize_info "INSTALL-OPENBOX-INFO-2"    "OPENBOX CUSTOMIZATION"
+fi
+# -------------------------------------
+install_openbox_menu() 
+{ 
+    # 8
+    local -r menu_name="INSTALL-OPENBOX"  # You must define Menu Name here
+    local BreakableKey="D"                # Q=Quit, D=Done, B=Back
+    local RecommendedOptions="4 6"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    #
+    if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 2 ]]; then       # KDE
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 3 ]]; then       # XFCE
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 4 ]]; then       # Razor-QT & Openbox
+        RecommendedOptions="1-14"
+    elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
+        RecommendedOptions=""
+    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesome
+        RecommendedOptions="1-14"
+    fi
+    #
+    if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
+        RecommendedOptions="$RecommendedOptions"        
+    elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
+        RecommendedOptions="$RecommendedOptions"        
+    elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
+        RecommendedOptions="$RecommendedOptions"        
+    elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
+        RecommendedOptions="$RecommendedOptions 1-14"    
+    fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
+    #
+    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$Last_IFS"
+    #
+    OPENBOX_INSTALLED=1
+    if add_packagemanager "package_install \"$INSTALL_OPENBOX\" 'INSTALL-OPENBOX'" "INSTALL-OPENBOX" ; then
+        add_package "$INSTALL_OPENBOX"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENBOX\" 'AUR-INSTALL-OPENBOX'" "AUR-INSTALL-OPENBOX" ; then
+        add_aur_package "$AUR_INSTALL_OPENBOX"
+        add_packagemanager "make_dir \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/rc.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/menu.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/autostart' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-OPENBOX"  
+    fi
+    #
+    install_common_apps_menu "$RecommendedOptions"
+}
+#}}}
+# -----------------------------------------------------------------------------
+# INSTALL COMMON APPS {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="install_common_apps_menu"
+    USAGE="install_common_apps_menu"
+    DESCRIPTION=$(localize "INSTALL-COMMON-APPS-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="helmuthdu and Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "INSTALL-COMMON-APPS-DESC"      "Install Common Applications"
+    localize_info "INSTALL-COMMON-APPS-TITLE"     "Install Common Applications"
+    #
+    localize_info "INSTALL-COMMON-APPS-MENU-1"    "xcompmgr"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-1"        "xcompmgr: Composite Window-effects manager for X.org"
+    localize_info "INSTALL-COMMON-APPS-MENU-2"    "viewnior"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-2"        "viewnior: A simple, fast and elegant image viewer program"
+    localize_info "INSTALL-COMMON-APPS-MENU-3"    "gmrun"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-3"        "gmrun: A simple program which provides a run program window"
+    localize_info "INSTALL-COMMON-APPS-MENU-4"    "PCManFM"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-4"        "PCManFM: An extremely fast and lightweight file manager"
+    localize_info "INSTALL-COMMON-APPS-MENU-5"    "rxvt-unicode"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-5"        "rxvt-unicode: An unicode enabled rxvt-clone terminal emulator (urxvt)"
+    localize_info "INSTALL-COMMON-APPS-MENU-6"    "scrot"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-6"        "scrot: Print Screen - A simple command-line screenshot utility for X"
+    localize_info "INSTALL-COMMON-APPS-MENU-7"    "thunar"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-7"        "thunar: Modern file manager for Xfce"
+    localize_info "INSTALL-COMMON-APPS-MENU-8"    "tint2"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-8"        "tint2: A basic, good-looking task manager for WMs"
+    localize_info "INSTALL-COMMON-APPS-MENU-9"    "volwheel"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-9"        "volwheel: Tray icon to change volume with the mouse"
+    localize_info "INSTALL-COMMON-APPS-MENU-10"   "xfburn"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-10"       "xfburn: A simple CD/DVD burning tool based on libburnia libraries"
+    localize_info "INSTALL-COMMON-APPS-MENU-11"   "qasmixer"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-11"       "qasmixer: Volume Manager for ALSA in Qt."
+    localize_info "INSTALL-COMMON-APPS-MENU-12"   "qtfm"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-12"       "qtfm: Qt File Browser."
+    localize_info "INSTALL-COMMON-APPS-MENU-13"   "qterminal"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-13"       "qterminal: Qt Terminal"
+    localize_info "INSTALL-COMMON-APPS-MENU-14"  "qpdfview"
+    localize_info "INSTALL-COMMON-APPS-MENU-I-14"      "qpdfview: Qt PDF View"
+fi
+# -------------------------------------
+install_common_apps_menu()
+{
+    local -r menu_name="INSTALL-COMMON-APPS"  # You must define Menu Name here
+    local BreakableKey="D"                    # Q=Quit, D=Done, B=Back
+    local RecommendedOptions="$1"             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    #
+    if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
+        RecommendedOptions="$RecommendedOptions"        
+    elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
+        RecommendedOptions="$RecommendedOptions"        
+    elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
+        RecommendedOptions="$RecommendedOptions"        
+    elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
+        RecommendedOptions="$RecommendedOptions"    
+    fi
+    #
+    if [[ "$CUSTOM_DE" -eq 4 ]]; then
+        RecommendedOptions="$RecommendedOptions"
+    fi                    
+    #
+    if ! $(is_needle_in_haystack "$BreakableKey" "$RecommendedOptions" 5) ; then # 5=Anywhere
+        RecommendedOptions="$RecommendedOptions $BreakableKey"
+    fi
+    #
+    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    IFS="$Last_IFS"
     #
     StatusBar1="INSTALL-MENU-REC"
     StatusBar2="$RecommendedOptions"
     #
     while [[ 1 ]];  do
-        print_title "INSTALL-AWESOME-TITLE" " - https://wiki.archlinux.org/index.php/Awesome"
+        print_title "INSTALL-COMMON-APPS-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info "INSTALL-AWESOME-INFO-1"
-        print_info "INSTALL-AWESOME-INFO-2"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xcompmgr"     "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior"     "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun"        "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM"      "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rxvt-unicode" "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot"        "" "" "scrot : [Print Screen]" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar"       "" "" "thunar: [File Browser]" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "tint2"        "" "" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "volwheel"     "" "" "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn"       "" "" "" "MenuTheme[@]" # 10
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-1"  "" "" "INSTALL-COMMON-APPS-MENU-I-1"  "MenuTheme[@]" # 1  xcompmgr
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-2"  "" "" "INSTALL-COMMON-APPS-MENU-I-2"  "MenuTheme[@]" # 2  viewnior
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-3"  "" "" "INSTALL-COMMON-APPS-MENU-I-3"  "MenuTheme[@]" # 3  gmrun
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-4"  "" "" "INSTALL-COMMON-APPS-MENU-I-4"  "MenuTheme[@]" # 4  PCManFM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-5"  "" "" "INSTALL-COMMON-APPS-MENU-I-5"  "MenuTheme[@]" # 5  rxvt-unicode
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-6"  "" "" "INSTALL-COMMON-APPS-MENU-I-6"  "MenuTheme[@]" # 6  scrot
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-7"  "" "" "INSTALL-COMMON-APPS-MENU-I-7"  "MenuTheme[@]" # 7  thunar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-8"  "" "" "INSTALL-COMMON-APPS-MENU-I-8"  "MenuTheme[@]" # 8  tint2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-9"  "" "" "INSTALL-COMMON-APPS-MENU-I-9"  "MenuTheme[@]" # 9  volwheel
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-10" "" "" "INSTALL-COMMON-APPS-MENU-I-10" "MenuTheme[@]" # 10 xfburn
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-11" "" "" "INSTALL-COMMON-APPS-MENU-I-11" "MenuTheme[@]" # 11 qasmixer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-12" "" "" "INSTALL-COMMON-APPS-MENU-I-12" "MenuTheme[@]" # 12 qtfm
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-13" "" "" "INSTALL-COMMON-APPS-MENU-I-13" "MenuTheme[@]" # 13 qterminal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-14" "" "" "INSTALL-COMMON-APPS-MENU-I-14" "MenuTheme[@]" # 14 qpdfview
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # xcompmgr
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_XCOMPMGR"
-                    add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR"
+                    if add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR" ; then
+                        add_package "$INSTALL_XCOMPMGR"
+                    fi
                     ;;
-                2)  # 
+                2)  # viewnior
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VIEWNIOR"
-                    add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
+                    if add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR" ; then
+                        add_package "$INSTALL_VIEWNIOR"
+                    fi
                     ;;
-                3)  # 
+                3)  # gmrun
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GMRUN"
-                    add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
+                    if add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN" ; then
+                        add_package "$INSTALL_GMRUN"
+                    fi
                     ;;
-                4)  # 
+                4)  # PCManFM
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_PCMANFM"
-                    add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
+                    if add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM" ; then
+                        add_package "$INSTALL_PCMANFM"
+                    fi
                     ;;
-                5)  # 
+                5)  # rxvt-unicode
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_RXVT_UNICODE"
-                    add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
+                    if add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE" ; then
+                        add_package "$INSTALL_RXVT_UNICODE"
+                    fi
                     ;;
                 6)  # scrot
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SCROT"
-                    add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
+                    if add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT" ; then
+                        add_package "$INSTALL_SCROT"
+                    fi
                     ;;
-                7)  # 
+                7)  # thunar
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_THUNAR"
-                    add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
+                    if add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR" ; then
+                        add_package "$INSTALL_THUNAR"
+                    fi
                     ;;
-                8)  # 
+                8)  # tint2
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_TINT2"
-                    add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
+                    if add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2" ; then
+                        add_package "$INSTALL_TINT2"
+                    fi
                     ;;
-                9)  # 
+                9)  # volwheel
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VOLWHEEL"
-                    add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL"
+                    if add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL" ; then
+                        add_package "$INSTALL_VOLWHEEL"
+                    fi
                     ;;
-               10)  # 
+               10)  # xfburn
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_XFBURN"
-                    add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
+                    if add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN" ; then
+                        add_package "$INSTALL_XFBURN"
+                    fi
+                    ;;
+               11)  # qasmixer 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_QASMIXER\" 'AUR-INSTALL-QASMIXER'" "AUR-INSTALL-QASMIXER" ; then
+                        add_aur_package "$AUR_INSTALL_QASMIXER"
+                    fi
+                    ;;
+               12)  # qtfm
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_QTFM\" 'INSTALL-QTFM'" "INSTALL-QTFM" ; then
+                        add_package "$INSTALL_QTFM"
+                    fi
+                    ;;
+               13)  # qterminal
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_QTERMINAL\" 'AUR-INSTALL-QTERMINAL'" "AUR-INSTALL-QTERMINAL" ; then
+                        add_aur_package "$AUR_INSTALL_QTERMINAL" 
+                    fi
+                    ;;
+               14)  # qpdfview
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_QT_PDF\" 'AUR-INSTALL-QT-PDF'" "AUR-INSTALL-QT-PDF" ; then
+                        add_aur_package "$AUR_QT_PDF"
+                    fi
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2954,13 +3313,8 @@ install_awesome_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-AWESOME"
 }
 #}}}
-
 # -----------------------------------------------------------------------------
 # INSTALL RAZOR QT MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
@@ -2976,31 +3330,6 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-RAZOR-QT-DESC"   "Install Razor-Qt"
-    localize_info "INSTALL-RAZOR-QT-TITLE"  "RAZOR-QT"
-    localize_info "INSTALL-RAZOR-QT-INFO-1" "RAZOR-QT is a highly configurable, next generation framework window manager for X. It is very fast, extensible and licensed under the GNU GPLv2 license."
-    localize_info "INSTALL-RAZOR-QT-INFO-2" "RAZOR-QT CUSTOMIZATION"
-    localize_info "INSTALL-RAZOR-QT-REC"    "Recommended Optins"
-    #
-    localize_info "INSTALL-RAZOR-QT-MENU-1"   "smplayer"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-1"       "smplayer: "
-    localize_info "INSTALL-RAZOR-QT-MENU-2"   "vlc"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-2"       "vlc: "
-    localize_info "INSTALL-RAZOR-QT-MENU-3"   "Clementine"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-3"       "Clementine: "
-    localize_info "INSTALL-RAZOR-QT-MENU-4"   "qasmixer"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-4"       "qasmixer: "
-    localize_info "INSTALL-RAZOR-QT-MENU-5"   "Qt Image Viewers"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-5"       "Qt Image Viewers: "
-    localize_info "INSTALL-RAZOR-QT-MENU-6"   "Image Editors"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-6"       "Image Editors: easypaint-git, pencil-svn"
-    localize_info "INSTALL-RAZOR-QT-MENU-7"   "scrot" 
-    localize_info "INSTALL-RAZOR-QT-MENU-I-7"       "scrot : [Print Screen]"
-    localize_info "INSTALL-RAZOR-QT-MENU-8"   "qtfm"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-8"       "qtfm: Qt File Browser."
-    localize_info "INSTALL-RAZOR-QT-MENU-9"   "qterminal"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-9"       "qterminal: Qt Terminal"
-    localize_info "INSTALL-RAZOR-QT-MENU-10"  "qpdfview"
-    localize_info "INSTALL-RAZOR-QT-MENU-I-10"      "qpdfview: Qt PDF View"
 fi
 # -------------------------------------
 install_razor_qt_menu()
@@ -3008,145 +3337,46 @@ install_razor_qt_menu()
     # 4
     local -r menu_name="INSTALL-RAZOR-QT"  # You must define Menu Name here
     local BreakableKey="D"                 # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="1-10"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1-14"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
     #
     if [[ "$CUSTOM_DE" -eq 4 ]]; then
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"
+        RecommendedOptions="$RecommendedOptions"
     fi                    
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    RAZOR-QT_INSTALLED=1
+    RAZOR_QT_INSTALLED=1
+    QT_INSTALL=1
     #
     # Needs a WM: openbox, fwwm2, kwin, KDE without Plasma Desktop
-                    
     #
     #INSTALL_RAZOR_QT=""
-    #add_package "$INSTALL_RAZOR_QT"
-    #add_packagemanager "package_install \"$INSTALL_RAZOR_QT\" 'INSTALL-AWESOME'" "INSTALL-AWESOME"
+    #if add_packagemanager "package_install \"$INSTALL_RAZOR_QT\" 'INSTALL-AWESOME'" "INSTALL-AWESOME" ; then add_package "$INSTALL_RAZOR_QT"; fi
     #
-    add_aur_package "$AUR_INSTALL_RAZOR_QT"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_RAZOR_QT\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT"
-    add_packagemanager "make_dir \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/razor/session.conf' \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
-
-    add_packagemanager "$(config_xinitrc 'exec razor-session')" "CONFIG-XINITRC-RAZOR"
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RAZOR_QT\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT" ; then
+        add_aur_package "$AUR_INSTALL_RAZOR_QT"
+        add_packagemanager "make_dir \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/razor/session.conf' \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
+        add_packagemanager "$(config_xinitrc 'exec razor-session')" "CONFIG-XINITRC-RAZOR"
+        #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-RAZOR-QT"
+    fi
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
-    #
-    while [[ 1 ]];  do
-        print_title "INSTALL-RAZOR-QT-TITLE" " - https://wiki.archlinux.org/index.php/Razor-qt"
-        print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info "INSTALL-RAZOR-QT-INFO-1"
-        print_info "INSTALL-RAZOR-QT-INFO-2"
-        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
-        #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-1"  "" ""     "INSTALL-RAZOR-QT-MENU-I-1"  "MenuTheme[@]" # 1  smplayer
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-2"  "" ""     "INSTALL-RAZOR-QT-MENU-I-2"  "MenuTheme[@]" # 2  vlc
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-3"  "" ""     "INSTALL-RAZOR-QT-MENU-I-3"  "MenuTheme[@]" # 3  Clementine
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-4"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-4"  "MenuTheme[@]" # 4  qasmixer
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-5"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-5"  "MenuTheme[@]" # 5  Qt Image Viewers
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-6"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-6"  "MenuTheme[@]" # 6  Image Editors
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-7"  "" ""     "INSTALL-RAZOR-QT-MENU-I-7"  "MenuTheme[@]" # 7  scrot
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-8"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-8"  "MenuTheme[@]" # 8  qtfm
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-9"  "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-9"  "MenuTheme[@]" # 9  qterminal
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RAZOR-QT-MENU-10" "" "$AUR" "INSTALL-RAZOR-QT-MENU-I-10" "MenuTheme[@]" # 10 qpdfview
-        #
-        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
-        #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        #
-        local S_OPT
-        for S_OPT in ${OPTIONS[@]}; do
-            case "$S_OPT" in
-                1)  # smplayer
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SMPLAYER"
-                    add_packagemanager "package_install \"$INSTALL_SMPLAYER\" 'INSTALL-SMPLAYER'" "INSTALL-SMPLAYER"
-                    ;;
-                2)  # vlc
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VLC"
-                    add_packagemanager "package_install \"$INSTALL_VLC\" 'INSTALL-VLC'" "INSTALL-VLC"
-                    ;;
-                3)  # Clementine
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_CLEMENTINE"
-                    add_packagemanager "package_install \"$INSTALL_CLEMENTINE\" 'INSTALL-CLEMENTINE'" "INSTALL-CLEMENTINE"
-                    ;;
-                4)  # qasmixer 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_QASMIXER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_QASMIXER\" 'AUR-INSTALL-QASMIXER'" "AUR-INSTALL-QASMIXER"
-                    ;;
-                5)  # Qt Image Viewers 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_QT_IMAGE_VIEWERS"
-                    add_packagemanager "package_install \"$INSTALL_QT_IMAGE_VIEWERS\" 'INSTALL-QT-IMAGE-VIEWERS'" "INSTALL-QT-IMAGE-VIEWERS"
-                    #
-                    add_package "$AUR_QT_IMAGE_VIEWERS"
-                    add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_VIEWERS\" 'AUR-INSTALL-QT-IMAGE-VIEWERS'" "AUR-INSTALL-QT-IMAGE-VIEWERS"
-                    ;;
-                6)  # Image Editors
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_QT_IMAGE_EDITORS"
-                    add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_EDITORS\" 'AUR-INSTALL-QT-IMAGE-EDITORS'" "AUR-INSTALL-QT-IMAGE-EDITORS"
-                    ;;
-                7)  # scrot
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SCROT"
-                    add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
-                    ;;
-                8)  # qtfm
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_TINT2"
-                    add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
-                    ;;
-                9)  # qterminal
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_QTERMINAL" 
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_QTERMINAL\" 'AUR-INSTALL-QTERMINAL'" "AUR-INSTALL-QTERMINAL"
-                    ;;
-               10)  # qpdfview
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_QT_PDF"
-                    add_packagemanager "aur_package_install \"$AUR_QT_PDF\" 'AUR-INSTALL-QT-PDF'" "AUR-INSTALL-QT-PDF"
-                    ;;
-                *)  # Catch ALL 
-                    if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
-                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
-                            SAVED_MAIN_MENU=1
-                        fi
-                        S_OPT="$BreakableKey"
-                    else
-                        invalid_option "$S_OPT"
-                    fi
-                    ;;
-            esac
-        done
-        is_breakable "$S_OPT" "$BreakableKey"
-    done
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # systemd-logind replaced console-kit-daemon.service
-    #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-RAZOR-QT"
+    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
-
 # -----------------------------------------------------------------------------
 # INSTALL CINNAMON {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
@@ -3168,11 +3398,16 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-CINNAMON-INFO-2" "CINNAMON CUSTOMIZATION"
     localize_info "INSTALL-CINNAMON-INFO-3" "Installed Cinnamon"
     #
-    localize_info "INSTALL-CINNAMON-MENU-1" "Applets"
-    localize_info "INSTALL-CINNAMON-MENU-2" "Themes"
-    localize_info "INSTALL-CINNAMON-MENU-3" "GNOME Packagekit"
-    localize_info "INSTALL-CINNAMON-MENU-4" "GNOME Activity Journal"
-    localize_info "INSTALL-CINNAMON-MENU-5" "gloobus-sushi-bzr"
+    localize_info "INSTALL-CINNAMON-MENU-1"   "Applets"
+    localize_info "INSTALL-CINNAMON-MENU-I-1"       "Applets: Metapackage for Cinnamon Applets"
+    localize_info "INSTALL-CINNAMON-MENU-2"   "Themes"
+    localize_info "INSTALL-CINNAMON-MENU-I-2"        "Themes: Metapackage for Cinnamon Themes"
+    localize_info "INSTALL-CINNAMON-MENU-3"   "GNOME Packagekit"
+    localize_info "INSTALL-CINNAMON-MENU-I-3"        "GNOME Packagekit: Collection of graphical tools for PackageKit to be used in the GNOME desktop"
+    localize_info "INSTALL-CINNAMON-MENU-4"   "GNOME Activity Journal"
+    localize_info "INSTALL-CINNAMON-MENU-I-4"        "GNOME Activity Journal: A tool for easily browsing and finding files on your computer, developmental code."
+    localize_info "INSTALL-CINNAMON-MENU-5"   "Gnome Sushi"
+    localize_info "INSTALL-CINNAMON-MENU-I-5"        "gloobus-sushi-bzr: GloobusPreview replacement for Gnome Sushi"
 fi
 # -------------------------------------
 install_cinnamon_menu()
@@ -3180,28 +3415,33 @@ install_cinnamon_menu()
     # 5
     local -r menu_name="INSTALL-CINNAMON"  # You must define Menu Name here
     local BreakableKey="D"                 # Q=Quit, D=Done, B=Back 
-    local RecommendedOptions="2"           # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1 2"         # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 3 4 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 3 4"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
     CINNAMON_INSTALLED=1
-    add_package "$INSTALL_CINNAMON_PACKAGE"
-    add_packagemanager "package_install \"$INSTALL_CINNAMON_PACKAGE\" 'INSTALL-CINNAMON'" "INSTALL-CINNAMON"
-    add_aur_package "$AUR_INSTALL_CINNAMON_PACKAGE"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_PACKAGE\" 'AUR-INSTALL-CINNAMON'" "AUR-INSTALL-CINNAMON"
+    if add_packagemanager "package_install \"$INSTALL_CINNAMON_PACKAGE\" 'INSTALL-CINNAMON'" "INSTALL-CINNAMON" ; then
+        add_package "$INSTALL_CINNAMON_PACKAGE"
+        add_packagemanager "systemctl enable accounts-daemon.service" "SYSTEMD-ENABLE-CINNAMON-1"
+        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-CINNAMON-2"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_PACKAGE\" 'AUR-INSTALL-CINNAMON'" "AUR-INSTALL-CINNAMON" ; then
+        add_aur_package "$AUR_INSTALL_CINNAMON_PACKAGE"
+    fi
     # @FIX gnome-extra gnome-extra-meta telepathy
     # 
     # not sure how to run these commands; seems like they need to run after GUI is up and running; so adding them as a start up script may be what is needed
@@ -3217,46 +3457,52 @@ install_cinnamon_menu()
         print_info  "INSTALL-CINNAMON-INFO-2"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-1" "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-2" "" ""     "" "MenuTheme[@]" # 2 
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-3" "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-4" "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-5" "" "$AUR" "" "MenuTheme[@]" # 5
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-1" "" "$AUR" "INSTALL-CINNAMON-MENU-I-1" "MenuTheme[@]" # 1 Applets
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-2" "" ""     "INSTALL-CINNAMON-MENU-I-2" "MenuTheme[@]" # 2 Themes
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-3" "" ""     "INSTALL-CINNAMON-MENU-I-3" "MenuTheme[@]" # 3 GNOME Packagekit
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-4" "" "$AUR" "INSTALL-CINNAMON-MENU-I-4" "MenuTheme[@]" # 4 GNOME Activity Journal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-CINNAMON-MENU-5" "" "$AUR" "INSTALL-CINNAMON-MENU-I-5" "MenuTheme[@]" # 5 gloobus-sushi-bzr
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Applets
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_CINNAMON_APPLETS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_APPLETS\" 'AUR-INSTALL-CINNAMON-APPLETS'" "AUR-INSTALL-CINNAMON-APPLETS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_APPLETS\" 'AUR-INSTALL-CINNAMON-APPLETS'" "AUR-INSTALL-CINNAMON-APPLETS" ; then
+                        add_aur_package "$AUR_INSTALL_CINNAMON_APPLETS"
+                    fi
                     ;;
-                2)  # 
+                2)  # Themes
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_CINNAMON_THEMES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_THEMES\" 'AUR-INSTALL-CINNAMON-THEMES'" "AUR-INSTALL-CINNAMON-THEMES"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_THEMES\" 'AUR-INSTALL-CINNAMON-THEMES'" "AUR-INSTALL-CINNAMON-THEMES" ; then
+                        add_aur_package "$AUR_INSTALL_CINNAMON_THEMES"
+                    fi
                     ;;
-                3)  # 
+                3)  # GNOME Packagekit
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GNOME_PACKAGEKIT"
-                    add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT"
+                    if add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT" ; then
+                        add_package "$INSTALL_GNOME_PACKAGEKIT"
+                    fi
                     ;;
-                4)  # 
+                4)  # GNOME Activity Journal
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_ZEITGEIST"
-                    add_packagemanager "package_install \"$INSTALL_ZEITGEIST\" 'INSTALL-ZEITGEIST'" "INSTALL-ZEITGEIST"
-                    add_aur_package "$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL\" 'AUR-INSTALL-GNOME-ACTIVITY-JOURNAL'" "AUR-INSTALL-GNOME-ACTIVITY-JOURNAL"
+                    if add_packagemanager "package_install \"$INSTALL_ZEITGEIST\" 'INSTALL-ZEITGEIST'" "INSTALL-ZEITGEIST" ; then
+                        add_package "$INSTALL_ZEITGEIST"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL\" 'AUR-INSTALL-GNOME-ACTIVITY-JOURNAL'" "AUR-INSTALL-GNOME-ACTIVITY-JOURNAL" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL"
+                    fi
                     ;;
-                5)  # 
+                5)  # gloobus-sushi-bzr
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GLOOBUS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GLOOBUS\" 'AUR-INSTALL-GLOOBUS'" "AUR-INSTALL-GLOOBUS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GLOOBUS\" 'AUR-INSTALL-GLOOBUS'" "AUR-INSTALL-GLOOBUS" ; then
+                        add_aur_package "$AUR_INSTALL_GLOOBUS"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3272,14 +3518,6 @@ install_cinnamon_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
-    # Gnome Display Manager (a reimplementation of xdm)
-    # D-Bus interface for user account query and manipulation
-    # Application development toolkit for controlling system-wide privileges
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # polkit.service
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable accounts-daemon.service upower.service" "SYSTEMD-ENABLE-CINNAMON"
     write_log "INSTALL-CINNAMON-INFO-3"
 }
 #}}}
@@ -3300,7 +3538,12 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-E17-DESC"   "Install E17"
     localize_info "INSTALL-E17-TITLE"  "E17 or Enlightenment"
     localize_info "INSTALL-E17-INFO-1" "Enlightenment, also known simply as E, is a stacking window manager for the X Window System which can be used alone or in conjunction with a desktop environment such as GNOME or KDE. Enlightenment is often used as a substitute for a full desktop environment."
-    localize_info "INSTALL-E17-INFO-2" "E17 CUSTOMIZATION"
+    localize_info "INSTALL-E17-INFO-2" "E17 Customization"
+    #
+    localize_info "INSTALL-E17-MENU-1"   "e17-icons"
+    localize_info "INSTALL-E17-MENU-I-1"     "e17-icons: Animated icons for E17 from exchange.enlightenment.org"
+    localize_info "INSTALL-E17-MENU-2"   "e17-themes"
+    localize_info "INSTALL-E17-MENU-I-2"     "e17-themes: Themes for E17 desklock from exchange.enlightenment.org"
 fi
 # -------------------------------------
 install_e17_menu()
@@ -3308,29 +3551,36 @@ install_e17_menu()
     # 6
     local -r menu_name="INSTALL-E17"  # You must define Menu Name here
     local BreakableKey="D"            # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="5 7"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1 2"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 8 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    E17_INSTALLED=1
-    add_package "$INSTALL_E17"
-    add_packagemanager "package_install \"$INSTALL_E17\" 'INSTALL-E17'" "INSTALL-E17"
-    add_aur_package "$AUR_INSTALL_E17"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_E17\" 'AUR-INSTALL-E17'" "AUR-INSTALL-E17"
-    add_packagemanager "chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-XFCE"
+    if add_packagemanager "package_install \"$INSTALL_E17\" 'INSTALL-E17'" "INSTALL-E17" ; then
+        E17_INSTALLED=1
+        add_package "$INSTALL_E17"
+        # Abstraction for enumerating power devices, listening to device events and querying history and statistics
+        # A framework for defining and tracking users, login sessions, and seats
+        # systemd-logind replaced console-kit-daemon.service
+        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-E17"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_E17\" 'AUR-INSTALL-E17'" "AUR-INSTALL-E17" ; then
+        add_aur_package "$AUR_INSTALL_E17"
+        add_packagemanager "chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-XFCE"
+    fi
     #
     StatusBar1="INSTALL-MENU-REC"
     StatusBar2="$RecommendedOptions"
@@ -3342,68 +3592,28 @@ install_e17_menu()
         print_info "INSTALL-E17-INFO-2"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "e17-icons"    "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "e17-themes"   "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior"     "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "gmrun"        "" ""     "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "PCManFM"      "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "rxvt-unicode" "" ""     "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "scrot"        "" ""     "scrot: Print Screen" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "thunar"       "" ""     "thunar: File Browser" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn"       "" ""     "" "MenuTheme[@]" # 9
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-E17-MENU-1" "" "$AUR" "INSTALL-E17-MENU-I-1" "MenuTheme[@]" # 1 e17-icons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-E17-MENU-2" "" "$AUR" "INSTALL-E17-MENU-I-2" "MenuTheme[@]" # 2 e17-themes
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # e17-icons
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_E17_ICONS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_ICONS\" 'AUR-INSTALL-E17-ICONS'" "AUR-INSTALL-E17-ICONS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_ICONS\" 'AUR-INSTALL-E17-ICONS'" "AUR-INSTALL-E17-ICONS" ; then
+                        add_aur_package "$AUR_INSTALL_E17_ICONS"
+                    fi
                     ;;
-                2)  # 
+                2)  # e17-themes
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_E17_THEMES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_THEMES\" 'AUR-INSTALL-E17-THEMES'" "AUR-INSTALL-E17-THEMES"
-                    ;;
-                3)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VIEWNIOR"
-                    add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
-                    ;;
-                4)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GMRUN"
-                    add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
-                    ;;
-                5)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_PCMANFM"
-                    add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
-                    ;;
-                6)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_RXVT_UNICODE"
-                    add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
-                    ;;
-                7)  # scrot
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SCROT"
-                    add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
-                    ;;
-                8)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_THUNAR"
-                    add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
-                    ;;
-                9)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_XFBURN"
-                    add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_THEMES\" 'AUR-INSTALL-E17-THEMES'" "AUR-INSTALL-E17-THEMES" ; then
+                        add_aur_package "$AUR_INSTALL_E17_THEMES"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3419,10 +3629,8 @@ install_e17_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-E17"
+    RecommendedOptions="1-14"
+    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3448,265 +3656,35 @@ fi
 install_lxde_menu()
 {
     # 7
-    local -r menu_name="INSTALL-LXDE"  # You must define Menu Name here
-    local BreakableKey="D"             # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="1 2"     # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1-14"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
     #
-    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
-    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
-    IFS="$Last_IFS"
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     LXDE_INSTALLED=1
     #
-    add_package "$INSTALL_LXDE"
-    add_packagemanager "package_install \"$INSTALL_LXDE\" 'INSTALL-LXDE'" "INSTALL-LXDE"
-    #
-    add_aur_package "$AUR_INSTALL_LXDE"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_LXDE\" 'AUR-INSTALL-LXDE'" "AUR-INSTALL-LXDE"
-    #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
-    #
-    while [[ 1 ]]; do
-        print_title "INSTALL-LXDE-TITLE" " - https://wiki.archlinux.org/index.php/lxde"
-        print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info "INSTALL-LXDE-INFO-1"
-        print_info "INSTALL-LXDE-INFO-2"
-        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
-        #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "viewnior" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfburn"   "" "" "" "MenuTheme[@]" # 2
-        #
-        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
-        #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        #
-        local S_OPT
-        for S_OPT in ${OPTIONS[@]}; do
-            case "$S_OPT" in
-                1)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VIEWNIOR"
-                    add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR '" "INSTALL-VIEWNIOR"
-                    ;;
-                2)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_XFBURN"
-                    add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
-                    ;;
-                *)  # Catch ALL
-                    if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
-                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
-                            SAVED_MAIN_MENU=1
-                        fi
-                        S_OPT="$BreakableKey"
-                    else
-                        invalid_option "$S_OPT"
-                    fi
-                    ;;
-            esac
-        done
-        is_breakable "$S_OPT" "$BreakableKey"
-    done
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-LXDE"
-}
-#}}}
-# -----------------------------------------------------------------------------
-# INSTALL OPENBOX {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_openbox_menu"
-    USAGE="install_openbox_menu"
-    DESCRIPTION=$(localize "INSTALL-OPENBOX-DESC")
-    NOTES=$(localize "NONE")
-    AUTHOR="helmuthdu and Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-OPENBOX-DESC"      "Install Openbox"
-    localize_info "INSTALL-OPENBOX-TITLE"     "OPENBOX"
-    localize_info "INSTALL-OPENBOX-INFO-1"    "Openbox is a lightweight and highly configurable window manager with extensive standards support."
-    localize_info "INSTALL-OPENBOX-INFO-2"    "OPENBOX CUSTOMIZATION"
-    #
-    localize_info "INSTALL-OPENBOX-MENU-1"    "xcompmgr"
-    localize_info "INSTALL-OPENBOX-MENU-I-1"        "xcompmgr: 	Composite Window-effects manager for X.org"
-    localize_info "INSTALL-OPENBOX-MENU-2"    "viewnior"
-    localize_info "INSTALL-OPENBOX-MENU-I-2"        "viewnior: A simple, fast and elegant image viewer program"
-    localize_info "INSTALL-OPENBOX-MENU-3"    "gmrun"
-    localize_info "INSTALL-OPENBOX-MENU-I-3"        "gmrun: A simple program which provides a run program window"
-    localize_info "INSTALL-OPENBOX-MENU-4"    "PCManFM"
-    localize_info "INSTALL-OPENBOX-MENU-I-4"        "PCManFM: An extremely fast and lightweight file manager"
-    localize_info "INSTALL-OPENBOX-MENU-5"    "rxvt-unicode"
-    localize_info "INSTALL-OPENBOX-MENU-I-5"        "rxvt-unicode: An unicode enabled rxvt-clone terminal emulator (urxvt)"
-    localize_info "INSTALL-OPENBOX-MENU-6"    "scrot"
-    localize_info "INSTALL-OPENBOX-MENU-I-6"        "scrot: Print Screen - A simple command-line screenshot utility for X"
-    localize_info "INSTALL-OPENBOX-MENU-7"    "thunar"
-    localize_info "INSTALL-OPENBOX-MENU-I-7"        "thunar: Modern file manager for Xfce"
-    localize_info "INSTALL-OPENBOX-MENU-8"    "tint2"
-    localize_info "INSTALL-OPENBOX-MENU-I-8"        "tint2: A basic, good-looking task manager for WMs"
-    localize_info "INSTALL-OPENBOX-MENU-9"    "volwheel"
-    localize_info "INSTALL-OPENBOX-MENU-I-9"        "volwheel: Tray icon to change volume with the mouse"
-    localize_info "INSTALL-OPENBOX-MENU-10"   "xfburn"
-    localize_info "INSTALL-OPENBOX-MENU-I-10"       "xfburn: A simple CD/DVD burning tool based on libburnia libraries"
-fi
-# -------------------------------------
-install_openbox_menu() 
-{ 
-    # 8
-    local -r menu_name="INSTALL-OPENBOX"  # You must define Menu Name here
-    local BreakableKey="D"                # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="4 6"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
-    #
-    if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
-        RecommendedOptions=""
-    elif [[ "$CUSTOM_DE" -eq 2 ]]; then       # KDE
-        RecommendedOptions=""
-    elif [[ "$CUSTOM_DE" -eq 3 ]]; then       # XFCE
-        RecommendedOptions=""
-    elif [[ "$CUSTOM_DE" -eq 4 ]]; then       # Razor-QT & Openbox
-        RecommendedOptions=""
-    elif [[ "$CUSTOM_DE" -eq 5 ]]; then       # Cinnamon
-        RecommendedOptions=""
-    elif [[ "$CUSTOM_DE" -eq 6 ]]; then       # Awesume
-        RecommendedOptions=""
+    if add_packagemanager "package_install \"$INSTALL_LXDE\" 'INSTALL-LXDE'" "INSTALL-LXDE" ; then
+        # Abstraction for enumerating power devices, listening to device events and querying history and statistics
+        # A framework for defining and tracking users, login sessions, and seats
+        # systemd-logind replaced console-kit-daemon.service
+        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-LXDE"
+        add_package "$INSTALL_LXDE"
     fi
     #
-    local SUB_OPTIONS=""        
-    if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
-    elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
-    elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
-    elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 7 $BreakableKey"    
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_LXDE\" 'AUR-INSTALL-LXDE'" "AUR-INSTALL-LXDE" ; then
+        add_aur_package "$AUR_INSTALL_LXDE"
     fi
     #
-    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
-    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
-    IFS="$Last_IFS"
-    #
-    OPENBOX_INSTALLED=1
-    add_package "$INSTALL_OPENBOX"
-    add_packagemanager "package_install \"$INSTALL_OPENBOX\" 'INSTALL-OPENBOX'" "INSTALL-OPENBOX"
-    add_aur_package "$AUR_INSTALL_OPENBOX"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENBOX\" 'AUR-INSTALL-OPENBOX'" "AUR-INSTALL-OPENBOX"
-    add_packagemanager "make_dir \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/rc.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/menu.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/autostart' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-OPENBOX"  
-    #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
-    #
-    while [[ 1 ]]; do
-        print_title "INSTALL-OPENBOX-TITLE" " - https://wiki.archlinux.org/index.php/Openbox"
-        print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info  "INSTALL-OPENBOX-INFO-1"
-        print_info  "INSTALL-OPENBOX-INFO-2"
-        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
-        #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-1"  "" "" "INSTALL-OPENBOX-MENU-I-1"  "MenuTheme[@]" # 1  xcompmgr
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-2"  "" "" "INSTALL-OPENBOX-MENU-I-2"  "MenuTheme[@]" # 2  viewnior
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-3"  "" "" "INSTALL-OPENBOX-MENU-I-3"  "MenuTheme[@]" # 3  gmrun
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-4"  "" "" "INSTALL-OPENBOX-MENU-I-4"  "MenuTheme[@]" # 4  PCManFM
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-5"  "" "" "INSTALL-OPENBOX-MENU-I-5"  "MenuTheme[@]" # 5  rxvt-unicode
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-6"  "" "" "INSTALL-OPENBOX-MENU-I-6"  "MenuTheme[@]" # 6  scrot
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-7"  "" "" "INSTALL-OPENBOX-MENU-I-7"  "MenuTheme[@]" # 7  thunar
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-8"  "" "" "INSTALL-OPENBOX-MENU-I-8"  "MenuTheme[@]" # 8  tint2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-9"  "" "" "INSTALL-OPENBOX-MENU-I-9"  "MenuTheme[@]" # 9  volwheel
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OPENBOX-MENU-10" "" "" "INSTALL-OPENBOX-MENU-I-10" "MenuTheme[@]" # 10 xfburn
-        #
-        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
-        #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        #
-        local S_OPT
-        for S_OPT in ${OPTIONS[@]}; do
-            case "$S_OPT" in
-                1)  # xcompmgr
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_XCOMPMGR"
-                    add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR"
-                    ;;
-                2)  # viewnior
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VIEWNIOR"
-                    add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR"
-                    ;;
-                3)  # gmrun
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GMRUN"
-                    add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN"
-                    ;;
-                4)  # PCManFM
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_PCMANFM"
-                    add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM"
-                    ;;
-                5)  # rxvt-unicode
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_RXVT_UNICODE"
-                    add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE"
-                    ;;
-                6)  # scrot
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SCROT"
-                    add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT"
-                    ;;
-                7)  # thunar
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_THUNAR"
-                    add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR"
-                    ;;
-                8)  # tint2
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_TINT2"
-                    add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2"
-                    ;;
-                9)  # volwheel
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VOLWHEEL"
-                    add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL"
-                    ;;
-               10)  # xfburn
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_XFBURN"
-                    add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN"
-                    ;;
-                *)  # Catch ALL
-                    if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
-                        if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
-                            SAVED_MAIN_MENU=1
-                        fi
-                        S_OPT="$BreakableKey"
-                    else
-                        invalid_option "$S_OPT"
-                    fi
-                    ;;
-            esac
-        done
-        is_breakable "$S_OPT" "$BreakableKey"
-    done
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # systemd-logind replaced console-kit-daemon.service
-    #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-OPENBOX"
+    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3727,6 +3705,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-XFCE-TITLE"     "XFCE"
     localize_info "INSTALL-XFCE-INFO-1"    "Xfce is a free software desktop environment for Unix and Unix-like platforms, such as Linux, Solaris, and BSD. It aims to be fast and lightweight, while still being visually appealing and easy to use."
     localize_info "INSTALL-XFCE-INFO-2"    "Install XFCE and Accessories."
+    localize_info "INSTALL-XFCE-MENU-1"    "xfce4-volumed"
+    localize_info "INSTALL-XFCE-MENU-I-1"        "xfce4-volumed: A volume keys control daemon for Xfce"
 fi
 # -------------------------------------
 install_xfce_menu() 
@@ -3736,26 +3716,35 @@ install_xfce_menu()
     local BreakableKey="D"             # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
     XFCE_INSTALLED=1
-    add_package "$INSTALL_XFCE_PACKAGE"
-    add_packagemanager "package_install \"$INSTALL_XFCE_PACKAGE\" 'INSTALL-XFCE'" "INSTALL-XFCE"
-    add_aur_package "$AUR_INSTALL_XFCE_PACKAGE"
-    add_packagemanager "aur_package_install \"$AUR_INSTALL_XFCE_PACKAGE\" 'AUR-INSTALL-XFCE'" "AUR-INSTALL-XFCE"
+    if add_packagemanager "package_install \"$INSTALL_XFCE_PACKAGE\" 'INSTALL-XFCE'" "INSTALL-XFCE" ; then
+        add_package "$INSTALL_XFCE_PACKAGE"
+        # Application development toolkit for controlling system-wide privileges
+        # Abstraction for enumerating power devices, listening to device events and querying history and statistics
+        # A framework for defining and tracking users, login sessions, and seats
+        # polkit.service
+        # systemd-logind replaced console-kit-daemon.service
+        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-XFCE"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_XFCE_PACKAGE\" 'AUR-INSTALL-XFCE'" "AUR-INSTALL-XFCE" ; then
+        add_aur_package "$AUR_INSTALL_XFCE_PACKAGE"
+    fi
     #
     StatusBar1="INSTALL-MENU-REC"
     StatusBar2="$RecommendedOptions"
@@ -3766,20 +3755,21 @@ install_xfce_menu()
         print_info "INSTALL-XFCE-INFO-1"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "xfce4-volumed" "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-XFCE-MENU-1" "" "" "INSTALL-XFCE-MENU-I-1" "MenuTheme[@]" # xfce4-volumed
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)
+                1)  # xfce4-volumed
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_XFCE_CUSTOM"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_XFCE_CUSTOM\" 'AUR-INSTALL-XFCE-CUSTOM'" "AUR-INSTALL-XFCE-CUSTOM"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_XFCE_CUSTOM\" 'AUR-INSTALL-XFCE-CUSTOM'" "AUR-INSTALL-XFCE-CUSTOM" ; then
+                        add_aur_package "$AUR_INSTALL_XFCE_CUSTOM"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3795,12 +3785,6 @@ install_xfce_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
-    # Application development toolkit for controlling system-wide privileges
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # polkit.service
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-XFCE"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3832,25 +3816,26 @@ install_unity_now()
     print_error "\nWARNING: EXPERIMENTAL OPTION, USE AT YOUR OWN RISK\nDo not install this if already have a DE or WM installed."
     local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
     read_input_yn "INSTALL-UNITY-CONTINUE" " " 1
-    BYPASS="$Old_BYPASS" # Restroe Bypass
+    BYPASS="$Old_BYPASS" # Restore Bypass
     [[ "$YN_OPTION" -eq 0 ]] && return 0
     # @FIX use Add Repo function
     echo -e '\n[unity]\nServer = http://unity.xe-xe.org/$arch'             >> $MOUNTPOINT/etc/pacman.conf
     echo -e '\n[unity-extra]\nServer = http://unity.xe-xe.org/extra/$arch' >> $MOUNTPOINT/etc/pacman.conf
-    add_package "$INSTALL_UNITY"
-    add_packagemanager "package_install \"$INSTALL_UNITY\" 'INSTALL-UNITY'" "INSTALL-UNITY"
-    # telepathy
-    # Gnome Display Manager (a reimplementation of xdm)
-    # D-Bus interface for user account query and manipulation
-    # Application development toolkit for controlling system-wide privileges
-    # Abstraction for enumerating power devices, listening to device events and querying history and statistics
-    # A framework for defining and tracking users, login sessions, and seats
-    # Network Management daemon
-    # polkit.service
-    # systemd-logind replaced console-kit-daemon.service
-    add_packagemanager "systemctl enable lightdm.service accounts-daemon.service upower.service" "SYSTEMD-ENABLE-UNITY"
-    # pacstrap will overwrite pacman.conf so copy it to temp 
-    copy_file $MOUNTPOINT"/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    if add_packagemanager "package_install \"$INSTALL_UNITY\" 'INSTALL-UNITY'" "INSTALL-UNITY" ; then
+        add_package "$INSTALL_UNITY"
+        # telepathy
+        # Gnome Display Manager (a reimplementation of xdm)
+        # D-Bus interface for user account query and manipulation
+        # Application development toolkit for controlling system-wide privileges
+        # Abstraction for enumerating power devices, listening to device events and querying history and statistics
+        # A framework for defining and tracking users, login sessions, and seats
+        # Network Management daemon
+        # polkit.service
+        # systemd-logind replaced console-kit-daemon.service
+        add_packagemanager "systemctl enable lightdm.service accounts-daemon.service upower.service" "SYSTEMD-ENABLE-UNITY"
+        # pacstrap will overwrite pacman.conf so copy it to temp 
+        copy_file $MOUNTPOINT"/etc/pacman.conf" "${FULL_SCRIPT_PATH}/etc/pacman.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    fi
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3895,16 +3880,17 @@ install_display_manager_menu()
     local BreakableKey="D"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -3919,105 +3905,109 @@ install_display_manager_menu()
         print_info  "INSTALL-DISPLAY-MANAGER-INFO-1"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-1" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-1-I" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-2" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-2-I" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-3" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-3-I" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-4" ""  "$AUR" "INSTALL-DISPLAY-MANAGER-MENU-4-I" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-5" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-5-I" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-6" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-1-I" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-7" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-7-I" "MenuTheme[@]" # 7
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-1" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-1-I" "MenuTheme[@]" # 1 GDM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-2" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-2-I" "MenuTheme[@]" # 2 KDM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-3" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-3-I" "MenuTheme[@]" # 3 Slim
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-4" ""  "$AUR" "INSTALL-DISPLAY-MANAGER-MENU-4-I" "MenuTheme[@]" # 4 LightDM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-5" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-5-I" "MenuTheme[@]" # 5 LXDM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-6" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-1-I" "MenuTheme[@]" # 6 Qingy
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DISPLAY-MANAGER-MENU-7" ""  ""     "INSTALL-DISPLAY-MANAGER-MENU-7-I" "MenuTheme[@]" # 7 XDM
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # GDM
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_GDM"
-                    add_packagemanager "package_install \"$INSTALL_GDM\" 'INSTALL-GDM'" "INSTALL-GDM"
+                    if add_packagemanager "package_install \"$INSTALL_GDM\" 'INSTALL-GDM'" "INSTALL-GDM" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_GDM"
+                        # gdm3setup https://aur.archlinux.org/packages/gdm3setup/ 
+                        #add_aur_package "$AUR_INSTALL_GDM"
+                        #if add_packagemanager "aur_package_install \"$AUR_INSTALL_GDM\" 'AUR-INSTALL-GDM'" "AUR-INSTALL-GDM"
+                        add_packagemanager "systemctl enable gdm.service" "SYSTEMD-ENABLE-GDM"
+                        if [[ "$MATE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
+                        elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
+                        elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
+                        elif [[ "$E17_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
+                        elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
+                        elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
+                        else
+                            add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
+                        fi
+                    fi
                     # dbus-launch
-                    add_package "$INSTALL_GDM_CONTROL"
-                    add_packagemanager "package_install \"$INSTALL_GDM_CONTROL\" 'INSTALL-GDM-CONTROL'" "INSTALL-GDM-CONTROL" # One only
-                    # gdm3setup https://aur.archlinux.org/packages/gdm3setup/ 
-                    #add_aur_package "$AUR_INSTALL_GDM"
-                    #add_packagemanager "aur_package_install \"$AUR_INSTALL_GDM\" 'AUR-INSTALL-GDM'" "AUR-INSTALL-GDM"
-                    add_packagemanager "systemctl enable gdm.service" "SYSTEMD-ENABLE-GDM"
-                    if [[ "$MATE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
-                    elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
-                    elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
-                    elif [[ "$E17_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
-                    elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
-                    elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
-                    else
-                        add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
+                    if add_packagemanager "package_install \"$INSTALL_GDM_CONTROL\" 'INSTALL-GDM-CONTROL'" "INSTALL-GDM-CONTROL" ; then # One only
+                        add_package "$INSTALL_GDM_CONTROL"
                     fi
                     S_OPT="$BreakableKey"
                     break
                     ;;
                 2)  # KDM
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_KDM"
-                    add_packagemanager "package_install \"$INSTALL_KDM\" 'INSTALL-KDM'" "INSTALL-KDM"
-                    add_packagemanager "[[ -f \"\${FULL_SCRIPT_PATH}/etc/kdmrc\" ]] && copy_file \"\${FULL_SCRIPT_PATH}/etc/kdmrc\" '/usr/share/config/kdm/kdmrc' \"\$FUNCNAME @ \$(basename \$BASH_SOURCE) : \$LINENO\"" "COPY-KDM"
-                    if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                        add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-1-KDM'" "ADD-OPTION-1-KDM"
-                        # SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions to SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions,/usr/share/xsessions
-                        add_packagemanager "replace_option '/usr/share/config/kdm/kdmrc' 'AllowClose=' 'true' 'ADD-OPTION-2-KDM'" "ADD-OPTION-2-KDM"
-                        # AllowClose=false to AllowClose=true
-                        add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'Session=' '.custom' 'ADD-OPTION-3-KDM'" "ADD-OPTION-3-KDM"
-                        # Session=/usr/share/config/kdm/Xsession to Session=/usr/share/config/kdm/Xsession.custom
-                        add_packagemanager "copy_file '/usr/share/config/kdm/Xsession' '/usr/share/config/kdm/Xsession.custom' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"" "COPY-2-KDM"
-                    fi
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'startkde')" "CONFIG-XINITRC-KDE"
-                        add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
-                        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-KDM-UPOWER"
-                    elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
-                    elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
-                    elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
-                    elif [[ "$E17_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
-                    elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
-                    elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
-                    else
-                        add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
+                    if add_packagemanager "package_install \"$INSTALL_KDM\" 'INSTALL-KDM'" "INSTALL-KDM" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_KDM"
+                        add_packagemanager "[[ -f \"\${FULL_SCRIPT_PATH}/etc/kdmrc\" ]] && copy_file \"\${FULL_SCRIPT_PATH}/etc/kdmrc\" '/usr/share/config/kdm/kdmrc' \"\$FUNCNAME @ \$(basename \$BASH_SOURCE) : \$LINENO\"" "COPY-KDM"
+                        if [[ "$GNOME_INSTALL" -eq 1 ]]; then
+                            add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'SessionsDirs=' ',/usr/share/xsessions' 'ADD-OPTION-1-KDM'" "ADD-OPTION-1-KDM"
+                            # SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions to SessionsDirs=/usr/share/config/kdm/sessions,/usr/share/apps/kdm/sessions,/usr/share/xsessions
+                            add_packagemanager "replace_option '/usr/share/config/kdm/kdmrc' 'AllowClose=' 'true' 'ADD-OPTION-2-KDM'" "ADD-OPTION-2-KDM"
+                            # AllowClose=false to AllowClose=true
+                            add_packagemanager "add_option '/usr/share/config/kdm/kdmrc' 'Session=' '.custom' 'ADD-OPTION-3-KDM'" "ADD-OPTION-3-KDM"
+                            # Session=/usr/share/config/kdm/Xsession to Session=/usr/share/config/kdm/Xsession.custom
+                            add_packagemanager "copy_file '/usr/share/config/kdm/Xsession' '/usr/share/config/kdm/Xsession.custom' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"" "COPY-2-KDM"
+                        fi
+                        if [[ "QT_INSTALL" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'startkde')" "CONFIG-XINITRC-KDE"
+                            add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
+                            add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-KDM-UPOWER"
+                        elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
+                        elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
+                        elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
+                        elif [[ "$E17_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
+                        elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
+                        elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
+                        else
+                            add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
+                        fi
                     fi
                     S_OPT="$BreakableKey"
                     break;
                     ;;
                 3)  # Slim
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_SLIM"
-                    add_packagemanager "package_install \"$INSTALL_SLIM\" 'INSTALL-SLIM'" "INSTALL-SLIM"
-                    add_packagemanager "systemctl enable slim.service" "SYSTEMD-ENABLE-SLIM"
+                    if add_packagemanager "package_install \"$INSTALL_SLIM\" 'INSTALL-SLIM'" "INSTALL-SLIM" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_SLIM"
+                        add_packagemanager "systemctl enable slim.service" "SYSTEMD-ENABLE-SLIM"
+                    fi
                     S_OPT="$BreakableKey"
                     break
                     ;;
                 4)  # LightDM
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_LIGHTDM"
-                    add_packagemanager "package_install \"$INSTALL_LIGHTDM\" 'INSTALL-LIGHTDM'" "INSTALL-LIGHTDM"
-                    add_packagemanager "copy_file 'gnome-autogen.sh' '/usr/bin/gnome-autogen.sh' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"" "INSTALL-LIGHTDM-GNOME"
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
+                    if add_packagemanager "package_install \"$INSTALL_LIGHTDM\" 'INSTALL-LIGHTDM'" "INSTALL-LIGHTDM" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_LIGHTDM"
+                    fi
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
                         add_aur_package "$AUR_INSTALL_LIGHTDM_KDE"
                         add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTDM_KDE\" 'AUR-INSTALL-LIGHTDM-KDE'" "AUR-INSTALL-LIGHTDM-KDE"
                     fi
@@ -4025,60 +4015,64 @@ install_display_manager_menu()
                         add_aur_package "$AUR_INSTALL_LIGHTDM_UNITY"
                         add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTDM_UNITY\" 'AUR-INSTALL-LIGHTDM-UNITY'" "AUR-INSTALL-LIGHTDM-UNITY"
                     fi
-                    add_aur_package "$AUR_INSTALL_LIGHTDM"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTDM\" 'AUR-INSTALL-LIGHTDM'" "AUR-INSTALL-LIGHTDM"
-                    add_packagemanager "sed -i 's/#greeter-session=.*\$/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf" "RUN-LIGHTDM"
-                    add_packagemanager "systemctl enable lightdm.service" "SYSTEMD-ENABLE-LIGHTDM"
-                    if [[ "$XFCE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "[[ ! -e /usr/bin/gdmflexiserver ]] && ln -s /usr/lib/lightdm/lightdm/gdmflexiserver /usr/bin/gdmflexiserver" "AUR-INSTALL-LIGHTDM-XFCE"
-                    fi
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'startkde')" "CONFIG-XINITRC-KDE"
-                        add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
-                        add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-KDM-UPOWER"
-                    elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
-                    elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
-                    elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
-                    elif [[ "$E17_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
-                    elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
-                    elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
-                        add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
-                    else
-                        add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTDM\" 'AUR-INSTALL-LIGHTDM'" "AUR-INSTALL-LIGHTDM" ; then
+                        add_aur_package "$AUR_INSTALL_LIGHTDM"
+                        add_packagemanager "sed -i 's/#greeter-session=.*\$/greeter-session=lightdm-gtk-greeter/' /etc/lightdm/lightdm.conf" "RUN-LIGHTDM"
+                        add_packagemanager "systemctl enable lightdm.service" "SYSTEMD-ENABLE-LIGHTDM"
+                        if [[ "$XFCE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "[[ ! -e /usr/bin/gdmflexiserver ]] && ln -s /usr/lib/lightdm/lightdm/gdmflexiserver /usr/bin/gdmflexiserver" "AUR-INSTALL-LIGHTDM-XFCE"
+                        fi
+                        if [[ "QT_INSTALL" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'startkde')" "CONFIG-XINITRC-KDE"
+                            add_packagemanager "systemctl enable kdm.service" "SYSTEMD-ENABLE-KDM"
+                            add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-KDM-UPOWER"
+                        elif [[ "$MATE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'mate-session')" "CONFIG-XINITRC-MATE"
+                        elif [[ "$CINNAMON_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'gnome-session-cinnamon')" "CONFIG-XINITRC-CINNAMON"
+                        elif [[ "$AWESOME_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'awesome')" "CONFIG-XINITRC-AWESOME"                     
+                        elif [[ "$E17_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'enlightenment_start')" "CONFIG-XINITRC-E17" 
+                        elif [[ "$OPENBOX_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'openbox-session')" "CONFIG-XINITRC-OPENBOX"
+                        elif [[ "$XFCE_INSTALLED" -eq 1 ]]; then
+                            add_packagemanager "$(config_xinitrc 'startxfce4')" "CONFIG-XINITRC-XFCE"
+                        else
+                            add_packagemanager "$(config_xinitrc 'gnome-session')" "CONFIG-XINITRC-GNOME"
+                        fi
                     fi
                     S_OPT="$BreakableKey"
                     break
                     ;;
                 5)  # LXDM
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_LXDM"
-                    add_packagemanager "package_install \"$INSTALL_LXDM\" 'INSTALL-LXDM'" "INSTALL-LXDM"
-                    add_packagemanager "systemctl enable lxdm.service" "SYSTEMD-ENABLE-LXDM"
-                    add_packagemanager "$(config_xinitrc 'startlxde')" "CONFIG-XINITRC-GNOME"
+                    if add_packagemanager "package_install \"$INSTALL_LXDM\" 'INSTALL-LXDM'" "INSTALL-LXDM" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_LXDM"
+                        add_packagemanager "systemctl enable lxdm.service" "SYSTEMD-ENABLE-LXDM"
+                        add_packagemanager "$(config_xinitrc 'startlxde')" "CONFIG-XINITRC-GNOME"
+                    fi
                     S_OPT="$BreakableKey"
                     break
                     ;;
                 6)  # Qingy
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_QINGY"
-                    add_packagemanager "package_install \"$INSTALL_QINGY\" 'INSTALL-QINGY'" "INSTALL-QINGY"
-                    add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-QINGY"
+                    if add_packagemanager "package_install \"$INSTALL_QINGY\" 'INSTALL-QINGY'" "INSTALL-QINGY" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_QINGY"
+                        add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-QINGY"
+                    fi
                     S_OPT="$BreakableKey"
                     break
                     ;;
                 7)  # XDM
                     MenuChecks[$((S_OPT - 1))]=1
-                    DE_MANAGER="$S_OPT"
-                    add_package "$INSTALL_XDM"
-                    add_packagemanager "package_install \"$INSTALL_XDM\" 'INSTALL-XDM'" "INSTALL-XDM"
-                    add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-XDM"
+                    if add_packagemanager "package_install \"$INSTALL_XDM\" 'INSTALL-XDM'" "INSTALL-XDM" ; then
+                        DE_MANAGER="$S_OPT"
+                        add_package "$INSTALL_XDM"
+                        add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-XDM"
+                    fi
                     S_OPT="$BreakableKey"
                     break
                     ;;
@@ -4114,11 +4108,12 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-EXTRA-DESC"   "Install Extra"
-    localize_info "INSTALL-EXTRA-TITLE"  "Extra's"
-    localize_info "INSTALL-EXTRA-INFO-1" "ELEMENTARY PROJECT: Media Player, Sharing service, Screencasting, Contacts manager, RSS feeds Reader, File Manager, Note Taking, Compositing Manager, Email client, Dictionary, Maya Calendar, Web Browser, Audio Player, Text Editor, Dock, App Launcher, Desktop Settings Hub, Indicators Topbar, Elementary Icons, and Elementary Theme."
-    localize_info "INSTALL-EXTRA-INFO-2" "Yapan: https://aur.archlinux.org/packages/yapan/ and https://bbs.archlinux.org/viewtopic.php?id=113078"
-    localize_info "INSTALL-EXTRA-INFO-3" "Yapan (Yet Another Package mAnager Notifier) — written in C++ and Qt. It shows an icon in the system tray and popup notifications for new packages and supports AUR helpers."
+    localize_info "INSTALL-EXTRA-DESC"     "Install Extra"
+    localize_info "INSTALL-EXTRA-TITLE"    "Extra's"
+    localize_info "INSTALL-EXTRA-MENU-1"   "Elementary Project"
+    localize_info "INSTALL-EXTRA-MENU-I-1"      "ELEMENTARY PROJECT: Media Player, Sharing service, Screencasting, Contacts manager, RSS feeds Reader, File Manager, Note Taking, Compositing Manager, Email client, Dictionary, Maya Calendar, Web Browser, Audio Player, Text Editor, Dock, App Launcher, Desktop Settings Hub, Indicators Topbar, Elementary Icons, and Elementary Theme."
+    localize_info "INSTALL-EXTRA-MENU-2"   "Yapan"
+    localize_info "INSTALL-EXTRA-MENU-I-2"      "Yapan (Yet Another Package mAnager Notifier) - pacman Update Monitor — written in C++ and Qt. It shows an icon in the system tray and popup notifications for new packages and supports AUR helpers. Yapan: https://aur.archlinux.org/packages/yapan/ and https://bbs.archlinux.org/viewtopic.php?id=113078"
 fi
 # -------------------------------------
 install_extra_menu()
@@ -4128,16 +4123,17 @@ install_extra_menu()
     local BreakableKey="D"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -4149,32 +4145,31 @@ install_extra_menu()
     while [[ 1 ]]; do
         print_title "INSTALL-EXTRA-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info  "INSTALL-EXTRA-INFO-1"
-        print_info  "INSTALL-EXTRA-INFO-2"
-        print_info  "INSTALL-EXTRA-INFO-3"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Elementary Project" "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Yapan" "" "$AUR" "Yapan: pacman Update Monitor" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EXTRA-MENU-1" "" "$AUR" "INSTALL-EXTRA-MENU-I-1" "MenuTheme[@]" # Elementary Project
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EXTRA-MENU-2" "" "$AUR" "INSTALL-EXTRA-MENU-I-2" "MenuTheme[@]" # Yapan
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Elementary Project
                     MenuChecks[$((S_OPT - 1))]=1
                     install_elementary_project_menu
                     ;;
-                2)  # 
+                2)  # Yapan
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_YAPAN"
-                    add_packagemanager "package_install \"$INSTALL_YAPAN\" 'INSTALL-YAPAN'" "INSTALL-YAPAN"
-                    add_aur_package "$AUR_INSTALL_YAPAN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_YAPAN\" 'AUR-INSTALL-YAPAN'" "AUR-INSTALL-YAPAN"
+                    if add_packagemanager "package_install \"$INSTALL_YAPAN\" 'INSTALL-YAPAN'" "INSTALL-YAPAN" ; then
+                        add_package "$INSTALL_YAPAN"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_YAPAN\" 'AUR-INSTALL-YAPAN'" "AUR-INSTALL-YAPAN" ; then
+                        add_aur_package "$AUR_INSTALL_YAPAN"
+                    fi
                     break; 
                     ;;
                 *)  # Catch ALL
@@ -4211,30 +4206,74 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ELEMENTARY-PROJECT-DESC"   "Install Elementary Project"
     localize_info "INSTALL-ELEMENTARY-PROJECT-INFO-1" "Note: Some of these programs still in alpha stage and may not work"
+    #
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-1"   "Media Player"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-1"      "Media Player: audience-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-2"   "Sharing service"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-2"      "Sharing service: contractor-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-3"   "Screencasting"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-3"      "Screencasting: eidete-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-4"   "Contacts Manager"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-4"      "Contacts Manager: dexter-contacts-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-5"   "RSS Feeds Reader"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-5"      "RSS Feeds Reader: feedler-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-6"   "File Manager"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-6"      "File Manager: files-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-7"   "Note Taking"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-7"      "Note Taking: footnote-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-8"   "Compositing Manager"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-8"      "Compositing Manager: gala-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-9"   "Email client"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-9"      "Email client: geary-git"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-10"   "Dictionary"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-10"      "Dictionary: lingo-dictionary-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-11"   "Calendar"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-11"      "Calendar: maya-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-12"   "Web Browser"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-12"      "Web Browser: midori"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-13"   "Audio Player"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-13"      "Audio Player: noise-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-14"   "Text Editor"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-14"      "Text Editor: scratch-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-15"   "Dock"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-15"      "Dock: plank-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-16"   "Terminal"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-16"      "Terminal: pantheon-terminal-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-17"   "App Launcher"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-17"      "App Launcher: slingshot-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-18"   "Desktop Settings Hub"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-18"      "Desktop Settings Hub: switchboard-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-19"   "Indicators Topbar"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-19"      "Indicators Topbar: wingpanel-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-20"   "Elementary Icons"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-20"      "Elementary Icons: elementary-icons-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-21"   "Elementary Theme"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-21"      "Elementary Theme: egtk-bzr"
 fi
-# -------------------------------------
+# -------------------------------------feedler-bzr
 install_elementary_project_menu()
 {
     local -r menu_name="ELEMENTARY-PROJECT"  # You must define Menu Name here
     local BreakableKey="B"                   # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 1 3 4 10 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 1 3 4 10"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    #
+    #audience-bzr
     StatusBar1="INSTALL-MENU-REC"
     StatusBar2="$RecommendedOptions"
     #
@@ -4244,141 +4283,165 @@ install_elementary_project_menu()
         print_error "INSTALL-ELEMENTARY-PROJECT-INFO-1"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Media Player"         "audience-bzr"          "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Sharing service"      "contractor-bzr"        "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Screencasting"        "eidete-bzr"            "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Contacts manager"     "dexter-contacts-bzr"   "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "RSS feeds Reader"     "feedler-bzr"           "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "File Manager"         "files-bzr"             "" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Note Taking"          "footnote-bzr"          "" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Compositing Manager"  "gala-bzr"              "" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Email client"         "geary-git"             "" "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dictionary"           "lingo-dictionary-bzr"  "" "" "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Calendar"             "maya-bzr"              "" "" "MenuTheme[@]" # 11
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Web Browser"          "midori"                "" "" "MenuTheme[@]" # 12
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Audio Player"         "noise-bzr"             "" "" "MenuTheme[@]" # 13
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Text Editor"          "scratch-bzr"           "" "" "MenuTheme[@]" # 14
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dock"                 "plank-bzr"             "" "" "MenuTheme[@]" # 15
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Terminal"             "pantheon-terminal-bzr" "" "" "MenuTheme[@]" # 16
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "App Launcher"         "slingshot-bzr"         "" "" "MenuTheme[@]" # 17
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Desktop Settings Hub" "switchboard-bzr"       "" "" "MenuTheme[@]" # 18
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Indicators Topbar"    "wingpanel-bzr"         "" "" "MenuTheme[@]" # 19
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Elementary Icons"     "elementary-icons-bzr"  "" "" "MenuTheme[@]" # 20
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Elementary Theme"     "egtk-bzr"              "" "" "MenuTheme[@]" # 21
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-1"  "aumidoridience-bzr"    "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-1"  "MenuTheme[@]" # 1  Media Player
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-2"  "contractor-bzr"        "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-2"  "MenuTheme[@]" # 2  Sharing service
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-3"  "eidete-bzr"            "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-3"  "MenuTheme[@]" # 3 Screencasting
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-4"  "dexter-contacts-bzr"   "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-4"  "MenuTheme[@]" # 4  Contacts manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-5"  "feedler-bzr"           "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-5"  "MenuTheme[@]" # 5  RSS Feeds Reader
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-6"  "files-bzr"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-6"  "MenuTheme[@]" # 6  File Manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-7"  "footnote-bzr"          "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-7"  "MenuTheme[@]" # 7 Note Taking
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-8"  "gala-bzr"              "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-8"  "MenuTheme[@]" # 8  Compositing Manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-9"  "geary-git"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-9"  "MenuTheme[@]" # 9 Email client 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-10" "lingo-dictionary-bzr"  "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-10" "MenuTheme[@]" # 10 Dictionary
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-11" "maya-bzr"              "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-11" "MenuTheme[@]" # 11 Calendar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-12" "midori"                "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-12" "MenuTheme[@]" # 12 Web Browser
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-13" "noise-bzr"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-13" "MenuTheme[@]" # 13 Audio Player
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-14" "scratch-bzr"           "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-14" "MenuTheme[@]" # 14 Text Editor
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-15" "plank-bzr"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-15" "MenuTheme[@]" # 15 Dock
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-16" "pantheon-terminal-bzr" "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-16" "MenuTheme[@]" # 16 Terminal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-17" "slingshot-bzr"         "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-17" "MenuTheme[@]" # 17 App Launcher
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-18" "switchboard-bzr"       "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-18" "MenuTheme[@]" # 18 Desktop Settings Hub
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-19" "wingpanel-bzr"         "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-19" "MenuTheme[@]" # 19 Indicators Topbar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-20" "elementary-icons-bzr"  "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-20" "MenuTheme[@]" # 20 Elementary Icons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-21" "egtk-bzr"              "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-21" "MenuTheme[@]" # 21 Elementary Theme
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # audience-bzr
+                1)  # Media Player audience-bzr
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_AUDIENCE" # gtk3
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_AUDIENCE\" 'AUR-INSTALL-EP-AUDIENCE'" "AUR-INSTALL-EP-AUDIENCE"
+                    if add_packagemanager "package_install \"$INSTALL_EP_AUDIENCE\" 'INSTALL-EP-AUDIENCE'" "INSTALL-EP-AUDIENCE" ; then
+                        add_package "$INSTALL_EP_AUDIENCE" # gtk3
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_AUDIENCE\" 'AUR-INSTALL-EP-AUDIENCE'" "AUR-INSTALL-EP-AUDIENCE" ; then
+                        add_aur_package "$AUR_INSTALL_EP_AUDIENCE" # gtk3
+                    fi
                     ;;
-                2)  # 
+                2)  # Sharing service
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_CONTRACTOR"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_CONTRACTOR\" 'AUR-INSTALL-EP-CONTRACTOR'" "AUR-INSTALL-EP-CONTRACTOR"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_CONTRACTOR\" 'AUR-INSTALL-EP-CONTRACTOR'" "AUR-INSTALL-EP-CONTRACTOR" ; then
+                        add_aur_package "$AUR_INSTALL_EP_CONTRACTOR"
+                    fi
                     ;;
-                3)  # 
+                3)  # Screencasting
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_EIDETE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EIDETE\" 'AUR-INSTALL-EP-EIDETE'" "AUR-INSTALL-EP-EIDETE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EIDETE\" 'AUR-INSTALL-EP-EIDETE'" "AUR-INSTALL-EP-EIDETE" ; then
+                        add_aur_package "$AUR_INSTALL_EP_EIDETE"
+                    fi
                     ;;
-                4)  # 
+                4)  # Contacts manager
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_DEXTER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_DEXTER\" 'AUR-INSTALL-EP-DEXTER'" "AUR-INSTALL-EP-DEXTER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_DEXTER\" 'AUR-INSTALL-EP-DEXTER'" "AUR-INSTALL-EP-DEXTER" ; then
+                        add_aur_package "$AUR_INSTALL_EP_DEXTER"
+                    fi
                     ;;
-                5)  # 
+                5)  # RSS Feeds Reader
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_FEEDLER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FEEDLER\" 'AUR-INSTALL-EP-FEEDLER'" "AUR-INSTALL-EP-FEEDLER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FEEDLER\" 'AUR-INSTALL-EP-FEEDLER'" "AUR-INSTALL-EP-FEEDLER" ; then
+                        add_aur_package "$AUR_INSTALL_EP_FEEDLER"
+                    fi
                     ;;
-                6)  # 
+                6)  # File Manager
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_FILES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FILES\" 'AUR-INSTALL-EP-FILES'" "AUR-INSTALL-EP-FILES"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FILES\" 'AUR-INSTALL-EP-FILES'" "AUR-INSTALL-EP-FILES" ; then
+                        add_aur_package "$AUR_INSTALL_EP_FILES"
+                    fi
                     ;;
-                7)  # 
+                7)  # Note Taking
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_FOOTNOTE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FOOTNOTE\" 'AUR-INSTALL-EP-FOOTNOTE'" "AUR-INSTALL-EP-FOOTNOTE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FOOTNOTE\" 'AUR-INSTALL-EP-FOOTNOTE'" "AUR-INSTALL-EP-FOOTNOTE" ; then
+                        add_aur_package "$AUR_INSTALL_EP_FOOTNOTE"
+                    fi
                     ;;
-                8)  # 
+                8)  # Compositing Manager
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_GALA"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GALA\" 'AUR-INSTALL-EP-GALA'" "AUR-INSTALL-EP-GALA"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GALA\" 'AUR-INSTALL-EP-GALA'" "AUR-INSTALL-EP-GALA" ; then
+                        add_aur_package "$AUR_INSTALL_EP_GALA"
+                    fi
                     ;;
-                9)  # 
+                9)  # Email client
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_GEARY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GEARY\" 'AUR-INSTALL-EP-GEARY'" "AUR-INSTALL-EP-GEARY"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GEARY\" 'AUR-INSTALL-EP-GEARY'" "AUR-INSTALL-EP-GEARY" ; then
+                        add_aur_package "$AUR_INSTALL_EP_GEARY"
+                    fi
                     ;;
-               10)  # 
+               10)  # Dictionary
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_LINGO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_LINGO\" 'AUR-INSTALL-EP-LINGO'" "AUR-INSTALL-EP-LINGO"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_LINGO\" 'AUR-INSTALL-EP-LINGO'" "AUR-INSTALL-EP-LINGO" ; then
+                        add_aur_package "$AUR_INSTALL_EP_LINGO"
+                    fi
                     ;;
-               11)  # 
+               11)  # Calendar
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_MAYA"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MAYA\" 'AUR-INSTALL-EP-MAYA'" "AUR-INSTALL-EP-MAYA"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MAYA\" 'AUR-INSTALL-EP-MAYA'" "AUR-INSTALL-EP-MAYA" ; then
+                        add_aur_package "$AUR_INSTALL_EP_MAYA"
+                    fi
                     ;;
-               12)  # 
+               12)  # Web Browser
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_MIDORI"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MIDORI\" 'AUR-INSTALL-EP-MIDORI'" "AUR-INSTALL-EP-MIDORI"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MIDORI\" 'AUR-INSTALL-EP-MIDORI'" "AUR-INSTALL-EP-MIDORI" ; then
+                        add_aur_package "$AUR_INSTALL_EP_MIDORI"
+                    fi
                     ;;
-               13)  # 
+               13)  # Audio Player
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_NOISE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_NOISE\" 'AUR-INSTALL-EP-NOISE'" "AUR-INSTALL-EP-NOISE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_NOISE\" 'AUR-INSTALL-EP-NOISE'" "AUR-INSTALL-EP-NOISE" ; then
+                        add_aur_package "$AUR_INSTALL_EP_NOISE"
+                    fi
                     ;;
-               14)  # 
+               14)  # Text Editor
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_SCRATCH"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SCRATCH\" 'AUR-INSTALL-EP-SCRATCH'" "AUR-INSTALL-EP-SCRATCH"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SCRATCH\" 'AUR-INSTALL-EP-SCRATCH'" "AUR-INSTALL-EP-SCRATCH" ; then
+                        add_aur_package "$AUR_INSTALL_EP_SCRATCH"
+                    fi
                     ;;
-               15)  # 
+               15)  # Dock
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_PLANK"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PLANK\" 'AUR-INSTALL-EP-PLANK'" "AUR-INSTALL-EP-PLANK"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PLANK\" 'AUR-INSTALL-EP-PLANK'" "AUR-INSTALL-EP-PLANK" ; then
+                        add_aur_package "$AUR_INSTALL_EP_PLANK"
+                    fi
                     ;;
-               16)  # 
+               16)  # Terminal
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_PANTHEON"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PANTHEON\" 'AUR-INSTALL-EP-PANTHEON'" "AUR-INSTALL-EP-PANTHEON"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PANTHEON\" 'AUR-INSTALL-EP-PANTHEON'" "AUR-INSTALL-EP-PANTHEON" ; then
+                        add_aur_package "$AUR_INSTALL_EP_PANTHEON"
+                    fi
                     ;;
-               17)  # 
+               17)  # App Launcher
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_SLINGSHOT"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SLINGSHOT\" 'AUR-INSTALL-EP-SLINGSHOT'" "AUR-INSTALL-EP-SLINGSHOT"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SLINGSHOT\" 'AUR-INSTALL-EP-SLINGSHOT'" "AUR-INSTALL-EP-SLINGSHOT" ; then
+                        add_aur_package "$AUR_INSTALL_EP_SLINGSHOT"
+                    fi
                     ;;
-               18)  # 
+               18)  # Desktop Settings Hub
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_SWITCHBOARD"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SWITCHBOARD\" 'AUR-INSTALL-EP-SWITCHBOARD" "AUR-INSTALL-EP-SWITCHBOARD"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SWITCHBOARD\" 'AUR-INSTALL-EP-SWITCHBOARD" "AUR-INSTALL-EP-SWITCHBOARD" ; then
+                        add_aur_package "$AUR_INSTALL_EP_SWITCHBOARD"
+                    fi
                     ;;
-               19)  # 
+               19)  # Indicators Topbar
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_WINGPANEL"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_WINGPANEL\" 'AUR-INSTALL-EP-WINGPANEL'" "AUR-INSTALL-EP-WINGPANEL"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_WINGPANEL\" 'AUR-INSTALL-EP-WINGPANEL'" "AUR-INSTALL-EP-WINGPANEL" ; then
+                        add_aur_package "$AUR_INSTALL_EP_WINGPANEL"
+                    fi
                     ;;
-               20)  # 
+               20)  # Elementary Icons
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_ICONS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_ICONS\" 'AUR-INSTALL-EP-ICONS'" "AUR-INSTALL-EP-ICONS"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK_UPDATE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_ICONS\" 'AUR-INSTALL-EP-ICONS'" "AUR-INSTALL-EP-ICONS" ; then
+                        add_aur_package "$AUR_INSTALL_EP_ICONS"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK_UPDATE"
+                    fi
                     ;;
-               21)  # 
+               21)  # Elementary Theme
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EP_EGTK"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EGTK\" 'AUR-INSTALL-EP-EGTK'" "AUR-INSTALL-EP-EGTK"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EGTK\" 'AUR-INSTALL-EP-EGTK'" "AUR-INSTALL-EP-EGTK" ; then
+                        add_aur_package "$AUR_INSTALL_EP_EGTK"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4413,9 +4476,13 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-AUDIO-APPS-DESC"   "Install Audio Apps"
-    localize_info "INSTALL-AUDIO-APPS-MENU-1" "Players"
-    localize_info "INSTALL-AUDIO-APPS-MENU-2" "Editors | Tools"
-    localize_info "INSTALL-AUDIO-APPS-MENU-3" "Codecs"
+    #
+    localize_info "INSTALL-AUDIO-APPS-MENU-1"   "Players"
+    localize_info "INSTALL-AUDIO-APPS-MENU-I-1"      "Players: Sub Menu"
+    localize_info "INSTALL-AUDIO-APPS-MENU-2"   "Editors | Tools"
+    localize_info "INSTALL-AUDIO-APPS-MENU-I-2"      "Editors | Tools: Sub Menu: soundconverter, puddletag, Audacity, Ocenaudio"
+    localize_info "INSTALL-AUDIO-APPS-MENU-3"   "Codecs"
+    localize_info "INSTALL-AUDIO-APPS-MENU-I-3"      "Codecs: gstreamer0.10-base, gstreamer0.10-good-plugins, mpg123, flac, faac, faad2, lame, libdca, wavpack"
 fi
 # -------------------------------------
 install_audio_apps_menu()
@@ -4425,16 +4492,17 @@ install_audio_apps_menu()
     local BreakableKey="D"           # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-3"   # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -4448,30 +4516,31 @@ install_audio_apps_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-APPS-MENU-1" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-APPS-MENU-2" "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-APPS-MENU-3" "" "" "" "MenuTheme[@]" # 3
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-APPS-MENU-1" "" "" "INSTALL-AUDIO-APPS-MENU-I-1" "MenuTheme[@]" # 1 Players
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-APPS-MENU-2" "" "" "INSTALL-AUDIO-APPS-MENU-I-2" "MenuTheme[@]" # 2 Editors | Tools
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-APPS-MENU-3" "" "" "INSTALL-AUDIO-APPS-MENU-I-3" "MenuTheme[@]" # 3 Codecs
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"$INSTALL_AUDIO_CODECS
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Players
                     MenuChecks[$((S_OPT - 1))]=1
                     install_players_menu
                     ;;
-                2)  # 
+                2)  # Editors | Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     install_audio_editors_menu
                     ;;
-                3)  # 
+                3)  # Codecs
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_AUDIO_CODECS"
-                    add_packagemanager "package_install \"$INSTALL_AUDIO_CODECS\" 'INSTALL-AUDIO-CODECS'" "INSTALL-AUDIO-CODECS"
+                    if add_packagemanager "package_install \"$INSTALL_AUDIO_CODECS\" 'INSTALL-AUDIO-CODECS'" "INSTALL-AUDIO-CODECS" ; then
+                        add_package "$INSTALL_AUDIO_CODECS"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4506,6 +4575,15 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-AUDIO-EDITORS-DESC"   "Install Audio Editors"
+    #
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-1"   "soundconverter"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-1"      "soundconverter: or soundkonverter Depending on DE"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-2"   "puddletag"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-2"      "puddletag: An audio tag editor for GNU/Linux (like Mp3tag)"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-3"   "Audacity"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-3"      "Audacity: A program that lets you manipulate digital audio waveforms"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-4"   "Ocenaudio"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-4"      "Ocenaudio: A cross-platform, easy to use, fast and functional audio editor"
 fi
 # -------------------------------------
 install_audio_editors_menu()
@@ -4514,16 +4592,17 @@ install_audio_editors_menu()
     local BreakableKey="B"                      # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"                # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 2 3 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2 3"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 2 3 4 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2 3 4"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 2 3 4 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 2 3 4"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -4537,47 +4616,53 @@ install_audio_editors_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "soundconverter" "" "" "soundconverter: or soundkonverter Depending on DE" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "puddletag"      "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Audacity"       "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Ocenaudio"      "" "" "" "MenuTheme[@]" # 4
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-EDITORS-MENU-1" "" ""     "" "MenuTheme[@]" # 1 soundconverter
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-EDITORS-MENU-2" "" "$AUR" "" "MenuTheme[@]" # 2 puddletag
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-EDITORS-MENU-3" "" ""     "" "MenuTheme[@]" # 3 Audacity
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-AUDIO-EDITORS-MENU-4" "" "$AUR" "" "MenuTheme[@]" # 4 Ocenaudio
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # soundconverter
                     MenuChecks[$((SS_OPT - 1))]=1
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                           add_package "$INSTALL_SOUNDCONVERTER"
-                           add_packagemanager "package_install \"$INSTALL_SOUNDCONVERTER\" 'INSTALL-SOUNDCONVERTER'" "INSTALL-SOUNDCONVERTER"
+                            if add_packagemanager "package_install \"$INSTALL_SOUNDCONVERTER\" 'INSTALL-SOUNDCONVERTER'" "INSTALL-SOUNDCONVERTER" ; then
+                                add_package "$INSTALL_SOUNDCONVERTER"
+                            fi
                         fi
-                        add_package "$INSTALL_SOUNDKONVERTER"
-                        add_packagemanager "package_install \"$INSTALL_SOUNDKONVERTER\" 'INSTALL-SOUNDKONVERTER'" "INSTALL-SOUNDKONVERTER"
+                        if add_packagemanager "package_install \"$INSTALL_SOUNDKONVERTER\" 'INSTALL-SOUNDKONVERTER'" "INSTALL-SOUNDKONVERTER" ; then
+                            add_package "$INSTALL_SOUNDKONVERTER"
+                        fi
                     else
-                        add_package "$INSTALL_SOUNDCONVERTER"
-                        add_packagemanager "package_install \"$INSTALL_SOUNDCONVERTER\" 'INSTALL-SOUNDCONVERTER'" "INSTALL-SOUNDCONVERTER"
+                        if add_packagemanager "package_install \"$INSTALL_SOUNDCONVERTER\" 'INSTALL-SOUNDCONVERTER'" "INSTALL-SOUNDCONVERTER" ; then
+                            add_package "$INSTALL_SOUNDCONVERTER"
+                        fi
                      fi
                      ;;
-                2)  # 
+                2)  # puddletag
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_PUDDLETAG"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_PUDDLETAG\" 'AUR-INSTALL-PUDDLETAG'" "AUR-INSTALL-PUDDLETAG"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_PUDDLETAG\" 'AUR-INSTALL-PUDDLETAG'" "AUR-INSTALL-PUDDLETAG" ; then
+                        add_aur_package "$AUR_INSTALL_PUDDLETAG"
+                    fi
                     ;;
-                3)  # 
+                3)  # Audacity
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_AUDACITY"
-                    add_packagemanager "package_install \"$INSTALL_AUDACITY\" 'INSTALL-AUDACITY'" "INSTALL-AUDACITY"
+                    if add_packagemanager "package_install \"$INSTALL_AUDACITY\" 'INSTALL-AUDACITY'" "INSTALL-AUDACITY" ; then
+                        add_package "$INSTALL_AUDACITY"
+                    fi
                     ;;
-                4)  # 
+                4)  # Ocenaudio
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_OCENAUDIO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_OCENAUDIO\" 'AUR-INSTALL-OCENAUDIO'" "AUR-INSTALL-OCENAUDIO"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_OCENAUDIO\" 'AUR-INSTALL-OCENAUDIO'" "AUR-INSTALL-OCENAUDIO" ; then
+                        add_aur_package "$AUR_INSTALL_OCENAUDIO"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4598,11 +4683,11 @@ install_audio_editors_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# INSTALL PLAYERS {{{
+# INSTALL PLAYERS MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_players_menu"
     USAGE="install_players_menu"
-    DESCRIPTION=$(localize "INSTALL-PLAYERS-DESC")
+    DESCRIPTION=$(localize "INSTALL-PLAYERS-MENU-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
     VERSION="1.0"
@@ -4611,7 +4696,34 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-PLAYERS-DESC"   "Install Players"
+    localize_info "INSTALL-PLAYERS-MENU-DESC"   "Install Players"
+
+    localize_info "INSTALL-PLAYERS-MENU-MENU-1"   "Amarok"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-1"       "Amarok: The powerful music player for KDE"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-2"   "Audacious"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-2"       "Audacious: Lightweight, advanced audio player focused on audio quality with Plugins for Audacious"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-3"   "Banshee"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-3"       "Banshee: Music management and playback for GNOME"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-4"   "Clementine"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-4"       "Clementine: A music player and library organizer"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-5"   "Dead beef"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-5"       "Dead beef: An audio player for GNU/Linux based on GTK2."
+    localize_info "INSTALL-PLAYERS-MENU-MENU-6"   "Exaile"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-6"       "Exaile: A full-featured media player for GTK+"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-7"   "Musique"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-7"       "Musique: Just another music player, only better"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-8"   "Nuvola Player"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-8"       "Nuvola Player: Integrated Google Music, Grooveshark, 8tracks and Hype Machine player."
+    localize_info "INSTALL-PLAYERS-MENU-MENU-9"   "Rhythmbox"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-9"       "Rhythmbox: An iTunes-like music playback and management application"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-10"   "Radio tray"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-10"       "Radio tray: An online radio streaming player that runs on a Linux system tray."
+    localize_info "INSTALL-PLAYERS-MENU-MENU-11"   "Spotify"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-11"       "Spotify: A proprietary peer-to-peer music streaming service"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-12"   "Tomahawk"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-12"       "Tomahawk: A Music Player App written in C++/Qt"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-13"   "Timidity++"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-14"       "Timidity++: A MIDI to WAVE converter and player"
 fi
 # -------------------------------------
 install_players_menu()
@@ -4619,17 +4731,18 @@ install_players_menu()
     local -r menu_name="INSTALL-PLAYERS"  # You must define Menu Name here
     local BreakableKey="B"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-5"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
-    #
-    local SUB_OPTIONS=""        
+    #Banshee
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -4639,98 +4752,111 @@ install_players_menu()
     StatusBar2="$RecommendedOptions"
     #
     while [[ 1 ]]; do
-        #
+        #Banshee
         print_title "INSTALL-PLAYERS-DESC"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Amarok"        "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Audacious"     "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Banshee"       "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Clementine"    "" ""     "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dead beef"     "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Exaile"        "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Musique"       "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Nuvola Player" "" "$AUR" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Rhythmbox"     "" ""     "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Radio tray"    "" "$AUR" "" "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Spotify"       "" "$AUR" "" "MenuTheme[@]" # 11
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Tomahawk"      "" "$AUR" "" "MenuTheme[@]" # 12
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Timidity++"    "" ""     "" "MenuTheme[@]" # 13
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-1"  "" ""     "INSTALL-PLAYERS-MENU-MENU-I-1"  "MenuTheme[@]" # 1  Amarok
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-2"  "" ""     "INSTALL-PLAYERS-MENU-MENU-I-2"  "MenuTheme[@]" # 2  Audacious
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-3"  "" ""     "INSTALL-PLAYERS-MENU-MENU-I-3"  "MenuTheme[@]" # 3  Banshee
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-4"  "" ""     "INSTALL-PLAYERS-MENU-MENU-I-4"  "MenuTheme[@]" # 4  Clementine
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-5"  "" ""     "INSTALL-PLAYERS-MENU-MENU-I-5"  "MenuTheme[@]" # 5  Dead beef
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-6"  "" "$AUR" "INSTALL-PLAYERS-MENU-MENU-I-6"  "MenuTheme[@]" # 6  Exaile
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-7"  "" "$AUR" "INSTALL-PLAYERS-MENU-MENU-I-7"  "MenuTheme[@]" # 7  Musique
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-8"  "" "$AUR" "INSTALL-PLAYERS-MENU-MENU-I-8"  "MenuTheme[@]" # 8  Nuvola Player
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-9"  "" ""     "INSTALL-PLAYERS-MENU-MENU-I-9"  "MenuTheme[@]" # 9  Rhythmbox
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-10" "" "$AUR" "INSTALL-PLAYERS-MENU-MENU-I-10" "MenuTheme[@]" # 10 Radio tray
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-11" "" "$AUR" "INSTALL-PLAYERS-MENU-MENU-I-11" "MenuTheme[@]" # 11 Spotify
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-12" "" "$AUR" "INSTALL-PLAYERS-MENU-MENU-I-12" "MenuTheme[@]" # 12 Tomahawk
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PLAYERS-MENU-MENU-13" "" ""     "INSTALL-PLAYERS-MENU-MENU-I-13" "MenuTheme[@]" # 13 Timidity++
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Amarok
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_AMAROK"
-                    add_packagemanager "package_install \"$INSTALL_AMAROK\" 'INSTALL-AMAROK'" "INSTALL-AMAROK"
+                    if add_packagemanager "package_install \"$INSTALL_AMAROK\" 'INSTALL-AMAROK'" "INSTALL-AMAROK" ; then
+                        add_package "$INSTALL_AMAROK"
+                    fi
                     ;;
-                2)  # 
+                2)  # Audacious
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_AUDACIOUS"
-                    add_packagemanager "package_install \"$INSTALL_AUDACIOUS\" 'INSTALL-AUDACIOUS'" "INSTALL-AUDACIOUS"
+                    if add_packagemanager "package_install \"$INSTALL_AUDACIOUS\" 'INSTALL-AUDACIOUS'" "INSTALL-AUDACIOUS" ; then
+                        add_package "$INSTALL_AUDACIOUS"
+                    fi
                     ;;
-                3)  # 
+                3)  # Banshee
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_BANSHEE"
-                    add_packagemanager "package_install \"$INSTALL_BANSHEE\" 'INSTALL-BANSHEE'" "INSTALL-BANSHEE"
+                    if add_packagemanager "package_install \"$INSTALL_BANSHEE\" 'INSTALL-BANSHEE'" "INSTALL-BANSHEE" ; then
+                        add_package "$INSTALL_BANSHEE"
+                    fi
                     ;;
-                4)  # 
+                4)  # Clementine
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_CLEMENTINE"
-                    add_packagemanager "package_install \"$INSTALL_CLEMENTINE\" 'INSTALL-CLEMENTINE'" "INSTALL-CLEMENTINE"
+                    if add_packagemanager "package_install \"$INSTALL_CLEMENTINE\" 'INSTALL-CLEMENTINE'" "INSTALL-CLEMENTINE" ; then
+                        add_package "$INSTALL_CLEMENTINE"
+                    fi
                     ;;
-                5)  # 
+                5)  # Dead beef
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_DEADBEEF"
-                    add_packagemanager "package_install \"$INSTALL_DEADBEEF\" 'INSTALL-DEADBEEF'" "INSTALL-DEADBEEF"
+                    if add_packagemanager "package_install \"$INSTALL_DEADBEEF\" 'INSTALL-DEADBEEF'" "INSTALL-DEADBEEF" ; then
+                        add_package "$INSTALL_DEADBEEF"
+                    fi
                     ;;
-                6)  # 
+                6)  # Exaile
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EXAILE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EXAILE\" 'AUR-INSTALL-EXAILE'" "AUR-INSTALL-EXAILE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EXAILE\" 'AUR-INSTALL-EXAILE'" "AUR-INSTALL-EXAILE" ; then
+                        add_aur_package "$AUR_INSTALL_EXAILE"
+                    fi
                     ;;
-                7)  # 
+                7)  # Musique
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MUSIQUE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MUSIQUE\" 'AUR-INSTALL-MUSIQUE'" "AUR-INSTALL-MUSIQUE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MUSIQUE\" 'AUR-INSTALL-MUSIQUE'" "AUR-INSTALL-MUSIQUE" ; then
+                        add_aur_package "$AUR_INSTALL_MUSIQUE"
+                    fi
                     ;;
-                8)  # 
+                8)  # Nuvola Player
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_NUVOLAPLAYER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_NUVOLAPLAYER\" 'AUR-INSTALL-NUVOLAPLAYER" "AUR-INSTALL-NUVOLAPLAYER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_NUVOLAPLAYER\" 'AUR-INSTALL-NUVOLAPLAYER" "AUR-INSTALL-NUVOLAPLAYER" ; then
+                        add_aur_package "$AUR_INSTALL_NUVOLAPLAYER"
+                    fi
                     ;;
-                9)  # 
+                9)  # Rhythmbox
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_RHYTHMBOX"
-                    add_packagemanager "package_install \"$INSTALL_RHYTHMBOX\" 'INSTALL-RHYTHMBOX'" "INSTALL-RHYTHMBOX"
-                   ;;
-               10)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_RADIOTRAY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_RADIOTRAY\" 'AUR-INSTALL-RADIOTRAY'" "AUR-INSTALL-RADIOTRAY"
+                    if add_packagemanager "package_install \"$INSTALL_RHYTHMBOX\" 'INSTALL-RHYTHMBOX'" "INSTALL-RHYTHMBOX" ; then
+                        add_package "$INSTALL_RHYTHMBOX"
+                    fi
                     ;;
-               11)  # 
+               10)  # Radio tray
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SPOTIFY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SPOTIFY\" 'AUR-INSTALL-SPOTIFY'" "AUR-INSTALL-SPOTIFY"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RADIOTRAY\" 'AUR-INSTALL-RADIOTRAY'" "AUR-INSTALL-RADIOTRAY" ; then
+                        add_aur_package "$AUR_INSTALL_RADIOTRAY"
+                    fi
                     ;;
-               12)  # 
+               11)  # Spotify
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_TOMAHAWK"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TOMAHAWK\" 'AUR-INSTALL-TOMAHAWK'" "AUR-INSTALL-TOMAHAWK"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SPOTIFY\" 'AUR-INSTALL-SPOTIFY'" "AUR-INSTALL-SPOTIFY" ; then
+                        add_aur_package "$AUR_INSTALL_SPOTIFY"
+                    fi
                     ;;
-               13)  # 
+               12)  # Tomahawk
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_TIMIDITY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TIMIDITY\" 'AUR-INSTALL-TIMIDITY'" "AUR-INSTALL-TIMIDITY"
-                    add_packagemanager"echo -e 'soundfont /usr/share/soundfonts/fluidr3/FluidR3GM.SF2' >> /etc/timidity++/timidity.cfg" "RUN-TIMIDITY"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_TOMAHAWK\" 'AUR-INSTALL-TOMAHAWK'" "AUR-INSTALL-TOMAHAWK" ; then
+                        add_aur_package "$AUR_INSTALL_TOMAHAWK"
+                    fi
+                    ;;
+               13)  # Timidity++
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_TIMIDITY\" 'AUR-INSTALL-TIMIDITY'" "AUR-INSTALL-TIMIDITY" ; then
+                        add_aur_package "$AUR_INSTALL_TIMIDITY"
+                        add_packagemanager"echo -e 'soundfont /usr/share/soundfonts/fluidr3/FluidR3GM.SF2' >> /etc/timidity++/timidity.cfg" "RUN-TIMIDITY"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4765,30 +4891,30 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-OFFICE-APPS-DESC"      "Install Office Apps"
-    localize_info "INSTALL-OFFICE-APPS-TITLE"     "OFFICE APPS"
+    localize_info "INSTALL-OFFICE-APPS-TITLE"     "Office Applications"
     #
     localize_info "INSTALL-OFFICE-APPS-MENU-1"    "LibreOffice"
-    localize_info "INSTALL-OFFICE-APPS-MENU-1-I"        "Libre Office - https://wiki.archlinux.org/index.php/LibreOffice"
-    localize_info "INSTALL-OFFICE-APPS-MENU-2"    "Caligra or Abiword + Gnumeric"
-    localize_info "INSTALL-OFFICE-APPS-MENU-2-I"        "Caligra or Abiword + Gnumeric: Depending on DE"
+    localize_info "INSTALL-OFFICE-APPS-MENU-1-I"        "Libre Office: LibreOffice is the free power-packed Open Source personal productivity suite for Windows, Macintosh and Linux, that gives you six feature-rich applications for all your document production and data processing needs: Writer, Calc, Impress, Draw, Math and Base. - https://wiki.archlinux.org/index.php/LibreOffice"
+    localize_info "INSTALL-OFFICE-APPS-MENU-2"    "Calligra or Abiword + Gnumeric"
+    localize_info "INSTALL-OFFICE-APPS-MENU-2-I"        "Calligra (Calligra is the new name of the KOffice suite, so the Calligra packages will replace the KOffice packages.) or Abiword (A fully-featured word processor) + Gnumeric (A GNOME Spreadsheet Program): Depending on DE"
     localize_info "INSTALL-OFFICE-APPS-MENU-3"    "latex"
-    localize_info "INSTALL-OFFICE-APPS-MENU-3-I"        "LATEX - https://wiki.archlinux.org/index.php/LaTeX"
+    localize_info "INSTALL-OFFICE-APPS-MENU-3-I"        "LaTeX is a popular markup language and document preparation system, often used in the sciences. The current implementation in Arch Linux is TeX Live. - https://wiki.archlinux.org/index.php/LaTeX"
     localize_info "INSTALL-OFFICE-APPS-MENU-4"    "calibre"
-    localize_info "INSTALL-OFFICE-APPS-MENU-4-I"        "calibre: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-4-I"        "calibre: Ebook management application"
     localize_info "INSTALL-OFFICE-APPS-MENU-5"    "gcstar"
-    localize_info "INSTALL-OFFICE-APPS-MENU-5-I"        "gcstar: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-5-I"        "gcstar: A collection management application"
     localize_info "INSTALL-OFFICE-APPS-MENU-6"    "homebank"
     localize_info "INSTALL-OFFICE-APPS-MENU-6-I"        "homebank: Free, easy, personal accounting for everyone: http://homebank.free.fr/"
     localize_info "INSTALL-OFFICE-APPS-MENU-7"    "impressive"
-    localize_info "INSTALL-OFFICE-APPS-MENU-7-I"        "impressive: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-7-I"        "impressive: A fancy PDF presentation program (previously known as KeyJNote)."
     localize_info "INSTALL-OFFICE-APPS-MENU-8"    "nitrotasks"
-    localize_info "INSTALL-OFFICE-APPS-MENU-8-I"        "nitrotasks: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-8-I"        "nitrotasks: An eyecandy task managment tool"
     localize_info "INSTALL-OFFICE-APPS-MENU-9"    "ocrfeeder"
-    localize_info "INSTALL-OFFICE-APPS-MENU-9-I"        "ocrfeeder: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-9-I"        "ocrfeeder: GTK+ document layout analysis and optical character recognition application"
     localize_info "INSTALL-OFFICE-APPS-MENU-10"   "xmind"
-    localize_info "INSTALL-OFFICE-APPS-MENU-10-I"       "xmind: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-10-I"       "xmind: Brainstorming and Mind Mapping Software"
     localize_info "INSTALL-OFFICE-APPS-MENU-11"   "zathura"
-    localize_info "INSTALL-OFFICE-APPS-MENU-11-I"       "zathura: "
+    localize_info "INSTALL-OFFICE-APPS-MENU-11-I"       "zathura: a document viewer"
 fi
 # -------------------------------------
 install_office_apps_menu()
@@ -4798,16 +4924,17 @@ install_office_apps_menu()
     local BreakableKey="D"            # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 6 7 9 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 6 7 9"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 6 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 6"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -4821,112 +4948,133 @@ install_office_apps_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-1"  "" "" "INSTALL-OFFICE-APPS-MENU-1-I"  "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-2"  "" "" "INSTALL-OFFICE-APPS-MENU-2-I"  "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-3"  "" "" "INSTALL-OFFICE-APPS-MENU-3-I"  "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-4"  "" "" "INSTALL-OFFICE-APPS-MENU-4-I"  "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-5"  "" "" "INSTALL-OFFICE-APPS-MENU-5-I"  "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-6"  "" "" "INSTALL-OFFICE-APPS-MENU-6-I"  "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-7"  "" "" "INSTALL-OFFICE-APPS-MENU-7-I"  "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-8"  "" "" "INSTALL-OFFICE-APPS-MENU-8-I"  "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-9"  "" "" "INSTALL-OFFICE-APPS-MENU-9-I"  "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-10" "" "" "INSTALL-OFFICE-APPS-MENU-10-I" "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-11" "" "" "INSTALL-OFFICE-APPS-MENU-11-I" "MenuTheme[@]" # 11
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-1"  "" ""          "INSTALL-OFFICE-APPS-MENU-1-I"  "MenuTheme[@]" # 1 LibreOffice
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-2"  "" "$SOME_AUR" "INSTALL-OFFICE-APPS-MENU-2-I"  "MenuTheme[@]" # 2 Calligra or Abiword + Gnumeric
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-3"  "" ""          "INSTALL-OFFICE-APPS-MENU-3-I"  "MenuTheme[@]" # 3 latex
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-4"  "" ""          "INSTALL-OFFICE-APPS-MENU-4-I"  "MenuTheme[@]" # 4 calibre
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-5"  "" ""          "INSTALL-OFFICE-APPS-MENU-5-I"  "MenuTheme[@]" # 5 gcstar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-6"  "" ""          "INSTALL-OFFICE-APPS-MENU-6-I"  "MenuTheme[@]" # 6 homebank
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-7"  "" ""          "INSTALL-OFFICE-APPS-MENU-7-I"  "MenuTheme[@]" # 7 impressive
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-8"  "" "$AUR"      "INSTALL-OFFICE-APPS-MENU-8-I"  "MenuTheme[@]" # 8 nitrotasks
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-9"  "" ""          "INSTALL-OFFICE-APPS-MENU-9-I"  "MenuTheme[@]" # 9 ocrfeeder
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-10" "" ""          "INSTALL-OFFICE-APPS-MENU-10-I" "MenuTheme[@]" # 10 xmind
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-OFFICE-APPS-MENU-11" "" ""          "INSTALL-OFFICE-APPS-MENU-11-I" "MenuTheme[@]" # 11 zathura
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        #
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        #	A fully-featured word processor
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # LibreOffice
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_LIBRE_OFFICE"
-                    add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE\" 'INSTALL-LIBRE_OFFICE'" "INSTALL-LIBRE_OFFICE"
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
+                    if add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE\" 'INSTALL-LIBRE_OFFICE'" "INSTALL-LIBRE_OFFICE" ; then
+                        add_package "$INSTALL_LIBRE_OFFICE"
+                    fi
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1   ]]; then
-                            add_package "$INSTALL_LIBRE_OFFICE_GNOME"
-                            add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE_GNOME\" 'INSTALL-LIBRE-OFFICE-GNOME'" "INSTALL-LIBRE-OFFICE-GNOME"
+                            if add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE_GNOME\" 'INSTALL-LIBRE-OFFICE-GNOME'" "INSTALL-LIBRE-OFFICE-GNOME" ; then
+                                add_package "$INSTALL_LIBRE_OFFICE_GNOME"
+                            fi
                         fi
-                        add_package "$INSTALL_LIBRE_OFFICE_KDE"
-                        add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE_KDE\" 'INSTALL-LIBRE-OFFICE-KDE'" "INSTALL-LIBRE-OFFICE-KDE"
+                        if add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE_KDE\" 'INSTALL-LIBRE-OFFICE-KDE'" "INSTALL-LIBRE-OFFICE-KDE" ; then
+                            add_package "$INSTALL_LIBRE_OFFICE_KDE"
+                        fi
                     else
-                        add_package "$INSTALL_LIBRE_OFFICE_GNOME"
-                        add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE_GNOME\" 'INSTALL-LIBRE-OFFICE-GNOME'" "INSTALL-LIBRE-OFFICE-GNOME"
+                        if add_packagemanager "package_install \"$INSTALL_LIBRE_OFFICE_GNOME\" 'INSTALL-LIBRE-OFFICE-GNOME'" "INSTALL-LIBRE-OFFICE-GNOME" ; then
+                            add_package "$INSTALL_LIBRE_OFFICE_GNOME"
+                        fi
                     fi
                     ;;
                 2)  # Caligra or Abiword + Gnumeric
                     MenuChecks[$((S_OPT - 1))]=1
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                            add_package "$INSTALL_GNUMERIC"
-                            add_packagemanager "package_install \"$INSTALL_GNUMERIC\" 'INSTALL-GNUMERIC'" "INSTALL-GNUMERIC"
+                            if add_packagemanager "package_install \"$INSTALL_GNUMERIC\" 'INSTALL-GNUMERIC'" "INSTALL-GNUMERIC" ; then
+                                add_package "$INSTALL_GNUMERIC"
+                            fi
                         fi
-                        add_package "$INSTALL_CALLIGRA"
-                        add_packagemanager "package_install \"$INSTALL_CALLIGRA\" 'INSTALL-CALLIGRA'" "INSTALL-CALLIGRA"
+                        if add_packagemanager "package_install \"$INSTALL_CALLIGRA\" 'INSTALL-CALLIGRA'" "INSTALL-CALLIGRA" ; then
+                            add_package "$INSTALL_CALLIGRA"
+                        fi
                     else
-                        add_package "$INSTALL_GNUMERIC"
-                        add_packagemanager "package_install \"$INSTALL_GNUMERIC\" 'INSTALL-GNUMERIC'" "INSTALL-GNUMERIC"
+                        if add_packagemanager "package_install \"$INSTALL_GNUMERIC\" 'INSTALL-GNUMERIC'" "INSTALL-GNUMERIC" ; then
+                            add_package "$INSTALL_GNUMERIC"
+                        fi
                     fi
-                    add_aur_package "$AUR_INSTALL_HUNSPELL"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_HUNSPELL\" 'AUR-INSTALL-HUNSPELL'" "AUR-INSTALL-HUNSPELL"
-                    add_aur_package "$AUR_INSTALL_ASPELL_LANGUAGE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_LANGUAGE\" \"AUR-INSTALL-ASPELL-LANGUAGE\"" "AUR-INSTALL-ASPELL-LANGUAGE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_HUNSPELL\" 'AUR-INSTALL-HUNSPELL'" "AUR-INSTALL-HUNSPELL" ; then
+                        add_aur_package "$AUR_INSTALL_HUNSPELL"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_LANGUAGE\" \"AUR-INSTALL-ASPELL-LANGUAGE\"" "AUR-INSTALL-ASPELL-LANGUAGE" ; then
+                        add_aur_package "$AUR_INSTALL_ASPELL_LANGUAGE"
+                    fi
                     ;;
                 3)  # LATEX
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_LATEX"
-                    add_packagemanager "package_install \"$INSTALL_LATEX\" 'INSTALL-LATEX'" "INSTALL-LATEX"
-                    add_aur_package "$AUR_INSTALL_TEXMAKER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TEXMAKER\" 'AUR-INSTALL-TEXMAKER'" "AUR-INSTALL-TEXMAKER"
+                    if add_packagemanager "package_install \"$INSTALL_LATEX\" 'INSTALL-LATEX'" "INSTALL-LATEX" ; then
+                        add_package "$INSTALL_LATEX"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_TEXMAKER\" 'AUR-INSTALL-TEXMAKER'" "AUR-INSTALL-TEXMAKER" ; then
+                        add_aur_package "$AUR_INSTALL_TEXMAKER"
+                    fi
                     if [[ "$LANGUAGE" == "pt_BR" ]]; then
-                        add_aur_package "$AUR_INSTALL_ABNTEX"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_ABNTEX\" 'AUR-INSTALL-ABNTEX'" "AUR-INSTALL-ABNTEX"
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_ABNTEX\" 'AUR-INSTALL-ABNTEX'" "AUR-INSTALL-ABNTEX" ; then
+                            add_aur_package "$AUR_INSTALL_ABNTEX"
+                        fi
                     fi
                     ;;
                 4)  # calibre
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_CALIBRE"
-                    add_packagemanager "package_install \"$INSTALL_CALIBRE\" 'INSTALL-CALIBRE'" "INSTALL-CALIBRE"
+                    if add_packagemanager "package_install \"$INSTALL_CALIBRE\" 'INSTALL-CALIBRE'" "INSTALL-CALIBRE" ; then
+                        add_package "$INSTALL_CALIBRE"
+                    fi
                     ;;
                 5)  # gcstar
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GCSTAR"
-                    add_packagemanager "package_install \"$INSTALL_GCSTAR\" 'INSTALL-GCSTAR'" "INSTALL-GCSTAR"
+                    if add_packagemanager "package_install \"$INSTALL_GCSTAR\" 'INSTALL-GCSTAR'" "INSTALL-GCSTAR" ; then
+                        add_package "$INSTALL_GCSTAR"
+                    fi
                     ;;
                 6)  # homebank
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_HOMEBANK"
-                    add_packagemanager "package_install \"$INSTALL_HOMEBANK\" 'INSTALL-HOMEBANK'" "INSTALL-HOMEBANK"
+                    if add_packagemanager "package_install \"$INSTALL_HOMEBANK\" 'INSTALL-HOMEBANK'" "INSTALL-HOMEBANK" ; then
+                        add_package "$INSTALL_HOMEBANK"
+                    fi
                     ;;
                 7)  # impressive
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_IMPRESSIVE"
-                    add_packagemanager "package_install \"$INSTALL_IMPRESSIVE\" 'INSTALL-IMPRESSIVE'" "INSTALL-IMPRESSIVE"
+                    if add_packagemanager "package_install \"$INSTALL_IMPRESSIVE\" 'INSTALL-IMPRESSIVE'" "INSTALL-IMPRESSIVE" ; then
+                        add_package "$INSTALL_IMPRESSIVE"
+                    fi
                     ;;
                 8)  # nitrotasks
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_NITROTASKS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROTASKS\" 'AUR-INSTALL-NITROTASKS'" "AUR-INSTALL-NITROTASKS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROTASKS\" 'AUR-INSTALL-NITROTASKS'" "AUR-INSTALL-NITROTASKS" ; then
+                        add_aur_package "$AUR_INSTALL_NITROTASKS"
+                    fi
                     ;;
                 9)  # ocrfeeder
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_OCRFEEDER"
-                    add_packagemanager "package_install \"$INSTALL_OCRFEEDER\" 'INSTALL-OCRFEEDER'" "INSTALL-OCRFEEDER"
-                    add_aur_package "$AUR_INSTALL_ASPELL_$LANGUAGE_AS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_$LANGUAGE_AS\" \"AUR-INSTALL-ASPELL-$LANGUAGE_AS\"" "AUR-INSTALL-ASPELL-$LANGUAGE_AS"
+                    if add_packagemanager "package_install \"$INSTALL_OCRFEEDER\" 'INSTALL-OCRFEEDER'" "INSTALL-OCRFEEDER" ; then
+                        add_package "$INSTALL_OCRFEEDER"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_$LANGUAGE_AS\" \"AUR-INSTALL-ASPELL-$LANGUAGE_AS\"" "AUR-INSTALL-ASPELL-$LANGUAGE_AS" ; then
+                        add_aur_package "$AUR_INSTALL_ASPELL_$LANGUAGE_AS"
+                    fi
                     ;;
                 10)  # xmind
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_XMIND"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_XMIND\" 'AUR-INSTALL-XMIND'" "AUR-INSTALL-XMIND"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_XMIND\" 'AUR-INSTALL-XMIND'" "AUR-INSTALL-XMIND" ; then
+                        add_aur_package "$AUR_INSTALL_XMIND"
+                    fi
                     ;;
                 11)  # zathura
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_ZATHURA"
-                    add_packagemanager "package_install \"$INSTALL_ZATHURA\" 'INSTALL-ZATHURA'" "INSTALL-ZATHURA"
+                    if add_packagemanager "package_install \"$INSTALL_ZATHURA\" 'INSTALL-ZATHURA'" "INSTALL-ZATHURA" ; then
+                        add_package "$INSTALL_ZATHURA"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4964,19 +5112,18 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-SYSTEM-APPS-NOTES" "Install System Tools Applications."
     localize_info "INSTALL-SYSTEM-APPS-TITLE" "Notes."
     #
-    localize_info "INSTALL-SYSTEM-APPS-MENU-1" "Gparted"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-2" "Grsync"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-3" "Htop"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-4" "Virtualbox"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-5" "Webmin"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-6" "WINE"
-    #
-    localize_info "INSTALL-SYSTEM-APPS-MENU-I-1" "Gparted: https://wiki.archlinux.org/index.php/GParted"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-I-2" "Grsync: GTK GUI for rsync"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-I-3" "Htop: Interactive process viewer"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-I-4" "VirtualBox is a virtual PC emulator like VMware - https://wiki.archlinux.org/index.php/VirtualBox"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-I-5" "Webmin runs as a service. Using webmin, you can administer other services and server configuration using a web browser, either from the server or remotely. https://wiki.archlinux.org/index.php/Webmin"
-    localize_info "INSTALL-SYSTEM-APPS-MENU-I-6" "Wine (originally an acronym for 'Wine Is Not an Emulator') is a compatibility layer capable of running Windows applications on several POSIX-compliant operating systems, such as Linux, Mac OSX, & BSD. https://wiki.archlinux.org/index.php/Wine"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-1"   "Gparted"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-I-1"        "Gparted: A Partition Magic clone, frontend to GNU Parted. https://wiki.archlinux.org/index.php/GParted"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-2"   "Grsync"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-I-2"        "Grsync: GTK GUI for rsync"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-3"   "Htop"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-I-3"        "Htop: Interactive process viewer"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-4"   "Virtualbox"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-I-4"        "VirtualBox is a virtual PC emulator like VMware - https://wiki.archlinux.org/index.php/VirtualBox"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-5"   "Webmin"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-I-5"        "Webmin runs as a service. Using webmin, you can administer other services and server configuration using a web browser, either from the server or remotely. https://wiki.archlinux.org/index.php/Webmin"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-6"   "WINE"
+    localize_info "INSTALL-SYSTEM-APPS-MENU-I-6"        "Wine (originally an acronym for 'Wine Is Not an Emulator') is a compatibility layer capable of running Windows applications on several POSIX-compliant operating systems, such as Linux, Mac OSX, & BSD. https://wiki.archlinux.org/index.php/Wine"
 fi
 # -------------------------------------
 install_system_apps_menu()
@@ -4986,16 +5133,17 @@ install_system_apps_menu()
     local BreakableKey="D"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"            # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 6 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 6"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 2 3 4 6 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2 3 4 6"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 2 3 4 5 6 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 2 3 4 5 6"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -5009,72 +5157,84 @@ install_system_apps_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-1" "" "" "INSTALL-SYSTEM-APPS-MENU-I-1" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-2" "" "" "INSTALL-SYSTEM-APPS-MENU-I-2" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-3" "" "" "INSTALL-SYSTEM-APPS-MENU-I-3" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-4" "" "" "INSTALL-SYSTEM-APPS-MENU-I-4" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-5" "" "" "INSTALL-SYSTEM-APPS-MENU-I-5" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-6" "" "" "INSTALL-SYSTEM-APPS-MENU-I-6" "MenuTheme[@]" # 6
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-1" "" "" "INSTALL-SYSTEM-APPS-MENU-I-1" "MenuTheme[@]" # 1 Gparted
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-2" "" "" "INSTALL-SYSTEM-APPS-MENU-I-2" "MenuTheme[@]" # 2 Grsync
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-3" "" "" "INSTALL-SYSTEM-APPS-MENU-I-3" "MenuTheme[@]" # 3 Htop
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-4" "" "" "INSTALL-SYSTEM-APPS-MENU-I-4" "MenuTheme[@]" # 4 Virtualbox
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-5" "" "" "INSTALL-SYSTEM-APPS-MENU-I-5" "MenuTheme[@]" # 5 Webmin
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SYSTEM-APPS-MENU-6" "" "" "INSTALL-SYSTEM-APPS-MENU-I-6" "MenuTheme[@]" # 6 WINE
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Gparted
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GPARTED"
-                    add_packagemanager "package_install \"$INSTALL_GPARTED\" 'INSTALL-GPARTED'" "INSTALL-GPARTED"
+                    if add_packagemanager "package_install \"$INSTALL_GPARTED\" 'INSTALL-GPARTED'" "INSTALL-GPARTED" ; then
+                        add_package "$INSTALL_GPARTED"
+                    fi
                     ;;
-                2)  # 
+                2)  # Grsync
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GRSYNC"
-                    add_packagemanager "package_install \"$INSTALL_GRSYNC\" 'INSTALL-GRSYNC'" "INSTALL-GRSYNC"
+                    if add_packagemanager "package_install \"$INSTALL_GRSYNC\" 'INSTALL-GRSYNC'" "INSTALL-GRSYNC" ; then
+                        add_package "$INSTALL_GRSYNC"
+                    fi
                     ;;
-                3)  # 
+                3)  # Htop
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_HTOP"
-                    add_packagemanager "package_install \"$INSTALL_HTOP\" 'INSTALL-HTOP'" "INSTALL-HTOP"
+                    if add_packagemanager "package_install \"$INSTALL_HTOP\" 'INSTALL-HTOP'" "INSTALL-HTOP" ; then
+                        add_package "$INSTALL_HTOP"
+                    fi
                     ;;
-                4)  # 
+                4)  # Virtualbox
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VIRTUALBOX"
-                    add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX"
-                    add_aur_package "$AUR_INSTALL_VIRTUALBOX_EXT_ORACLE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_VIRTUALBOX_EXT_ORACLE\" 'AUR-INSTALL-VIRTUALBOX-EXT-ORACLE'" "AUR-INSTALL-VIRTUALBOX-EXT-ORACLE"
-                    add_module "vboxdrv" "MODULE-VIRTUALBOX"
-                    add_packagemanager "systemctl enable vboxservice.service" "SYSTEMD-ENABLE-VIRTUALBOX"
-                    add_packagemanager "add_user_2_group 'vboxusers'" "GROUPADD-VBOXUSERS"
+                    if add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX" ; then
+                        add_package "$INSTALL_VIRTUALBOX"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_VIRTUALBOX_EXT_ORACLE\" 'AUR-INSTALL-VIRTUALBOX-EXT-ORACLE'" "AUR-INSTALL-VIRTUALBOX-EXT-ORACLE" ; then
+                        add_aur_package "$AUR_INSTALL_VIRTUALBOX_EXT_ORACLE"
+                        add_module "vboxdrv" "MODULE-VIRTUALBOX"
+                        add_packagemanager "systemctl enable vboxservice.service" "SYSTEMD-ENABLE-VIRTUALBOX"
+                        add_packagemanager "add_user_2_group 'vboxusers'" "GROUPADD-VBOXUSERS"
+                    fi
                     ;;
-                5)  # 
+                5)  # Webmin
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_WEBMIN"
-                    add_packagemanager "package_install \"$INSTALL_WEBMIN\" 'INSTALL-WEBMIN'" "INSTALL-WEBMIN"
-                    add_packagemanager "systemctl enable webmin.service" "SYSTEMD-ENABLE-WEBMIN"
+                    if add_packagemanager "package_install \"$INSTALL_WEBMIN\" 'INSTALL-WEBMIN'" "INSTALL-WEBMIN" ; then
+                        add_package "$INSTALL_WEBMIN"
+                        add_packagemanager "systemctl enable webmin.service" "SYSTEMD-ENABLE-WEBMIN"
+                    fi
                     ;;
-                6)  # 
+                6)  # WINE
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_WINE"
-                    add_packagemanager "package_install \"$INSTALL_WINE\" 'INSTALL-WINE'" "INSTALL-WINE"
+                    if add_packagemanager "package_install \"$INSTALL_WINE\" 'INSTALL-WINE'" "INSTALL-WINE" ; then
+                        add_package "$INSTALL_WINE"
+                    fi
                     if [[ "$ARCHI" == "x86_64" ]]; then
                         if [[ "$VIDEO_CARD" -eq 1 ]]; then    # nVidia for WINE
-                            add_package "$INSTALL_WINE_NVIDIA"
-                            add_packagemanager "package_install \"$INSTALL_WINE_NVIDIA\" 'INSTALL-WINE-NVIDIA'" "INSTALL-WINE-NVIDIA"
+                            if add_packagemanager "package_install \"$INSTALL_WINE_NVIDIA\" 'INSTALL-WINE-NVIDIA'" "INSTALL-WINE-NVIDIA" ; then
+                                add_package "$INSTALL_WINE_NVIDIA"
+                            fi
                         elif [[ "$VIDEO_CARD" -eq 2 ]]; then  # Nouveau
-                            add_package "$INSTALL_WINE_NOUVEAU"
-                            add_packagemanager "package_install  \"$INSTALL_WINE_NOUVEAU\" 'INSTALL-WINE-NOUVEAU'" "INSTALL-WINE-NOUVEAU"
+                            if add_packagemanager "package_install  \"$INSTALL_WINE_NOUVEAU\" 'INSTALL-WINE-NOUVEAU'" "INSTALL-WINE-NOUVEAU" ; then
+                                add_package "$INSTALL_WINE_NOUVEAU"
+                            fi
                         elif [[ "$VIDEO_CARD" -eq 3 ]]; then  # Intel
-                            add_package "$INSTALL_WINE_INTEL"
-                            add_packagemanager "package_install \"$INSTALL_WINE_INTEL\" 'INSTALL-WINE-INTEL'" "INSTALL-WINE-INTEL"
+                            if add_packagemanager "package_install \"$INSTALL_WINE_INTEL\" 'INSTALL-WINE-INTEL'" "INSTALL-WINE-INTEL" ; then
+                                add_package "$INSTALL_WINE_INTEL"
+                            fi
                         elif [[ "$VIDEO_CARD" -eq 4 ]]; then  # ATI
-                            add_package "$INSTALL_WINE_ATI"
-                            add_packagemanager "package_install \"$INSTALL_WINE_ATI\" 'INSTALL-WINE-ATI'" "INSTALL-WINE-ATI"
+                            if add_packagemanager "package_install \"$INSTALL_WINE_ATI\" 'INSTALL-WINE-ATI'" "INSTALL-WINE-ATI" ; then
+                                add_package "$INSTALL_WINE_ATI"
+                            fi
                         fi
-                        add_package "$INSTALL_WINE_ALSA"
-                        add_packagemanager "package_install \"$INSTALL_WINE_ALSA\" 'INSTALL-WINE-ALSA'" "INSTALL-WINE-ALSA"
+                        if add_packagemanager "package_install \"$INSTALL_WINE_ALSA\" 'INSTALL-WINE-ALSA'" "INSTALL-WINE-ALSA" ; then
+                            add_package "$INSTALL_WINE_ALSA"
+                        fi
                     fi
                     ;;
                 *)  # Catch ALL
@@ -5127,16 +5287,17 @@ install_gnome_de_extras_menu()
     local BreakableKey="B"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 2"          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -5152,27 +5313,27 @@ install_gnome_de_extras_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I" "MenuThemeWarn[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I" "MenuTheme[@]"     # 1 GNOME Icons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I" "MenuTheme[@]"     # 2 GTK Themes
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I" "MenuThemeWarn[@]" # Unity
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # GNOME Icons
                     MenuChecks[$((S_OPT - 1))]=1
                     install_icons_menu
                     ;;
-                2)  # 
+                2)  # GTK Themes
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gtk_themes_menu
                     ;;
-                3)  # 
+                3)  # Unity
                     MenuChecks[$((S_OPT - 1))]=1
                     install_unity_now
                     ;;
@@ -5209,6 +5370,27 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-GTK-THEMES-DESC"   "Install GTK Themes"
+    #
+    localize_info "INSTALL-GTK-THEMES-MENU-1"    "Adwaita Cupertino"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-1"      "Adwaita Cupertino: Adwaita Cupertino GTK3 theme with matte and glassy metacity icons."
+    localize_info "INSTALL-GTK-THEMES-MENU-2"    "Boomerang"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-2"      "Boomerang: A modern and well polished theme for GNOME desktop (gtk3, gtk2 and metacity)"
+    localize_info "INSTALL-GTK-THEMES-MENU-3"    "Blackbird"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-3"      "Blackbird: A dark, ink black Xfce theme, based off of Greybird"
+    localize_info "INSTALL-GTK-THEMES-MENU-4"    "Bluebird"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-4"      "Bluebird: A light blue Xfce theme, introduced in the release of Xubuntu 10.10"
+    localize_info "INSTALL-GTK-THEMES-MENU-5"    "eGTK"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-5"      "eGTK: Development branch of the elementary GTK theme."
+    localize_info "INSTALL-GTK-THEMES-MENU-6"    "Greybird"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-6"      "Greybird: A grey and blue Xfce theme, introduced in the release of Xubuntu 11.04 and updated for 12.04; includes the classic low saturation theme"
+    localize_info "INSTALL-GTK-THEMES-MENU-7"    "Light"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-7"      "Light: Ubuntu 'light' themes Ambiance and Radiance (GTK2 and GTK3)"
+    localize_info "INSTALL-GTK-THEMES-MENU-8"    "Orion"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-8"      "Orion: A modern and light GTK theme"
+    localize_info "INSTALL-GTK-THEMES-MENU-9"    "Zukini"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-9"      "Zukini: A gtk2, gtk3, metacity, gnome-shell and unity theme..."
+    localize_info "INSTALL-GTK-THEMES-MENU-10"    "Zukitwo"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-10"      "Zukitwo: A theme for gtk3, gtk2, metacity, xfwm4, gnome-shell and unity..."
 fi
 # -------------------------------------
 install_gtk_themes_menu() 
@@ -5218,16 +5400,17 @@ install_gtk_themes_menu()
     local BreakableKey="D"                   # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-10"          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -5241,74 +5424,84 @@ install_gtk_themes_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Adwaita Cupertino" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Boomerang"         "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Blackbird"         "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Bluebird"          "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "eGTK"              "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Greybird"          "" "" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Light"             "" "" "Light: aka Ambiance/Radiance" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Orion"             "" "" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Zukini"            "" "" "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Zukitwo"           "" "" "" "MenuTheme[@]" # 10
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-1"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-1"  "MenuTheme[@]" # 1 Adwaita Cupertino
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-2"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-2"  "MenuTheme[@]" # 2 Boomerang
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-3"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-3"  "MenuTheme[@]" # 3 Blackbird
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-4"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-4"  "MenuTheme[@]" # 4 Bluebird
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-5"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-5"  "MenuTheme[@]" # 5 eGTK
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-6"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-6"  "MenuTheme[@]" # 6 Greybird
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-7"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-7"  "MenuTheme[@]" # 7 Light
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-8"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-8"  "MenuTheme[@]" # 8 Orion
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-9"  "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-9"  "MenuTheme[@]" # 9 Zukini
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GTK-THEMES-MENU-10" "" "$AUR" "INSTALL-GTK-THEMES-MENU-I-10" "MenuTheme[@]" # 10 Zukitwo
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Adwaita Cupertino
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_ADWAITA"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ADWAITA\" 'AUR-INSTALL-GTK-THEMES-ADWAITA'" "AUR-INSTALL-GTK-THEMES-ADWAITA"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ADWAITA\" 'AUR-INSTALL-GTK-THEMES-ADWAITA'" "AUR-INSTALL-GTK-THEMES-ADWAITA" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_ADWAITA"
+                    fi
                     ;;
-                2)  # 
+                2)  # Boomerang
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_BOOMERANG"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BOOMERANG\" 'AUR-INSTALL-GTK-THEMES-BOOMERANG'" "AUR-INSTALL-GTK-THEMES-BOOMERANG"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BOOMERANG\" 'AUR-INSTALL-GTK-THEMES-BOOMERANG'" "AUR-INSTALL-GTK-THEMES-BOOMERANG" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_BOOMERANG"
+                    fi
                     ;;
-                3)  # 
+                3)  # Blackbird
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_BLACKBIRD"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLACKBIRD\" 'AUR-INSTALL-GTK-THEMES-BLACKBIRD'" "AUR-INSTALL-GTK-THEMES-BLACKBIRD"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLACKBIRD\" 'AUR-INSTALL-GTK-THEMES-BLACKBIRD'" "AUR-INSTALL-GTK-THEMES-BLACKBIRD" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_BLACKBIRD"
+                    fi
                     ;;
-                4)  # 
+                4)  # Bluebird
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_BLUEBIRD"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLUEBIRD\" 'AUR-INSTALL-GTK-THEMES-BLUEBIRD'" "AUR-INSTALL-GTK-THEMES-BLUEBIRD"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLUEBIRD\" 'AUR-INSTALL-GTK-THEMES-BLUEBIRD'" "AUR-INSTALL-GTK-THEMES-BLUEBIRD" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_BLUEBIRD"
+                    fi
                     ;;
-                5)  # 
+                5)  # eGTK
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_EGTK"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_EGTK\" 'AUR-INSTALL-GTK-THEMES-EGTK'" "AUR-INSTALL-GTK-THEMES-EGTK"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_EGTK\" 'AUR-INSTALL-GTK-THEMES-EGTK'" "AUR-INSTALL-GTK-THEMES-EGTK" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_EGTK"
+                    fi
                     ;;
-                6)  # 
+                6)  # Greybird
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD\" 'AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD'" "AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD\" 'AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD'" "AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD"
+                    fi
                     ;;
-                7)  # 
+                7)  # Light
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES\" 'AUR-INSTALL-GTK-THEMES-LIGHT-THEMES'" "AUR-INSTALL-GTK-THEMES-LIGHT-THEMES"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES\" 'AUR-INSTALL-GTK-THEMES-LIGHT-THEMES'" "AUR-INSTALL-GTK-THEMES-LIGHT-THEMES" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES"
+                    fi
                     ;;
-                8)  # 
+                8)  # Orion
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_ORION"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ORION\" 'AUR-INSTALL-GTK-THEMES-ORION'" "AUR-INSTALL-GTK-THEMES-ORION"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ORION\" 'AUR-INSTALL-GTK-THEMES-ORION'" "AUR-INSTALL-GTK-THEMES-ORION" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_ORION"
+                    fi
                     ;;
-                9)  # 
+                9)  # Zukini
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKINI"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKINI\" 'AUR-INSTALL-GTK-THEMES-ZUKINI'" "AUR-INSTALL-GTK-THEMES-ZUKINI"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKINI\" 'AUR-INSTALL-GTK-THEMES-ZUKINI'" "AUR-INSTALL-GTK-THEMES-ZUKINI" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKINI"
+                    fi
                     ;;
-               10)  # 
+               10)  # Zukitwo
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKITWO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKITWO\" 'AUR-INSTALL-GTK-THEMES-ZUKITWO'" "AUR-INSTALL-GTK-THEMES-ZUKITWO"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKITWO\" 'AUR-INSTALL-GTK-THEMES-ZUKITWO'" "AUR-INSTALL-GTK-THEMES-ZUKITWO" ; then
+                        add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKITWO"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5345,6 +5538,19 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ICONS-DESC"   "Install ICONS: Install also the elementary XFCE icons" 
     localize_info "INSTALL-ICONS-TITLE"  "GNOME ICONS" 
     localize_info "INSTALL-ICONS-INFO-1" "Install also the elementary XFCE icons" 
+    #
+    localize_info "INSTALL-ICONS-MENU-1"    "Awoken" 
+    localize_info "INSTALL-ICONS-MENU-I-1"       "Awoken: Simple and quite complete icon set, Token-style. awoken-icons" 
+    localize_info "INSTALL-ICONS-MENU-2"    "Faenza" 
+    localize_info "INSTALL-ICONS-MENU-I-2"       "Faenza: Faenza icon theme for KDE4. faenza-icon-theme" 
+    localize_info "INSTALL-ICONS-MENU-3"    "Faenza-Cupertino" 
+    localize_info "INSTALL-ICONS-MENU-I-3"       "Faenza-Cupertino: Icon theme designed for Equinox GTK theme, recolored. faenza-cupertino-icon-theme" 
+    localize_info "INSTALL-ICONS-MENU-4"    "Faience" 
+    localize_info "INSTALL-ICONS-MENU-I-4"       "Faience: An icon theme based on Faenza. faience-icon-theme" 
+    localize_info "INSTALL-ICONS-MENU-5"    "Elementary" 
+    localize_info "INSTALL-ICONS-MENU-I-5"       "Elementary: An icon theme designed to be smooth, sexy, clear, and efficient (Development branch). elementary-icons-bzr" 
+    localize_info "INSTALL-ICONS-MENU-6"    "Nitrux" 
+    localize_info "INSTALL-ICONS-MENU-I-6"       "Nitrux: new squared icon set for Linux that sports clean lines, smooth gradients, and simple icon logos. nitrux-icon-theme" 
 fi
 # -------------------------------------
 install_icons_menu() 
@@ -5354,23 +5560,25 @@ install_icons_menu()
     local BreakableKey="D"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-6"      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    add_package "$INSTALL_GTK_ICONS"
-    add_packagemanager "package_install \"$INSTALL_GTK_ICONS\" 'INSTALL-GTK-ICONS'" "INSTALL-GTK-ICONS"
+    if add_packagemanager "package_install \"$INSTALL_GTK_ICONS\" 'INSTALL-GTK-ICONS'" "INSTALL-GTK-ICONS" ; then
+        add_package "$INSTALL_GTK_ICONS"
+    fi
     #
     StatusBar1="INSTALL-MENU-REC"
     StatusBar2="$RecommendedOptions"
@@ -5380,80 +5588,87 @@ install_icons_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Awoken"           "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Faenza"           "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Faenza-Cupertino" "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Faience"          "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Elementary"       "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Nitrux"           "" "" "" "MenuTheme[@]" # 6
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ICONS-MENU-1" "" "$AUR" "INSTALL-ICONS-MENU-I-1" "MenuTheme[@]" # 1 Awoken
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ICONS-MENU-2" "" "$AUR" "INSTALL-ICONS-MENU-I-2" "MenuTheme[@]" # 2 Faenza
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ICONS-MENU-3" "" "$AUR" "INSTALL-ICONS-MENU-I-3" "MenuTheme[@]" # 3 Faenza-Cupertino
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ICONS-MENU-4" "" "$AUR" "INSTALL-ICONS-MENU-I-4" "MenuTheme[@]" # 4 Faience
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ICONS-MENU-5" "" "$AUR" "INSTALL-ICONS-MENU-I-5" "MenuTheme[@]" # 5 Elementary
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ICONS-MENU-6" "" "$AUR" "INSTALL-ICONS-MENU-I-6" "MenuTheme[@]" # 6 Nitrux
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Awoken
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_ICONS_AWOKEN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_AWOKEN\" 'AUR-INSTALL-GNOME-ICONS-AWOKEN'" "AUR-INSTALL-GNOME-ICONS-AWOKEN"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken" "RUN-GTK-ICONS-1"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken-Dark" "RUN-GTK-ICONS-2"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_AWOKEN\" 'AUR-INSTALL-GNOME-ICONS-AWOKEN'" "AUR-INSTALL-GNOME-ICONS-AWOKEN" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_AWOKEN"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken" "RUN-GTK-ICONS-1"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken-Dark" "RUN-GTK-ICONS-2"
+                    fi
                     ;;
-                2)  # 
+                2)  # Faenza
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_ICONS_FAENZA"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FAENZA\" 'AUR-INSTALL-GNOME-ICONS-FAENZA'" "AUR-INSTALL-GNOME-ICONS-FAENZA"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza" "RUN-GTK-ICONS-3"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Dark" "RUN-GTK-ICONS-4"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darker" "RUN-GTK-ICONS-5"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darkest" "RUN-GTK-ICONS-6"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FAENZA\" 'AUR-INSTALL-GNOME-ICONS-FAENZA'" "AUR-INSTALL-GNOME-ICONS-FAENZA" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_FAENZA"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza" "RUN-GTK-ICONS-3"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Dark" "RUN-GTK-ICONS-4"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darker" "RUN-GTK-ICONS-5"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darkest" "RUN-GTK-ICONS-6"
+                    fi
                     ;;
-                3)  # 
+                3)  # Faenza-Cupertino
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_ICONS_FEANZA_CUPERTINO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FEANZA_CUPERTINO\" 'AUR-INSTALL-GNOME-ICONS-FEANZA-CUPERTINO'" "AUR-INSTALL-GNOME-ICONS-FEANZA-CUPERTINO"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino" "RUN-GTK-ICONS-7"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Dark" "RUN-GTK-ICONS-8"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darker" "RUN-GTK-ICONS-9"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darkest" "RUN-GTK-ICONS-10"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FEANZA_CUPERTINO\" 'AUR-INSTALL-GNOME-ICONS-FEANZA-CUPERTINO'" "AUR-INSTALL-GNOME-ICONS-FEANZA-CUPERTINO" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_FEANZA_CUPERTINO"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino" "RUN-GTK-ICONS-7"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Dark" "RUN-GTK-ICONS-8"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darker" "RUN-GTK-ICONS-9"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darkest" "RUN-GTK-ICONS-10"
+                    fi
                     ;;
-                4)  # 
+                4)  # Faience
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_ICONS_FAIENCE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FAIENCE\" 'AUR-INSTALL-GNOME-ICONS-FAIENCE'" "AUR-INSTALL-GNOME-ICONS-FAIENCE"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience" "RUN-GTK-ICONS-11"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Azur" "RUN-GTK-ICONS-12"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Claire" "RUN-GTK-ICONS-13"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Ocre" "RUN-GTK-ICONS-14"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_FAIENCE\" 'AUR-INSTALL-GNOME-ICONS-FAIENCE'" "AUR-INSTALL-GNOME-ICONS-FAIENCE" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_FAIENCE"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience" "RUN-GTK-ICONS-11"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Azur" "RUN-GTK-ICONS-12"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Claire" "RUN-GTK-ICONS-13"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Ocre" "RUN-GTK-ICONS-14"
+                    fi
                     ;;
-                5)  # 
+                5)  # Elementary
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_ICONS_ELEMENTARY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_ELEMENTARY\" 'AUR-INSTALL-GNOME-ICONS-ELEMENTARY'" "AUR-INSTALL-GNOME-ICONS-ELEMENTARY"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK-ICONS-15"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_ELEMENTARY\" 'AUR-INSTALL-GNOME-ICONS-ELEMENTARY'" "AUR-INSTALL-GNOME-ICONS-ELEMENTARY" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_ELEMENTARY"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK-ICONS-15"
+                    fi
                     #
                     read_input_yn "INSTALL-ICONS-INFO-1" " " 1 # Allow Bypass
                     if [[ "$YN_OPTION" -eq 1 ]]; then
-                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_ELEMENTARY_XFCE"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_ELEMENTARY_XFCE\" 'AUR-INSTALL-GNOME-ICONS-ELEMENTARY-XFCE'" "AUR-INSTALL-GNOME-ICONS-ELEMENTARY-XFCE"
-                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary-xfce" "RUN-GTK-ICONS-16"
-                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary-xfce-dark" "RUN-GTK-ICONS-17"
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_ELEMENTARY_XFCE\" 'AUR-INSTALL-GNOME-ICONS-ELEMENTARY-XFCE'" "AUR-INSTALL-GNOME-ICONS-ELEMENTARY-XFCE" ; then
+                            add_aur_package "$AUR_INSTALL_GNOME_ICONS_ELEMENTARY_XFCE"
+                            add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary-xfce" "RUN-GTK-ICONS-16"
+                            add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary-xfce-dark" "RUN-GTK-ICONS-17"
+                        fi
                     fi
                     ;;
-                6)  # 
+                6)  # Nitrux
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_ICONS_NITRUX"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_NITRUX\" 'AUR-INSTALL-GNOME-ICONS-NITRUX'" "AUR-INSTALL-GNOME-ICONS-NITRUX"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX" "RUN-GTK-ICONS-18"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-BTN" "RUN-GTK-ICONS-19"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-BTN-blufold" "RUN-GTK-ICONS-20"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-C" "RUN-GTK-ICONS-21"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-DRK" "RUN-GTK-ICONS-22"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-G" "RUN-GTK-ICONS-23"
-                    add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-G-lightpnl" "RUN-GTK-ICONS-24"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ICONS_NITRUX\" 'AUR-INSTALL-GNOME-ICONS-NITRUX'" "AUR-INSTALL-GNOME-ICONS-NITRUX" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_ICONS_NITRUX"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX" "RUN-GTK-ICONS-18"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-BTN" "RUN-GTK-ICONS-19"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-BTN-blufold" "RUN-GTK-ICONS-20"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-C" "RUN-GTK-ICONS-21"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-DRK" "RUN-GTK-ICONS-22"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-G" "RUN-GTK-ICONS-23"
+                        add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-G-lightpnl" "RUN-GTK-ICONS-24"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5489,6 +5704,35 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DUNGEON-GAMES-DESC"   "Install Games"
     localize_info "INSTALL-DUNGEON-GAMES-TITLE"  "GAMES"
+    #
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-1"    "Action | Adventure"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-1"       "Action | Adventure: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-2"    "Arcade | Platformer"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-2"       "Arcade | Platformer: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-3"    "Dungeon"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-3"       "Dungeon: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-4"    "Emulators"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-4"       "Emulators: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-5"    "FPS"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-5"       "FPS: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-6"    "MMO"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-6"       "MMO: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-7"    "Puzzle"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-7"       "Puzzle: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-8"    "RPG"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-8"       "RPG: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-9"    "Racing"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-9"       "Racing: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-10"   "Simulation"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-10"      "Simulation: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-11"   "Strategy"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-11"      "Strategy: Sub Menu"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-12"   "Gnome"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-12"      "Gnome: $INSTALL_GNOME_GAMES"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-13"   "KDE"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-13"      "KDE: $INSTALL_KDE_GAMES"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-14"   "Misc"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-14"      "Misc: $INSTALL_MISC_GAMES"
 fi
 # -------------------------------------
 install_games_menu()
@@ -5498,19 +5742,20 @@ install_games_menu()
     local BreakableKey="D"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="12"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-14 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-14"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 14 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 14"    
     fi
     #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
+    #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
-    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_nameMisc}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
     StatusBar1="INSTALL-MENU-REC"
@@ -5521,87 +5766,90 @@ install_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Action | Adventure"  "" "" "Action | Adventure"  "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Arcade | Platformer" "" "" "Arcade | Platformer" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dungeon"           "" "" "Dungeon"           "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Emulators"         "" "" "Emulators"         "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "FPS"               "" "" "FPS: First Person Shooter" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MMO"               "" "" "MMO"               "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Puzzle"            "" "" "Puzzle"            "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "RPG"               "" "" "RPG"               "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Racing"            "" "" "Racing"            "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Simulation"        "" "" "Simulation"        "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Strategy"          "" "" "Strategy"          "MenuTheme[@]" # 11
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Gnome"             "" "" "Gnome: $INSTALL_GNOME_GAMES" "MenuTheme[@]" # 12
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "KDE"               "" "" "KDE: $INSTALL_KDE_GAMES"     "MenuTheme[@]" # 13
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Misc"              "" "" "Misc: $INSTALL_MISC_GAMES"   "MenuTheme[@]" # 14
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-1"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-1"  "MenuTheme[@]" # 1  Action | Adventure
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-2"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-2"  "MenuTheme[@]" # 2  Arcade | Platformer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-3"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-3"  "MenuTheme[@]" # 3  Dungeon
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-4"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-4"  "MenuTheme[@]" # 4  Emulators
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-5"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-5"  "MenuTheme[@]" # 5  FPS
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-6"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-6"  "MenuTheme[@]" # 6  MMO
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-7"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-7"  "MenuTheme[@]" # 7  Puzzle
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-8"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-8"  "MenuTheme[@]" # 8  RPG
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-9"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-9"  "MenuTheme[@]" # 9  Racing
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-10" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-10" "MenuTheme[@]" # 10 Simulation
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-11" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-11" "MenuTheme[@]" # 11 Strategy
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-12" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-12" "MenuTheme[@]" # 12 Gnome
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-13" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-13" "MenuTheme[@]" # 13 KDE
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-14" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-14" "MenuTheme[@]" # 14 Misc
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Action | Adventure
                     MenuChecks[$((S_OPT - 1))]=1
                     install_action_games_menu
                     ;;
-                2)  # 
+                2)  # Arcade | Platformer
                     MenuChecks[$((S_OPT - 1))]=1
                     install_arade_games_menu
                     ;;
-                3)  # 
+                3)  # Dungeon
                     MenuChecks[$((S_OPT - 1))]=1
                     install_dungon_games_menu
                     ;;
-                4)  # 
+                4)  # Emulators
                     MenuChecks[$((S_OPT - 1))]=1
                     install_emulator_games_menu
                     ;;
-                5)  # 
+                5)  # FPS
                     MenuChecks[$((S_OPT - 1))]=1
                     install_fps_games_menu
                     ;;
-                6)  # 
+                6)  # MMO
                     MenuChecks[$((S_OPT - 1))]=1
                     install_mmo_games_menu
                     ;;
-                7)  # 
+                7)  # Puzzle
                     MenuChecks[$((S_OPT - 1))]=1
                     install_puzzle_games_menu
                     ;;
-                8)  # 
+                8)  # RPG
                     MenuChecks[$((S_OPT - 1))]=1
                     install_rpg_games_menu
                     ;;
-                9)  # 
+                9)  # Racing
                     MenuChecks[$((S_OPT - 1))]=1
                     install_racing_games_menu
                     ;;
-                10)  # 
+               10)  # Simulation
                     MenuChecks[$((S_OPT - 1))]=1
                     install_simulation_games_menu
                     ;;
-                11)  # 
+               11)  # Strategy
                     MenuChecks[$((S_OPT - 1))]=1
                     install_strategy_games_menu
                     ;;
-                12)  # 
+               12)  # Gnome
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GNOME_GAMES"
-                    add_packagemanager "package_install \"$INSTALL_GNOME_GAMES\" 'INSTALL-GNOME-GAMES'" "INSTALL-GNOME-GAMES"
+                    if add_packagemanager "package_install \"$INSTALL_GNOME_GAMES\" 'INSTALL-GNOME-GAMES'" "INSTALL-GNOME-GAMES" ; then
+                        add_package "$INSTALL_GNOME_GAMES"
+                    fi
                     ;;
-                13)  # 
+               13)  # KDE
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_KDE_GAMES"
-                    add_packagemanager "package_install \"$INSTALL_KDE_GAMES\" 'INSTALL-KDE-GAMES'" "INSTALL-KDE-GAMES"
+                    if add_packagemanager "package_install \"$INSTALL_KDE_GAMES\" 'INSTALL-KDE-GAMES'" "INSTALL-KDE-GAMES" ; then
+                        add_package "$INSTALL_KDE_GAMES"
+                    fi
                     ;;
-                14)  # 
+               14)  # Misc
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_MISC_GAMES"
-                    add_packagemanager "package_install \"$INSTALL_MISC_GAMES\" 'INSTALL-MISC-GAMES'" "INSTALL-MISC-GAMES"
+                    if add_packagemanager "package_install \"$INSTALL_MISC_GAMES\" 'INSTALL-MISC-GAMES'" "INSTALL-MISC-GAMES" ; then
+                        add_package "$INSTALL_MISC_GAMES"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5635,8 +5883,27 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-ACTION-GAMES-DESC"               "Install Action/Adventure Games"
-    localize_info "INSTALL-ACTION-GAMES-TITLE"              "Install Action/Adventure Games"
+    localize_info "INSTALL-ACTION-GAMES-DESC"   "Install Action/Adventure Games"
+    localize_info "INSTALL-ACTION-GAMES-TITLE"  "Install Action/Adventure Games"
+    #
+    localize_info "INSTALL-ACTION-GAMES-MENU-1"   "Astromenace"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-1"        "Astromenace: Hardcore 3D space shooter with spaceship upgrade possibilities"
+    localize_info "INSTALL-ACTION-GAMES-MENU-2"   "Counter-Strike 2D"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-2"        "Counter-Strike 2D: A more than just a freeware clone of the well known game Counter-Strike"
+    localize_info "INSTALL-ACTION-GAMES-MENU-3"   "Dead Cyborg Episode 1"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-3"        "Dead Cyborg Episode 1: Free, donation based oldskool sci-fi adventure game with 3D first person view"
+    localize_info "INSTALL-ACTION-GAMES-MENU-4"   "M.A.R.S. Shooter"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-4"        "M.A.R.S. Shooter: A ridiculous space shooter with nice graphics"
+    localize_info "INSTALL-ACTION-GAMES-MENU-5"   "Nikki"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-5"        "Nikki: Nikki and the robots: A game where you take the role of Nikki and try to cross those evil plans on behalf of a secret organization."
+    localize_info "INSTALL-ACTION-GAMES-MENU-6"   "OpenTyrian"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-6"        "opentyrian-hg: OpenTyrian is a port of the DOS shoot-em-up Tyrian. This is a Port of the classic DOS game Tyrian"
+    localize_info "INSTALL-ACTION-GAMES-MENU-7"   "Sonic Robot Blast 2"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-7"        "Sonic Robot Blast 2: Sonic Robo Blast 2. A 3-D Sonic fan-game based off of Doom Legacy."
+    localize_info "INSTALL-ACTION-GAMES-MENU-8"   "Steelstorm"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-8"        "Steelstorm: a classic top down shooter, rife with explosions and things to explode, with a distinct visual style."
+    localize_info "INSTALL-ACTION-GAMES-MENU-9"   "Yo Frankie!"
+    localize_info "INSTALL-ACTION-GAMES-MENU-I-9"        "Yo Frankie!: A 3D platform game based on the bully rodent in Big Buck Bunny"
 fi
 # -------------------------------------
 install_action_games_menu()
@@ -5645,16 +5912,17 @@ install_action_games_menu()
     local BreakableKey="B"                       # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"                 # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -5668,68 +5936,77 @@ install_action_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Astromenace"           "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Counter-Strike 2D"     "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dead Cyborg Episode 1" "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "M.A.R.S. Shooter"      "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Nikki"                 "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "opentyrian-hg"         "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Sonic Robot Blast 2"   "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Steelstorm"            "" "$AUR" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Yo Frankie!"           "" "$AUR" "" "MenuTheme[@]" # 9
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-1" "" ""     "INSTALL-ACTION-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Astromenace
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-2" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Counter-Strike 2D
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-3" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Dead Cyborg Episode 1
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-4" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-4" "MenuTheme[@]" # 4 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-5" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-5" "MenuTheme[@]" # 5 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-6" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-6" "MenuTheme[@]" # 6 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-7" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-7" "MenuTheme[@]" # 7 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-8" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-8" "MenuTheme[@]" # 8 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACTION-GAMES-MENU-9" "" "$AUR" "INSTALL-ACTION-GAMES-MENU-I-9" "MenuTheme[@]" # 9 
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Astromenace
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_ASTROMENANCE"
-                    add_packagemanager "package_install \"$INSTALL_ASTROMENANCE\" 'INSTALL-ASTROMENANCE'" "INSTALL-ASTROMENANCE"
+                    if add_packagemanager "package_install \"$INSTALL_ASTROMENANCE\" 'INSTALL-ASTROMENANCE'" "INSTALL-ASTROMENANCE" ; then
+                        add_package "$INSTALL_ASTROMENANCE"
+                    fi
                     ;;
-                2)  # 
+                2)  # Counter-Strike 2D
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_COUNTER_STRIKE_2D"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_COUNTER_STRIKE_2D\" 'AUR-INSTALL-COUNTER-STRIKE-2D'" "AUR-INSTALL-COUNTER-STRIKE-2D"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_COUNTER_STRIKE_2D\" 'AUR-INSTALL-COUNTER-STRIKE-2D'" "AUR-INSTALL-COUNTER-STRIKE-2D" ; then
+                        add_aur_package "$AUR_INSTALL_COUNTER_STRIKE_2D"
+                    fi
                     ;;
-                3)  # 
+                3)  # Dead Cyborg Episode 1
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DEAD_CYBORG_EP_1"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DEAD_CYBORG_EP_1\" 'AUR-INSTALL-DEAD-CYBORG-EP-1'" "AUR-INSTALL-DEAD-CYBORG-EP-1"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEAD_CYBORG_EP_1\" 'AUR-INSTALL-DEAD-CYBORG-EP-1'" "AUR-INSTALL-DEAD-CYBORG-EP-1" ; then
+                        add_aur_package "$AUR_INSTALL_DEAD_CYBORG_EP_1"
+                    fi
                     ;;
                 4)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MARS_SHOOTER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MARS_SHOOTER\" 'AUR-INSTALL-MARS-SHOOTER'" "AUR-INSTALL-MARS-SHOOTER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MARS_SHOOTER\" 'AUR-INSTALL-MARS-SHOOTER'" "AUR-INSTALL-MARS-SHOOTER" ; then
+                        add_aur_package "$AUR_INSTALL_MARS_SHOOTER"
+                    fi
                     ;;
                 5)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_NIKKI"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_NIKKI\" 'AUR-INSTALL-NIKKI'" "AUR-INSTALL-NIKKI"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_NIKKI\" 'AUR-INSTALL-NIKKI'" "AUR-INSTALL-NIKKI" ; then
+                        add_aur_package "$AUR_INSTALL_NIKKI"
+                    fi
                     ;;
                 6)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_OPENTYRIAN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENTYRIAN\" 'AUR-INSTALL-OPENTYRIAN'" "AUR-INSTALL-OPENTYRIAN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENTYRIAN\" 'AUR-INSTALL-OPENTYRIAN'" "AUR-INSTALL-OPENTYRIAN" ; then
+                        add_aur_package "$AUR_INSTALL_OPENTYRIAN"
+                    fi
                     ;;
                 7)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SRB2"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SRB2\" 'AUR-INSTALL-SRB2" "AUR-INSTALL-SRB2"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SRB2\" 'AUR-INSTALL-SRB2" "AUR-INSTALL-SRB2" ; then
+                        add_aur_package "$AUR_INSTALL_SRB2"
+                    fi
                     ;;
                 8)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_STEELSTORM"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_STEELSTORM\" 'AUR-INSTALL-STEELSTORM'" "AUR-INSTALL-STEELSTORM"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_STEELSTORM\" 'AUR-INSTALL-STEELSTORM'" "AUR-INSTALL-STEELSTORM" ; then
+                        add_aur_package "$AUR_INSTALL_STEELSTORM"
+                    fi
                     ;;
                 9)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_YOFRANKIE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_YOFRANKIE\" 'AUR-INSTALL-YOFRANKIE'" "AUR-INSTALL-YOFRANKIE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_YOFRANKIE\" 'AUR-INSTALL-YOFRANKIE'" "AUR-INSTALL-YOFRANKIE" ; then
+                        add_aur_package "$AUR_INSTALL_YOFRANKIE"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5765,6 +6042,31 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ARCADE-GAMES-DESC"  "Install Arcade Platformer Games"
     localize_info "INSTALL-ARCADE-GAMES-TITLE" "Install Arcade Platformer Games"
+    #
+    localize_info "INSTALL-ARCADE-GAMES-MENU-1"    "Abuse"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-1"        "Abuse: A side-scroller action game that pits you against ruthless alien killers."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-2"    "Battle Tanks"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-2"        "Battle Tanks: Fast 2d tank arcade game with multiplayer and split-screen modes."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-3"    "Bomberclone"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-3"        "Bomberclone: A clone of the game AtomicBomberMan."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-4"    "Those Funny Funguloids"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-4"        "Those Funny Funguloids: 3D game about collecting mushrooms in outerspace"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-5"    "Frogatto"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-5"        ": Frogatto: An old-school 2d platformer game, starring a certain quixotic frog"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-6"    "Goonies"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-6"        "Goonies: A remake of the MSX Goonies game"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-7"    "Mari0"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-7"        "Mari0: The Mario game with Portal gun mechanics"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-8"    "Neverball"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-8"        "Neverball: 3D game similar to Super Monkey Ball or Marble Madness"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-9"    "Opensonic"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-9"        "Opensonic: Game based on the Sonic the Hedgehog Universe."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-10"    "Robombs"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-10"        "Robombs: A free LAN game inspired by Bomberman"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-11"    "Super Mario Chronicles"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-11"        "Super Mario Chronicles: Secret Maryo Chronicles"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-12"    "Xmoto"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-12"        "Xmoto: A challenging 2D motocross platform game, where physics play an important role."
 fi
 # -------------------------------------
 install_arade_games_menu()
@@ -5773,16 +6075,17 @@ install_arade_games_menu()
     local BreakableKey="B"                     # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 11"            # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-12 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-12"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 1 2 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1 2"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 1 2 11 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 1 2 11"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -5796,86 +6099,98 @@ install_arade_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Abuse"                  "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Battle Tanks"           "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Bomberclone"            "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Those Funny Funguloids" "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Frogatto"               "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Goonies"                "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Mari0"                  "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Neverball"              "" ""     "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Opensonic"              "" "$AUR" "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Robombs"                "" "$AUR" "" "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Super Mario Chronicles" "" ""     "" "MenuTheme[@]" # 11
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Xmoto"                  "" ""     "" "MenuTheme[@]" # 12
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-1"  "" ""     "INSTALL-ARCADE-GAMES-MENU-I-1"  "MenuTheme[@]" # 1  Abuse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-2"  "" ""     "INSTALL-ARCADE-GAMES-MENU-I-2"  "MenuTheme[@]" # 2  Battle Tanks
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-3"  "" ""     "INSTALL-ARCADE-GAMES-MENU-I-3"  "MenuTheme[@]" # 3  Bomberclone
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-4"  "" "$AUR" "INSTALL-ARCADE-GAMES-MENU-I-4"  "MenuTheme[@]" # 4  Those Funny Funguloids
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-5"  "" ""     "INSTALL-ARCADE-GAMES-MENU-I-5"  "MenuTheme[@]" # 5  Frogatto  
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-6"  "" "$AUR" "INSTALL-ARCADE-GAMES-MENU-I-6"  "MenuTheme[@]" # 6  Goonies
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-7"  "" "$AUR" "INSTALL-ARCADE-GAMES-MENU-I-7"  "MenuTheme[@]" # 7  Mari0
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-8"  "" ""     "INSTALL-ARCADE-GAMES-MENU-I-8"  "MenuTheme[@]" # 8  Neverball
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-9"  "" "$AUR" "INSTALL-ARCADE-GAMES-MENU-I-9"  "MenuTheme[@]" # 9  Opensonic
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-10" "" "$AUR" "INSTALL-ARCADE-GAMES-MENU-I-10" "MenuTheme[@]" # 10 Robombs
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-11" "" ""     "INSTALL-ARCADE-GAMES-MENU-I-11" "MenuTheme[@]" # 11 Super Mario Chronicles
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ARCADE-GAMES-MENU-12" "" ""     "INSTALL-ARCADE-GAMES-MENU-I-12" "MenuTheme[@]" # 12 Xmoto
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)  # Abuse
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_ABUSE"
-                    add_packagemanager "package_install \"$INSTALL_ABUSE\" 'INSTALL-ABUSE'" "INSTALL-ABUSE"
+                    if add_packagemanager "package_install \"$INSTALL_ABUSE\" 'INSTALL-ABUSE'" "INSTALL-ABUSE" ; then
+                        add_package "$INSTALL_ABUSE"
+                    fi
                     ;;
                 2)  # Battle Tanks
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_BTANKS"
-                    add_packagemanager "package_install \"$INSTALL_BTANKS\" 'INSTALL-BTANKS'" "INSTALL-BTANKS"
+                    if add_packagemanager "package_install \"$INSTALL_BTANKS\" 'INSTALL-BTANKS'" "INSTALL-BTANKS" ; then
+                        add_package "$INSTALL_BTANKS"
+                    fi
                     ;;
                 3)  # Bomberclone
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_BOMBERCLONE"
-                    add_packagemanager "package_install \"$INSTALL_BOMBERCLONE\" 'INSTALL-BOMBERCLONE'" "INSTALL-BOMBERCLONE"
+                    if add_packagemanager "package_install \"$INSTALL_BOMBERCLONE\" 'INSTALL-BOMBERCLONE'" "INSTALL-BOMBERCLONE" ; then
+                        add_package "$INSTALL_BOMBERCLONE"
+                    fi
                     ;;
                 4)  # Those Funny Funguloids
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_FUNGULOIDS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_FUNGULOIDS\" 'AUR-INSTALL-FUNGULOIDS'" "AUR-INSTALL-FUNGULOIDS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_FUNGULOIDS\" 'AUR-INSTALL-FUNGULOIDS'" "AUR-INSTALL-FUNGULOIDS" ; then
+                        add_aur_package "$AUR_INSTALL_FUNGULOIDS"
+                    fi
                     ;;
-                5)  # 
+                5)  # Frogatto
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_FROGATTO"
-                    add_packagemanager "package_install \"$INSTALL_FROGATTO\" 'INSTALL-FROGATTO'" "INSTALL-FROGATTO"
+                    if add_packagemanager "package_install \"$INSTALL_FROGATTO\" 'INSTALL-FROGATTO'" "INSTALL-FROGATTO" ; then
+                        add_package "$INSTALL_FROGATTO"
+                    fi
                     ;;
-                6)  # 
+                6)  # Goonies
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GOONIES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GOONIES\" 'AUR-INSTALL-GOONIES'" "AUR-INSTALL-GOONIES"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOONIES\" 'AUR-INSTALL-GOONIES'" "AUR-INSTALL-GOONIES" ; then
+                        add_aur_package "$AUR_INSTALL_GOONIES"
+                    fi
                     ;;
-                7)  # 
+                7)  # Mari0
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MARI0"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MARI0\" 'AUR-INSTALL-MARI0'" "AUR-INSTALL-MARI0"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MARI0\" 'AUR-INSTALL-MARI0'" "AUR-INSTALL-MARI0" ; then
+                        add_aur_package "$AUR_INSTALL_MARI0"
+                    fi
                     ;;
-                8)  # 
+                8)  # Neverball
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_NEVERBALL"
-                    add_packagemanager "package_install \"$INSTALL_NEVERBALL\" 'INSTALL-NEVERBALL'" "INSTALL-NEVERBALL"
+                    if add_packagemanager "package_install \"$INSTALL_NEVERBALL\" 'INSTALL-NEVERBALL'" "INSTALL-NEVERBALL" ; then
+                        add_package "$INSTALL_NEVERBALL"
+                    fi
                     ;;
-                9)  # 
+                9)  # Opensonic
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_OPENSONIC"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENSONIC\" 'AUR-INSTALL-OPENSONIC'" "AUR-INSTALL-OPENSONIC"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENSONIC\" 'AUR-INSTALL-OPENSONIC'" "AUR-INSTALL-OPENSONIC" ; then
+                        add_aur_package "$AUR_INSTALL_OPENSONIC"
+                    fi
                     ;;
-               10)  # 
+               10)  # Robombs
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ROBOMBS_BIN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ROBOMBS_BIN\" 'AUR-INSTALL-ROBOMBS-BIN'" "AUR-INSTALL-ROBOMBS-BIN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ROBOMBS_BIN\" 'AUR-INSTALL-ROBOMBS-BIN'" "AUR-INSTALL-ROBOMBS-BIN" ; then
+                        add_aur_package "$AUR_INSTALL_ROBOMBS_BIN"
+                    fi
                     ;;
-               11)  # 
+               11)  # Super Mario Chronicles
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_SMC"
-                    add_packagemanager "package_install \"$INSTALL_SMC\" 'INSTALL-SMC'" "INSTALL-SMC"
+                    if add_packagemanager "package_install \"$INSTALL_SMC\" 'INSTALL-SMC'" "INSTALL-SMC" ; then
+                        add_package "$INSTALL_SMC"
+                    fi
                     ;;
-               12)  # 
+               12)  # Xmoto
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_XMOTO"
-                    add_packagemanager "package_install \"$INSTALL_XMOTO\" 'INSTALL-XMOTO'" "INSTALL-XMOTO"
+                    if add_packagemanager "package_install \"$INSTALL_XMOTO\" 'INSTALL-XMOTO'" "INSTALL-XMOTO" ; then
+                        add_package "$INSTALL_XMOTO"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5910,6 +6225,17 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DUNGEON-GAMES-DESC"   "Install Dungon Games"
+    #
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-1"    "Adom"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-1"       "Adom: A roguelike game with a quest-centric, plot driven structure"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-2"    "Tales of MajEyal"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-2"       "Tales of MajEyal: An open-source, single-player, role-playing roguelike game set in the world of Eyal."
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-3"    "Lost Labyrinth"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-3"       "Lost Labyrinth: RPG turn based game"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-4"    "S.C.O.U.R.G.E."
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-4"       "S.C.O.U.R.G.E.: A rogue-like game with a 3d graphical front-end"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-5"    "Stone-Soupe"
+    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-5"       "Stone-Soupe: An open-source, single-player, role-playing roguelike game of exploration and treasure-hunting"
 fi
 # -------------------------------------
 install_dungon_games_menu()
@@ -5918,16 +6244,17 @@ install_dungon_games_menu()
     local BreakableKey="B"                      # Q=Quit, D=Done, B=Back
     local RecommendedOptions="5"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-5 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -5941,44 +6268,49 @@ install_dungon_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Adom"             "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Tales of MajEyal" "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Lost Labyrinth"   "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "S.C.O.U.R.G.E."   "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Stone-Soupe"      "" ""     "" "MenuTheme[@]" # 5
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-1" "" "$AUR" "INSTALL-DUNGEON-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Adom
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-2" "" "$AUR" "INSTALL-DUNGEON-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Tales of MajEyal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-3" "" "$AUR" "INSTALL-DUNGEON-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Lost Labyrinth
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-4" "" "$AUR" "INSTALL-DUNGEON-GAMES-MENU-I-4" "MenuTheme[@]" # 4 S.C.O.U.R.G.E.
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-5" "" ""     "INSTALL-DUNGEON-GAMES-MENU-I-5" "MenuTheme[@]" # 5 Stone-Soupe
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Adom
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ADOM"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ADOM\" 'AUR-INSTALL-ADOM'" "AUR-INSTALL-ADOM"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ADOM\" 'AUR-INSTALL-ADOM'" "AUR-INSTALL-ADOM" ; then
+                        add_aur_package "$AUR_INSTALL_ADOM"
+                    fi
                     ;;
-                2)  # 
+                2)  # Tales of MajEyal
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_TOME4"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TOME4\" 'AUR-INSTALL-TOME4'" "AUR-INSTALL-TOME4"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_TOME4\" 'AUR-INSTALL-TOME4'" "AUR-INSTALL-TOME4" ; then
+                        add_aur_package "$AUR_INSTALL_TOME4"
+                    fi
                     ;;
-                3)  # 
+                3)  # Lost Labyrinth
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_LOST_LABYRINTH"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_LOST_LABYRINTH\" 'AUR-INSTALL-LOST-LABYRINTH'" "AUR-INSTALL-LOST-LABYRINTH"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_LOST_LABYRINTH\" 'AUR-INSTALL-LOST-LABYRINTH'" "AUR-INSTALL-LOST-LABYRINTH" ; then
+                        add_aur_package "$AUR_INSTALL_LOST_LABYRINTH"
+                    fi
                     ;;
-                4)  # 
+                4)  # S.C.O.U.R.G.E.
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SCOURGE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SCOURGE\" 'AUR-INSTALL-SCOURGE'" "AUR-INSTALL-SCOURGE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SCOURGE\" 'AUR-INSTALL-SCOURGE'" "AUR-INSTALL-SCOURGE" ; then
+                        add_aur_package "$AUR_INSTALL_SCOURGE"
+                    fi
                     ;;
-                5)  # 
+                5)  # Stone-Soupe
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_STONE_SOUP"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_STONE_SOUP\" 'AUR-INSTALL-STONE-SOUP'" "AUR-INSTALL-STONE-SOUP"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_STONE_SOUP\" 'AUR-INSTALL-STONE-SOUP'" "AUR-INSTALL-STONE-SOUP" ; then
+                        add_aur_package "$AUR_INSTALL_STONE_SOUP"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6013,6 +6345,23 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-EMULATORS-GAMES-DESC"   "Install Emulator Games"
+    #
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-1"    "BSNES"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-1"        "BSNES: A library that exposes the core emulation of BSNES, a Super Nintendo Entertainment System (SNES) emulator."
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-2"    "Desmume-svn"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-2"        "Desmume-svn: Nintendo DS emulator, svn version"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-3"    "Dolphin"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-3"        "Dolphin: A Gamecube / Wii / Triforce Emulator"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-4"    "Epsxe"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-4"        "Epsxe: Enhanced PSX emulator"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-5"    "Project 64"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-5"        "Project 64: A very popular and accurate Nintendo 64 Emulator (run via wine)"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-6"    "Visual Boy Advanced"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-6"        "Visual Boy Advanced: Gameboy Advance Emulator combining features of all VBA forks - GTK GUI"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-7"    "wxmupen64plus"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-7"        "wxmupen64plus: A full-featured frontend for Mupen64Plus written using wxWidgets"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-8"    "zsnes"
+    localize_info "INSTALL-EMULATORS-GAMES-MENU-I-8"        "zsnes: Super Nintendo emulator"
 fi
 # -------------------------------------
 install_emulator_games_menu()
@@ -6021,16 +6370,17 @@ install_emulator_games_menu()
     local BreakableKey="B"                        # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""                   # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-8 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-8"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6044,62 +6394,70 @@ install_emulator_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "BSNES"               "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Desmume-svn"         "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dolphin"             "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Epsxe"               "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Project 64"          "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Visual Boy Advanced" "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "wxmupen64plus"       "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "zsnes"               "" ""     "" "MenuTheme[@]" # 8
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-1" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-1" "MenuTheme[@]" # 1 BSNES
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-2" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Desmume-svn
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-3" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Dolphin
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-4" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-4" "MenuTheme[@]" # 4 Epsxe
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-5" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-5" "MenuTheme[@]" # 5 Project 64
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-6" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-6" "MenuTheme[@]" # 6 Visual Boy Advanced
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-7" "" "$AUR" "INSTALL-EMULATORS-GAMES-MENU-I-7" "MenuTheme[@]" # 7 wxmupen64plus
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMULATORS-GAMES-MENU-8" "" ""     "INSTALL-EMULATORS-GAMES-MENU-I-8" "MenuTheme[@]" # 8 zsnes
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # BSNES
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_BSMES"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_BSMES\" 'AUR-INSTALL-BSMES'" "AUR-INSTALL-BSMES"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_BSNES\" 'AUR-INSTALL-BSNES'" "AUR-INSTALL-BSNES" ; then
+                        add_aur_package "$AUR_INSTALL_BSNES"
+                    fi
                     ;;
-                2)  # 
+                2)  # Desmume-svn
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DESMUME"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DESMUME\" 'AUR-INSTALL-DESMUME'" "AUR-INSTALL-DESMUME"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DESMUME\" 'AUR-INSTALL-DESMUME'" "AUR-INSTALL-DESMUME" ; then
+                        add_aur_package "$AUR_INSTALL_DESMUME"
+                    fi
                     ;;
-                3)  # 
+                3)  # Dolphin
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DOLPHIN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DOLPHIN\" 'AUR-INSTALL-DOLPHIN'" "AUR-INSTALL-DOLPHIN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DOLPHIN\" 'AUR-INSTALL-DOLPHIN'" "AUR-INSTALL-DOLPHIN" ; then
+                        add_aur_package "$AUR_INSTALL_DOLPHIN"
+                    fi
                     ;;
-                4)  # 
+                4)  # Epsxe
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_EPSXE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_EPSXE\" 'AUR-INSTALL-EPSXE'" "AUR-INSTALL-EPSXE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EPSXE\" 'AUR-INSTALL-EPSXE'" "AUR-INSTALL-EPSXE" ; then
+                        add_aur_package "$AUR_INSTALL_EPSXE"
+                    fi
                     ;;
-                5)  # 
+                5)  # Project 64
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_PROJECT_64"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_PROJECT_64\" 'AUR-INSTALL-PROJECT-64'" "AUR-INSTALL-PROJECT-64"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_PROJECT_64\" 'AUR-INSTALL-PROJECT-64'" "AUR-INSTALL-PROJECT-64" ; then
+                        add_aur_package "$AUR_INSTALL_PROJECT_64"
+                    fi
                     ;;
-                6)  # 
+                6)  # Visual Boy Advanced
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_VBA"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_VBA\" 'AUR-INSTALL-VBA'" "AUR-INSTALL-VBA"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_VBA\" 'AUR-INSTALL-VBA'" "AUR-INSTALL-VBA" ; then
+                        add_aur_package "$AUR_INSTALL_VBA"
+                    fi
                     ;;
-                7)  # 
+                7)  # wxmupen64plus
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_WXMUPEN64PLUS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_WXMUPEN64PLUS\" 'AUR-INSTALL-WXMUPEN64PLUS'" "AUR-INSTALL-WXMUPEN64PLUS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_WXMUPEN64PLUS\" 'AUR-INSTALL-WXMUPEN64PLUS'" "AUR-INSTALL-WXMUPEN64PLUS" ; then
+                        add_aur_package "$AUR_INSTALL_WXMUPEN64PLUS"
+                    fi
                     ;;
-                8)  # 
+                8)  # zsnes
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_ZSNES"
-                    add_packagemanager "package_install \"$INSTALL_ZSNES\" 'INSTALL-ZSNES'" "INSTALL-ZSNES"
+                    if add_packagemanager "package_install \"$INSTALL_ZSNES\" 'INSTALL-ZSNES'" "INSTALL-ZSNES" ; then
+                        add_package "$INSTALL_ZSNES"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6134,6 +6492,17 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-FPS-GAMES-DESC"   "Install FPS Games"
+    #
+    localize_info "INSTALL-FPS-GAMES-MENU-1"    "Alienarena"
+    localize_info "INSTALL-FPS-GAMES-MENU-I-1"      "Alienarena: Multiplayer retro sci-fi deathmatch game"
+    localize_info "INSTALL-FPS-GAMES-MENU-2"    "Warsow"
+    localize_info "INSTALL-FPS-GAMES-MENU-I-2"      "Warsow: Free online multiplayer competitive FPS based on the Qfusion engine"
+    localize_info "INSTALL-FPS-GAMES-MENU-3"    "Wolfenstein"
+    localize_info "INSTALL-FPS-GAMES-MENU-I-3"      "Wolfenstein: Enemy Territory is a completely free, standalone, team-based, multiplayer FPS. enemy-territory"
+    localize_info "INSTALL-FPS-GAMES-MENU-4"    "World of Padman"
+    localize_info "INSTALL-FPS-GAMES-MENU-I-4"      "World of Padman: Cartoon-style multiplayer first-person shooter"
+    localize_info "INSTALL-FPS-GAMES-MENU-5"    "Xonotic"
+    localize_info "INSTALL-FPS-GAMES-MENU-I-5"      "Xonotic: A free, fast-paced crossplatform first-person shooter"
 fi
 # -------------------------------------
 install_fps_games_menu()
@@ -6142,16 +6511,17 @@ install_fps_games_menu()
     local BreakableKey="B"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-5 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6165,44 +6535,49 @@ install_fps_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Alienarena"      "" "" ""  "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Warsow"          "" "" ""  "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Wolfenstein"     "" "$AUR" "Wolfenstein: Enemy Territory" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "World of Padman" "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Xonotic"         "" ""     "" "MenuTheme[@]" # 5
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FPS-GAMES-MENU-1" "" ""     "INSTALL-FPS-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Alienarena
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FPS-GAMES-MENU-2" "" ""     "INSTALL-FPS-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Warsow
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FPS-GAMES-MENU-3" "" "$AUR" "INSTALL-FPS-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Wolfenstein
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FPS-GAMES-MENU-4" "" "$AUR" "INSTALL-FPS-GAMES-MENU-I-4" "MenuTheme[@]" # 4 World of Padman
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FPS-GAMES-MENU-5" "" ""     "INSTALL-FPS-GAMES-MENU-I-5" "MenuTheme[@]" # 5 Xonotic
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Alienarena
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_ALIENARENA"
-                    add_packagemanager "package_install \"$INSTALL_ALIENARENA\" 'INSTALL-ALIENARENA'" "INSTALL-ALIENARENA"
+                    if add_packagemanager "package_install \"$INSTALL_ALIENARENA\" 'INSTALL-ALIENARENA'" "INSTALL-ALIENARENA" ; then
+                        add_package "$INSTALL_ALIENARENA"
+                    fi
                     ;;
-                2)  # 
+                2)  # Warsow
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_WARSOW"
-                    add_packagemanager "package_install \"$INSTALL_WARSOW\" 'INSTALL-WARSOW'" "INSTALL-WARSOW"
+                    if add_packagemanager "package_install \"$INSTALL_WARSOW\" 'INSTALL-WARSOW'" "INSTALL-WARSOW" ; then
+                        add_package "$INSTALL_WARSOW"
+                    fi
                     ;;
-                3)  # 
+                3)  # Wolfenstein
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ENEMY_TERRITORY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ENEMY_TERRITORY\" 'AUR-INSTALL-ENEMY-TERRITORY'" "AUR-INSTALL-ENEMY-TERRITORY"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ENEMY_TERRITORY\" 'AUR-INSTALL-ENEMY-TERRITORY'" "AUR-INSTALL-ENEMY-TERRITORY" ; then
+                        add_aur_package "$AUR_INSTALL_ENEMY_TERRITORY"
+                    fi
                     ;;
-                4)  # 
+                4)  # World of Padman
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_WORLD_OF_PADMAN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLD_OF_PADMAN\" 'AUR-INSTALL-WORLD-OF-PADMAN'" "AUR-INSTALL-WORLD-OF-PADMAN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLD_OF_PADMAN\" 'AUR-INSTALL-WORLD-OF-PADMAN'" "AUR-INSTALL-WORLD-OF-PADMAN" ; then
+                        add_aur_package "$AUR_INSTALL_WORLD_OF_PADMAN"
+                    fi
                     ;;
-                5)  # 
+                5)  # Xonotic
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_XONOTIC"
-                    add_packagemanager "package_install \"$INSTALL_XONOTIC\" 'INSTALL-XONOTIC'" "INSTALL-XONOTIC"
+                    if add_packagemanager "package_install \"$INSTALL_XONOTIC\" 'INSTALL-XONOTIC'" "INSTALL-XONOTIC" ; then
+                        add_package "$INSTALL_XONOTIC"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6237,6 +6612,19 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-MMO-GAMES-DESC"   "Install MMO Games"
+    #
+    localize_info "INSTALL-MMO-GAMES-MENU-1"    "Heroes of Newerth"
+    localize_info "INSTALL-MMO-GAMES-MENU-I-1"       "Heroes of Newerth: Heroes of Newerth is a Real Time Strategy game heavily influcenced by DotA"
+    localize_info "INSTALL-MMO-GAMES-MENU-2"    "Manaplus"
+    localize_info "INSTALL-MMO-GAMES-MENU-I-2"       "Manaplus: ManaPlus is a 2D MMORPG game advanced client for games based on eAthena fork The Mana World (tAthena) also for other forks like Evol."
+    localize_info "INSTALL-MMO-GAMES-MENU-3"    "Runescape"
+    localize_info "INSTALL-MMO-GAMES-MENU-I-3"       "Runescape: Runescape Client for Linux and Unix. unix-runescape-client"
+    localize_info "INSTALL-MMO-GAMES-MENU-4"    "Savage 2"
+    localize_info "INSTALL-MMO-GAMES-MENU-I-4"       "Savage 2: A Tortured Soul is an fantasy themed online multiplayer team-based FPS/RTS/RPG hybrid. Completely free as of December 2008."
+    localize_info "INSTALL-MMO-GAMES-MENU-5"    "Spiral Knights"
+    localize_info "INSTALL-MMO-GAMES-MENU-I-5"       "Spiral Knights: The Spiral Knights have awoken on an alien world. Their equipment stores have been raided and their starship, The Skylark, will not recover from the crash. They must work together to survive on a journey that will take them to the very core of the world."
+    localize_info "INSTALL-MMO-GAMES-MENU-6"    "Wakfu"
+    localize_info "INSTALL-MMO-GAMES-MENU-I-6"       "Wakfu: A turn-based tactical Massively Multiplayer Online Role-playing Game (MMORPG) written in Java/OpenGL."
 fi
 # -------------------------------------
 install_mmo_games_menu()
@@ -6245,16 +6633,17 @@ install_mmo_games_menu()
     local BreakableKey="B"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-6 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-6"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6268,50 +6657,56 @@ install_mmo_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Heroes of Newerth" "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Manaplus"          "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Runescape"         "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Savage 2"          "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Spiral Knights"    "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Wakfu"             "" "$AUR" "" "MenuTheme[@]" # 6
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MMO-GAMES-MENU-1" "" "$AUR" "INSTALL-MMO-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Heroes of Newerth
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MMO-GAMES-MENU-2" "" "$AUR" "INSTALL-MMO-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Manaplus
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MMO-GAMES-MENU-3" "" "$AUR" "INSTALL-MMO-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Runescape
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MMO-GAMES-MENU-4" "" "$AUR" "INSTALL-MMO-GAMES-MENU-I-4" "MenuTheme[@]" # 4 Savage 2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MMO-GAMES-MENU-5" "" "$AUR" "INSTALL-MMO-GAMES-MENU-I-5" "MenuTheme[@]" # 5 Spiral Knights
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MMO-GAMES-MENU-6" "" "$AUR" "INSTALL-MMO-GAMES-MENU-I-6" "MenuTheme[@]" # 6 Wakfu
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Heroes of Newerth
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_HON"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_HON\" 'AUR-INSTALL-HON'" "AUR-INSTALL-HON"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_HON\" 'AUR-INSTALL-HON'" "AUR-INSTALL-HON" ; then
+                        add_aur_package "$AUR_INSTALL_HON"
+                    fi
                     ;;
-                2)  # 
+                2)  # Manaplus
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MANAPLUS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MANAPLUS\" 'AUR-INSTALL-MANAPLUS'" "AUR-INSTALL-MANAPLUS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MANAPLUS\" 'AUR-INSTALL-MANAPLUS'" "AUR-INSTALL-MANAPLUS" ; then
+                        add_aur_package "$AUR_INSTALL_MANAPLUS"
+                    fi
                     ;;
-                3)  # 
+                3)  # Runescape
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_RUNESCAPE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_RUNESCAPE\" 'AUR-INSTALL-RUNESCAPE'" "AUR-INSTALL-RUNESCAPE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RUNESCAPE\" 'AUR-INSTALL-RUNESCAPE'" "AUR-INSTALL-RUNESCAPE" ; then
+                        add_aur_package "$AUR_INSTALL_RUNESCAPE"
+                    fi
                     ;;
-                4)  # 
+                4)  # Savage 2
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SAVAGE_2"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SAVAGE_2\" 'AUR-INSTALL-SAVAGE-2'" "AUR-INSTALL-SAVAGE-2"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SAVAGE_2\" 'AUR-INSTALL-SAVAGE-2'" "AUR-INSTALL-SAVAGE-2" ; then
+                        add_aur_package "$AUR_INSTALL_SAVAGE_2"
+                    fi
                     ;;
-                5)  # 
+                5)  # Spiral Knights
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SPIRAL_KNIGHTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_KNIGHTS\" 'AUR-INSTALL-SPIRAL-KNIGHTS'" "AUR-INSTALL-SPIRAL-KNIGHTS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_KNIGHTS\" 'AUR-INSTALL-SPIRAL-KNIGHTS'" "AUR-INSTALL-SPIRAL-KNIGHTS" ; then
+                        add_aur_package "$AUR_INSTALL_SPIRAL_KNIGHTS"
+                    fi
                     ;;
-                6)  # 
+                6)  # Wakfu
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_WAKFU"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_WAKFU\" 'AUR-INSTALL-WAKFU'" "AUR-INSTALL-WAKFU"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_WAKFU\" 'AUR-INSTALL-WAKFU'" "AUR-INSTALL-WAKFU" ; then
+                        add_aur_package "$AUR_INSTALL_WAKFU"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6346,6 +6741,11 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-PUZZLE-GAMES-DESC"   "Install Puzzle Games"
+    #
+    localize_info "INSTALL-PUZZLE-GAMES-MENU-1"    "frozen-bubble"
+    localize_info "INSTALL-PUZZLE-GAMES-MENU-I-1"       "frozen-bubble: A game in which you throw colorful bubbles and build groups to destroy the bubbles"
+    localize_info "INSTALL-PUZZLE-GAMES-MENU-2"    "Numptyphysics"
+    localize_info "INSTALL-PUZZLE-GAMES-MENU-I-2"       "Numptyphysics: a drawing puzzle game in the spirit of Crayon Physics"
 fi
 # -------------------------------------
 install_puzzle_games_menu()
@@ -6354,16 +6754,17 @@ install_puzzle_games_menu()
     local BreakableKey="B"                     # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"               # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-2 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-2"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6377,26 +6778,28 @@ install_puzzle_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "frozen-bubble" "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Numptyphysics" "" "$AUR" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PUZZLE-GAMES-MENU-1" "" ""     "INSTALL-PUZZLE-GAMES-MENU-I-1" "MenuTheme[@]" # frozen-bubble
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-PUZZLE-GAMES-MENU-2" "" "$AUR" "INSTALL-PUZZLE-GAMES-MENU-I-2" "MenuTheme[@]" # Numptyphysics
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # frozen-bubble
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_FROZEN_BUBBLE"
-                    add_packagemanager "package_install \"$INSTALL_FROZEN_BUBBLE\" 'INSTALL-FROZEN-BUBBLE'" "INSTALL-FROZEN-BUBBLE"
+                    if add_packagemanager "package_install \"$INSTALL_FROZEN_BUBBLE\" 'INSTALL-FROZEN-BUBBLE'" "INSTALL-FROZEN-BUBBLE" ; then
+                        add_package "$INSTALL_FROZEN_BUBBLE"
+                    fi
                     ;;
-                2)  # 
+                2)  # Numptyphysics
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_NUMPTYPHYSICS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_NUMPTYPHYSICS\" 'AUR-INSTALL-NUMPTYPHYSICS'" "AUR-INSTALL-NUMPTYPHYSICS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_NUMPTYPHYSICS\" 'AUR-INSTALL-NUMPTYPHYSICS'" "AUR-INSTALL-NUMPTYPHYSICS" ; then
+                        add_aur_package "$AUR_INSTALL_NUMPTYPHYSICS"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6431,6 +6834,13 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-RPG-GAMES-DESC"   "Install RPG GAMES"
+    #
+    localize_info "INSTALL-RPG-GAMES-MENU-1"    "Ardentryst"
+    localize_info "INSTALL-RPG-GAMES-MENU-I-1"       "Ardentryst: An Action/RPG sidescoller with a focus on story and character development"
+    localize_info "INSTALL-RPG-GAMES-MENU-2"    "Flare RPG"
+    localize_info "INSTALL-RPG-GAMES-MENU-I-2"       "Flare RPG: Open Source Action Roleplaying Game"
+    localize_info "INSTALL-RPG-GAMES-MENU-3"    "Freedroid RPG"
+    localize_info "INSTALL-RPG-GAMES-MENU-I-3"       "Freedroid RPG: A Mature Science Fiction Role Playing game set in the future"
 fi
 # -------------------------------------
 install_rpg_games_menu()
@@ -6439,16 +6849,17 @@ install_rpg_games_menu()
     local BreakableKey="B"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-3 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-3"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6462,32 +6873,35 @@ install_rpg_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Ardentryst"    "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Flare RPG"     "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Freedroid RPG" "" ""     "" "MenuTheme[@]" # 3
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RPG-GAMES-MENU-1" "" "$AUR" "INSTALL-RPG-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Ardentryst
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RPG-GAMES-MENU-2" "" "$AUR" "INSTALL-RPG-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Flare RPG
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RPG-GAMES-MENU-3" "" ""     "INSTALL-RPG-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Freedroid RPG
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Ardentryst
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ARDENTRYST"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ARDENTRYST\" 'AUR-INSTALL-ARDENTRYST'" "AUR-INSTALL-ARDENTRYST"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ARDENTRYST\" 'AUR-INSTALL-ARDENTRYST'" "AUR-INSTALL-ARDENTRYST" ; then
+                        add_aur_package "$AUR_INSTALL_ARDENTRYST"
+                    fi
                     ;;
-                2)  # 
+                2)  # Flare RPG
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_FLARE_RPG"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_FLARE_RPG\" 'AUR-INSTALL-FLARE-RPG'" "AUR-INSTALL-FLARE-RPG"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_FLARE_RPG\" 'AUR-INSTALL-FLARE-RPG'" "AUR-INSTALL-FLARE-RPG" ; then
+                        add_aur_package "$AUR_INSTALL_FLARE_RPG"
+                    fi
                     ;;
-                3)  # 
+                3)  # Freedroid RPG
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_FREEDROUDRPG"
-                    add_packagemanager "package_install \"$INSTALL_FREEDROUDRPG\" 'INSTALL-FREEDROUDRPG'" "INSTALL-FREEDROUDRPG"
+                    if add_packagemanager "package_install \"$INSTALL_FREEDROUDRPG\" 'INSTALL-FREEDROUDRPG'" "INSTALL-FREEDROUDRPG" ; then
+                        add_package "$INSTALL_FREEDROUDRPG"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6522,6 +6936,17 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-RACING-GAMES-DESC"   "Install Racing Games"
+    #
+    localize_info "INSTALL-RACING-GAMES-MENU-1"    "Maniadrive"
+    localize_info "INSTALL-RACING-GAMES-MENU-I-1"        "Maniadrive: An acrobatic racing game"
+    localize_info "INSTALL-RACING-GAMES-MENU-2"    "Death Rally"
+    localize_info "INSTALL-RACING-GAMES-MENU-I-2"        "Death Rally: A free windows port of the classic racing game from Remedy games, played in Wine."
+    localize_info "INSTALL-RACING-GAMES-MENU-3"    "Stun Trally"
+    localize_info "INSTALL-RACING-GAMES-MENU-I-3"        "Stun Trally: Stunt Rally game with track editor, based on VDrift and OGRE"
+    localize_info "INSTALL-RACING-GAMES-MENU-4"    "Supertuxkart"
+    localize_info "INSTALL-RACING-GAMES-MENU-I-4"        "Supertuxkart: Kart racing game featuring Tux and his friends"
+    localize_info "INSTALL-RACING-GAMES-MENU-5"    "Speed Dreams"
+    localize_info "INSTALL-RACING-GAMES-MENU-I-5"        "Speed Dreams: A racing simulator with rich graphics and physics"
 fi
 # -------------------------------------
 install_racing_games_menu()
@@ -6530,16 +6955,17 @@ install_racing_games_menu()
     local BreakableKey="B"                     # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""                # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-5 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 5 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 5"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6553,44 +6979,49 @@ install_racing_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Maniadrive"   "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Death Rally"  "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Stun Trally"  "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Supertuxkart" "" ""     "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Speed Dreams" "" ""     "" "MenuTheme[@]" # 5
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RACING-GAMES-MENU-1" "" "$AUR" "INSTALL-RACING-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Maniadrive
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RACING-GAMES-MENU-2" "" "$AUR" "INSTALL-RACING-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Death Rally
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RACING-GAMES-MENU-3" "" "$AUR" "INSTALL-RACING-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Stun Trally
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RACING-GAMES-MENU-4" "" ""     "INSTALL-RACING-GAMES-MENU-I-4" "MenuTheme[@]" # 4 Supertuxkart
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-RACING-GAMES-MENU-5" "" ""     "INSTALL-RACING-GAMES-MENU-I-5" "MenuTheme[@]" # 5 Speed Dreams
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Maniadrive
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MANIADRIVE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MANIADRIVE\" 'AUR-INSTALL-MANIADRIVE'" "AUR-INSTALL-MANIADRIVE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MANIADRIVE\" 'AUR-INSTALL-MANIADRIVE'" "AUR-INSTALL-MANIADRIVE" ; then
+                        add_aur_package "$AUR_INSTALL_MANIADRIVE"
+                    fi
                     ;;
-                2)  # 
+                2)  # Death Rally
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DEATH_RALLY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DEATH_RALLY\" 'AUR-INSTALL-DEATH-RALLY'" "AUR-INSTALL-DEATH-RALLY"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEATH_RALLY\" 'AUR-INSTALL-DEATH-RALLY'" "AUR-INSTALL-DEATH-RALLY" ; then
+                        add_aur_package "$AUR_INSTALL_DEATH_RALLY"
+                    fi
                     ;;
-                3)  # 
+                3)  # Stun Trally
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_STUNTRALLY"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_STUNTRALLY\" 'AUR-INSTALL-STUNTRALLY'" "AUR-INSTALL-STUNTRALLY"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_STUNTRALLY\" 'AUR-INSTALL-STUNTRALLY'" "AUR-INSTALL-STUNTRALLY" ; then
+                        add_aur_package "$AUR_INSTALL_STUNTRALLY"
+                    fi
                     ;;
-                4)  # 
+                4)  # Supertuxkart
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_SUPTERTUXKART"
-                    add_packagemanager "package_install \"$INSTALL_SUPTERTUXKART\" 'INSTALL-SUPTERTUXKART'" "INSTALL-SUPTERTUXKART"
+                    if add_packagemanager "package_install \"$INSTALL_SUPTERTUXKART\" 'INSTALL-SUPTERTUXKART'" "INSTALL-SUPTERTUXKART" ; then
+                        add_package "$INSTALL_SUPTERTUXKART"
+                    fi
                     ;;
-                5)  # 
+                5)  # Speed Dreams
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_SPEED_DREAMS"
-                    add_packagemanager "package_install \"$INSTALL_SPEED_DREAMS\" 'INSTALL-SPEED-DREAMS'" "INSTALL-SPEED-DREAMS"
+                    if add_packagemanager "package_install \"$INSTALL_SPEED_DREAMS\" 'INSTALL-SPEED-DREAMS'" "INSTALL-SPEED-DREAMS" ; then
+                        add_package "$INSTALL_SPEED_DREAMS"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6625,6 +7056,13 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-SIMULATION-GAMES-DESC"   "Install Simulation Games"
+    #
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-1"    "Simutrans"
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-I-1"        "Simutrans: An Open Source Transportation Simulation Game"
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-2"    "Theme Hospital"
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-I-2"        "Theme Hospital:  	Reimplementation of the Game Engine of Theme Hospital. corsix-th"
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-3"    "Openttd"
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-I-3"        "Openttd: An Engine for Running Transport Tycoon Deluxe."
 fi
 # -------------------------------------
 install_simulation_games_menu()
@@ -6633,16 +7071,17 @@ install_simulation_games_menu()
     local BreakableKey="B"                         # Q=Quit, D=Done, B=Back
     local RecommendedOptions="3"                   # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1 2 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1 2"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 1 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 1"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6656,32 +7095,35 @@ install_simulation_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Simutrans"      ""     "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Theme Hospital" "$AUR" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Openttd"        ""     "" "" "MenuTheme[@]" # 3
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SIMULATION-GAMES-MENU-1" "" ""     "INSTALL-SIMULATION-GAMES-MENU-I-1" "MenuTheme[@]" # 1 Simutrans
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SIMULATION-GAMES-MENU-2" "" "$AUR" "INSTALL-SIMULATION-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Theme Hospital 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-SIMULATION-GAMES-MENU-3" "" ""     "INSTALL-SIMULATION-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Openttd
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Simutrans
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_SIMUTRANS"
-                    add_packagemanager "package_install \"$INSTALL_SIMUTRANS\" 'INSTALL-SIMUTRANS'" "INSTALL-SIMUTRANS"
+                    if add_packagemanager "package_install \"$INSTALL_SIMUTRANS\" 'INSTALL-SIMUTRANS'" "INSTALL-SIMUTRANS" ; then
+                        add_package "$INSTALL_SIMUTRANS"
+                    fi
                     ;;
-                2)  # 
+                2)  # Theme Hospital
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_CORSIX_TH"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_CORSIX_TH\" 'AUR-INSTALL-CORSIX-TH'" "AUR-INSTALL-CORSIX-TH"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CORSIX_TH\" 'AUR-INSTALL-CORSIX-TH'" "AUR-INSTALL-CORSIX-TH" ; then
+                        add_aur_package "$AUR_INSTALL_CORSIX_TH"
+                    fi
                     ;;
-                3)  # 
+                3)  # Openttd
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_OPENTTD"
-                    add_packagemanager "package_install \"$INSTALL_OPENTTD\" 'INSTALL-OPENTTD'" "INSTALL-OPENTTD"
+                    if add_packagemanager "package_install \"$INSTALL_OPENTTD\" 'INSTALL-OPENTTD'" "INSTALL-OPENTTD" ; then
+                        add_package "$INSTALL_OPENTTD"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6716,6 +7158,21 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-STRATEGY-GAMES-DESC"   "Install Strategy Games"
+    #
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-1"    "0ad"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-1"          "0ad: Cross-platform, 3D and historically-based Real-Time Strategy Game"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-2"    "Hedgewars"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-2"          "Hedgewars: Free Worms-like turn based strategy game"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-3"    "Megaglest"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-3"          "Megaglest: Fork of Glest, a 3D Real-Time Strategy Game in a Fantastic World."
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-4"    "Unknown-horizons"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-4"          "Unknown-horizons: A 2D Realtime Strategy Simulation with an emphasis on economy and City Building"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-5"    "Warzone2100"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-5"          "Warzone2100: 	3D Realtime Strategy Game on a future Earth"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-6"    "Wesnoth"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-6"          "Wesnoth: A turn-based Strategy Game on a fantasy world"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-7"    "Zod"
+    localize_info "INSTALL-STRATEGY-GAMES-MENU-I-7"          "Zod: The Zod Engine - An Open Source Remake of the 1996 Game Z by Bitmap Brothers"
 fi
 # -------------------------------------
 install_strategy_games_menu()
@@ -6724,16 +7181,17 @@ install_strategy_games_menu()
     local BreakableKey="B"                       # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""                  # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1-7 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1-7"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6747,56 +7205,63 @@ install_strategy_games_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "0ad"              "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dedgewars"        "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Megaglest"        "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Unknown-horizons" "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Warzone2100"      "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Wesnoth"          "" ""     "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Zod"              "" "$AUR" "" "MenuTheme[@]" # 7
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-1" "" ""     "INSTALL-STRATEGY-GAMES-MENU-I-1" "MenuTheme[@]" # 1 0ad
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-2" "" ""     "INSTALL-STRATEGY-GAMES-MENU-I-2" "MenuTheme[@]" # 2 Hedgewars
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-3" "" ""     "INSTALL-STRATEGY-GAMES-MENU-I-3" "MenuTheme[@]" # 3 Megaglest
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-4" "" "$AUR" "INSTALL-STRATEGY-GAMES-MENU-I-4" "MenuTheme[@]" # 4 Unknown-horizons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-5" "" ""     "INSTALL-STRATEGY-GAMES-MENU-I-5" "MenuTheme[@]" # 5 Warzone2100
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-6" "" ""     "INSTALL-STRATEGY-GAMES-MENU-I-6" "MenuTheme[@]" # 6 Wesnoth
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-STRATEGY-GAMES-MENU-7" "" "$AUR" "INSTALL-STRATEGY-GAMES-MENU-I-7" "MenuTheme[@]" # 7 Zod
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # 0ad
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_0AD"
-                    add_packagemanager "package_install \"$INSTALL_0AD\" 'INSTALL-0AD'" "INSTALL-0AD"
+                    if add_packagemanager "package_install \"$INSTALL_0AD\" 'INSTALL-0AD'" "INSTALL-0AD" ; then
+                        add_package "$INSTALL_0AD"
+                    fi
                     ;;
-                2)  # 
+                2)  # Hedgewars
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_HEDGEWARS"
-                    add_packagemanager "package_install \"$INSTALL_HEDGEWARS\" 'INSTALL-HEDGEWARS'" "INSTALL-HEDGEWARS"
+                    if add_packagemanager "package_install \"$INSTALL_HEDGEWARS\" 'INSTALL-HEDGEWARS'" "INSTALL-HEDGEWARS" ; then
+                        add_package "$INSTALL_HEDGEWARS"
+                    fi
                     ;;
-                3)  # 
+                3)  # Megaglest
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_MEGAGLEST"
-                    add_packagemanager "package_install \"$INSTALL_MEGAGLEST\" 'INSTALL-MEGAGLEST'" "INSTALL-MEGAGLEST"
+                    if add_packagemanager "package_install \"$INSTALL_MEGAGLEST\" 'INSTALL-MEGAGLEST'" "INSTALL-MEGAGLEST" ; then
+                        add_package "$INSTALL_MEGAGLEST"
+                    fi
                     ;;
-                4)  # 
+                4)  # Unknown-horizons
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_UNKNOW_HORIZONS"
-                    add_packagemanager "package_install \"$INSTALL_UNKNOW_HORIZONS\" 'INSTALL-UNKNOW-HORIZONS'" "INSTALL-UNKNOW-HORIZONS"
+                    if add_packagemanager "package_install \"$INSTALL_UNKNOW_HORIZONS\" 'INSTALL-UNKNOW-HORIZONS'" "INSTALL-UNKNOW-HORIZONS" ; then
+                        add_package "$INSTALL_UNKNOW_HORIZONS"
+                    fi
                     ;;
-                5)  # 
+                5)  # Warzone2100
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_WARZONE2100"
-                    add_packagemanager "package_install \"$INSTALL_WARZONE2100\" 'INSTALL-WARZONE2100'" "INSTALL-WARZONE2100"
+                    if add_packagemanager "package_install \"$INSTALL_WARZONE2100\" 'INSTALL-WARZONE2100'" "INSTALL-WARZONE2100" ; then
+                        add_package "$INSTALL_WARZONE2100"
+                    fi
                     ;;
-                6)  # 
+                6)  # Wesnoth
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_WESNOTH"
-                    add_packagemanager "package_install \"$INSTALL_WESNOTH\"  'INSTALL-WESNOTH'" "INSTALL-WESNOTH"
+                    if add_packagemanager "package_install \"$INSTALL_WESNOTH\"  'INSTALL-WESNOTH'" "INSTALL-WESNOTH" ; then
+                        add_package "$INSTALL_WESNOTH"
+                    fi
                     ;;
-                7)  # 
+                7)  # Zod
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_COMMANDER_ZOD"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_COMMANDER_ZOD\" 'AUR-INSTALL-COMMANDER-ZOD'" "AUR-INSTALL-COMMANDER-ZOD"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_COMMANDER_ZOD\" 'AUR-INSTALL-COMMANDER-ZOD'" "AUR-INSTALL-COMMANDER-ZOD" ; then
+                        add_aur_package "$AUR_INSTALL_COMMANDER_ZOD"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6866,8 +7331,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-WEB-SERVER-DESC"  "Main Menu"
     localize_info "INSTALL-WEB-SERVER-TITLE" "Web Server"
     #
-    localize_info "INSTALL-WEB-SERVER-MENU-1" "LAMP - APACHE, MYSQL & PHP + ADMINER"
-    localize_info "INSTALL-WEB-SERVER-MENU-2" "LAPP - APACHE, POSTGRESQL & PHP + ADMINER"
+    localize_info "INSTALL-WEB-SERVER-MENU-1"   "LAPP - APACHE, POSTGRESQL & PHP + ADMINER"
+    localize_info "INSTALL-WEB-SERVER-MENU-I-1"         "POSTGRESQL: A Sophisticated Object-Relational DBMS"
+    localize_info "INSTALL-WEB-SERVER-MENU-2"   "LAMP - APACHE, MYSQL & PHP + ADMINER"
+    localize_info "INSTALL-WEB-SERVER-MENU-I-2"         "MYSQL: A fast SQL Database Server"
 fi
 # -------------------------------------
 install_web_server_menu()
@@ -6878,16 +7345,17 @@ install_web_server_menu()
     local BreakableKey="D"           # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -6903,34 +7371,38 @@ install_web_server_menu()
         #
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WEB-SERVER-MENU-1" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WEB-SERVER-MENU-2" "" "" "" "MenuTheme[@]" # 2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WEB-SERVER-MENU-1" "" "INSTALL-WEB-SERVER-MENU-I-1" "INSTALL-WEB-SERVER-MENU-I-1" "MenuTheme[@]" # 1 POSTGRESQL
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-WEB-SERVER-MENU-2" "" "INSTALL-WEB-SERVER-MENU-I-2" "INSTALL-WEB-SERVER-MENU-I-2" "MenuTheme[@]" # 2 MYSQL
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # POSTGRESQL
                     MenuChecks[$((S_OPT - 1))]=1
                     WEBSERVER="$S_OPT"
-                    add_package "$INSTALL_WEB_SERVER_1"
-                    add_packagemanager "package_install \"$INSTALL_WEB_SERVER_1\" 'INSTALL-WEB-SERVER-1'" "INSTALL-WEB-SERVER-1"
-                    add_aur_package "$AUR_INSTALL_ADMINER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ADMINER\" 'AUR-INSTALL-ADMINER'" "AUR-INSTALL-ADMINER" # if you add something, change this name
-                    add_packagemanager "systemctl enable httpd.service mysqld.service" "SYSTEMD-ENABLE-WEBSERVER-1"
-                    add_packagemanager "systemctl start mysqld.service" "SYSTEMD-START-MYSQL"
+                    if add_packagemanager "package_install \"$INSTALL_WEB_SERVER_1\" 'INSTALL-WEB-SERVER-1'" "INSTALL-WEB-SERVER-1" ; then
+                        add_package "$INSTALL_WEB_SERVER_1"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ADMINER\" 'AUR-INSTALL-ADMINER'" "AUR-INSTALL-ADMINER" ; then # if you add something, change this name
+                        add_aur_package "$AUR_INSTALL_ADMINER"
+                    fi
                     ;;
-                2)  # 
+                2)  # MYSQL
                     MenuChecks[$((S_OPT - 1))]=1
                     WEBSERVER="$S_OPT"
-                    add_package "$INSTALL_WEB_SERVER_2" 
-                    add_packagemanager "package_install \"$INSTALL_WEB_SERVER_2\" 'INSTALL-WEB-SERVER-2'" "INSTALL-WEB-SERVER-2"
-                    add_aur_package "$AUR_INSTALL_ADMINER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ADMINER\" 'AUR-INSTALL-ADMINER'" "AUR-INSTALL-ADMINER" # if you add something, change this name
+                    if add_packagemanager "package_install \"$INSTALL_WEB_SERVER_2\" 'INSTALL-WEB-SERVER-2'" "INSTALL-WEB-SERVER-2" ; then
+                        add_package "$INSTALL_WEB_SERVER_2" 
+                        add_packagemanager "systemctl enable httpd.service mysqld.service" "SYSTEMD-ENABLE-WEBSERVER-1"
+                        add_packagemanager "systemctl start mysqld.service" "SYSTEMD-START-MYSQL"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ADMINER\" 'AUR-INSTALL-ADMINER'" "AUR-INSTALL-ADMINER" ; then # if you add something, change this name
+                        add_aur_package "$AUR_INSTALL_ADMINER"
+                    fi
                     ;;
 
                 *)  # Catch ALL
@@ -6966,8 +7438,23 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-FONTS-DESC"     "Install Fonts"
-    localize_info "INSTALL-FONTS-MENU-2-I" "ttf-google-webfonts Note: Removes: ttf-droid ttf-roboto ttf-ubuntu-font-family"
-    localize_info "INSTALL-FONTS-MENU-8-I" "wqy-microhei: Chinese/Japanese/Korean Support"
+    #
+    localize_info "INSTALL-FONTS-MENU-1"    "ttf-dejavu"
+    localize_info "INSTALL-FONTS-MENU-I-1"       "ttf-dejavu: Font family based on the Bitstream Vera Fonts with a wider range of characters"
+    localize_info "INSTALL-FONTS-MENU-2"    "ttf-google-webfonts"
+    localize_info "INSTALL-FONTS-MENU-I-2"       "ttf-google-webfonts: Google Web Fonts catalogue. Note: Removes: ttf-droid ttf-roboto ttf-ubuntu-font-family"
+    localize_info "INSTALL-FONTS-MENU-3"    "ttf-funfonts"
+    localize_info "INSTALL-FONTS-MENU-I-3"       "ttf-funfonts: 76 selected TTF fonts from 6760 font packages"
+    localize_info "INSTALL-FONTS-MENU-4"    "ttf-kochi-substitute"
+    localize_info "INSTALL-FONTS-MENU-I-4"       "ttf-kochi-substitute: High quality Japanese TrueType fonts"
+    localize_info "INSTALL-FONTS-MENU-5"    "ttf-liberation"
+    localize_info "INSTALL-FONTS-MENU-I-5"       "ttf-liberation: Red Hats Liberation fonts."
+    localize_info "INSTALL-FONTS-MENU-6"    "ttf-ms-fonts"
+    localize_info "INSTALL-FONTS-MENU-I-6"       "ttf-ms-fonts: Core TTF Fonts from Microsoft"
+    localize_info "INSTALL-FONTS-MENU-7"    "ttf-vista-fonts"
+    localize_info "INSTALL-FONTS-MENU-I-7"       "ttf-vista-fonts: Microsoft Vista True Type Fonts"
+    localize_info "INSTALL-FONTS-MENU-8"    "wqy-microhei"
+    localize_info "INSTALL-FONTS-MENU-I-8"       "wqy-microhei: A Sans-Serif style high quality CJK outline font. Chinese/Japanese/Korean Support"
 fi
 # -------------------------------------
 install_fonts_menu()
@@ -6977,16 +7464,17 @@ install_fonts_menu()
     local BreakableKey="D"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 5-7"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -7000,63 +7488,71 @@ install_fonts_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-dejavu"           "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-google-webfonts"  "" "$AUR" "INSTALL-FONTS-MENU-2-I" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-funfonts"         "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-kochi-substitute" "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-liberation"       "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-ms-fonts"         "" ""     "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "ttf-vista-fonts"      "" ""     "" "MenuTheme[@]" # 7 
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "wqy-microhei"         "" ""     "INSTALL-FONTS-MENU-8-I" "MenuTheme[@]" # 8
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-1"  "" ""     "INSTALL-FONTS-MENU-I-1" "MenuTheme[@]" # 1 ttf-dejavu
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-2"  "" "$AUR" "INSTALL-FONTS-MENU-I-2" "MenuTheme[@]" # 2 ttf-google-webfonts
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-3"  "" "$AUR" "INSTALL-FONTS-MENU-I-3" "MenuTheme[@]" # 3 ttf-funfonts
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-4"  "" "$AUR" "INSTALL-FONTS-MENU-I-4" "MenuTheme[@]" # 4 ttf-kochi-substitute
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-5"  "" ""     "INSTALL-FONTS-MENU-I-5" "MenuTheme[@]" # 5 ttf-liberation
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-6"  "" "$AUR" "INSTALL-FONTS-MENU-I-6" "MenuTheme[@]" # 6 ttf-ms-fonts
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-7"  "" "$AUR" "INSTALL-FONTS-MENU-I-7" "MenuTheme[@]" # 7 ttf-vista-fonts 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-8"  "" ""     "INSTALL-FONTS-MENU-I-8" "MenuTheme[@]" # 8 wqy-microhei
         #
-        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+        print_menu "MenuItems[@]" "MenuInfo[ttf-kochi-substitute@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # ttf-dejavu
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_TTF_DEJAVU"
-                    add_packagemanager "package_install \"$INSTALL_TTF_DEJAVU\" 'INSTALL-TTF-DEJAVU'" "INSTALL-TTF-DEJAVU"
+                    if add_packagemanager "package_install \"$INSTALL_TTF_DEJAVU\" 'INSTALL-TTF-DEJAVU'" "INSTALL-TTF-DEJAVU" ; then
+                        add_package "$INSTALL_TTF_DEJAVU"
+                    fi
                     ;;
-                2)  # 
+                2)  # ttf-google-webfonts
                     MenuChecks[$((S_OPT - 1))]=1
                     add_packagemanager "package_remove 'ttf-droid ttf-roboto ttf-ubuntu-font-family'" "REMOVE-GOOGLE-WEBFONTS"
-                    add_aur_package "$AUR_INSTALL_GOOGLE_WEBFONTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_WEBFONTS\" 'AUR-INSTALL-GOOGLE-WEBFONTS'" "AUR-INSTALL-GOOGLE-WEBFONTS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_WEBFONTS\" 'AUR-INSTALL-GOOGLE-WEBFONTS'" "AUR-INSTALL-GOOGLE-WEBFONTS" ; then
+                        add_aur_package "$AUR_INSTALL_GOOGLE_WEBFONTS"
+                    fi
                     ;;
-                3)  # 
+                3)  # ttf-funfonts
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_FUN_FONTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_FUN_FONTS\" 'AUR-INSTALL-FUN-FONTS'" "AUR-INSTALL-FUN-FONTS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_FUN_FONTS\" 'AUR-INSTALL-FUN-FONTS'" "AUR-INSTALL-FUN-FONTS" ; then
+                        add_aur_package "$AUR_INSTALL_FUN_FONTS"
+                    fi
                     ;;
-                4)  # 
+                4)  # ttf-kochi-substitute
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_KOCHI_FONTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_KOCHI_FONTS\" 'AUR-INSTALL-KOCHI-FONTS'" "AUR-INSTALL-KOCHI-FONTS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_KOCHI_FONTS\" 'AUR-INSTALL-KOCHI-FONTS'" "AUR-INSTALL-KOCHI-FONTS" ; then
+                        add_aur_package "$AUR_INSTALL_KOCHI_FONTS"
+                    fi
                     ;;
-                5)  # 
+                5)  # ttf-liberation
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_TTF_LIBERATION"
-                    add_packagemanager "package_install \"$INSTALL_TTF_LIBERATION\" 'INSTALL-TTF-LIBERATION'" "INSTALL-TTF-LIBERATION"
+                    if add_packagemanager "package_install \"$INSTALL_TTF_LIBERATION\" 'INSTALL-TTF-LIBERATION'" "INSTALL-TTF-LIBERATION" ; then
+                        add_package "$INSTALL_TTF_LIBERATION"
+                    fi
                     ;;
-                6)  # 
+                6)  # ttf-ms-fonts
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MS_FONTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MS_FONTS\" 'AUR-INSTALL-MS-FONTS'" "AUR-INSTALL-MS-FONTS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MS_FONTS\" 'AUR-INSTALL-MS-FONTS'" "AUR-INSTALL-MS-FONTS" ; then
+                        add_aur_package "$AUR_INSTALL_MS_FONTS"
+                    fi
                     ;;
-                7)  # 
+                7)  # ttf-vista-fonts
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_VISTA_FONTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_VISTA_FONTS\" 'AUR-INSTALL-VISTA-FONTS'" "AUR-INSTALL-VISTA-FONTS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_VISTA_FONTS\" 'AUR-INSTALL-VISTA-FONTS'" "AUR-INSTALL-VISTA-FONTS" ; then
+                        add_aur_package "$AUR_INSTALL_VISTA_FONTS"
+                    fi
                     ;;
-                8)  # 
+                8)  # wqy-microhei
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_WQY_FONTS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_WQY_FONTS\" 'AUR-INSTALL-WQY-FONTS'" "AUR-INSTALL-WQY-FONTS"
+                    if add_packagemanager "package_install \"$INSTALL_WQY_FONTS\" 'INSTALL-WQY-FONTS'" "INSTALL-WQY-FONTS" ; then
+                        add_package "$INSTALL_WQY_FONTS"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7131,16 +7627,17 @@ get_network_manager_menu()
     local BreakableKey="D"                    # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"              # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -7160,8 +7657,8 @@ get_network_manager_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -7224,36 +7721,42 @@ install_network_manager_now()
     # 1
     # @FIX use 
     if [[ "$NETWORK_MANAGER" == "networkmanager" ]]; then
-        if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-            add_package "$INSTALL_NETWORKMANAGER_KDE"
-            add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER_KDE\" 'INSTALL-NETWORKMANAGER-KDE'" "INSTALL-NETWORKMANAGER-KDE"
+        if [[ "QT_INSTALL" -eq 1 ]]; then
+            if add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER_KDE\" 'INSTALL-NETWORKMANAGER-KDE'" "INSTALL-NETWORKMANAGER-KDE" ; then
+                add_package "$INSTALL_NETWORKMANAGER_KDE"
+            fi
             if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                add_package "$INSTALL_NETWORKMANAGER_APPLET"
-                add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER_APPLET\" 'INSTALL-NETWORKMANAGER-APPLET'" "INSTALL-NETWORKMANAGER-APPLET"
+                if add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER_APPLET\" 'INSTALL-NETWORKMANAGER-APPLET'" "INSTALL-NETWORKMANAGER-APPLET" ; then
+                    add_package "$INSTALL_NETWORKMANAGER_APPLET"
+                fi
             fi
         else
-            add_package "$INSTALL_NETWORKMANAGER"
-            add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER\" 'INSTALL-NETWORKMANAGER'" "INSTALL-NETWORKMANAGER"
+            if add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER\" 'INSTALL-NETWORKMANAGER'" "INSTALL-NETWORKMANAGER" ; then
+                add_package "$INSTALL_NETWORKMANAGER"
+            fi
         fi
-        add_package "$INSTALL_NETWORKMANAGER_NTP"
-        add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER_NTP\" 'INSTALL-NETWORKMANAGER-NTP'" "INSTALL-NETWORKMANAGER-NTP"
-        add_user_group "networkmanager"
+        if add_packagemanager "package_install \"$INSTALL_NETWORKMANAGER_NTP\" 'INSTALL-NETWORKMANAGER-NTP'" "INSTALL-NETWORKMANAGER-NTP" ; then
+            add_package "$INSTALL_NETWORKMANAGER_NTP"
+            add_user_group "networkmanager"
+        fi
         # Network Management daemon
         # Application development toolkit for controlling system-wide privileges
-        # polkit.service
         add_packagemanager "systemctl enable NetworkManager.service" "SYSTEMD-ENABLE-NETWORKMANAGER"
         add_packagemanager "add_user_2_group 'networkmanager'" "GROUPADD-NETWORKMANAGER"
     elif [[ "$NETWORK_MANAGER" == "wicd" ]]; then
-        if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-            add_aur_package "$AUR_INSTALL_WICD_KDE"
-            add_packagemanager "aur_package_install \"$AUR_INSTALL_WICD_KDE\" 'AUR-INSTALL-WICD-KDE'" "AUR-INSTALL-WICD-KDE"
+        if [[ "QT_INSTALL" -eq 1 ]]; then
+            if add_packagemanager "aur_package_install \"$AUR_INSTALL_WICD_KDE\" 'AUR-INSTALL-WICD-KDE'" "AUR-INSTALL-WICD-KDE" ; then
+                add_aur_package "$AUR_INSTALL_WICD_KDE"
+            fi
             if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                add_package "$INSTALL_WICD_GTK"
-                add_packagemanager "package_install \"$INSTALL_WICD_GTK\" 'INSTALL-WICD-GTK'" "INSTALL-WICD-GTK"
+                if add_packagemanager "package_install \"$INSTALL_WICD_GTK\" 'INSTALL-WICD-GTK'" "INSTALL-WICD-GTK" ; then
+                    add_package "$INSTALL_WICD_GTK"
+                fi
             fi
         else
-            add_package "$INSTALL_WICD_GTK"
-            add_packagemanager "package_install \"$INSTALL_WICD_GTK\" 'INSTALL-WICD-GTK'" "INSTALL-WICD-GTK"
+            if add_packagemanager "package_install \"$INSTALL_WICD_GTK\" 'INSTALL-WICD-GTK'" "INSTALL-WICD-GTK" ; then
+                add_package "$INSTALL_WICD_GTK"
+            fi
         fi
         # Network Management daemon
         add_packagemanager "systemctl enable wicd.service" "SYSTEMD-ENABLE-WICD"
@@ -7276,9 +7779,39 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-ACCESSORIES-APPS-DESC"  "Install Accessory Apps"
-    localize_info "INSTALL-ACCESSORIES-APPS-NOTES" "Notes."
-    localize_info "INSTALL-ACCESSORIES-APPS-TITLE" "ACCESSORIES APPS"
+    localize_info "INSTALL-ACCESSORIES-APPS-DESC"    "Install Accessory Applications"
+    localize_info "INSTALL-ACCESSORIES-APPS-TITLE"   "Accessory Applications"
+    #
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-1"    "Cairo Dock"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-1"       "Cairo-dock is a highly customizable dock written in C. "
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-2"    "Conky + CONKY-colors"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-2"       "Conky + CONKY-colors: Lightweight system monitor for X. An easier way to configure Conky."
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-3"    "Deepin Screenshot"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-3"       "Deepin Screenshot: a screen snapshot tool from deepin linux"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-4"    "Dockbarx"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-4"       "Dockbarx: TaskBar with groupping and group manipulation (with optional MATE support)"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-5"    "Docky"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-5"       "Docky: Full fledged dock application that makes opening common applications and managing windows easier and quicker"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-6"    "Speedcrunch or galculator"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-6"       "Speedcrunch or galculator: Depending on DE -> Simple but powerful calculator using Qt or GTK+ based scientific calculator"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-7"    "Gnome Pie"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-7"       "Gnome Pie: A visual application launcher for gnome."
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-8"    "Guake"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-8"       "Guake: Nice Terminal Popup F12"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-9"    "Kupfer"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-9"       "Kupfer: Launcher application written in python. Similar to Gnome-Do / Launchy"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-10"   "Pyrenamer"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-10"      "Pyrenamer: Mass file renamer"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-11"   "Shutter"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-11"      "Shutter: A featureful screenshot tool (formerly gscrot)"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-12"   "Synapse"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-12"      "Synapse: A semantic file launcher and Zeitgeist client library"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-13"   "Terminator"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-13"      "Terminator: an application that provides lots of terminals in a single window and Library for registering global keyboard shortcuts - Python 2 bindings"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-14"   "Zim"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-14"      "Zim: A WYSIWYG text editor that aims at bringing the concept of a wiki to the desktop."
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-15"   "Revelation"
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-16"      "Revelation: Password Safe."
 fi
 # -------------------------------------
 install_accessories_apps_menu()
@@ -7288,16 +7821,17 @@ install_accessories_apps_menu()
     local BreakableKey="D"                 # Q=Quit, D=Done, B=Back
     local RecommendedOptions="15"          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 6 7 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 6 7"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 6 7 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 6 7"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 6 7 12 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 6 7 12"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -7311,118 +7845,134 @@ install_accessories_apps_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Cairo"                     "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Conky + CONKY-colors"      "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Deepin Scrot"              "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Dockbarx"                  "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Docky"                     "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Speedcrunch or galculator" "" "$AUR" "Depending on DE" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Gnome Pie"                 "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Guake"                     "" ""     "Nice Terminal Popup F12" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Kupfer"                    "" "$AUR" "" "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Pyrenamer"                 "" "$AUR" "" "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Shutter"                   "" "$AUR" "" "MenuTheme[@]" # 11
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Synapse"                   "" "$AUR" "" "MenuTheme[@]" # 12
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Terminator"                "" ""     "" "MenuTheme[@]" # 13
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Zim"                       "" ""     "" "MenuTheme[@]" # 14
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Revelation"                "" "$AUR" "Password Safe." "MenuTheme[@]" # 15
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-1"  "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-1"  "MenuTheme[@]" # 1  Cairo
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-2"  "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-2"  "MenuTheme[@]" # 2  Conky + CONKY-colors
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-3"  "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-3"  "MenuTheme[@]" # 3  Deepin Screenshot
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-4"  "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-4"  "MenuTheme[@]" # 4  Dockbarx
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-5"  "" ""           "INSTALL-ACCESSORIES-APPS-MENU-I-5"  "MenuTheme[@]" # 5  Docky
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-6"  "" "$MAYBE_AUR" "INSTALL-ACCESSORIES-APPS-MENU-I-6"  "MenuTheme[@]" # 6  Speedcrunch or galculator
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-7"  "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-7"  "MenuTheme[@]" # 7  Gnome Pie
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-8"  "" ""           "INSTALL-ACCESSORIES-APPS-MENU-I-8"  "MenuTheme[@]" # 8  Guake
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-9"  "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-9"  "MenuTheme[@]" # 9  Kupfer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-10" "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-10" "MenuTheme[@]" # 10 Pyrenamer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-11" "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-11" "MenuTheme[@]" # 11 Shutter
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-12" "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-12" "MenuTheme[@]" # 12 Synapse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-13" "" ""           "INSTALL-ACCESSORIES-APPS-MENU-I-13" "MenuTheme[@]" # 13 Terminator
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-14" "" ""           "INSTALL-ACCESSORIES-APPS-MENU-I-14" "MenuTheme[@]" # 14 Zim
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ACCESSORIES-APPS-MENU-15" "" "$AUR"       "INSTALL-ACCESSORIES-APPS-MENU-I-15" "MenuTheme[@]" # 15 Revelation
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Cairo
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_CAIRO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_CAIRO\" 'AUR-INSTALL-CAIRO'" "AUR-INSTALL-CAIRO"
-                    ;;
-                2)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_CONKY" 
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_CONKY\" 'AUR-INSTALL-CONKY'" "AUR-INSTALL-CONKY"
-                    ;;
-                3)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DEEPIN_SCROT"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DEEPIN_SCROT\" 'AUR-INSTALL-DEEPIN-SCROT'" "AUR-INSTALL-DEEPIN-SCROT"
-                    ;;
-                4)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DOCKBARX"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DOCKBARX\" 'AUR-INSTALL-DOCKBARX'" "AUR-INSTALL-DOCKBARX"
-                    ;;
-                5)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_DOCKY"
-                    add_packagemanager "package_install \"$INSTALL_DOCKY\" 'INSTALL-DOCKY'" "INSTALL-DOCKY"
-                    ;;
-                6)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                            add_aur_package "$AUR_INSTALL_GALGULATOR"
-                            add_packagemanager "aur_package_install \"$AUR_INSTALL_GALGULATOR\" 'AUR-INSTALL-GALCULATOR'" "AUR-INSTALL-GALCULATOR"
-                        fi
-                        add_aur_package "$AUR_INSTALL_SPEEDCRUNCH"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_SPEEDCRUNCH\" 'AUR-INSTALL-SPEEDCRUNCH'" "AUR-INSTALL-SPEEDCRUNCH"
-                    else
-                        add_aur_package "$AUR_INSTALL_GALGULATOR"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_GALGULATOR\" 'AUR-INSTALL-GALGULATOR'" "AUR-INSTALL-GALGULATOR"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CAIRO\" 'AUR-INSTALL-CAIRO'" "AUR-INSTALL-CAIRO" ; then
+                        add_aur_package "$AUR_INSTALL_CAIRO"
                     fi
                     ;;
-                7)  # 
+                2)  # Conky + CONKY-colors
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GNOME_PIE" 
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_PIE\" 'AUR-INSTALL-GNOME-PIE'" "AUR-INSTALL-GNOME-PIE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CONKY\" 'AUR-INSTALL-CONKY'" "AUR-INSTALL-CONKY" ; then
+                        add_aur_package "$AUR_INSTALL_CONKY" 
+                    fi
                     ;;
-                8)  # 
+                3)  # Deepin Screenshot
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GUAKE"
-                    add_packagemanager "package_install \"$INSTALL_GUAKE\" 'INSTALL-GUAKE'" "INSTALL-GUAKE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEEPIN_SCROT\" 'AUR-INSTALL-DEEPIN-SCROT'" "AUR-INSTALL-DEEPIN-SCROT" ; then
+                        add_aur_package "$AUR_INSTALL_DEEPIN_SCROT"
+                    fi
                     ;;
-                9)  # 
+                4)  # Dockbarx
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_KUPFER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_KUPFER\" 'AUR-INSTALL-KUPFER'" "AUR-INSTALL-KUPFER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DOCKBARX\" 'AUR-INSTALL-DOCKBARX'" "AUR-INSTALL-DOCKBARX" ; then
+                        add_aur_package "$AUR_INSTALL_DOCKBARX"
+                    fi
                     ;;
-               10)  # 
+                5)  # Docky
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_PYRENAMER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_PYRENAMER\" 'AUR-INSTALL-PYRENAMER'" "AUR-INSTALL-PYRENAMER"
+                    if add_packagemanager "package_install \"$INSTALL_DOCKY\" 'INSTALL-DOCKY'" "INSTALL-DOCKY" ; then
+                        add_package "$INSTALL_DOCKY"
+                    fi
                     ;;
-               11)  # 
+                6)  # Speedcrunch or galculator
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SHUTTER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SHUTTER\" 'AUR-INSTALL-SHUTTER'" "AUR-INSTALL-SHUTTER"
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
+                        if [[ "$GNOME_INSTALL" -eq 1 ]]; then
+                            if add_packagemanager "aur_package_install \"$AUR_INSTALL_GALGULATOR\" 'AUR-INSTALL-GALCULATOR'" "AUR-INSTALL-GALCULATOR" ; then
+                                add_aur_package "$AUR_INSTALL_GALGULATOR"
+                            fi
+                        fi
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_SPEEDCRUNCH\" 'AUR-INSTALL-SPEEDCRUNCH'" "AUR-INSTALL-SPEEDCRUNCH" ; then
+                            add_aur_package "$AUR_INSTALL_SPEEDCRUNCH"
+                        fi
+                    else
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_GALGULATOR\" 'AUR-INSTALL-GALGULATOR'" "AUR-INSTALL-GALGULATOR" ; then
+                            add_aur_package "$AUR_INSTALL_GALGULATOR"
+                        fi
+                    fi
                     ;;
-               12)  # 
+                7)  # Gnome Pie
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_ZEITGEIST"
-                    add_packagemanager "package_install \"$INSTALL_ZEITGEIST\" 'INSTALL-ZEITGEIST'" "INSTALL-ZEITGEIST"
-                    add_aur_package "$AUR_INSTALL_ZEITGEIST"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEITGEIST\" 'AUR-INSTALL-ZEITGEIST'" "AUR-INSTALL-ZEITGEIST"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_PIE\" 'AUR-INSTALL-GNOME-PIE'" "AUR-INSTALL-GNOME-PIE" ; then
+                        add_aur_package "$AUR_INSTALL_GNOME_PIE" 
+                    fi
                     ;;
-               13)  # 
+                8)  # Guake
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_TERMINATOR"
-                    add_packagemanager "package_install \"$INSTALL_TERMINATOR\" 'INSTALL-TERMINATOR'" "INSTALL-TERMINATOR"
-                    add_aur_package "$AUR_INSTALL_TERMINATOR"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TERMINATOR\" 'AUR-INSTALL-TERMINATOR'" "AUR-INSTALL-TERMINATOR"
+                    if add_packagemanager "package_install \"$INSTALL_GUAKE\" 'INSTALL-GUAKE'" "INSTALL-GUAKE" ; then
+                        add_package "$INSTALL_GUAKE"
+                    fi
                     ;;
-               14)  # 
+                9)  # Kupfer
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_ZIM"
-                    add_packagemanager "package_install \"$INSTALL_ZIM\" 'INSTALL-ZIM'" "INSTALL-ZIM"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_KUPFER\" 'AUR-INSTALL-KUPFER'" "AUR-INSTALL-KUPFER" ; then
+                        add_aur_package "$AUR_INSTALL_KUPFER"
+                    fi
                     ;;
-               15)  # 
+               10)  # Pyrenamer
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_REVELATION"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_REVELATION\" 'AUR-INSTALL-REVELATION'" "AUR-INSTALL-REVELATION"
-                    add_packagemanager "make_dir '/etc/gconf/schemas/' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"; cd /etc/gconf/schemas/; ln -s /usr/share/gconf/schemas/revelation.schemas; cd \$(pwd)" "AUR-INSTALL-REVELATION-SETUP"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_PYRENAMER\" 'AUR-INSTALL-PYRENAMER'" "AUR-INSTALL-PYRENAMER" ; then
+                        add_aur_package "$AUR_INSTALL_PYRENAMER"
+                    fi
+                    ;;
+               11)  # Shutter
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SHUTTER\" 'AUR-INSTALL-SHUTTER'" "AUR-INSTALL-SHUTTER" ; then
+                        add_aur_package "$AUR_INSTALL_SHUTTER"
+                    fi
+                    ;;
+               12)  # Synapse
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_ZEITGEIST\" 'INSTALL-ZEITGEIST'" "INSTALL-ZEITGEIST" ; then
+                        add_package "$INSTALL_ZEITGEIST"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEITGEIST\" 'AUR-INSTALL-ZEITGEIST'" "AUR-INSTALL-ZEITGEIST" ; then
+                        add_aur_package "$AUR_INSTALL_ZEITGEIST"
+                    fi
+                    ;;
+               13)  # Terminator
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_TERMINATOR\" 'INSTALL-TERMINATOR'" "INSTALL-TERMINATOR" ; then
+                        add_package "$INSTALL_TERMINATOR"
+                    fi
+                    ;;
+               14)  # Zim
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_ZIM\" 'INSTALL-ZIM'" "INSTALL-ZIM" ; then
+                        add_package "$INSTALL_ZIM"
+                    fi
+                    ;;
+               15)  # Revelation
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_REVELATION\" 'AUR-INSTALL-REVELATION'" "AUR-INSTALL-REVELATION" ; then
+                        add_aur_package "$AUR_INSTALL_REVELATION"
+                        add_packagemanager "make_dir '/etc/gconf/schemas/' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"; cd /etc/gconf/schemas/; ln -s /usr/share/gconf/schemas/revelation.schemas; cd \$(pwd)" "AUR-INSTALL-REVELATION-SETUP"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7458,46 +8008,49 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DEVELOPMENT-APPS-DESC"    "Install Development Apps"
     #
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-1"    "Qt and Creator"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-1-I"                   "Qt and Creator"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-2"    "Wt"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-2-I"                   "Wt Pronounced [Witty]: C++ Web Applications Frame work based on Widgets."
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-3"    "MySQL and Workbench"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-3-I"                   "MySQL and Workbench"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-4"    "Aptana-Studio"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-4-I"                   "Aptana-Studio"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-5"    "Bluefish"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-5-I"                   "Bluefish"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-6"    "Eclipse"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-6-I"                   "Eclipse: Sub menu for Customizing."
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-7"    "emacs"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-7-I"                   "emacs"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-8"    "gvim"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-8-I"                   "gvim"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-9"    "geany"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-9-I"                   "geany"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-10"   "IntelliJ IDEA"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-10-I"                  "IntelliJ IDEA"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-11"   "kdevelop"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-11-I"                  "kdevelop"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-12"   "Netbeans"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-12-I"                  "Netbeans"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-13"   "Oracle Java"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-13-I"                  "Oracle Java: https://wiki.archlinux.org/index.php/Java"    
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-14"   "Sublime Text 2"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-14-I"                  "Sublime Text 2"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-15"   "Debugger Tools"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-15-I"                  "Debugger Tools"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-16"   "meld"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-16-I"                  "meld"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-17"   "RabbitVCS"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-17-I"                  "RabbitVCS"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-18"   "astyle"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-18-I"                  "astyle"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-19"   "putty"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-19-I"                  "putty"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-20"   "Utilities"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-20-I"                  "Utilities"
+    MENU_NUMBER=1
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Qt and Creator"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Qt and Creator"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Wt"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Wt Pronounced [Witty]: C++ Web Applications Frame work based on Widgets."
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "PostgreSQL"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "PostgreSQL: A sophisticated Object-Relational DBMS"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "MySQL and Workbench"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "MySQL and Workbench: In AUR - DBMS - Commercial License."
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Aptana-Studio"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Aptana-Studio"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Bluefish"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Bluefish"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Eclipse"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Eclipse: Sub menu for Customizing."
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "emacs"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "emacs"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "gvim"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "gvim"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "geany"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "geany"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "IntelliJ IDEA"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "IntelliJ IDEA"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "kdevelop"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "kdevelop"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Netbeans"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Netbeans"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Oracle Java"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Oracle Java: https://wiki.archlinux.org/index.php/Java"    
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Sublime Text 2"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Sublime Text 2"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Debugger Tools"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Debugger Tools"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "meld"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "meld"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "RabbitVCS"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "RabbitVCS"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "astyle"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "astyle"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "putty"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "putty"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Utilities"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Utilities"
 fi
 # -------------------------------------
 install_development_apps_menu()
@@ -7507,16 +8060,17 @@ install_development_apps_menu()
     local BreakableKey="D"                 # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"           # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 2 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 2 5 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2 5"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 2 3 5 6 12 15 18-20 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 2 3 5 6 12 15 18-20"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -7530,145 +8084,169 @@ install_development_apps_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-1"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-1-I"  "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-2"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-2-I"  "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-3"  "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-3-I"  "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-4"  "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-4-I"  "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-5"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-5-I"  "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-6"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-6-I"  "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-7"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-7-I"  "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-8"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-8-I"  "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-9"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-9-I"  "MenuTheme[@]" # 9
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-10" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-10-I" "MenuTheme[@]" # 10
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-11" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-11-I" "MenuTheme[@]" # 11
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-12" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-12-I" "MenuTheme[@]" # 12
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-13" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-13-I" "MenuTheme[@]" # 13
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-14" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-14-I" "MenuTheme[@]" # 14
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-15" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-15-I" "MenuTheme[@]" # 15
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-16" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-16-I" "MenuTheme[@]" # 16
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-17" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-17-I" "MenuTheme[@]" # 17
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-18" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-18-I" "MenuTheme[@]" # 18
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-19" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-19-I" "MenuTheme[@]" # 19
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-20" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-20-I" "MenuTheme[@]" # 20
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-1"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-1-I"  "MenuTheme[@]" # 1  Qt and Creator
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-2"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-2-I"  "MenuTheme[@]" # 2  Wt
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-3"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-3-I"  "MenuTheme[@]" # 3  postgresql
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-4"  "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-4-I"  "MenuTheme[@]" # 4  MySQL and Workbench
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-5"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-5-I"  "MenuTheme[@]" # 5  Aptana-Studio
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-6"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-6-I"  "MenuTheme[@]" # 6  Bluefish
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-7"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-7-I"  "MenuTheme[@]" # 7  Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-8"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-8-I"  "MenuTheme[@]" # 8  emacs
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-9"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-9-I"  "MenuTheme[@]" # 9  gvim
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-10" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-10-I" "MenuTheme[@]" # 10 geany
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-11" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-11-I" "MenuTheme[@]" # 11 IntelliJ IDEA
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-12" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-12-I" "MenuTheme[@]" # 12 kdevelop
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-13" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-13-I" "MenuTheme[@]" # 13 Netbeans
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-14" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-14-I" "MenuTheme[@]" # 14 Oracle Java
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-15" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-15-I" "MenuTheme[@]" # 15 Sublime Text 2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-16" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-16-I" "MenuTheme[@]" # 16 Debugger Tools
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-17" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-17-I" "MenuTheme[@]" # 17 RabbitVCS
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-18" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-18-I" "MenuTheme[@]" # 18 astyle
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-19" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-19-I" "MenuTheme[@]" # 19 putty
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-20" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-20-I" "MenuTheme[@]" # 20 Utilities
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        #
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        #postgresql
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
                 1)  # Qt and Creator
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_QT"
-                    add_packagemanager "package_install \"$INSTALL_QT\" 'INSTALL-QT'" "INSTALL-QT"
-                    add_packagemanager "mkdir -p /home/\$USERNAME/.config/Nokia/qtcreator/styles" "RUN-QT-1"
-                    add_packagemanager "curl -o monokai.xml http://angrycoding.googlecode.com/svn/branches/qt-creator-monokai-theme/monokai.xml" "RUN-QT-2"
-                    add_packagemanager "mv monokai.xml /home/\$USERNAME/.config/Nokia/qtcreator/styles/" "RUN-QT-3"
-                    add_packagemanager "chown -R \$USERNAME:\$USERNAME /home/\$USERNAME/.config" "RUN-QT-4"
+                    if add_packagemanager "package_install \"$INSTALL_QT\" 'INSTALL-QT'" "INSTALL-QT" ; then
+                        add_package "$INSTALL_QT"
+                        add_packagemanager "mkdir -p /home/\$USERNAME/.config/Nokia/qtcreator/styles" "RUN-QT-1"
+                        add_packagemanager "curl -o monokai.xml http://angrycoding.googlecode.com/svn/branches/qt-creator-monokai-theme/monokai.xml" "RUN-QT-2"
+                        add_packagemanager "mv monokai.xml /home/\$USERNAME/.config/Nokia/qtcreator/styles/" "RUN-QT-3"
+                        add_packagemanager "chown -R \$USERNAME:\$USERNAME /home/\$USERNAME/.config" "RUN-QT-4"
+                    fi
                     ;;
                 2)  # Wt
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_WT"
-                    add_packagemanager "package_install \"$INSTALL_WT\" 'INSTALL-WT'" "INSTALL-WT"
+                    if add_packagemanager "package_install \"$INSTALL_WT\" 'INSTALL-WT'" "INSTALL-WT" ; then
+                        add_package "$INSTALL_WT"
+                    fi
                     ;;
-                3)  # MySQL and Workbenchhttps://wiki.archlinux.org/index.php/Java
+                3)  # postgresql 
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MYSQL_WORKBENCH"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MYSQL_WORKBENCH\" 'AUR-INSTALL-MYSQL-WORKBENCH'" "AUR-INSTALL-MYSQL-WORKBENCH"
-                    ;;
-                4)  # Aptana-Studio
+                    if add_packagemanager "package_install \"$INSTALL_POSTGRESQL\" 'INSTALL-POSTGRESQL'" "INSTALL-POSTGRESQL" ; then
+                        add_package "$INSTALL_POSTGRESQL"
+                    fi
+                    ;;                    
+                4)  # MySQL and Workbenchhttps://wiki.archlinux.org/index.php/Java
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_APTANA_STUDIO"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_APTANA_STUDIO\" 'AUR-INSTALL-APTANA-STUDIO'" "AUR-INSTALL-APTANA-STUDIO"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_MYSQL_WORKBENCH\" 'AUR-INSTALL-MYSQL-WORKBENCH'" "AUR-INSTALL-MYSQL-WORKBENCH" ; then
+                        add_aur_package "$AUR_INSTALL_MYSQL_WORKBENCH"
+                    fi
                     ;;
-                5)  # Bluefish
+                5)  # Aptana-Studio
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_BLUEFISH"
-                    add_packagemanager "package_install \"$INSTALL_BLUEFISH\" 'INSTALL-BLUEFISH'" "INSTALL-BLUEFISH"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_APTANA_STUDIO\" 'AUR-INSTALL-APTANA-STUDIO'" "AUR-INSTALL-APTANA-STUDIO" ; then
+                        add_aur_package "$AUR_INSTALL_APTANA_STUDIO"
+                    fi
                     ;;
-                6)  # Eclipse
+                6)  # Bluefish
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_BLUEFISH\" 'INSTALL-BLUEFISH'" "INSTALL-BLUEFISH" ; then
+                        add_package "$INSTALL_BLUEFISH"
+                    fi
+                    ;;
+                7)  # Eclipse
                     MenuChecks[$((S_OPT - 1))]=1
                     install_eclipse_dev_menu
                     ;;
-                7)  # emacs
+                8)  # emacs
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_EMACS"
-                    add_packagemanager "package_install \"$INSTALL_EMACS\" 'INSTALL-EMACS'" "INSTALL-EMACS"
+                    if add_packagemanager "package_install \"$INSTALL_EMACS\" 'INSTALL-EMACS'" "INSTALL-EMACS" ; then
+                        add_package "$INSTALL_EMACS"
+                    fi
                     ;;
-                8)  # gvim
+                9)  # gvim
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_packagemanager "package_remove 'vim'" "REMOVE-GVIM"
-                    add_package "$INSTALL_VIM"
-                    add_packagemanager "package_install \"$INSTALL_VIM\" 'INSTALL-VIM'" "INSTALL-VIM"
-                    add_aur_package "$AUR_INSTALL_DISCOUNT"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DISCOUNT\" 'AUR-INSTALL-DISCOUNT'" "AUR-INSTALL-DISCOUNT"
+                    if add_packagemanager "package_install \"$INSTALL_VIM\" 'INSTALL-VIM'" "INSTALL-VIM" ; then
+                        add_packagemanager "package_remove 'vim'" "REMOVE-GVIM"
+                        add_package "$INSTALL_VIM"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DISCOUNT\" 'AUR-INSTALL-DISCOUNT'" "AUR-INSTALL-DISCOUNT" ; then
+                        add_aur_package "$AUR_INSTALL_DISCOUNT"
+                    fi
                     ;;
-                9)  # geany
+               10)  # geany
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GEANY"
-                    add_packagemanager "package_install \"$INSTALL_GEANY\" 'INSTALL-GEANY'" "INSTALL-GEANY"
+                    if add_packagemanager "package_install \"$INSTALL_GEANY\" 'INSTALL-GEANY'" "INSTALL-GEANY" ; then
+                        add_package "$INSTALL_GEANY"
+                    fi
                     ;;
-               10)  # IntelliJ IDEA
+               11)  # IntelliJ IDEA
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_INTELLIJ"
-                    add_packagemanager "package_install \"$INSTALL_INTELLIJ\" 'INSTALL-INTELLIJ'" "INSTALL-INTELLIJ"
+                    if add_packagemanager "package_install \"$INSTALL_INTELLIJ\" 'INSTALL-INTELLIJ'" "INSTALL-INTELLIJ" ; then
+                        add_package "$INSTALL_INTELLIJ"
+                    fi
                     ;;
-               11)  # kdevelop
+               12)  # kdevelop
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_KDEVELOP"
-                    add_packagemanager "package_install \"$INSTALL_KDEVELOP\" 'INSTALL-KDEVELOP'" "INSTALL-KDEVELOP"
+                    if add_packagemanager "package_install \"$INSTALL_KDEVELOP\" 'INSTALL-KDEVELOP'" "INSTALL-KDEVELOP" ; then
+                        add_package "$INSTALL_KDEVELOP"
+                    fi
                     ;;
-               12)  # Netbeans
+               13)  # Netbeans
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_NETBEANS"
-                    add_packagemanager "package_install \"$INSTALL_NETBEANS\" 'INSTALL-NETBEANS'" "INSTALL-NETBEANS"
+                    if add_packagemanager "package_install \"$INSTALL_NETBEANS\" 'INSTALL-NETBEANS'" "INSTALL-NETBEANS" ; then
+                        add_package "$INSTALL_NETBEANS"
+                    fi
                     ;;
-               13)  # Oracle Java
+               14)  # Oracle Java
                     MenuChecks[$((S_OPT - 1))]=1
                     add_packagemanager "package_remove 'jre7-openjdk jdk7-openjdk'" "REMOVE-JDK"
-                    add_aur_package "$AUR_INSTALL_JDK"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_JDK\" 'AUR-INSTALL-JDK'" "AUR-INSTALL-JDK"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_JDK\" 'AUR-INSTALL-JDK'" "AUR-INSTALL-JDK" ; then
+                        add_aur_package "$AUR_INSTALL_JDK"
+                    fi
                     ;;
-               14)  # Sublime Text 2
+               15)  # Sublime Text 2
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_SUBLIME"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SUBLIME\" 'AUR-INSTALL-SUBLIME'" "AUR-INSTALL-SUBLIME"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SUBLIME\" 'AUR-INSTALL-SUBLIME'" "AUR-INSTALL-SUBLIME" ; then
+                        add_aur_package "$AUR_INSTALL_SUBLIME"
+                    fi
                     ;;
-               15)  # Debugger Tools
+               16)  # Debugger Tools
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DEBUGGER_TOOLS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DEBUGGER_TOOLS\" 'AUR-INSTALL-DEBUGGER-TOOLS'" "AUR-INSTALL-DEBUGGER-TOOLS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEBUGGER_TOOLS\" 'AUR-INSTALL-DEBUGGER-TOOLS'" "AUR-INSTALL-DEBUGGER-TOOLS" ; then
+                        add_aur_package "$AUR_INSTALL_DEBUGGER_TOOLS"
+                    fi
                     ;;
-               16)  # meld
+               17)  # meld
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_MELD"
-                    add_packagemanager "package_install \"$INSTALL_MELD\" 'INSTALL-MELD'" "INSTALL-MELD"
+                    if add_packagemanager "package_install \"$INSTALL_MELD\" 'INSTALL-MELD'" "INSTALL-MELD" ; then
+                        add_package "$INSTALL_MELD"
+                    fi
                     ;;
-               17)  # RabbitVCS
+               18)  # RabbitVCS
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_RABBITVCS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_RABBITVCS\" 'AUR-INSTALL-RABBITVCS'" "AUR-INSTALL-RABBITVCS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RABBITVCS\" 'AUR-INSTALL-RABBITVCS'" "AUR-INSTALL-RABBITVCS" ; then
+                        add_aur_package "$AUR_INSTALL_RABBITVCS"
+                    fi
                     # @FIX check what is to be installed
-                    add_aur_package "$AUR_INSTALL_RABBITVCS_NAUTILUS"
-                    add_packagemanager "[[ check_package 'nautilus' ]] && aur_package_install \"$AUR_INSTALL_RABBITVCS_NAUTILUS\" 'AUR-INSTALL-RABBITVCS-NAUTILUS'" "AUR-INSTALL-RABBITVCS-NAUTILUS"
-                    add_aur_package "$AUR_INSTALL_RABBITVCS_THUNAR"
-                    add_packagemanager "[[ check_package 'thunar' ]] && aur_package_install \"$AUR_INSTALL_RABBITVCS_THUNAR\" 'AUR-INSTALL-RABBITVCS-THUNAR'" "AUR-INSTALL-RABBITVCS-THUNAR"
-                    add_aur_package "$AUR_INSTALL_RABBITVCS_CLI"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_RABBITVCS_CLI\" 'AUR-INSTALL-RABBITVCS-CLI'" "AUR-INSTALL-RABBITVCS-CLI"
+                    add_packagemanager "if [[ check_package 'nautilus' ]]; then if aur_package_install \"$AUR_INSTALL_RABBITVCS_NAUTILUS\" 'AUR-INSTALL-RABBITVCS-NAUTILUS'; then add_aur_package "$AUR_INSTALL_RABBITVCS_NAUTILUS"; fi fi " "AUR-INSTALL-RABBITVCS-NAUTILUS"
+                    add_packagemanager "if [[ check_package 'thunar' ]]; then if aur_package_install \"$AUR_INSTALL_RABBITVCS_THUNAR\" 'AUR-INSTALL-RABBITVCS-THUNAR'; then add_aur_package "$AUR_INSTALL_RABBITVCS_THUNAR"; fi fi" "AUR-INSTALL-RABBITVCS-THUNAR"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RABBITVCS_CLI\" 'AUR-INSTALL-RABBITVCS-CLI'" "AUR-INSTALL-RABBITVCS-CLI" ; then
+                        add_aur_package "$AUR_INSTALL_RABBITVCS_CLI"
+                    fi
                     ;;
-               18)  # astyle
+               19)  # astyle
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_ASTYLE"
-                    add_packagemanager "package_install \"$INSTALL_ASTYLE\"  'INSTALL-ASTYLE'" "INSTALL-ASTYLE"
+                    if add_packagemanager "package_install \"$INSTALL_ASTYLE\"  'INSTALL-ASTYLE'" "INSTALL-ASTYLE" ; then
+                        add_package "$INSTALL_ASTYLE"
+                    fi
                     ;;
-               19)  # putty
+               20)  # putty
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_PUTTY"
-                    add_packagemanager "package_install \"$INSTALL_PUTTY\" 'INSTALL-PUTTY'" "INSTALL-PUTTY"
+                    if add_packagemanager "package_install \"$INSTALL_PUTTY\" 'INSTALL-PUTTY'" "INSTALL-PUTTY" ; then
+                        add_package "$INSTALL_PUTTY"
+                    fi
                     ;;
-               20)  # Utilities
+               21)  # Utilities
                     MenuChecks[$((S_OPT - 1))]=1
                     install_utilities
                     ;;
@@ -7724,16 +8302,17 @@ install_eclipse_dev_menu()
     local BreakableKey="B"                    # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 2"            # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 6 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 6"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 3 6 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 3 6"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 3 4 5 6 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 3 4 5 6"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -7760,56 +8339,65 @@ install_eclipse_dev_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_ECLIPSE"
-                    add_packagemanager "package_install \"$INSTALL_ECLIPSE\" 'INSTALL-ECLIPSE'" "INSTALL-ECLIPSE"
+                    if add_packagemanager "package_install \"$INSTALL_ECLIPSE\" 'INSTALL-ECLIPSE'" "INSTALL-ECLIPSE" ; then
+                        add_package "$INSTALL_ECLIPSE"
+                    fi
                     ;;
                 2)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_ECLIPSE_CDT"
-                    add_packagemanager "package_install \"$INSTALL_ECLIPSE_CDT\" 'INSTALL-ECLIPSE-CDT'" "INSTALL-ECLIPSE-CDT"
+                    if add_packagemanager "package_install \"$INSTALL_ECLIPSE_CDT\" 'INSTALL-ECLIPSE-CDT'" "INSTALL-ECLIPSE-CDT" ; then
+                        add_package "$INSTALL_ECLIPSE_CDT"
+                    fi
                     ;;
                 3)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_ANDROID"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_ANDROID\" 'AUR-INSTALL-ECLIPSE-ANDROID'" "AUR-INSTALL-ECLIPSE-ANDROID"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_ANDROID\" 'AUR-INSTALL-ECLIPSE-ANDROID'" "AUR-INSTALL-ECLIPSE-ANDROID" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_ANDROID"
+                    fi
                     ;;
                 4)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_WTP"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_WTP\" 'AUR-INSTALL-ECLIPSE-WTP'" "AUR-INSTALL-ECLIPSE-WTP"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_WTP\" 'AUR-INSTALL-ECLIPSE-WTP'" "AUR-INSTALL-ECLIPSE-WTP" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_WTP"
+                    fi
                     ;;
                 5)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_PDT"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PDT\" 'AUR-INSTALL-ECLIPSE-PDT'" "AUR-INSTALL-ECLIPSE-PDT"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PDT\" 'AUR-INSTALL-ECLIPSE-PDT'" "AUR-INSTALL-ECLIPSE-PDT" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_PDT"
+                    fi
                     ;;
                 6)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_PYDEV"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PYDEV\" 'AUR-INSTALL-ECLIPSE-PYDEV'" "AUR-INSTALL-ECLIPSE-PYDEV"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PYDEV\" 'AUR-INSTALL-ECLIPSE-PYDEV'" "AUR-INSTALL-ECLIPSE-PYDEV" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_PYDEV"
+                    fi
                     ;;
                 7)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_APTANA"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_APTANA\" 'AUR-INSTALL-ECLIPSE-APTANA'" "AUR-INSTALL-ECLIPSE-APTANA"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_APTANA\" 'AUR-INSTALL-ECLIPSE-APTANA'" "AUR-INSTALL-ECLIPSE-APTANA" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_APTANA"
+                    fi
                     ;;
                 8)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_VRAPPER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_VRAPPER\" 'AUR-INSTALL-ECLIPSE-VRAPPER'" "AUR-INSTALL-ECLIPSE-VRAPPER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_VRAPPER\" 'AUR-INSTALL-ECLIPSE-VRAPPER'" "AUR-INSTALL-ECLIPSE-VRAPPER" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_VRAPPER"
+                    fi
                     ;;
                 9)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ECLIPSE_EGIT"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_EGIT\" 'AUR-INSTALL-ECLIPSE-EGIT'" "AUR-INSTALL-ECLIPSE-EGIT"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_EGIT\" 'AUR-INSTALL-ECLIPSE-EGIT'" "AUR-INSTALL-ECLIPSE-EGIT" ; then
+                        add_aur_package "$AUR_INSTALL_ECLIPSE_EGIT"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7854,8 +8442,9 @@ install_utilities()
     print_info "Full List: $INSTALL_UTILITES" 
     read_input_yn "Install Utilities" " " 1  # Allow Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
-        add_package "$INSTALL_UTILITES"
-        add_packagemanager "package_install \"$INSTALL_UTILITES\" 'INSTALL-UTITILTIES'" "INSTALL-UTITILTIES"
+        if add_packagemanager "package_install \"$INSTALL_UTILITES\" 'INSTALL-UTITILTIES'" "INSTALL-UTITILTIES" ; then
+            add_package "$INSTALL_UTILITES"
+        fi
     fi
 }
 #}}}
@@ -7874,7 +8463,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-INTERNET-APPS-DESC"  "Install Internet Applications"
-    localize_info "INSTALL-INTERNET-APPS-TITLE" "INTERNET APPS"
+    localize_info "INSTALL-INTERNET-APPS-TITLE" "Internet Applications"
     #
     localize_info "INSTALL-INTERNET-MENU-1"     "Browser"
     localize_info "INSTALL-INTERNET-MENU-2"     "Download | Fileshare"
@@ -7892,16 +8481,17 @@ install_internet_apps_menu()
     local BreakableKey="D"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-4 6"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 5 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 5 7 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 5 7"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 5 7 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 5 7"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -7925,8 +8515,8 @@ install_internet_apps_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -8008,16 +8598,17 @@ install_browsers_menu()
     local BreakableKey="B"                 # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"           # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 2 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 2 3 4 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 2 3 4"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 2 3 4 5 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 2 3 4 5"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8039,40 +8630,46 @@ install_browsers_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
                 1)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_FIREFOX"
-                    add_packagemanager "package_install \"$INSTALL_FIREFOX\" 'INSTALL-FIREFOX'" "INSTALL-FIREFOX"
+                    if add_packagemanager "package_install \"$INSTALL_FIREFOX\" 'INSTALL-FIREFOX'" "INSTALL-FIREFOX" ; then
+                        add_package "$INSTALL_FIREFOX"
+                    fi
                     ;;
                 2)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_CHROMIUM"
-                    add_packagemanager "package_install \"$INSTALL_CHROMIUM\" 'INSTALL-CHROMIUM'" "INSTALL-CHROMIUM"
+                    if add_packagemanager "package_install \"$INSTALL_CHROMIUM\" 'INSTALL-CHROMIUM'" "INSTALL-CHROMIUM" ; then
+                        add_package "$INSTALL_CHROMIUM"
+                    fi
                     ;;
                 3)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GOOGLE_CHROME"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_CHROME\" 'AUR-INSTALL-GOOGLE-CHROME'" "AUR-INSTALL-GOOGLE-CHROME"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_CHROME\" 'AUR-INSTALL-GOOGLE-CHROME'" "AUR-INSTALL-GOOGLE-CHROME" ; then
+                        add_aur_package "$AUR_INSTALL_GOOGLE_CHROME"
+                    fi
                     ;;
                 4)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_OPERA"
-                    add_packagemanager "package_install \"$INSTALL_OPERA\" 'INSTALL-OPERA'" "INSTALL-OPERA"
+                    if add_packagemanager "package_install \"$INSTALL_OPERA\" 'INSTALL-OPERA'" "INSTALL-OPERA" ; then
+                        add_package "$INSTALL_OPERA"
+                    fi
                     ;;
                 5)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        add_package "$INSTALL_REKONQ"
-                        add_packagemanager "package_install \"$INSTALL_REKONQ\" 'INSTALL-REKONQ'" "INSTALL-REKONQ"
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
+                        if add_packagemanager "package_install \"$INSTALL_REKONQ\" 'INSTALL-REKONQ'" "INSTALL-REKONQ" ; then
+                            add_package "$INSTALL_REKONQ"
+                        fi
                     else
-                        add_package "$INSTALL_MIDORI"
-                        add_packagemanager "package_install \"$INSTALL_MIDORI\" 'INSTALL-MIDORI'" "INSTALL-MIDORI"
+                        if add_packagemanager "package_install \"$INSTALL_MIDORI\" 'INSTALL-MIDORI'" "INSTALL-MIDORI" ; then
+                            add_package "$INSTALL_MIDORI"
+                        fi
                     fi
                     ;;
                 *)  # Catch ALL
@@ -8108,6 +8705,23 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DOWNLOAD-FILESHARE-DESC"   "Install Download / Fileshare Apps"
+    #
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-1"   "Transmission"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-1"      "Transmission: Transmission is a light-weighted and cross-platform BitTorrent client. It is the default BitTorrent client in many Linux distributions."
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-2"   "Deluge"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-2"      "Deluge: Deluge is a lightweight, BitTorrent client written in python that offers users a powerful client/server architecture. Once a headless daemon has been setup, user can interact with it in three ways including a WebUI, GTK-UI, and console interface."
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-3"   "Dropbox"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-3"      "Dropbox: Dropbox is a file sharing system that recently introduced a GNU/Linux client. Use it to transparently sync files across computers and architectures. Simply drop files into your ~/Dropbox folder, and they will automatically sync to your centralized repository."
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-4"   "Insync"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-4"      "Insync: An unofficial Google Drive client that runs on Linux, with support for various desktops"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-5"   "JDownloader"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-5"      "JDownloader: JDownloader is a Download Manager written in Java. JDownloader can download normal files, but also files from online file hosting services like Rapidshare.com."
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-6"   "Nitroshare"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-6"      "Nitroshare: Makes sending a file to another machine on the local network as easy as dragging-and-dropping"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-7"   "Sparkleshare"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-7"      "Sparkleshare: An open-source clone of Dropbox, written in Mono"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-8"   "Steadyflow"
+    localize_info "INSTALL-DOWNLOAD-FILESHARE-MENU-I-8"      "Steadyflow: steadyflow-bzr is a download manager that aims for minimalism, ease of use, and a clean, malleable codebase"
 fi
 # -------------------------------------
 install_download_fileshare_menu()
@@ -8116,16 +8730,17 @@ install_download_fileshare_menu()
     local BreakableKey="B"                           # Q=Quit, D=Done, B=Back
     local RecommendedOptions="8"                     # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8139,78 +8754,86 @@ install_download_fileshare_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "deluge"         "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "dropbox"        "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "insync"         "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "jdownloader"    "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "nitroshare"     "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "sparkleshare"   "" ""     "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "steadyflow-bzr" "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Transmission"   "" ""     "" "MenuTheme[@]" # 8
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-1" "" ""     "INSTALL-DOWNLOAD-FILESHARE-MENU-I-1" "MenuTheme[@]" # 1 Transmission
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-2" "" "$AUR" "INSTALL-DOWNLOAD-FILESHARE-MENU-I-2" "MenuTheme[@]" # 2 deluge
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-3" "" "$AUR" "INSTALL-DOWNLOAD-FILESHARE-MENU-I-3" "MenuTheme[@]" # 3 dropbox
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-4" "" "$AUR" "INSTALL-DOWNLOAD-FILESHARE-MENU-I-4" "MenuTheme[@]" # 4 insync
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-5" "" "$AUR" "INSTALL-DOWNLOAD-FILESHARE-MENU-I-5" "MenuTheme[@]" # 5 jdownloader
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-6" "" "$AUR" "INSTALL-DOWNLOAD-FILESHARE-MENU-I-6" "MenuTheme[@]" # 6 nitroshare
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-7" "" ""     "INSTALL-DOWNLOAD-FILESHARE-MENU-I-7" "MenuTheme[@]" # 7 sparkleshare
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DOWNLOAD-FILESHARE-MENU-8" "" "$AUR" "INSTALL-DOWNLOAD-FILESHARE-MENU-I-8" "MenuTheme[@]" # 8 steadyflow-bzr
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Transmission
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_DELUGE"
-                    add_packagemanager "package_install \"$INSTALL_DELUGE\" 'INSTALL-DELUGE'" "INSTALL-DELUGE"
-                    ;;
-                2)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_DROPBOX"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DROPBOX\" 'AUR-INSTALL-DROPBOX'" "AUR-INSTALL-DROPBOX"
-                    add_aur_package "$AUR_INSTALL_DROPBOX_NAUTILUS"
-                    add_packagemanager "[[ check_package 'nautilus' ]] && aur_package_install \"$AUR_INSTALL_DROPBOX_NAUTILUS\" 'AUR-INSTALL-DROPBOX-NAUTILUS'" "AUR-INSTALL-DROPBOX-NAUTILUS"
-                    add_aur_package "$AUR_INSTALL_DROPBOX_THUNAR"
-                    add_packagemanager "[[ check_package 'thunar' ]] && aur_package_install \"$AUR_INSTALL_DROPBOX_THUNAR\" 'AUR-INSTALL-DROPBOX-THUNAR'" "AUR-INSTALL-DROPBOX-THUNAR"
-                    add_aur_package "$AUR_INSTALL_DROPBOX_KFILEBOX"
-                    add_packagemanager "[[ check_package 'kdebase-dolphin' ]] && aur_package_install \"$AUR_INSTALL_DROPBOX_KFILEBOX\" 'AUR-INSTALL-DROPBOX-KFILEBOX'" "AUR-INSTALL-DROPBOX-KFILEBOX"
-                    add_aur_package "$AUR_INSTALL_DROPBOX_CLI"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_DROPBOX_CLI\" 'AUR-INSTALL-DROPBOX-CLI'" "AUR-INSTALL-DROPBOX-CLI"
-                    ;;
-                3)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_INSYNC"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_INSYNC\" 'AUR-INSTALL-INSYNC'" "AUR-INSTALL-INSYNC"
-                    ;;
-                4)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_JDOWNLOADER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_JDOWNLOADER\" 'AUR-INSTALL-JDOWNLOADER'" "AUR-INSTALL-JDOWNLOADER"
-                    ;;
-                5)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_NITROSHARE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROSHARE\" 'AUR-INSTALL-NITROSHARE" "AUR-INSTALL-NITROSHARE"
-                    ;;
-                6)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_SPARKLESHARE"
-                    add_packagemanager "package_install \"$INSTALL_SPARKLESHARE\" 'INSTALL-SPARKLESHARE'" "INSTALL-SPARKLESHARE"
-                    ;;
-                7)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_STEADYFLOW"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_STEADYFLOW\" 'AUR-INSTALL-STEADYFLOW'" "AUR-INSTALL-STEADYFLOW"
-                    ;;
-                8)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-                            add_package "$INSTALL_TRANSMISSION_GTK"
-                            add_packagemanager "package_install \"$INSTALL_TRANSMISSION_GTK\" 'INSTALL-TRANSMISSION-GTK'" "INSTALL-TRANSMISSION-GTK"
+                    if [[ "$QT_INSTALL" -eq 1 ]]; then
+                        if [[ "$GNOME_INSTALL" -eq 1 ]]; then # @FIX Should I install them both?
+                            if add_packagemanager "package_install \"$INSTALL_TRANSMISSION_GTK\" 'INSTALL-TRANSMISSION-GTK'" "INSTALL-TRANSMISSION-GTK" ; then
+                                add_package "$INSTALL_TRANSMISSION_GTK"
+                            fi
                         fi
-                        add_package "$INSTALL_TRANSMISSION_QT"
-                        add_packagemanager "package_install \"$INSTALL_TRANSMISSION_QT\" 'INSTALL-TRANSMISSION-QT'" "INSTALL-TRANSMISSION-QT"
+                        if add_packagemanager "package_install \"$INSTALL_TRANSMISSION_QT\" 'INSTALL-TRANSMISSION-QT'" "INSTALL-TRANSMISSION-QT" ; then
+                            add_package "$INSTALL_TRANSMISSION_QT"
+                        fi
                     else
-                        add_package "$INSTALL_TRANSMISSION_GTK"
-                        add_packagemanager "package_install \"$INSTALL_TRANSMISSION_GTK\" 'INSTALL-TRANSMISSION-GTK'" "INSTALL-TRANSMISSION-GTK"
+                        if add_packagemanager "package_install \"$INSTALL_TRANSMISSION_GTK\" 'INSTALL-TRANSMISSION-GTK'" "INSTALL-TRANSMISSION-GTK" ; then
+                            add_package "$INSTALL_TRANSMISSION_GTK"
+                        fi
+                    fi
+                    ;;
+                2)  # deluge
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_DELUGE\" 'INSTALL-DELUGE'" "INSTALL-DELUGE" ; then
+                        add_package "$INSTALL_DELUGE"
+                    fi
+                    ;;
+                3)  # dropbox
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DROPBOX\" 'AUR-INSTALL-DROPBOX'" "AUR-INSTALL-DROPBOX" ; then
+                        add_aur_package "$AUR_INSTALL_DROPBOX"
+                    fi
+                    add_packagemanager "if [[ check_package 'nautilus' ]]; then if aur_package_install \"$AUR_INSTALL_DROPBOX_NAUTILUS\" 'AUR-INSTALL-DROPBOX-NAUTILUS'; then add_aur_package "$AUR_INSTALL_DROPBOX_NAUTILUS"; fi fi" "AUR-INSTALL-DROPBOX-NAUTILUS"
+                    add_packagemanager "if [[ check_package 'thunar' ]]; then if aur_package_install \"$AUR_INSTALL_DROPBOX_THUNAR\" 'AUR-INSTALL-DROPBOX-THUNAR'; then add_aur_package "$AUR_INSTALL_DROPBOX_THUNAR"; fi fi" "AUR-INSTALL-DROPBOX-THUNAR"
+                    add_packagemanager "if [[ check_package 'kdebase-dolphin' ]]; then if aur_package_install \"$AUR_INSTALL_DROPBOX_KFILEBOX\" 'AUR-INSTALL-DROPBOX-KFILEBOX'; then add_aur_package "$AUR_INSTALL_DROPBOX_KFILEBOX"; fi fi" "AUR-INSTALL-DROPBOX-KFILEBOX"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_DROPBOX_CLI\" 'AUR-INSTALL-DROPBOX-CLI'" "AUR-INSTALL-DROPBOX-CLI" ; then
+                        add_aur_package "$AUR_INSTALL_DROPBOX_CLI"
+                    fi
+                    ;;
+                4)  # insync
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_INSYNC\" 'AUR-INSTALL-INSYNC'" "AUR-INSTALL-INSYNC" ; then
+                        add_aur_package "$AUR_INSTALL_INSYNC"
+                    fi
+                    ;;
+                5)  # jdownloader
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_JDOWNLOADER\" 'AUR-INSTALL-JDOWNLOADER'" "AUR-INSTALL-JDOWNLOADER" ; then
+                        add_aur_package "$AUR_INSTALL_JDOWNLOADER"
+                    fi
+                    ;;
+                6)  # nitroshare
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROSHARE\" 'AUR-INSTALL-NITROSHARE" "AUR-INSTALL-NITROSHARE" ; then
+                        add_aur_package "$AUR_INSTALL_NITROSHARE"
+                    fi
+                    ;;
+                7)  # sparkleshare
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_SPARKLESHARE\" 'INSTALL-SPARKLESHARE'" "INSTALL-SPARKLESHARE" ; then
+                        add_package "$INSTALL_SPARKLESHARE"
+                    fi
+                    ;;
+                8)  # steadyflow-bzr
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_STEADYFLOW\" 'AUR-INSTALL-STEADYFLOW'" "AUR-INSTALL-STEADYFLOW" ; then
+                        add_aur_package "$AUR_INSTALL_STEADYFLOW"
                     fi
                     ;;
                 *)  # Catch ALL
@@ -8245,7 +8868,15 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-EMAIL-DESC"   "Install Email / RSS Apps"
+    localize_info "INSTALL-EMAIL-DESC"     "Install Email / RSS Apps"
+    localize_info "INSTALL-EMAIL-MENU-1"    "Evolution"
+    localize_info "INSTALL-EMAIL-MENU-I-1"         "Evolution: Evolution is a GNOME mail client it supports IMAP, Microsoft Exchange Server and Novell GroupWise. It also has a calender function that supports vcal,csv, google calendar and many more. You can also organise your contacts, tasks and memos with Evolution. The beautiful thing about evolution is that it's easy to use and integrates with the gnome environment. You can see your calendar, tasks and location in the GNOME panel along with the weather and date. Just add the clock to your gnome panel."
+    localize_info "INSTALL-EMAIL-MENU-2"    "Thunderbird"
+    localize_info "INSTALL-EMAIL-MENU-I-2"         "Thunderbird: Mozilla Thunderbird is an email, newsgroup, and news feed client designed around simplicity and full-featuredness while avoiding bloat. It supports POP, IMAP, SMTP, S/MIME, and OpenPGP encryption (through the Enigmail extension). Similarly to Firefox, it has a wide variety of extension and addons available for download that add more features."
+    localize_info "INSTALL-EMAIL-MENU-3"    "Liferea"
+    localize_info "INSTALL-EMAIL-MENU-I-3"         "Liferea: A desktop news aggregator for online news feeds and weblogs"
+    localize_info "INSTALL-EMAIL-MENU-4"    "Lightread"
+    localize_info "INSTALL-EMAIL-MENU-I-4"         "Lightread: A totally awesome offline Google Reader."
 fi
 # -------------------------------------
 install_email_menu()
@@ -8254,16 +8885,17 @@ install_email_menu()
     local BreakableKey="B"              # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 2"      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8277,38 +8909,42 @@ install_email_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Evolution"   "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Thunderbird" "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Liferea"     "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Lightread"   "" "" "" "MenuTheme[@]" # 4
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMAIL-MENU-1" "" "" "INSTALL-EMAIL-MENU-I-1" "MenuTheme[@]" # 1 Evolution
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMAIL-MENU-2" "" "" "INSTALL-EMAIL-MENU-I-2" "MenuTheme[@]" # 2 Thunderbird
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMAIL-MENU-3" "" "" "INSTALL-EMAIL-MENU-I-3" "MenuTheme[@]" # 3 Liferea
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-EMAIL-MENU-4" "" "" "INSTALL-EMAIL-MENU-I-4" "MenuTheme[@]" # 4 Lightread
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Evolution
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_EVOLUTION"
-                    add_packagemanager "package_install \"$INSTALL_EVOLUTION\" 'INSTALL-EVOLUTION'" "INSTALL-EVOLUTION"
+                    if add_packagemanager "package_install \"$INSTALL_EVOLUTION\" 'INSTALL-EVOLUTION'" "INSTALL-EVOLUTION" ; then
+                        add_package "$INSTALL_EVOLUTION"
+                    fi
                     ;;
-                2)  # 
+                2)  # Thunderbird
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_THUNDERBIRD"
-                    add_packagemanager "package_install \"$INSTALL_THUNDERBIRD\" 'INSTALL-THUNDERBIRD'" "INSTALL-THUNDERBIRD"
+                    if add_packagemanager "package_install \"$INSTALL_THUNDERBIRD\" 'INSTALL-THUNDERBIRD'" "INSTALL-THUNDERBIRD" ; then
+                        add_package "$INSTALL_THUNDERBIRD"
+                    fi
                     ;;
-                3)  # 
+                3)  # Liferea
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_LIFEREA"
-                    add_packagemanager "package_install \"$INSTALL_LIFEREA\" 'INSTALL-LIFEREA'" "INSTALL-LIFEREA"
+                    if add_packagemanager "package_install \"$INSTALL_LIFEREA\" 'INSTALL-LIFEREA'" "INSTALL-LIFEREA" ; then
+                        add_package "$INSTALL_LIFEREA"
+                    fi
                     ;;
-                4)  # 
+                4)  # Lightread
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_LIGHTREAD"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTREAD\" 'AUR-INSTALL-LIGHTREAD'" "AUR-INSTALL-LIGHTREAD"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTREAD\" 'AUR-INSTALL-LIGHTREAD'" "AUR-INSTALL-LIGHTREAD" ; then
+                        add_aur_package "$AUR_INSTALL_LIGHTREAD"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8343,6 +8979,17 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-IM-DESC"   "Install IM - Instant Messaging"
+    #
+    localize_info "INSTALL-IM-MENU-1"   "Emesene"
+    localize_info "INSTALL-IM-MENU-I-1"      "Emesene: A pygtk MSN Messenger client"
+    localize_info "INSTALL-IM-MENU-2"   "Google Talkplugin"
+    localize_info "INSTALL-IM-MENU-I-2"      "Google Talkplugin: Video chat browser plug-in for Google Talk"
+    localize_info "INSTALL-IM-MENU-3"   "Pidgin"
+    localize_info "INSTALL-IM-MENU-I-3"      "Pidgin: Multi-protocol instant messaging client"
+    localize_info "INSTALL-IM-MENU-4"   "Skype"
+    localize_info "INSTALL-IM-MENU-I-4"      "Skype: P2P software for high-quality voice communication - with a Commerical License."
+    localize_info "INSTALL-IM-MENU-5"   "Teamspeak3"
+    localize_info "INSTALL-IM-MENU-I-5"      "Teamspeak3: TeamSpeak is software for quality voice communication via the Internet"
 fi
 # -------------------------------------
 install_im_menu()
@@ -8351,16 +8998,17 @@ install_im_menu()
     local BreakableKey="B"           # Q=Quit, D=Done, B=Back
     local RecommendedOptions="3 4"   # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8374,45 +9022,50 @@ install_im_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Emesene"           "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Google Talkplugin" "" "$AUR" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Pidgin"            "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Skype"             "" ""     "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Teamspeak3"        "" "$AUR" "" "MenuTheme[@]" # 5
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-1" "" ""     "INSTALL-IM-MENU-I-1" "MenuTheme[@]" # 1 Emesene
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-2" "" "$AUR" "INSTALL-IM-MENU-I-2" "MenuTheme[@]" # 2 Google Talkplugin
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-3" "" ""     "INSTALL-IM-MENU-I-3" "MenuTheme[@]" # 3 Pidgin
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-4" "" ""     "INSTALL-IM-MENU-I-4" "MenuTheme[@]" # 4 Skype
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-5" "" "$AUR" "INSTALL-IM-MENU-I-5" "MenuTheme[@]" # 5 Teamspeak3
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Emesene
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_EMESENE"
-                    add_packagemanager "package_install \"$INSTALL_EMESENE\"  'INSTALL-EMESENE'" "INSTALL-EMESENE"
+                    if add_packagemanager "package_install \"$INSTALL_EMESENE\"  'INSTALL-EMESENE'" "INSTALL-EMESENE" ; then
+                        add_package "$INSTALL_EMESENE"
+                    fi
                     ;;
-                2)  # 
+                2)  # Google Talkplugin
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_GOOGLE_TALKPLUGIN"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_TALKPLUGIN\" 'AUR-INSTALL-GOOGLE-TALKPLUGIN'" "AUR-INSTALL-GOOGLE-TALKPLUGIN"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_TALKPLUGIN\" 'AUR-INSTALL-GOOGLE-TALKPLUGIN'" "AUR-INSTALL-GOOGLE-TALKPLUGIN" ; then
+                        add_aur_package "$AUR_INSTALL_GOOGLE_TALKPLUGIN"
+                    fi
                     ;;
-                3)  # 
+                3)  # Pidgin
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_PIDGIN"
-                    add_packagemanager "package_install \"$INSTALL_PIDGIN\" 'INSTALL-PIDGIN'" "INSTALL-PIDGIN"
+                    if add_packagemanager "package_install \"$INSTALL_PIDGIN\" 'INSTALL-PIDGIN'" "INSTALL-PIDGIN" ; then
+                        add_package "$INSTALL_PIDGIN"
+                    fi
                     ;;
-                4)  # 
+                4)  # Skype
                     MenuChecks[$((SS_OPT - 1))]=1
                     add_taskmanager "required_repo 'multilib'" "REQUIRED-REPO-MULTILIB"                    
-                    add_package "$INSTALL_SKYPE"
-                    add_packagemanager "package_install \"$INSTALL_SKYPE\" 'INSTALL-SKYPE'" "INSTALL-SKYPE"
+                    if add_packagemanager "package_install \"$INSTALL_SKYPE\" 'INSTALL-SKYPE'" "INSTALL-SKYPE" ; then
+                        add_package "$INSTALL_SKYPE"
+                    fi
                     ;;
-                5)  # 
+                5)  # Teamspeak3
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_TEAMSPEAK3"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMSPEAK3\" 'AUR-INSTALL-TEAMSPEAK3'" "AUR-INSTALL-TEAMSPEAK3"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMSPEAK3\" 'AUR-INSTALL-TEAMSPEAK3'" "AUR-INSTALL-TEAMSPEAK3" ; then
+                        add_aur_package "$AUR_INSTALL_TEAMSPEAK3"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8447,6 +9100,11 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-IRC-DESC"   "Install IRC - Internet Relay Chat"
+    #
+    localize_info "INSTALL-IRC-MENU-1"   "irssi"
+    localize_info "INSTALL-IRC-MENU-I-1"     "irssi: Modular text mode IRC client with Perl scripting"
+    localize_info "INSTALL-IRC-MENU-2"   "quassel or xchat"
+    localize_info "INSTALL-IRC-MENU-I-2"     "quassel or xchat: quassel (QT4 irc client with a separated core) or xchat (A GTK+ based IRC client): Depending on DE"
 fi
 # -------------------------------------
 install_irc_menu()
@@ -8455,16 +9113,17 @@ install_irc_menu()
     local BreakableKey="B"            # Q=Quit, D=Done, B=Back
     local RecommendedOptions="2"      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8478,34 +9137,38 @@ install_irc_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "irssi" "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "quassel or xchat" "Depending on DE" "" "quassel or xchat: Depending on DE" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IRC-MENU-1" "" "" "INSTALL-IRC-MENU-I-1" "MenuTheme[@]" # irssi
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IRC-MENU-2" "" "" "INSTALL-IRC-MENU-I-2" "MenuTheme[@]" # quassel or xchat
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # irssi
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_IRSSI"
-                    add_packagemanager "package_install \"$INSTALL_IRSSI\" 'INSTALL-IRSSI'" "INSTALL-IRSSI"
+                    if add_packagemanager "package_install \"$INSTALL_IRSSI\" 'INSTALL-IRSSI'" "INSTALL-IRSSI" ; then
+                        add_package "$INSTALL_IRSSI"
+                    fi
                     ;;
-                2)  # 
+                2)  # quassel or xchat
                     MenuChecks[$((SS_OPT - 1))]=1
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                            add_package "$INSTALL_XCHAT"
-                            add_packagemanager "package_install \"$INSTALL_XCHAT\" 'INSTALL-XCHAT'" "INSTALL-XCHAT"
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
+                        if [[ "QT_INSTALL" -eq 1 ]]; then
+                            if add_packagemanager "package_install \"$INSTALL_XCHAT\" 'INSTALL-XCHAT'" "INSTALL-XCHAT" ; then
+                                add_package "$INSTALL_XCHAT"
+                            fi
                         fi
-                        add_package "$INSTALL_QUASSEL"
-                        add_packagemanager "package_install \"$INSTALL_QUASSEL\" 'INSTALL-QUASSEL'" "INSTALL-QUASSEL"
+                        if add_packagemanager "package_install \"$INSTALL_QUASSEL\" 'INSTALL-QUASSEL'" "INSTALL-QUASSEL" ; then
+                            add_package "$INSTALL_QUASSEL"
+                        fi
                     else
-                        add_package "$INSTALL_XCHAT"
-                        add_packagemanager "package_install \"$INSTALL_XCHAT\" 'INSTALL-XCHAT'" "INSTALL-XCHAT"
+                        if add_packagemanager "package_install \"$INSTALL_XCHAT\" 'INSTALL-XCHAT'" "INSTALL-XCHAT" ; then
+                            add_package "$INSTALL_XCHAT"
+                        fi
                     fi
                     ;;
                 *)  # Catch ALL
@@ -8540,9 +9203,12 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-MAPPING-DESC"   "Install Mapping Tools"
-    localize_info "INSTALL-MAPPING-MENU-1" "Google Earth"
-    localize_info "INSTALL-MAPPING-MENU-2" "NASA World Wind"
+    localize_info "INSTALL-MAPPING-DESC"     "Install Mapping Tools"
+    #
+    localize_info "INSTALL-MAPPING-MENU-1"   "Google Earth"
+    localize_info "INSTALL-MAPPING-MENU-I-1"        "Google Earth: Google Earth lets you fly anywhere on Earth to view satellite imagery, maps, terrain, 3D buildings, from galaxies in outer space to the canyons of the ocean. You can explore rich geographical content, save your toured places, and share with others."
+    localize_info "INSTALL-MAPPING-MENU-2"   "NASA World Wind"
+    localize_info "INSTALL-MAPPING-MENU-I-2"        "NASA World Wind: An Open Source 3D Interactive World viewer"
 fi
 # -------------------------------------
 install_mapping_menu()
@@ -8551,16 +9217,17 @@ install_mapping_menu()
     local BreakableKey="B"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 2"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8574,29 +9241,32 @@ install_mapping_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAPPING-MENU-1" "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAPPING-MENU-2" "" "$AUR" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAPPING-MENU-1" "" "$AUR" "" "MenuTheme[@]" # Google Earth
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAPPING-MENU-2" "" "$AUR" "" "MenuTheme[@]" # NASA World Wind
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Google Earth
                     MenuChecks[$((SS_OPT - 1))]=1
                     add_taskmanager "required_repo 'multilib'" "REQUIRED-REPO-MULTILIB"
-                    add_package "$INSTALL_GOOGLE_EARTH"
-                    add_packagemanager "package_install \"$INSTALL_GOOGLE_EARTH\" 'INSTALL-GOOGLE-EARTH'" "INSTALL-GOOGLE-EARTH"
-                    add_aur_package "$AUR_INSTALL_GOOGLE_EARTH"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_EARTH\" 'AUR-INSTALL-GOOGLE-EARTH'" "AUR-INSTALL-GOOGLE-EARTH"
+                    if add_packagemanager "package_install \"$INSTALL_GOOGLE_EARTH\" 'INSTALL-GOOGLE-EARTH'" "INSTALL-GOOGLE-EARTH" ; then
+                        add_package "$INSTALL_GOOGLE_EARTH"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_EARTH\" 'AUR-INSTALL-GOOGLE-EARTH'" "AUR-INSTALL-GOOGLE-EARTH" ; then
+                        add_aur_package "$AUR_INSTALL_GOOGLE_EARTH"
+                    fi
                     ;;
-                2)  # 
+                2)  # NASA World Wind
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_WORLDWIND"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLDWIND\" 'AUR-INSTALL-WORLDWIND'" "AUR-INSTALL-WORLDWIND"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLDWIND\" 'AUR-INSTALL-WORLDWIND'" "AUR-INSTALL-WORLDWIND" ; then
+                        add_aur_package "$AUR_INSTALL_WORLDWIND"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8631,6 +9301,10 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DESKTOP-SHARE-DESC"   "Install Desktop Share"
+    localize_info "INSTALL-DESKTOP-SHARE-MENU-1"   "Remmina"
+    localize_info "INSTALL-DESKTOP-SHARE-MENU-I-1"       "Remmina: Remmina is a remote desktop client written in GTK+."
+    localize_info "INSTALL-DESKTOP-SHARE-MENU-2"   "Teamviewer"
+    localize_info "INSTALL-DESKTOP-SHARE-MENU-I-2"       "Teamviewer: All-in-one solution for accessing PC's using the internet"
 fi
 # -------------------------------------
 install_desktop_share_menu()
@@ -8639,16 +9313,17 @@ install_desktop_share_menu()
     local BreakableKey="B"                      # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1"                # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8660,28 +9335,30 @@ install_desktop_share_menu()
     while [[ 1 ]]; do
         print_title "INSTALL-DESKTOP-SHARE-DESC"
         print_caution "${StatusBar1}" "${StatusBar2}"
-        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # $AURReset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Remmina"    "" "" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Teamviewer" "" "" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-SHARE-MENU-1" "" ""     "INSTALL-DESKTOP-SHARE-MENU-I-1" "MenuTheme[@]" # Remmina
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-SHARE-MENU-2" "" "$AUR" "INSTALL-DESKTOP-SHARE-MENU-I-2" "MenuTheme[@]" # Teamviewer
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Remmina
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_REMMINA"
-                    add_packagemanager "package_install \"$INSTALL_REMMINA\" 'INSTALL-REMMINA'" "INSTALL-REMMINA"
+                    if add_packagemanager "package_install \"$INSTALL_REMMINA\" 'INSTALL-REMMINA'" "INSTALL-REMMINA" ; then
+                        add_package "$INSTALL_REMMINA"
+                    fi
                     ;;
-                2)  # 
+                2)  # Teamviewer
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_TEAMVIEWER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMVIEWER\" 'AUR-INSTALL-TEAMVIEWER'" "AUR-INSTALL-TEAMVIEWER"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMVIEWER\" 'AUR-INSTALL-TEAMVIEWER'" "AUR-INSTALL-TEAMVIEWER" ; then
+                        add_aur_package "$AUR_INSTALL_TEAMVIEWER"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8722,21 +9399,38 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-GRAPHICS-APPS-INFO-2"   "and from AUR"
     #
     localize_info "INSTALL-GRAPHICS-APPS-MENU-1"   "AV Studio"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-1"      "AV Studio: Installs all Below and more Audio and Video Apps"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-2"   "Blender"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-2"      "Blender: A fully integrated 3D graphics creation suite."
     localize_info "INSTALL-GRAPHICS-APPS-MENU-3"   "Handbrake"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-3"      "Handbrake: Multithreaded video transcoder"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-4"   "CD/DVD Burners"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-4"      "CD/DVD Burners: brasero (A disc burning application for Gnome), dvd+rw-tools (DVD burning tools), dvdauthor (DVD authoring tools), Gnomebaker (AUR: A full featured CD/DVD burning application for Gnome), k3b (Feature-rich and easy to handle CD burning application) and Xfburn"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-5"   "Gimp"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-5"      "Gimp: GNU Image Manipulation Program"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-6"   "Gimp-plugins"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-6"      "Gimp-plugins: GNU Image Manipulation Program Plugins."
     localize_info "INSTALL-GRAPHICS-APPS-MENU-7"   "Gthumb"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-7"      "Gthumb: Image browser and viewer for the GNOME Desktop"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-8"   "Inkscape"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-8"      "Inkscape: Vector graphics editor using the SVG file format"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-9"   "Mcomix"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-9"      "Mcomix: A user-friendly, customizable image viewer specifically designed to handle comic books"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-10"  "MyPaint"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-10"      "MyPaint: A fast and easy painting application for digital painters, with brush dynamics"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-11"  "Scribus"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-11"      "Scribus: A desktop publishing program"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-12"  "Shotwell"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-12"      "Shotwell: A digital photo organizer designed for the GNOME desktop environment"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-13"  "Simple-scan"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-13"      "Simple-scan: Simple scanning utility"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-14"  "Xnviewmp"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-14"      "Xnviewmp: An efficient multimedia viewer, browser and converter (beta release)."
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-15"   "Qt Image Viewers"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-15"       "Qt Image Viewers: nomacs, limoo, qiviewer"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-16"   "Qt Image Editors"
+    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-16"       "Image Editors: easypaint-git, pencil-svn"
 
-    localize_info "INSTALL-GRAPHICS-APPS-MENU-I-1"   "AV Studio: Installs all Below and more Audio and Video Apps"
 fi
 # -------------------------------------
 install_graphics_apps_menu()
@@ -8746,16 +9440,17 @@ install_graphics_apps_menu()
     local BreakableKey="D"                      # Q=Quit, D=Done, B=Back
     local RecommendedOptions=""                # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions 3-13 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 3-13"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 1 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 1 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 1"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 1 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 1"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8770,102 +9465,215 @@ install_graphics_apps_menu()
         print_info  "INSTALL-GRAPHICS-APPS-INFO" " $AV_STUDIO $(localize "INSTALL-GRAPHICS-APPS-INFO-2") $AV_STUDIO_AUR"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-1"  "" "Some $AUR" "INSTALL-GRAPHICS-APPS-MENU-I-1" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-2"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-3"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-4"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-5"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-6"  "" "$AUR" "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-7"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-8"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-9"  "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-10" "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-11" "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-12" "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-13" "" ""     "" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-14" "" "$AUR" "" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-1"  "" "$SOME_AUR" "INSTALL-GRAPHICS-APPS-MENU-I-1"  "MenuTheme[@]" # AV Studio
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-2"  "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-2"  "MenuTheme[@]" # Blender
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-3"  "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-3"  "MenuTheme[@]" # Handbrake
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-4"  "" "$SOME_AUR" "INSTALL-GRAPHICS-APPS-MENU-I-4"  "MenuTheme[@]" # CD/DVD Burners
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-5"  "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-5"  "MenuTheme[@]" # Gimp
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-6"  "" "$AUR"      "INSTALL-GRAPHICS-APPS-MENU-I-6"  "MenuTheme[@]" # Gimp-plugins
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-7"  "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-7"  "MenuTheme[@]" # Gthumb
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-8"  "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-8"  "MenuTheme[@]" # Inkscape
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-9"  "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-9"  "MenuTheme[@]" # Mcomix
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-10" "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-10" "MenuTheme[@]" # MyPaint
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-11" "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-11" "MenuTheme[@]" # Scribus
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-12" "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-12" "MenuTheme[@]" # Shotwell
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-13" "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-13" "MenuTheme[@]" # Simple-scan
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-14" "" "$AUR"      "INSTALL-GRAPHICS-APPS-MENU-I-14" "MenuTheme[@]" # Xnviewmp
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-15" "" ""          "INSTALL-GRAPHICS-APPS-MENU-I-15" "MenuTheme[@]" # Qt Image Viewers
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-16" "" "$AUR"      "INSTALL-GRAPHICS-APPS-MENU-I-16" "MenuTheme[@]" # Qt Image Editors
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # AV Studio
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_av_studio
-                    ;;
-                2)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_BLENDER"
-                    add_packagemanager "package_install \"$INSTALL_BLENDER\" 'INSTALL-BLENDER'" "INSTALL-BLENDER"
-                    ;;
-                3)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_HANDBRAKE"
-                    add_packagemanager "package_install \"$INSTALL_HANDBRAKE\" 'INSTALL-HANDBRAKE'" "INSTALL-HANDBRAKE"
-                    ;;
-                4)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_BRASERO"
-                    add_packagemanager "package_install \"$INSTALL_BRASERO\" 'INSTALL-BRASERO'" "INSTALL-BRASERO"
-                    ;;
-                5)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GIMP"
-                    add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP"
-                    ;;
-                6)  # 
-                    MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GIMP"
-                    add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP"
+                    if add_packagemanager "package_install \"$INSTALL_BLENDER\" 'INSTALL-BLENDER'" "INSTALL-BLENDER" ; then
+                        add_package "$INSTALL_BLENDER"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_HANDBRAKE\" 'INSTALL-HANDBRAKE'" "INSTALL-HANDBRAKE" ; then
+                        add_package "$INSTALL_HANDBRAKE"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_CD_DVD_BURNERS\" 'INSTALL-CD-DVD-BURNERS'" "INSTALL-CD-DVD-BURNERS" ; then
+                        add_package "$INSTALL_CD_DVD_BURNERS"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP" ; then
+                        add_package "$INSTALL_GIMP"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS" ; then
+                        add_aur_package "$AUR_INSTALL_GIMP_PLUGINS"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_GTHUMB\" 'INSTALL-GTHUMB'" "INSTALL-GTHUMB" ; then
+                        add_package "$INSTALL_GTHUMB"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_INKSCAPE\" 'INSTALL-INKSCAPE'" "INSTALL-INKSCAPE" ; then
+                        add_package "$INSTALL_INKSCAPE"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SOZI\" 'AUR-INSTALL-SOZI'" "AUR-INSTALL-SOZI" ; then
+                        add_aur_package "$AUR_INSTALL_SOZI"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_MCOMIX\" 'INSTALL-MCOMIX'" "INSTALL-MCOMIX" ; then
+                        add_package "$INSTALL_MCOMIX"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_MYPAINT\"  'INSTALL-MYPAINT'" "INSTALL-MYPAINT" ; then
+                        add_package "$INSTALL_MYPAINT"
+                    fi
+                    if add_packagemanager "package_install \"$INSTALL_SCRIBUS\" 'INSTALL-SCRIBUS'" "INSTALL-SCRIBUS" ; then
+                        add_package "$INSTALL_SCRIBUS"
+                    fi
+
+                    if add_packagemanager "package_install \"$INSTALL_SHOTWELL\" 'INSTALL-SHOTWELL'" "INSTALL-SHOTWELL" ; then
+                        add_package "$INSTALL_SHOTWELL"
+                    fi
+                    # Simple-scan
+                    if add_packagemanager "package_install \"$INSTALL_SIMPLE_SCAN\" 'INSTALL-SIMPLE-SCAN'" "INSTALL-SIMPLE-SCAN" ; then
+                        add_package "$INSTALL_SIMPLE_SCAN"
+                    fi
+                    # Xnviewmp
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_XNVIEWMP\" 'AUR-INSTALL-XNVIEWMP'" "AUR-INSTALL-XNVIEWMP" ; then
+                        add_aur_package "$AUR_INSTALL_XNVIEWMP"
+                    fi
+                    # Qt Image Viewers 
+                    if add_packagemanager "package_install \"$INSTALL_QT_IMAGE_VIEWERS\" 'INSTALL-QT-IMAGE-VIEWERS'" "INSTALL-QT-IMAGE-VIEWERS" ; then
+                        add_package "$INSTALL_QT_IMAGE_VIEWERS"
+                    fi
                     #
-                    add_aur_package "$AUR_INSTALL_GIMP_PLUGINS"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS"
+                    if add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_VIEWERS\" 'AUR-INSTALL-QT-IMAGE-VIEWERS'" "AUR-INSTALL-QT-IMAGE-VIEWERS" ; then
+                        add_package "$AUR_QT_IMAGE_VIEWERS"
+                    fi
+                    # Qt Image Editors
+                    if add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_EDITORS\" 'AUR-INSTALL-QT-IMAGE-EDITORS'" "AUR-INSTALL-QT-IMAGE-EDITORS" ; then
+                        add_aur_package "$AUR_QT_IMAGE_EDITORS"
+                    fi
+                    #
+                    if [[ "$GNOME_INSTALL" -eq 1 ]]; then
+                        if add_packagemanager "package_install \"$AV_STUDIO_GTK\" 'INSTALL-AUDIO-VIDEO-STUDIO-GTK'" "INSTALL-AUDIO-VIDEO-STUDIO-GTK" ; then
+                            add_package "$AV_STUDIO_GTK"
+                        fi
+                    fi
+                    #
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
+                        if add_packagemanager "package_install \"$AV_STUDIO_KDE\" 'INSTALL-AUDIO-VIDEO-STUDIO-KDE'" "INSTALL-AUDIO-VIDEO-STUDIO-KDE" ; then
+                            add_package "$AV_STUDIO_KDE"
+                        fi
+                    else
+                        if add_packagemanager "package_install \"$AV_STUDIO_KDEGRAPHICS\" 'INSTALL-AUDIO-VIDEO-STUDIO-KDEGRAPHICS'" "INSTALL-AUDIO-VIDEO-STUDIO-KDEGRAPHICS" ; then
+                            add_package "$AV_STUDIO_KDEGRAPHICS"
+                        fi
+                    fi
+                    #
+                    if add_packagemanager "aur_package_install \"$AV_STUDIO_AUR\" 'AUR-INSTALL-AUDIO-VIDEO-STUDIO'" "AUR-INSTALL-AUDIO-VIDEO-STUDIO" ; then
+                        add_aur_package "$AV_STUDIO_AUR"
+                    fi
                     ;;
-                7)  # 
+                2)  # Blender
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_GTHUMB"
-                    add_packagemanager "package_install \"$INSTALL_GTHUMB\" 'INSTALL-GTHUMB'" "INSTALL-GTHUMB"
+                    if add_packagemanager "package_install \"$INSTALL_BLENDER\" 'INSTALL-BLENDER'" "INSTALL-BLENDER" ; then
+                        add_package "$INSTALL_BLENDER"
+                    fi
                     ;;
-                8)  # 
+                3)  # Handbrake
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_INKSCAPE"
-                    add_packagemanager "package_install \"$INSTALL_INKSCAPE\" 'INSTALL-INKSCAPE'" "INSTALL-INKSCAPE"
-                    add_aur_package "$AUR_INSTALL_SOZI"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_SOZI\" 'AUR-INSTALL-SOZI'" "AUR-INSTALL-SOZI"
+                    if add_packagemanager "package_install \"$INSTALL_HANDBRAKE\" 'INSTALL-HANDBRAKE'" "INSTALL-HANDBRAKE" ; then
+                        add_package "$INSTALL_HANDBRAKE"
+                    fi
                     ;;
-                9)  # 
+                4)  # CD/DVD Burners
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_MCOMIX"
-                    add_packagemanager "package_install \"$INSTALL_MCOMIX\" 'INSTALL-MCOMIX'" "INSTALL-MCOMIX"
+                    if add_packagemanager "package_install \"$INSTALL_CD_DVD_BURNERS\" 'INSTALL-CD-DVD-BURNERS'" "INSTALL-CD-DVD-BURNERS" ; then
+                        add_package "$INSTALL_CD_DVD_BURNERS"
+                    fi
+                    #
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_CD_DVD_BURNERS\" 'AUR-INSTALL-CD-DVD-BURNERS'" "AUR-INSTALL-CD-DVD-BURNERS" ; then
+                        add_aur_package "$AUR_INSTALL_CD_DVD_BURNERS"
+                    fi
                     ;;
-               10)  # 
+                5)  # Gimp
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_MYPAINT"
-                    add_packagemanager "package_install \"$INSTALL_MYPAINT\"  'INSTALL-MYPAINT'" "INSTALL-MYPAINT"
+                    if add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP" ; then
+                        add_package "$INSTALL_GIMP"
+                    fi
                     ;;
-               11)  # 
+                6)  # Gimp-plugins
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SCRIBUS"
-                    add_packagemanager "package_install \"$INSTALL_SCRIBUS\" 'INSTALL-SCRIBUS'" "INSTALL-SCRIBUS"
+                    if add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP" ; then
+                        add_package "$INSTALL_GIMP"
+                    fi
+                    #
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS" ; then
+                        add_aur_package "$AUR_INSTALL_GIMP_PLUGINS"
+                    fi
                     ;;
-               12)  # 
+                7)  # Gthumb
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SHOTWELL"
-                    add_packagemanager "package_install \"$INSTALL_SHOTWELL\" 'INSTALL-SHOTWELL'" "INSTALL-SHOTWELL"
+                    if add_packagemanager "package_install \"$INSTALL_GTHUMB\" 'INSTALL-GTHUMB'" "INSTALL-GTHUMB" ; then
+                        add_package "$INSTALL_GTHUMB"
+                    fi
                     ;;
-               13)  # 
+                8)  # Inkscape
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_SIMPLE_SCAN"
-                    add_packagemanager "package_install \"$INSTALL_SIMPLE_SCAN\" 'INSTALL-SIMPLE-SCAN'" "INSTALL-SIMPLE-SCAN"
+                    if add_packagemanager "package_install \"$INSTALL_INKSCAPE\" 'INSTALL-INKSCAPE'" "INSTALL-INKSCAPE" ; then
+                        add_package "$INSTALL_INKSCAPE"
+                    fi
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_SOZI\" 'AUR-INSTALL-SOZI'" "AUR-INSTALL-SOZI" ; then
+                        add_aur_package "$AUR_INSTALL_SOZI"
+                    fi
                     ;;
-               14)  # 
+                9)  # Mcomix
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_XNVIEWMP"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_XNVIEWMP\" 'AUR-INSTALL-XNVIEWMP'" "AUR-INSTALL-XNVIEWMP"
+                    if add_packagemanager "package_install \"$INSTALL_MCOMIX\" 'INSTALL-MCOMIX'" "INSTALL-MCOMIX" ; then
+                        add_package "$INSTALL_MCOMIX"
+                    fi
+                    ;;
+               10)  # MyPaint
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_MYPAINT\"  'INSTALL-MYPAINT'" "INSTALL-MYPAINT" ; then
+                        add_package "$INSTALL_MYPAINT"
+                    fi
+                    ;;
+               11)  # Scribus
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_SCRIBUS\" 'INSTALL-SCRIBUS'" "INSTALL-SCRIBUS" ; then
+                        add_package "$INSTALL_SCRIBUS"
+                    fi
+                    ;;
+               12)  # Shotwell
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_SHOTWELL\" 'INSTALL-SHOTWELL'" "INSTALL-SHOTWELL" ; then
+                        add_package "$INSTALL_SHOTWELL"
+                    fi
+                    ;;
+               13)  # Simple-scan
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_SIMPLE_SCAN\" 'INSTALL-SIMPLE-SCAN'" "INSTALL-SIMPLE-SCAN" ; then
+                        add_package "$INSTALL_SIMPLE_SCAN"
+                    fi
+                    ;;
+               14)  # Xnviewmp
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_XNVIEWMP\" 'AUR-INSTALL-XNVIEWMP'" "AUR-INSTALL-XNVIEWMP" ; then
+                        add_aur_package "$AUR_INSTALL_XNVIEWMP"
+                    fi
+                    ;;
+               15)  # Qt Image Viewers 
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_QT_IMAGE_VIEWERS\" 'INSTALL-QT-IMAGE-VIEWERS'" "INSTALL-QT-IMAGE-VIEWERS" ; then
+                        add_package "$INSTALL_QT_IMAGE_VIEWERS"
+                    fi
+                    #
+                    if add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_VIEWERS\" 'AUR-INSTALL-QT-IMAGE-VIEWERS'" "AUR-INSTALL-QT-IMAGE-VIEWERS" ; then
+                        add_package "$AUR_QT_IMAGE_VIEWERS"
+                    fi
+                    ;;
+               16)  # Qt Image Editors
+                    MenuChecks[$((S_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_EDITORS\" 'AUR-INSTALL-QT-IMAGE-EDITORS'" "AUR-INSTALL-QT-IMAGE-EDITORS" ; then
+                        add_aur_package "$AUR_QT_IMAGE_EDITORS"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8886,52 +9694,6 @@ install_graphics_apps_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# INSTALL AV STUDIO {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_av_studio"
-    USAGE="install_av_studio"
-    DESCRIPTION=$(localize "INSTALL-AV-STUDIO-DESC")
-    NOTES=$(localize "NONE")
-    AUTHOR="Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-AV-STUDIO-DESC"  "Install AV Studio"
-    #
-    localize_info "INSTALL-AV-STUDIO-TITLE" "Audio Video Studio"
-    localize_info "INSTALL-AV-STUDIO-INFO"  "Full List"
-fi
-# -------------------------------------
-install_av_studio()
-{
-    # 6 sub 14
-    print_title "INSTALL-AV-STUDIO-TITLE"
-    print_info "INSTALL-AV-STUDIO-INFO" ": $AV_STUDIO" 
-    #
-    add_package "$AV_STUDIO"
-    add_packagemanager "package_install \"$AV_STUDIO\" 'INSTALL-AUDIO-VIDEO-STUDIO'" "INSTALL-AUDIO-VIDEO-STUDIO" 
-    if [[ "$GNOME_INSTALL" -eq 1 ]]; then
-        add_package "$AV_STUDIO_GTK"
-        add_packagemanager "package_install \"$AV_STUDIO_GTK\" 'INSTALL-AUDIO-VIDEO-STUDIO-GTK'" "INSTALL-AUDIO-VIDEO-STUDIO-GTK"
-    fi
-    #
-    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-        add_package "$AV_STUDIO_KDE"
-        add_packagemanager "package_install \"$AV_STUDIO_KDE\" 'INSTALL-AUDIO-VIDEO-STUDIO-KDE'" "INSTALL-AUDIO-VIDEO-STUDIO-KDE"
-    else
-        add_package "$AV_STUDIO_KDEGRAPHICS"
-        add_packagemanager "package_install \"$AV_STUDIO_KDEGRAPHICS\" 'INSTALL-AUDIO-VIDEO-STUDIO-KDEGRAPHICS'" "INSTALL-AUDIO-VIDEO-STUDIO-KDEGRAPHICS"
-    fi
-    #
-    add_aur_package "$AV_STUDIO_AUR"
-    add_packagemanager "aur_package_install \"$AV_STUDIO_AUR\" 'AUR-INSTALL-AUDIO-VIDEO-STUDIO'" "AUR-INSTALL-AUDIO-VIDEO-STUDIO"
-    if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-}
-#}}}
-# -----------------------------------------------------------------------------
 # INSTALL VIDEO APPS {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_video_apps_menu"
@@ -8945,10 +9707,14 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-VIDEO-APPS-DESC"   "Install Video Apps"
-    localize_info "INSTALL-VIDEO-APPS-MENU-1" "Players"
-    localize_info "INSTALL-VIDEO-APPS-MENU-2" "Editors | Tools"
-    localize_info "INSTALL-VIDEO-APPS-MENU-3" "Codecs"
+    localize_info "INSTALL-VIDEO-APPS-DESC"     "Install Video Apps"
+    #
+    localize_info "INSTALL-VIDEO-APPS-MENU-1"   "Players"
+    localize_info "INSTALL-VIDEO-APPS-MENU-I-1"     "Players: Sub Menu"
+    localize_info "INSTALL-VIDEO-APPS-MENU-2"   "Editors | Tools"
+    localize_info "INSTALL-VIDEO-APPS-MENU-I-2"     "Editors | Tools: Sub Menu"
+    localize_info "INSTALL-VIDEO-APPS-MENU-3"   "Codecs"
+    localize_info "INSTALL-VIDEO-APPS-MENU-I-3"     "Codecs: $AUR_INSTALL_CODECS_64"
 fi
 # -------------------------------------
 install_video_apps_menu()
@@ -8958,16 +9724,17 @@ install_video_apps_menu()
     local BreakableKey="D"                   # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-3"           # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -8981,36 +9748,39 @@ install_video_apps_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-APPS-MENU-1" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-APPS-MENU-2" "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-APPS-MENU-3" "" "" "" "MenuTheme[@]" # 3
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-APPS-MENU-1" "" ""     "INSTALL-VIDEO-APPS-MENU-I-1" "MenuTheme[@]" # 1 Players
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-APPS-MENU-2" "" "$AUR" "INSTALL-VIDEO-APPS-MENU-I-2" "MenuTheme[@]" # 2 Editors | Tools
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-APPS-MENU-3" "" "$AUR" "INSTALL-VIDEO-APPS-MENU-I-3" "MenuTheme[@]" # 3 Codecs
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Players
                     MenuChecks[$((S_OPT - 1))]=1
                     install_video_players_menu
                     ;;
-                2)  # 
+                2)  # Editors | Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     install_video_editors_tools_menu
                     ;;
-                3)  # 
+                3)  # Codecs
                     MenuChecks[$((S_OPT - 1))]=1
-                    add_package "$INSTALL_VIDEO_CODECS"
-                    add_packagemanager "package_install \"$INSTALL_VIDEO_CODECS\"  'INSTALL-VIDEO-CODECS'" "INSTALL-VIDEO-CODECS"
+                    if add_packagemanager "package_install \"$INSTALL_VIDEO_CODECS\"  'INSTALL-VIDEO-CODECS'" "INSTALL-VIDEO-CODECS" ; then
+                        add_package "$INSTALL_VIDEO_CODECS"
+                    fi
                     if [[ "$ARCHI" != "x86_64" ]]; then
-                        add_aur_package "$AUR_INSTALL_CODECS"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_CODECS\" 'AUR-INSTALL-CODECS'" "AUR-INSTALL-CODECS"
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_CODECS\" 'AUR-INSTALL-CODECS'" "AUR-INSTALL-CODECS" ; then
+                            add_aur_package "$AUR_INSTALL_CODECS"
+                        fi
                     else
-                        add_aur_package "$AUR_INSTALL_CODECS_64"
-                        add_packagemanager "aur_package_install \"$AUR_INSTALL_CODECS_64\" 'AUR-INSTALL-CODECS-64'" "AUR-INSTALL-CODECS-64"
+                        if add_packagemanager "aur_package_install \"$AUR_INSTALL_CODECS_64\" 'AUR-INSTALL-CODECS-64'" "AUR-INSTALL-CODECS-64" ; then
+                            add_aur_package "$AUR_INSTALL_CODECS_64"
+                        fi
                     fi
                     ;;
                 *)  # Catch ALL
@@ -9046,6 +9816,25 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-VIDEO-PLAYERS-DESC"   "Install Video Players"
+
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-1"   "Audience-bzr"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-1"       "Audience-bzr: A simple and modern media player"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-2"   "Gnome-mplayer"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-2"       "Gnome-mplayer: A simple MPlayer GUI."
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-3"   "Parole"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-3"       "Parole: A modern media player based on the GStreamer framework"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-4"   "MiniTube"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-4"       "MiniTube: A native YouTube client in QT. Watch YouTube videos without Flash Player"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-5"   "Miro"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-5"       "Miro: The free and open source internet TV platform"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-6"   "Rosa Media Player"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-6"       "Rosa Media Player: The new multimedia player(based on SMPlayer) with clean and elegant UI."
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-7"   "smplayer"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-7"       "smplayer: A complete front-end for MPlayer"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-8"   "VLC"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-8"       "VLC: A multi-platform MPEG, VCD/DVD, and DivX player"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-9"   "XBMC"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-9"       "XBMC: A software media player and entertainment hub for digital media"
 fi
 # -------------------------------------
 install_video_players_menu()
@@ -9054,16 +9843,17 @@ install_video_players_menu()
     local BreakableKey="B"                      # Q=Quit, D=Done, B=Back
     local RecommendedOptions="2 3 7 8"          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions 4 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 4"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions  4 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions  4"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions 1-9 $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions 1-9"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -9077,72 +9867,82 @@ install_video_players_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Audience-bzr"      "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Gnome-mplayer"     "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Parole"            "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MiniTube"          "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Miro"              "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Rosa Media Player" "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "SM Player"         "" ""     "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "VLC"               "" ""     "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "XBMC"              "" ""     "" "MenuTheme[@]" # 9
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-1" "" "$AUR" "INSTALL-VIDEO-PLAYERS-MENU-I-1" "MenuTheme[@]" # 1 Audience-bzr
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-2" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-2" "MenuTheme[@]" # 2 Gnome-mplayer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-3" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-3" "MenuTheme[@]" # 3 Parole
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-4" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-4" "MenuTheme[@]" # 4 MiniTube
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-5" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-5" "MenuTheme[@]" # 5 Miro
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-6" "" "$AUR" "INSTALL-VIDEO-PLAYERS-MENU-I-6" "MenuTheme[@]" # 6 Rosa Media Player
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-7" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-7" "MenuTheme[@]" # 7 smplayer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-8" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-8" "MenuTheme[@]" # 8 VLC
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-PLAYERS-MENU-9" "" ""     "INSTALL-VIDEO-PLAYERS-MENU-I-9" "MenuTheme[@]" # 9 XBMC
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Audience-bzr
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_AUDIENCE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_AUDIENCE\" 'AUR-INSTALL-AUDIENCE'" "AUR-INSTALL-AUDIENCE"
-                    ;;
-                2)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_GNOME_MPLAYER"
-                    add_packagemanager "package_install \"$INSTALL_GNOME_MPLAYER\"  'INSTALL-GNOME-MPLAYER'" "INSTALL-GNOME-MPLAYER"
-                    ;;
-                3)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_PAROLE"
-                    add_packagemanager "package_install \"$INSTALL_PAROLE\" 'INSTALL-PAROLE'" "INSTALL-PAROLE"
-                    ;;
-                4)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_MINITUBE"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_MINITUBE\" 'AUR-INSTALL-MINITUBE'" "AUR-INSTALL-MINITUBE"
-                    ;;
-                5)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_MIRO"
-                    add_packagemanager "package_install \"$INSTALL_MIRO\" 'INSTALL-MIRO'" "INSTALL-MIRO"
-                    ;;
-                6)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_aur_package "$AUR_INSTALL_ROSA_MEDIA_PLAYER"
-                    add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_MEDIA_PLAYER\" 'AUR-INSTALL-ROSA-MEDIA-PLAYER'" "AUR-INSTALL-ROSA-MEDIA-PLAYER"
-                    ;;
-                7)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_SMPLAYER"
-                    add_packagemanager "package_install \"$INSTALL_SMPLAYER\" 'INSTALL-SMPLAYER'" "INSTALL-SMPLAYER"
-                    ;;
-                8)  # 
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_VLC"
-                    add_packagemanager "package_install \"$INSTALL_VLC\" 'INSTALL-VLC'" "INSTALL-VLC"
-                    if [[ "$KDE_INSTALLED" -eq 1 ]]; then
-                        add_package "$INSTALL_VLC_KDE"
-                        add_packagemanager "package_install \"$INSTALL_VLC_KDE\" 'INSTALL-VLC-KDE'" "INSTALL-VLC-KDE"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_AUDIENCE\" 'AUR-INSTALL-AUDIENCE'" "AUR-INSTALL-AUDIENCE" ; then
+                        add_aur_package "$AUR_INSTALL_AUDIENCE"
                     fi
                     ;;
-                9)  # 
+                2)  # Gnome-mplayer
                     MenuChecks[$((SS_OPT - 1))]=1
-                    add_package "$INSTALL_XBNC"
-                    add_packagemanager "package_install \"$INSTALL_XBNC\" 'INSTALL-XBNC'" "INSTALL-XBNC"
+                    if add_packagemanager "package_install \"$INSTALSMPLAYERL_GNOME_MPLAYER\"  'INSTALL-GNOME-MPLAYER'" "INSTALL-GNOME-MPLAYER" ; then
+                        add_package "$INSTALL_GNOME_MPLAYER"
+                    fi
+                    ;;
+                3)  # Parole
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_PAROLE\" 'INSTALL-PAROLE'" "INSTALL-PAROLE" ; then
+                        add_package "$INSTALL_PAROLE"
+                    fi
+                    ;;
+                4)  # MiniTube
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_MINITUBE\" 'INSTALL-MINITUBE'" "INSTALL-MINITUBE" ; then
+                        add_package "$INSTALL_MINITUBE"
+                    fi
+                    ;;
+                5)  # MiroSMPLAYER
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_MIRO\" 'INSTALL-MIRO'" "INSTALL-MIRO" ; then
+                        add_package "$INSTALL_MIRO"
+                    fi
+                    ;;
+                6)  # Rosa Media Player
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_MEDIA_PLAYER\" 'AUR-INSTALL-ROSA-MEDIA-PLAYER'" "AUR-INSTALL-ROSA-MEDIA-PLAYER" ; then
+                        add_aur_package "$AUR_INSTALL_ROSA_MEDIA_PLAYER"
+                    fi
+                    ;;
+                7)  # smplayer
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_SMPLAYER\" 'INSTALL-SMPLAYER'" "INSTALL-SMPLAYER" ; then
+                        add_package "$INSTALL_SMPLAYER"
+                    fi
+                    ;;
+                8)  # VLC
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_VLC\" 'INSTALL-VLC'" "INSTALL-VLC" ; then
+                        add_package "$INSTALL_VLC"
+                    fi
+                    if [[ "QT_INSTALL" -eq 1 ]]; then
+                        if add_packagemanager "package_install \"$INSTALL_VLC_KDE\" 'INSTALL-VLC-KDE'" "INSTALL-VLC-KDE" ; then
+                            add_package "$INSTALL_VLC_KDE"
+                        fi
+                    fi
+                    ;;
+                9)  # XBMC
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_XBNC\" 'INSTALL-XBNC'" "INSTALL-XBNC" ; then
+                        add_package "$INSTALL_XBNC"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9179,6 +9979,19 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-VIDEO-EDITORS-TOOLS-DESC"  "Install Video Editors Tools"
     #
     localize_info "INSTALL-VIDEO-EDITORS-TOOLS-TITLE" "Video Editors and Tools"
+    #
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-1"   "Arista-transcoder"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-1"        "Arista-transcoder: Easy to use multimedia transcoder for the GNOME Desktop"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-2"   "Transmageddon"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-2"        "Transmageddon: Simple python application for transcoding video into formats supported by GStreamer"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-3"   "KDEenlive"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-3"        "KDEenlive: A non-linear video editor for Linux"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-4"   "Openshot"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-4"        "Openshot: An Open-Source, non-linear video editor for Linux based on MLT framework"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-5"   "Pitivi"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-5"        "Pitivi: Editor for audio/video projects using the GStreamer framework"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-6"   "Kazam"
+    localize_info "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-6"        "Kazam-bzr: A screencasting program with design in mind. Unstable branch."
 fi
 # -------------------------------------
 install_video_editors_tools_menu()
@@ -9187,16 +10000,17 @@ install_video_editors_tools_menu()
     local BreakableKey="B"                            # Q=Quit, D=Done, B=Back
     local RecommendedOptions="4"                      # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions 3 $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions 3"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
+    #
+    RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
@@ -9210,50 +10024,56 @@ install_video_editors_tools_menu()
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Arista-transcoder" "" "$AUR" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Transmageddon"     "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "KDEenlive"         "" ""     "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Openshot"          "" ""     "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Pitivi"            "" ""     "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "Kazam-bzr"         "" "$AUR" "" "MenuTheme[@]" # 6
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-1" "" "$AUR" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-1" "MenuTheme[@]" # 1 Arista-transcoder
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-2" "" ""     "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-2" "MenuTheme[@]" # 2 Transmageddon
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-3" "" ""     "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-3" "MenuTheme[@]" # 3 KDEenlive
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-4" "" ""     "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-4" "MenuTheme[@]" # 4 Openshot
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-5" "" ""     "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-5" "MenuTheme[@]" # 5 Pitivi
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-6" "" "$AUR" "INSTALL-VIDEO-EDITORS-TOOLS-MENU-I-6" "MenuTheme[@]" # 6 Kazam-bzr
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
            case "$SS_OPT" in
-               1)  # 
+               1)  # Arista-transcoder
                    MenuChecks[$((SS_OPT - 1))]=1
-                   add_package "$AUR_INSTALL_ARISTA_TRANSCODER"
-                   add_packagemanager "aur_package_install \"$AUR_INSTALL_ARISTA_TRANSCODER\" 'AUR-INSTALL-ARISTA-TRANSCODER'" "AUR-INSTALL-ARISTA-TRANSCODER"
+                   if add_packagemanager "aur_package_install \"$AUR_INSTALL_ARISTA_TRANSCODER\" 'AUR-INSTALL-ARISTA-TRANSCODER'" "AUR-INSTALL-ARISTA-TRANSCODER" ; then
+                       add_package "$AUR_INSTALL_ARISTA_TRANSCODER"
+                   fi
                    ;;
-               2)  # 
+               2)  # Transmageddon
                    MenuChecks[$((SS_OPT - 1))]=1
-                   add_package "$INSTALL_TRAMSMAGEDDON"
-                   add_packagemanager "package_install \"$INSTALL_TRAMSMAGEDDON\" 'INSTALL-TRAMSMAGEDDON'" "INSTALL-TRAMSMAGEDDON"
+                   if add_packagemanager "package_install \"$INSTALL_TRAMSMAGEDDON\" 'INSTALL-TRAMSMAGEDDON'" "INSTALL-TRAMSMAGEDDON" ; then
+                       add_package "$INSTALL_TRAMSMAGEDDON"
+                   fi
                    ;;
-               3)  # 
+               3)  # KDEenlive
                    MenuChecks[$((SS_OPT - 1))]=1
-                   add_package "$INSTALL_KDENLIVE"
-                   add_packagemanager "package_install \"$INSTALL_KDENLIVE\" 'INSTALL-KDENLIVE'" "INSTALL-KDENLIVE"
+                   if add_packagemanager "package_install \"$INSTALL_KDENLIVE\" 'INSTALL-KDENLIVE'" "INSTALL-KDENLIVE" ; then
+                       add_package "$INSTALL_KDENLIVE"
+                   fi
                    ;;
-               4)  # 
+               4)  # Openshot
                    MenuChecks[$((SS_OPT - 1))]=1
-                   add_package "$INSTALL_OPENSHOT"
-                   add_packagemanager "package_install \"$INSTALL_OPENSHOT\" 'INSTALL-OPENSHOT'" "INSTALL-OPENSHOT"
+                   if add_packagemanager "package_install \"$INSTALL_OPENSHOT\" 'INSTALL-OPENSHOT'" "INSTALL-OPENSHOT" ; then
+                       add_package "$INSTALL_OPENSHOT"
+                   fi
                    ;;
-               5)  # 
+               5)  # Pitivi
                    MenuChecks[$((SS_OPT - 1))]=1
-                   add_package "$INSTALL_PITIVI"
-                   add_packagemanager "package_install \"$INSTALL_PITIVI\" 'INSTALL-PITIVI'" "INSTALL-PITIVI"
+                   if add_packagemanager "package_install \"$INSTALL_PITIVI\" 'INSTALL-PITIVI'" "INSTALL-PITIVI" ; then
+                       add_package "$INSTALL_PITIVI"
+                   fi
                    ;;
-               6)  # 
+               6)  # Kazam-bzr
                    MenuChecks[$((SS_OPT - 1))]=1
-                   add_aur_package "$AUR_INSTALL_KAZAM_BZR"
-                   add_packagemanager "aur_package_install \"$AUR_INSTALL_KAZAM_BZR\" 'AUR-INSTALL-KAZAM-BZR'" "AUR-INSTALL-KAZAM-BZR"
+                   if add_packagemanager "aur_package_install \"$AUR_INSTALL_KAZAM_BZR\" 'AUR-INSTALL-KAZAM-BZR'" "AUR-INSTALL-KAZAM-BZR" ; then
+                       add_aur_package "$AUR_INSTALL_KAZAM_BZR"
+                   fi
                    ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9295,8 +10115,24 @@ install_science()
     print_title "INSTALL-SCIENCE-DESC"
     echo ''
     print_info "Full List: $INSTALL_SCIENCE_EDUCATION" 
-    add_package "$INSTALL_SCIENCE_EDUCATION"
-    add_packagemanager "package_install \"$INSTALL_SCIENCE_EDUCATION\" 'INSTALL-SCIENCE'" "INSTALL-SCIENCE"
+    if add_packagemanager "package_install \"$INSTALL_SCIENCE_EDUCATION\" 'INSTALL-SCIENCE'" "INSTALL-SCIENCE" ; then
+        add_package "$INSTALL_SCIENCE_EDUCATION"
+    fi
+    if add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP" ; then
+       add_package "$INSTALL_GIMP"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS" ; then
+       add_aur_package "$AUR_INSTALL_GIMP_PLUGINS"
+    fi
+    if add_packagemanager "aur_package_install \"$AUR_SCIENCE\" 'AUR-INSTALL-GIMP-PLUGINS-SCIENCE'" "AUR-INSTALL-GIMP-PLUGINS-SCIENCE" ; then
+       add_aur_package "$AUR_SCIENCE"
+    fi
+    if [[ "$QT_INSTALL" -eq 1 ]]; then
+        if add_packagemanager "package_install \"$INSTALL_SCIENCE_KDE\"  'INSTALL-SCIENCE-KDE'" "INSTALL-SCIENCE-KDE" ; then
+           add_package "$INSTALL_SCIENCE_KDE"
+        fi
+    fi
+    #    
     if [[ "$SHOW_PAUSE" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
 }
 #}}}
@@ -9333,30 +10169,36 @@ install_video_card_now()
         add_packagemanager "TEMP=\$(pacman -Qe | grep xf86-video | awk '{print \$1}'); if [[ -n \"\$TEMP\" ]]; then package_remove \"\$TEMP\" \"REMOVE-NVIDIA-XF86-VIDEO-LIVE\"; fi" "REMOVE-NVIDIA-XF86-VIDEO"
         #
         add_packagemanager "package_remove 'libgl'" "REMOVE-NVIDIA"
-        add_package "$INSTALL_NVIDIA"
-        add_packagemanager "package_install \"$INSTALL_NVIDIA\" 'INSTALL-NVIDIA'" "INSTALL-NVIDIA"
-        add_packagemanager "nvidia-xconfig" "RUN-NVIDIA-XCONFIG"
+        if add_packagemanager "package_install \"$INSTALL_NVIDIA\" 'INSTALL-NVIDIA'" "INSTALL-NVIDIA" ; then
+            add_package "$INSTALL_NVIDIA"
+            add_packagemanager "nvidia-xconfig" "RUN-NVIDIA-XCONFIG"
+        fi
     elif [[ "$VIDEO_CARD" -eq 2 ]]; then    # Nouveau
-        add_package "$INSTALL_NOUVEAU"
-        add_packagemanager "package_install \"$INSTALL_NOUVEAU\" 'INSTALL-NOUVEAU'" "INSTALL-NOUVEAU"
-        add_module "nouveau" "MODULE-NOUVEAU"
+        if add_packagemanager "package_install \"$INSTALL_NOUVEAU\" 'INSTALL-NOUVEAU'" "INSTALL-NOUVEAU" ; then
+            add_package "$INSTALL_NOUVEAU"
+            add_module "nouveau" "MODULE-NOUVEAU"
+        fi
     elif [[ "$VIDEO_CARD" -eq 3 ]]; then    # Intel
-        add_package "$INSTALL_INTEL"
-        add_packagemanager "package_install \"$INSTALL_INTEL\" 'INSTALL-INTEL'" "INSTALL-INTEL"
+        if add_packagemanager "package_install \"$INSTALL_INTEL\" 'INSTALL-INTEL'" "INSTALL-INTEL" ; then
+            add_package "$INSTALL_INTEL"
+        fi
     elif [[ "$VIDEO_CARD" -eq 4 ]]; then    # ATI
-        add_package "$INSTALL_ATI"
-        add_packagemanager "package_install \"$INSTALL_ATI\" 'INSTALL-ATI'" "INSTALL-ATI"
-        add_module "radeon" "MODULE-RADEON"
+        if add_packagemanager "package_install \"$INSTALL_ATI\" 'INSTALL-ATI'" "INSTALL-ATI" ; then
+            add_package "$INSTALL_ATI"
+            add_module "radeon" "MODULE-RADEON"
+        fi
     elif [[ "$VIDEO_CARD" -eq 5 ]]; then    # Vesa
-        add_package "$INSTALL_VESA"
-        add_packagemanager "package_install \"$INSTALL_VESA\" 'INSTALL-VESA'" "INSTALL-VESA"
+        if add_packagemanager "package_install \"$INSTALL_VESA\" 'INSTALL-VESA'" "INSTALL-VESA" ; then
+            add_package "$INSTALL_VESA"
+        fi
     elif [[ "$VIDEO_CARD" -eq 6 ]]; then    # Virtualbox
-        add_package "$INSTALL_VIRTUALBOX"
-        add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX"
-        add_module "vboxguest" "MODULE-VIRUALBOX-GUEST"
-        add_module "vboxsf"    "MODULE-VITRUALBOX-SF"
-        add_module "vboxvideo" "MODULE-VIRTUALBOX-VIDEO"
-        add_user_group "vboxsf"
+        if add_packagemanager "package_install \"$INSTALL_VIRTUALBOX\" 'INSTALL-VIRTUALBOX'" "INSTALL-VIRTUALBOX" ; then
+            add_package "$INSTALL_VIRTUALBOX"
+            add_module "vboxguest" "MODULE-VIRUALBOX-GUEST"
+            add_module "vboxsf"    "MODULE-VITRUALBOX-SF"
+            add_module "vboxvideo" "MODULE-VIRTUALBOX-VIDEO"
+            add_user_group "vboxsf"
+        fi
     else
         write_error "INSTALL-VIDEO-CARD-NOW-WARN" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     fi
@@ -9365,7 +10207,7 @@ install_video_card_now()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# INSTALL VIDEO CARDS {{{
+# INSTALL VIDEO CARDS MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_video_cards_menu"
     USAGE=$(localize "INSTALL-VIDEO-CARDS-USAGE")
@@ -9408,15 +10250,14 @@ install_video_cards_menu()
     local RecommendedOptions="$VIDEO_CARD"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     #
-    local SUB_OPTIONS=""        
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"        
+        RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        SUB_OPTIONS="$RecommendedOptions $BreakableKey"    
+        RecommendedOptions="$RecommendedOptions"    
     fi
     # @FIX do a snoop and auto fill a recommendation
     # 
@@ -9434,20 +10275,20 @@ install_video_cards_menu()
         #
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         # "nVidia" "Nouveau" "Intel" "ATI" "Vesa" "Virtualbox" "Skip"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-1" "" "" "INSTALL-VIDEO-CARDS-MENU-1-I" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-2" "" "" "INSTALL-VIDEO-CARDS-MENU-2-I" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-3" "" "" "INSTALL-VIDEO-CARDS-MENU-3-I" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-4" "" "" "INSTALL-VIDEO-CARDS-MENU-4-I" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-5" "" "" "INSTALL-VIDEO-CARDS-MENU-5-I" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-6" "" "" "INSTALL-VIDEO-CARDS-MENU-6-I" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-7" "" "" "INSTALL-VIDEO-CARDS-MENU-7-I" "MenuTheme[@]" # 7
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-1" "" "" "INSTALL-VIDEO-CARDS-MENU-1-I" "MenuTheme[@]" # 1 nVidia
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-2" "" "" "INSTALL-VIDEO-CARDS-MENU-2-I" "MenuTheme[@]" # 2 Nouveau
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-3" "" "" "INSTALL-VIDEO-CARDS-MENU-3-I" "MenuTheme[@]" # 3 Intel
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-4" "" "" "INSTALL-VIDEO-CARDS-MENU-4-I" "MenuTheme[@]" # 4 ATI
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-5" "" "" "INSTALL-VIDEO-CARDS-MENU-5-I" "MenuTheme[@]" # 5 Vesa
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-6" "" "" "INSTALL-VIDEO-CARDS-MENU-6-I" "MenuTheme[@]" # 6 Virtualbox
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-VIDEO-CARDS-MENU-7" "" "" "INSTALL-VIDEO-CARDS-MENU-7-I" "MenuTheme[@]" # 7 Skip
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-        read_input_options "$SUB_OPTIONS" "$BreakableKey"
-        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS" # Restroe Bypass
+        read_input_options "$RecommendedOptions" "$BreakableKey"
+        RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
+        BYPASS="$Old_BYPASS" # Restore Bypass
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
@@ -9915,38 +10756,6 @@ install_software_live()
     fi
     # @FIX
     if [[ "$WEBSERVER" -eq 1 ]]; then    
-        #echo "Enter your new mysql root account password"
-        #/usr/bin/mysqladmin -u root password
-        /usr/bin/mysql_secure_installation
-        # CONFIGURE HTTPD.CONF {{{
-        if [ ! -f  /etc/httpd/conf/httpd.conf.aui ]; then
-            copy_file '/etc/httpd/conf/httpd.conf' '/etc/httpd/conf/httpd.conf.aui' "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-            echo -e '\n# adminer configuration\nInclude conf/extra/httpd-adminer.conf' >> /etc/httpd/conf/httpd.conf
-            echo -e 'application/x-httpd-php5		php php5' >> /etc/httpd/conf/mime.types
-            sed -i '/LoadModule dir_module modules\/mod_dir.so/a\LoadModule php5_module modules\/libphp5.so' /etc/httpd/conf/httpd.conf
-            echo -e '\n# Use for PHP 5.x:\nInclude conf/extra/php5_module.conf\n\nAddHandler php5-script php' >> /etc/httpd/conf/httpd.conf
-            sed -i 's/DirectoryIndex\ index.html/DirectoryIndex\ index.html\ index.php/g' /etc/httpd/conf/httpd.conf
-        fi
-        #}}}
-        # CONFIGURE PHP.INI {{{
-        if [ -f  /etc/php/php.ini.pacnew ]; then
-            mv -v /etc/php/php.ini /etc/php/php.ini.pacold
-            mv -v /etc/php/php.ini.pacnew /etc/php/php.ini
-            rm -v /etc/php/php.ini.aui
-        fi
-        [[ -f /etc/php/php.ini.aui ]] && echo "/etc/php/php.ini.aui || cp -v /etc/php/php.ini /etc/php/php.ini.aui";
-        sed -i '/mysqli.so/s/^;//' /etc/php/php.ini
-        sed -i '/mysql.so/s/^;//' /etc/php/php.ini
-        sed -i '/mcrypt.so/s/^;//' /etc/php/php.ini
-        sed -i '/gd.so/s/^;//' /etc/php/php.ini
-        sed -i '/display_errors=/s/off/on/' /etc/php/php.ini
-        sed -i '/skip-networking/s/^/#/' /etc/mysql/my.cnf
-        #}}}
-        CURRENT_STATUS=1
-        create_sites_folder
-    fi
-    # @FIX
-    if [[ "$WEBSERVER" -eq 2 ]]; then    
         chown -R postgres:postgres /var/lib/postgres/
         print_info "INSTALL-SOFTWARE-LIVE-INFO-12"
         passwd postgres
@@ -9982,6 +10791,38 @@ install_software_live()
         CURRENT_STATUS=1
         create_sites_folder
     fi
+    # @FIX
+    if [[ "$WEBSERVER" -eq 2 ]]; then    
+        #echo "Enter your new mysql root account password"
+        #/usr/bin/mysqladmin -u root password
+        /usr/bin/mysql_secure_installation
+        # CONFIGURE HTTPD.CONF {{{
+        if [ ! -f  /etc/httpd/conf/httpd.conf.aui ]; then
+            copy_file '/etc/httpd/conf/httpd.conf' '/etc/httpd/conf/httpd.conf.aui' "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+            echo -e '\n# adminer configuration\nInclude conf/extra/httpd-adminer.conf' >> /etc/httpd/conf/httpd.conf
+            echo -e 'application/x-httpd-php5		php php5' >> /etc/httpd/conf/mime.types
+            sed -i '/LoadModule dir_module modules\/mod_dir.so/a\LoadModule php5_module modules\/libphp5.so' /etc/httpd/conf/httpd.conf
+            echo -e '\n# Use for PHP 5.x:\nInclude conf/extra/php5_module.conf\n\nAddHandler php5-script php' >> /etc/httpd/conf/httpd.conf
+            sed -i 's/DirectoryIndex\ index.html/DirectoryIndex\ index.html\ index.php/g' /etc/httpd/conf/httpd.conf
+        fi
+        #}}}
+        # CONFIGURE PHP.INI {{{
+        if [ -f  /etc/php/php.ini.pacnew ]; then
+            mv -v /etc/php/php.ini /etc/php/php.ini.pacold
+            mv -v /etc/php/php.ini.pacnew /etc/php/php.ini
+            rm -v /etc/php/php.ini.aui
+        fi
+        [[ -f /etc/php/php.ini.aui ]] && echo "/etc/php/php.ini.aui || cp -v /etc/php/php.ini /etc/php/php.ini.aui";
+        sed -i '/mysqli.so/s/^;//' /etc/php/php.ini
+        sed -i '/mysql.so/s/^;//' /etc/php/php.ini
+        sed -i '/mcrypt.so/s/^;//' /etc/php/php.ini
+        sed -i '/gd.so/s/^;//' /etc/php/php.ini
+        sed -i '/display_errors=/s/off/on/' /etc/php/php.ini
+        sed -i '/skip-networking/s/^/#/' /etc/mysql/my.cnf
+        #}}}
+        CURRENT_STATUS=1
+        create_sites_folder
+    fi
     #   
     # Clean Orphan Packages
     if [[ "$CONFIG_ORPHAN" -eq 1 ]]; then
@@ -10001,7 +10842,7 @@ install_software_live()
         test_installation    
     fi
     #
-    finish 2
+    finish 2 # install_software_live
     exit 0
 }
 #}}}
