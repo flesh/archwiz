@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="18 Jan 2013 16:33"
+# LAST_UPDATE="21 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -114,6 +114,10 @@ install_base_system()
 {
     print_title "INSTALL-BASE-SYSTEM-BASE-SYSTEM" ' - https://wiki.archlinux.org/index.php/Beginners%27_Guide#Install_the_base_system'
     print_info "INSTALL-BASE-SYSTEM-MSG-1"
+    if [[ "$SIMULATE" -eq 1 ]]; then
+        print_warning "GDISK-PARTITION-SIMULATE"
+        return 0
+    fi
     #
     run_task_manager # May modify pacman.conf
     #
@@ -950,8 +954,14 @@ run_install_scripts()
     # 
     # Run in chroot
     arch-chroot "${MOUNTPOINT}" /install_scripts
-    #
-    make_dir "/home/${USERNAME}/usb/"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #    
+    make_dir "${MOUNTPOINT}/home/${USERNAME}/Downloads" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/home/${USERNAME}/Documents" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/home/${USERNAME}/Pictures"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/home/${USERNAME}/Videos"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/home/${USERNAME}/Music"     "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    make_dir "${MOUNTPOINT}/home/${USERNAME}/usb"       "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    # 
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"
     #
     print_info "RUN-INSTALL-SCRIPTS-SUDOERS"
@@ -959,12 +969,9 @@ run_install_scripts()
     if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
     #
     copy_file  ${MOUNTPOINT}/boot/grub_uefi.log "${LOG_PATH}/"  "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file  ${MOUNTPOINT}/install_scripts    "${FULL_SCRIPT_PATH}" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    # Copy all files to root @FIX
-    copy_file  "${FULL_SCRIPT_PATH}/arch-wiz.sh" ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_files "$CONFIG_PATH/" "db"              ${MOUNTPOINT}/${USERNAME}/CONFIG/ "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_files "${LOG_PATH}/"  "log"             ${MOUNTPOINT}/${USERNAME}/LOG/    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-    copy_file  ${MOUNTPOINT}/install_scripts     ${MOUNTPOINT}/${USERNAME}/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    #
+    copy_file  ${MOUNTPOINT}/install_scripts    "${FULL_SCRIPT_PATH}"                                 "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    copy_file  ${MOUNTPOINT}/install_scripts    "${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
     #
     rm ${MOUNTPOINT}"/install_scripts"
     # Overwrite all Config files 
