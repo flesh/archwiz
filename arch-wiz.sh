@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="21 Jan 2013 16:33"
+# LAST_UPDATE="24 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -220,8 +220,8 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "CONFIGURE-AUR-HELPER-DESC"  "Configure AUR Helper"
-    localize_info "CONFIGURE-AUR-HELPER-NOTES" "Should only be run from Live Mode."
+    localize_info "CONFIGURE-AUR-HELPER-DESC"          "Configure AUR Helper"
+    localize_info "CONFIGURE-AUR-HELPER-NOTES"         "Should only be run from Live Mode."
     #
     localize_info "CONFIGURE-AUR-HELPER-CONFIG-HELP"   "Configuring AUR Helper"
     localize_info "CONFIGURE-AUR-HELPER-NOT-INSTALLED" "Not Installed"
