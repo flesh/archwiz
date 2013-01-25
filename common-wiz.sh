@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="23 Jan 2013 16:33"
+# LAST_UPDATE="24 Jan 2013 16:33"
 # SCRIPT_VERSION="1.0.0.a"
 #
 # THINGS TO DO
@@ -429,8 +429,8 @@ check_package()
     if ! pacman -Q "$1" &> /dev/null ; then        # check if a package is already installed from Core
         print_warning "CHECK-PACKAGE-NFCD" ": $1"
         if pacman -Ssp "$1" &> /dev/null ; then   # check if a package is already installed from Outside Repository
-            touch "${LOG_PATH}/ssp/${1}-ssp.log"
-            pacman -Ssp "$1" > "${LOG_PATH}/ssp/${1}-ssp.log"
+            touch "${LOG_PATH}/ssp/${1}.log"
+            pacman -Ssp "$1" > "${LOG_PATH}/ssp/${1}.log"
             ## The files created need to be hand made, two elements per line; element 0 is package name, second element is a path to look for, if it exist; program should be installed
             local -i isFound=0
             local -i index=0
@@ -438,13 +438,13 @@ check_package()
             for (( index=0; index<${total}; index++ )); do
                 if [[ "${PACKAGE_CHECK_FAILURES[$((index))]}" == "$1" ]]; then
                     #echo "total=$total - ${PACKAGE_CHECK_FAILURES[@]} and ${PACKAGE_FAILURES_CHECK[@]}"
-                    if is_string_in_file "${LOG_PATH}/ssp/${1}-ssp.log" "${PACKAGE_FAILURES_CHECK[$index]}" ; then
+                    if is_string_in_file "${LOG_PATH}/ssp/${1}.log" "${PACKAGE_FAILURES_CHECK[$index]}" ; then
                         isFound=1
                         print_warning "CHECK-PACKAGE-FSSP" ": $1"
                         break
                     else
                         print_error "CHECK-PACKAGE-FFP" ": $1"
-                        write_error "CHECK-PACKAGE-FFP" ": $1 -> check_package @ $(basename $BASH_SOURCE) : $LINENO${White}"
+                        write_error "CHECK-PACKAGE-FFP" ": $1 -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO${White}"
                     fi
                 fi
             done
@@ -1202,43 +1202,40 @@ package_install()
                 pacman -S --noconfirm --needed --force "$PACKAGE" # Install with the force
                 if ! check_package "$PACKAGE" ; then # 3. Failed Twice
                     ((retry_times++))
-                    if is_in_array "PACKAGE_CHECK_FAILURES[@]" "$PACKAGE" ; then
-                        failed_install_core "$PACKAGE"
-                        write_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                        print_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                        if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-                    else
-                        if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
+                    if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
+                        if ! is_internet ; then
+                            restart_internet
+                            sleep 13
                             if ! is_internet ; then
-                                restart_internet
-                                sleep 13
-                                if ! is_internet ; then
-                                    failed_install_core "$PACKAGE"
-                                    write_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                                    print_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                                    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-                                    # @FIX what to do now: restart network adapter
-                                    abort_install "$RUNTIME_MODE"
-                                else
-                                    print_this "Refreshing pacman Database and Updates..."
-                                    pacman -Syu
-                                fi
+                                failed_install_core "$PACKAGE"
+                                write_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                print_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - $(localize "PACKAGE-INSTALL-FAILED-INTERNET") - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                                # @FIX what to do now: restart network adapter
+                                abort_install "$RUNTIME_MODE"
+                            else
+                                print_this "Refreshing pacman Database and Updates..."
+                                pacman -Syu
                             fi
-                        fi             
-                        print_this "*" "${BRed} $(localize "PACKAGE-INSTALL-RETRY") ${BWhite}  $(localize "PACKAGE-INSTALL-PACKAGE") $PACKAGE $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 $(localize "PACKAGE-INSTALL-MANUAL") $(localize "PACKAGE-INSTALL-CURRENTLY") $current -> $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES") -> $(localize "PACKAGE-INSTALL-RETRIES") = ${retry_times}"
-                        pacman -S --needed "$PACKAGE" # Install with Manual Interaction
-                        # Last try     
+                        fi
+                    fi             
+                    print_this "*" "${BRed} $(localize "PACKAGE-INSTALL-RETRY") ${BWhite}  $(localize "PACKAGE-INSTALL-PACKAGE") $PACKAGE $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 $(localize "PACKAGE-INSTALL-MANUAL") $(localize "PACKAGE-INSTALL-CURRENTLY") $current -> $total_packages - $(localize "PACKAGE-INSTALL-PACKAGES") -> $(localize "PACKAGE-INSTALL-RETRIES") = ${retry_times}"
+                    pacman -S --needed "$PACKAGE" # Install with Manual Interaction
+                    # Last try     
+                    if ! check_package "$PACKAGE" ; then # 4. Failed Three times
+                        ((retry_times++))
+                        ((number_failed++)) # increment number installed
+                        touch "${LOG_PATH}/failures/core/${PACKAGE}.log"
+                        pacman -S --noconfirm --needed --force "$PACKAGE" 2> "${LOG_PATH}/failures/core/${PACKAGE}.log" # Install with the force and Log output
                         if ! check_package "$PACKAGE" ; then # 4. Failed Three times
-                            ((retry_times++))
-                            ((number_failed++)) # increment number installed
                             failed_install_core "$PACKAGE"
                             write_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                             print_error "PACKAGE-INSTALL-ERROR" ": $PACKAGE - $(localize "PACKAGE-INSTALL-PACKAGE-MANAGER") $2 - USE_PACMAN=$USE_PACMAN : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
                             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-                        else
-                            installed_core "$PACKAGE"
-                            ((number_installed++))
                         fi
+                    else
+                        installed_core "$PACKAGE"
+                        ((number_installed++))
                     fi
                 else
                     installed_core "$PACKAGE"
@@ -1621,7 +1618,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-DOWNLOAD-USAGE" "install_download 1->(PACKAGE FROM AUR) 2->(Args: NoConfirm, Force)"
+    localize_info "INSTALL-DOWNLOAD-USAGE" "install_download 1->(PACKAGE FROM AUR) 2->(Args: NoConfirm, Force) 3->(Log output)"
     localize_info "INSTALL-DOWNLOAD-DESC"  "Install AUR Package using AUR_HELPER"
     localize_info "INSTALL-DOWNLOAD-NOTES" "Called from add_packagemanager, run in Live Mode: Install one at a time, check to see if its already installed, if fail, try again with confirm.<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: --needed --recursive --force --upgrades"
 fi
@@ -1630,9 +1627,17 @@ install_download()
 {
     if [[ "$AUR_REPO" -eq 1 ]]; then
         # package-name-1.0.1-1-x86_64.pkg.tar.xz
-        pacman --needed -U "${AUR_CUSTOM_PACKAGES}/${1}/${1}-"*.pkg.tar.xz 
+        if [[ "$3" -eq 1 ]]; then
+            pacman --needed -U "${AUR_CUSTOM_PACKAGES}/${1}/${1}-"*.pkg.tar.xz 
+        else
+            pacman --needed -U "${AUR_CUSTOM_PACKAGES}/${1}/${1}-"*.pkg.tar.xz 2> "${LOG_PATH}/failures/core/${PACKAGE}.log"
+        fi
     else
-        su - "${USERNAME}" -c "$AUR_HELPER $2 --needed -S $1" # Run as User
+        if [[ "$3" -eq 1 ]]; then
+            su - "${USERNAME}" -c "$AUR_HELPER $2 --needed --force -S $1 2> ${LOG_PATH}/failures/core/${PACKAGE}.log" # Run as User
+        else
+            su - "${USERNAME}" -c "$AUR_HELPER $2 --needed -S $1" # Run as User
+        fi
     fi
 }
 #}}}
@@ -1677,6 +1682,7 @@ aur_package_install()
 {
     if [[ "$REFRESH_AUR" -eq 1 ]]; then
         REFRESH_AUR=0
+        # @FIX Do I need to do different arguments for each AUR Helper?
         su - "${USERNAME}" -c "$AUR_HELPER --noconfirm -Syu" # Run as User
     fi
     local -i retry_times=0
@@ -1695,54 +1701,52 @@ aur_package_install()
             while [[ "$YN_OPTION" -ne 0 ]]; do
                 ((retry_times++))
                 print_this "AUR-PACKAGE-INSTALL-WORKING-ON" ": $AUR_HELPER $PACKAGE $(localize "AUR-PACKAGE-INSTALL-CURRENTLY") $current $(localize "AUR-PACKAGE-INSTALL-OF") $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed -> $(localize "AUR-PACKAGE-INSTALL-RETRIES") = ${retry_times}."
-                install_download "${PACKAGE}" "$AUR_CONFIRM"
+                install_download "${PACKAGE}" "$AUR_CONFIRM" 0
                 # check if the package was not installed
                 # some packages do not register, i.e. mate and mate-extras, so this is a work around; so you do not get stuck in a loop @FIX make a list
                 if ! check_package "$PACKAGE" ; then # 2. Failed Once, now check in Loop
                     print_error "AUR-PACKAGE-INSTALL-REFRESH" ": $AUR_HELPER $PACKAGE $(localize "AUR-PACKAGE-INSTALL-CURRENTLY") $current $(localize "AUR-PACKAGE-INSTALL-OF") $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed -> $(localize "AUR-PACKAGE-INSTALL-RETRIES") = ${retry_times}."
                     $AUR_HELPER -Syu
                     # Manual Intervention may resolve this issue
-                    install_download "${PACKAGE}" "$AUR_CONFIRM --force"
+                    install_download "${PACKAGE}" "$AUR_CONFIRM --force" 0
                     if ! check_package "$PACKAGE" ; then # 3. Faild Twice, Now lets see if its a Known Failure in pacman
-                        if is_in_array "PACKAGE_CHECK_FAILURES[@]" "$PACKAGE" ; then
-                            # @FIX try to find solution to why this is happening and put it here
-                            if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
+                        # @FIX try to find solution to why this is happening and put it here
+                        if [[ "$INSTALL_NO_INTERNET" -eq 0 ]]; then
+                            if ! is_internet ; then
+                                restart_internet
+                                sleep 13
                                 if ! is_internet ; then
-                                   restart_internet
-                                   sleep 13
-                                   if ! is_internet ; then
-                                       failed_install_core "$PACKAGE"
-                                       write_error "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                                       print_error "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                                       if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
-                                       # @FIX what to do now
-                                       abort_install "$RUNTIME_MODE"
-                                   fi
-                               fi             
-                           fi
-                           print_this "AUR-PACKAGE-INSTALL-REFRESH" " - $(localize "AUR-PACKAGE-INSTALL-UPDATE"): $AUR_HELPER $PACKAGE $(localize "AUR-PACKAGE-INSTALL-CURRENTLY") $current $(localize "AUR-PACKAGE-INSTALL-OF") $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed -> $(localize "AUR-PACKAGE-INSTALL-RETRIES") = ${retry_times}."
-                           su "${USERNAME}" -c "$AUR_HELPER --noconfirm -Syu" # Run as User
-                           # Force install
-                           install_download "${PACKAGE}" "$AUR_CONFIRM --force"
-                           if ! check_package "$PACKAGE" ; then
-                               print_info "AUR-PACKAGE-INSTALL-NOT-INSTALLED" ": $PACKAGE -> $2"
-                               if [[ "$retry_times" -ge 1 ]]; then
-                                   read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 0 # Allow Bypass
-                               else
-                                   read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 1 # Allow Bypass
-                               fi
-                               if [[ "$YN_OPTION" -eq 0 ]]; then
-                                   failed_install_aur "$PACKAGE"
-                               fi
-                           else
-                               installed_aur "$PACKAGE"
-                               ((number_installed++)) # increment number installed
-                               YN_OPTION=0 # Exit Loop
-                           fi
+                                    failed_install_core "$PACKAGE"
+                                    write_error "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                    print_error "AUR-PACKAGE-INSTALL-ERROR-1" ": $AUR_HELPER - $PACKAGE - $(localize "AUR-PACKAGE-INSTALL-ERROR-2"): $2 - $(localize "AUR-PACKAGE-INSTALL-INTERNET") : $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                                    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+                                    # @FIX what to do now
+                                    abort_install "$RUNTIME_MODE"
+                                fi
+                            fi             
+                        fi
+                        print_this "AUR-PACKAGE-INSTALL-REFRESH" " - $(localize "AUR-PACKAGE-INSTALL-UPDATE"): $AUR_HELPER $PACKAGE $(localize "AUR-PACKAGE-INSTALL-CURRENTLY") $current $(localize "AUR-PACKAGE-INSTALL-OF") $total_packages $(localize "AUR-PACKAGE-INSTALL-PACKAGES"), $(localize "AUR-PACKAGE-INSTALL-INSTALLED") $number_installed - $(localize "AUR-PACKAGE-INSTALL-FAILS") $number_failed -> $(localize "AUR-PACKAGE-INSTALL-RETRIES") = ${retry_times}."
+                        su "${USERNAME}" -c "$AUR_HELPER --noconfirm -Syu" # Run as User
+                        # Force install
+                        install_download "${PACKAGE}" "$AUR_CONFIRM --force" 0
+                        if ! check_package "$PACKAGE" ; then
+                            print_info "AUR-PACKAGE-INSTALL-NOT-INSTALLED" ": $PACKAGE -> $2"
+                            if [[ "$retry_times" -ge 1 ]]; then
+                                read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 0 # Allow Bypass
+                            else
+                                read_input_yn "AUR-PACKAGE-INSTALL-TRY-AGAIN" " " 1 # Allow Bypass
+                            fi
+                            if [[ "$YN_OPTION" -eq 0 ]]; then
+                                touch "${LOG_PATH}/failures/core/${PACKAGE}.log"
+                                install_download "${PACKAGE}" "$AUR_CONFIRM --force" 0
+                                if ! check_package "$PACKAGE" ; then
+                                    failed_install_aur "$PACKAGE"
+                                fi
+                            fi
                         else
-                           # @FIX we don't know if its installed or not; this happens, its a bug
-                           ((number_failed++)) # increment number installed
-                           YN_OPTION=0 # Exit Loop
+                            installed_aur "$PACKAGE"
+                            ((number_installed++)) # increment number installed
+                            YN_OPTION=0 # Exit Loop
                         fi
                     else
                         installed_aur "$PACKAGE"
@@ -2723,12 +2727,12 @@ show_software()
         BYPASS="$Old_BYPASS" # Restore Bypass
         if [[ "$YN_OPTION" -eq 1 ]]; then
             clear_software 1
-            install_menu
+            install_main_menu
         fi
     else
         BYPASS="$Old_BYPASS" # Restore Bypass
         clear_software 1
-        install_menu
+        install_main_menu
     fi
 }
 #}}}
@@ -2879,10 +2883,45 @@ show_disk_profile()
 }
 #}}}
 # -----------------------------------------------------------------------------
+# DETECT MODE {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="detect_mode"
+    USAGE="detect_mode"
+    DESCRIPTION=$(localize "DETECT-MODE-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "DETECT-MODE-DESC"  "Detect Mode: Detects Boot mode: Boot Mode from ISO, Live Preinstall, and Live OS Mode after Installation of Software has ran."
+fi
+# -------------------------------------
+detect_mode()
+{
+    if [ -d "/home/arch/" ]; then # Make sure to remove this folder after installing OS
+        DETECTED_RUN_MODE=1 # Boot Mode
+        RUNTIME_MODE=1
+    elif [ -f "/home/${USERNAME}/.flesh.conf" ]; then # If Configuration files have not been Loaded, this may not be true; its set to whoami, so who ever logged in
+        DETECTED_RUN_MODE=3 # Live OS Mode
+        MOUNTPOINT=" "
+        RUNTIME_MODE=2
+        DRIVE_FORMATED=1        
+    else
+        DETECTED_RUN_MODE=2 # Live Preinstall
+        MOUNTPOINT=" "
+        RUNTIME_MODE=2
+        DRIVE_FORMATED=1        
+    fi
+}
+#}}}
+# -----------------------------------------------------------------------------
 # GET INSTALL MODE {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="get_install_mode"
-    USAGE="get_install_mode 1->(1=Install OS, 2=Install Software)"
+    USAGE="get_install_mode"
     DESCRIPTION=$(localize "GET-INSTALL-MODE-DESC")
     NOTES=$(localize "Localized.")
     AUTHOR="Flesher"
@@ -2894,12 +2933,17 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "GET-INSTALL-MODE-DESC"  "Change MOUNTPOINT"
     #
-    localize_info "GET-INSTALL-MODE"               "Install mode has two options: Boot and Live:"
-    localize_info "GET-INSTALL-MODE-BOOT"          "Boot mode is when you Boot from an Arch ISO to install OS for first time, not to be confused with LIVE CD."
-    localize_info "GET-INSTALL-MODE-LIVE"          "Live mode is after you install Boot, and then reboot into Live mode, i.e. Active Installed OS."
-    localize_info "GET-INSTALL-MODE-IS-LIVE"       "Is Install Mode Live"
-    localize_info "GET-INSTALL-MODE-BOOT-DETECTED" "Boot Mode Detected."
-    localize_info "GET-INSTALL-MODE-LIVE-DETECTED" "Live Mode Detected."
+    localize_info "GET-INSTALL-MODE"                          "Install mode has 3 Options: Boot and Live Preinstall and Live OS Mode:"
+    localize_info "GET-INSTALL-MODE-BOOT"                     "Boot mode is when you Boot from an Arch ISO to install OS for first time, not to be confused with LIVE CD."
+    localize_info "GET-INSTALL-MODE-LIVE"                     "Live Preinstall mode is after you install Boot, and then reboot into Live Preinstall mode, i.e. Active Installed OS, after you install OS, then Reboot, you will then be in Live OS Mode."
+    localize_info "GET-INSTALL-MODE-IS-BOOT"                  "Is Install Mode Boot"
+    localize_info "GET-INSTALL-MODE-IS-LIVE"                  "Is Install Mode Live OS"
+    localize_info "GET-INSTALL-MODE-IS-LIVE-PREINSTALL"       "Is Install Mode Live Preinstall"
+    localize_info "GET-INSTALL-MODE-BOOT-DETECTED"            "Boot Mode Detected."
+    localize_info "GET-INSTALL-MODE-LIVE-PREINSTALL-DETECTED" "Live Preinstall Mode Detected."
+    localize_info "GET-INSTALL-MODE-LIVE-DETECTED"            "Live Mode Detected."
+    localize_info "GET-INSTALL-MODE-MODES"                    "1. Boot 2. Live Preinstall 3. Live OS"
+    localize_info "GET-INSTALL-MODE-WHICH"                    "Which Mode are you in"
 fi
 # -------------------------------------
 get_install_mode()
@@ -2908,23 +2952,35 @@ get_install_mode()
     print_info  "GET-INSTALL-MODE-BOOT"
     print_info  "GET-INSTALL-MODE-LIVE"    
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
-    if [ -d "/home/arch/" ]; then
+    detect_mode
+    if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then              # Boot Mode
         print_caution "GET-INSTALL-MODE-BOOT-DETECTED"
-        read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 0
-    else
+        read_input_yn "GET-INSTALL-MODE-IS-BOOT" " " 1
+    elif [[ "$DETECTED_RUN_MODE" -eq 2 ]]; then            # Live Preinstall Mode
+        print_caution "GET-INSTALL-MODE-LIVE-PREINSTALL-DETECTED"
+        read_input_yn "GET-INSTALL-MODE-IS-LIVE-PREINSTALL" " " 1
+    elif [[ "$DETECTED_RUN_MODE" -eq 3 ]]; then            # Live OS Mode
         print_caution "GET-INSTALL-MODE-LIVE-DETECTED"
-        if [[ "$1" -eq 1 ]]; then
-            read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 0
-        else
-            read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 1
-        fi
+        read_input_yn "GET-INSTALL-MODE-IS-LIVE" " " 1
     fi
-    if [[ "$YN_OPTION" -eq 1 ]]; then
-        MOUNTPOINT=" "
-        RUNTIME_MODE=2
-        DRIVE_FORMATED=1
-    else
-        RUNTIME_MODE=1
+    if [[ "$YN_OPTION" -eq 0 ]]; then
+        local -a DETECTION_MODES=( 1 2 3 )
+        print_caution "GET-INSTALL-MODE-MODES"
+        get_input_option "DETECTION_MODES[@]" "$DETECTED_RUN_MODE"
+        DETECTED_RUN_MODE="$OPTION"
+        if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then   # Boot Mode
+            MOUNTPOINT="/mnt"
+            DRIVE_FORMATED=0
+            RUNTIME_MODE=1
+        elif [[ "$DETECTED_RUN_MODE" -eq 2 ]]; then # Live Preinstall
+            MOUNTPOINT=" "
+            RUNTIME_MODE=2
+            DRIVE_FORMATED=1
+        elif [[ "$DETECTED_RUN_MODE" -eq 3 ]]; then # Live OS Mode
+            MOUNTPOINT=" "
+            RUNTIME_MODE=2
+            DRIVE_FORMATED=1
+        fi
     fi
     BYPASS="$Old_BYPASS" # Restore Bypass
 }
@@ -2980,7 +3036,7 @@ verify_config()
         # @FIX pacman Optimization
         return 0
     fi
-    get_install_mode "$1"
+    get_install_mode
     print_title "VERIFY-CONFIG-DESC"
     Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass - AUTOMAN Mode will never make it this far, and no Wizard here
     if [[ "$RUNTIME_MODE" -eq 2 ]]; then
@@ -3015,10 +3071,10 @@ verify_config()
             print_info "VERIFY-CONFIG-SOFTWARE-CONFIG-FOUND"
             read_input_yn "VERIFY-CONFIG-CREATE-NEW-CONFIG" " " 1
             if [[ "$YN_OPTION" -eq 1 ]]; then
-                install_menu
+                install_main_menu
             fi
         else
-            install_menu
+            install_main_menu
         fi
     fi
     # Disk Configuration Files
@@ -5193,6 +5249,7 @@ finish()
         copy_file   "${FULL_SCRIPT_PATH}/common-wiz.sh"  ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         copy_file   "${FULL_SCRIPT_PATH}/package-wiz.sh" ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         copy_file   "${FULL_SCRIPT_PATH}/packages.sh"    ${MOUNTPOINT}/${MOUNTPOINT}/${USERNAME}/ArchWizard/        "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        remove_folder "/home/arch/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
         # 
         chown -R "${USERNAME}:${USERNAME}" "${MOUNTPOINT}/${MOUNTPOINT}/home/${USERNAME}"
     else # Live Mode
@@ -5213,6 +5270,9 @@ finish()
             if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
         fi
         copy_file  "/etc/X11/xorg.conf" "${FULL_SCRIPT_PATH}/etc/X11/xorg.conf" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+        if [ ! -f "/home/${USERNAME}/.flesh.conf" ]; then
+            echo "# Flesh Configuration File, DO NOT DELETE THIS FILE if you are using the Arch Wizard Script to Manage your OS Installation" > "/home/${USERNAME}/.flesh.conf"
+        fi
     fi
     # @FIX, where to save it to
     chown -R "${USERNAME}:${USERNAME}" "${CONFIG_PATH}/"
@@ -6219,6 +6279,32 @@ escape_special_characters()
 }
 #}}}
 # -----------------------------------------------------------------------------
+# CLEAR ERROR LOGS  {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="clear_error_logs"
+    USAGE="clear_error_logs"
+    DESCRIPTION=$(localize "CLEAR-ERROR-LOGS-DESC")
+    NOTES=$(localize "NONE")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 SEP 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "CLEAR-ERROR-LOGS-DESC"  "Clear Error Logs"
+    localize_info "CLEAR-ERROR-LOGS-TITLE" "Clearing Error Logs"
+fi
+# -------------------------------------
+clear_error_logs()
+{
+    print_this "CLEAR-ERROR-LOGS-TITLE" "..."
+    make_dir "$LOG_PATH"    "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    remove_folder "${LOG_PATH}/failures/core/${PACKAGE}.log" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+    
+}
+#}}}
+# -----------------------------------------------------------------------------
 set_language "$LANGUAGE" # Run function to set defaults
 # -----------------------------------------------------------------------------
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then 
@@ -6253,7 +6339,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "SHOW-CUSTOM-HELP-INFO-29" "&nbsp;&nbsp;&nbsp;&nbsp; instead of trying to patch an existing OS,"
     localize_info "SHOW-CUSTOM-HELP-INFO-30" "&nbsp;&nbsp;&nbsp;&nbsp; then after a reboot into the new OS created using the Install OS option; "
     localize_info "SHOW-CUSTOM-HELP-INFO-31" "&nbsp;&nbsp;&nbsp;&nbsp; it can load the software list using the Load Software option in the menu."
-    localize_info "SHOW-CUSTOM-HELP-INFO-32" "3.  Reboot; now we are in Live Mode:"
+    localize_info "SHOW-CUSTOM-HELP-INFO-32" "3.  Reboot; now we are in Live Preinstall Mode:"
     localize_info "SHOW-CUSTOM-HELP-INFO-33" "&nbsp;&nbsp;&nbsp;&nbsp; cd /home/\$USERNAME"
     localize_info "SHOW-CUSTOM-HELP-INFO-34" "&nbsp;&nbsp;&nbsp;&nbsp; mkdir usb # if it does not exist"
     localize_info "SHOW-CUSTOM-HELP-INFO-35" "&nbsp;&nbsp;&nbsp;&nbsp; mount /dev/sdb1 usb"
@@ -6262,6 +6348,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "SHOW-CUSTOM-HELP-INFO-38" "&nbsp;&nbsp;&nbsp;&nbsp; or"
     localize_info "SHOW-CUSTOM-HELP-INFO-39" "&nbsp;&nbsp;&nbsp;&nbsp; ./wiz"
     localize_info "SHOW-CUSTOM-HELP-INFO-40" "&nbsp;&nbsp;&nbsp;&nbsp; Choose option to Load Software"
+    localize_info "SHOW-CUSTOM-HELP-I-40-A"  "&nbsp;&nbsp;&nbsp;&nbsp; After Reboot, you will be in Live Mode."
     localize_info "SHOW-CUSTOM-HELP-INFO-41" "Features:"
     localize_info "SHOW-CUSTOM-HELP-INFO-42" "Custom Repository: This script creates a Custom Repository with all Software in it;"
     localize_info "SHOW-CUSTOM-HELP-INFO-43" "&nbsp;&nbsp;&nbsp;&nbsp; this way it can be installed multiple times and save bandwidth,"
