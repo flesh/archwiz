@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="22 Jan 2013 16:33"
+# LAST_UPDATE="24 Jan 2013 16:33"
 #
 declare ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
@@ -221,26 +221,25 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "CONFIG-MENU-NOTES"              "Fast place to make changes and verify Settings."
     # Menu Localization
     localize_info "CONFIG-MENU-CREATE-CONF"        "Create Config"
+    localize_info "CONFIG-MENU-I-CREATE"                "Create all Configuration files"
     localize_info "CONFIG-MENU-EDIT-CONF"          "Edit Config"
+    localize_info "CONFIG-MENU-I-EDIT"                  "Edit all etc Configuration files"
     localize_info "CONFIG-MENU-BACKUP-CONF"        "Backup Config"
+    localize_info "CONFIG-MENU-I-BACKUP"                "Backup all Configuration files from Hard Drive to Flash Drive."
     localize_info "CONFIG-MENU-RESTORE-CONF"       "Restore Config"
+    localize_info "CONFIG-MENU-I-RESTORE"               "Restore all Configuration files from Flash Drive."
     localize_info "CONFIG-MENU-CUSTOM-NAMESERVER"  "Custom Nameserver"
+    localize_info "CONFIG-MENU-I-C-NAMESERVERS"         "Edit Custom Nameserver File and resolv.conf"
     localize_info "CONFIG-MENU-WEB-SERVER"         "Web Server"
+    localize_info "CONFIG-MENU-I-WEB-SERVER"            "Web Server Configuration"
     localize_info "CONFIG-MENU-FLESH"              "Flesh"
+    localize_info "CONFIG-MENU-I-FLESH"                 "Flesh Configuration Files"
     localize_info "CONFIG-MENU-LOGS"               "LOGS"
+    localize_info "CONFIG-MENU-I-LOGS"                  "Copy LOGS and Configuration Files"
     localize_info "CONFIG-MENU-EXPORT"             "Export Scripts"
+    localize_info "CONFIG-MENU-I-EXPORT"                "Export Scripts so you can Import them into a Live System, used after you have already Installed Step 2."
     localize_info "CONFIG-MENU-RETURN"             "Return"
-    # Menu Description Localization
-    localize_info "CONFIG-MENU-DESC-CREATE"        "Create all Configuration files"
-    localize_info "CONFIG-MENU-DESC-EDIT"          "Edit all etc Configuration files"
-    localize_info "CONFIG-MENU-DESC-BACKUP"        "Backup all Configuration files from Hard Drive to Flash Drive."
-    localize_info "CONFIG-MENU-DESC-RESTORE"       "Restore all Configuration files from Flash Drive."
-    localize_info "CONFIG-MENU-DESC-C-NAMESERVERS" "Edit Custom Nameserver File and resolv.conf"
-    localize_info "CONFIG-MENU-DESC-WEB-SERVER"    "Web Server Configuration"
-    localize_info "CONFIG-MENU-DESC-FLESH"         "Flesh Configuration Files"
-    localize_info "CONFIG-MENU-DESC-LOGS"          "Copy LOGS and Configuration Files"
-    localize_info "CONFIG-MENU-DESC-EXPORT"        "Export Scripts so you can Import them into a Live System, used after you have already Installed Step 2."
-    localize_info "CONFIG-MENU-DESC-RETURN"        "Return to Main Menu"
+    localize_info "CONFIG-MENU-I-RETURN"                "Return to Main Menu"
     # Status bar Localization
     localize_info "Make-Choose"                    "Make a Choose:"
     localize_info "CONFIG-MENU-SB-CREATE"          "Create Configuration files Completed."
@@ -287,16 +286,16 @@ config_menu()
         #
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset        
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CREATE-CONF"       "" "" "CONFIG-MENU-DESC-CREATE"        "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EDIT-CONF"         "" "" "CONFIG-MENU-DESC-EDIT"          "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-BACKUP-CONF"       "" "" "CONFIG-MENU-DESC-BACKUP"        "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RESTORE-CONF"      "" "" "CONFIG-MENU-DESC-RESTORE"       "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CUSTOM-NAMESERVER" "" "" "CONFIG-MENU-DESC-C-NAMESERVERS" "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-WEB-SERVER"        "" "" "CONFIG-MENU-DESC-WEB-SERVER"    "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-FLESH"             "" "" "CONFIG-MENU-DESC-FLESH"         "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-LOGS"              "" "" "CONFIG-MENU-DESC-LOGS"          "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EXPORT"            "" "" "CONFIG-MENU-DESC-EXPORT"        "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RETURN"            "" "" "CONFIG-MENU-DESC-RETURN"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CREATE-CONF"       "" "" "CONFIG-MENU-I-CREATE"        "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EDIT-CONF"         "" "" "CONFIG-MENU-I-EDIT"          "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-BACKUP-CONF"       "" "" "CONFIG-MENU-I-BACKUP"        "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RESTORE-CONF"      "" "" "CONFIG-MENU-I-RESTORE"       "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CUSTOM-NAMESERVER" "" "" "CONFIG-MENU-I-C-NAMESERVERS" "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-WEB-SERVER"        "" "" "CONFIG-MENU-I-WEB-SERVER"    "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-FLESH"             "" "" "CONFIG-MENU-I-FLESH"         "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-LOGS"              "" "" "CONFIG-MENU-I-LOGS"          "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EXPORT"            "" "" "CONFIG-MENU-I-EXPORT"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RETURN"            "" "" "CONFIG-MENU-I-RETURN"        "MenuTheme[@]"   
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #-1-
@@ -502,26 +501,25 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "MAIN-MENU-WIZARD" "Use Installation Wizard."
     # Menu Localization
     localize_info "MAIN-MENU-NEW-SOFTWARE"  "New Software Configure File"
+    localize_info "MAIN-MENU-I-SOFTWARE"        "Install Software: Will install Software Packages from Menu Driven Wizards."
     localize_info "MAIN-MENU-INSTALL"       "Install Arch Linux"
+    localize_info "MAIN-MENU-I-INSTALL"         "Install Arch Linux: Format Hard Drive and Install Arch Linux."
     localize_info "MAIN-MENU-LOAD-SOFTWARE" "Load Software Configuration File"
+    localize_info "MAIN-MENU-I-LOAD-SOFTWARE"   "Load Software: Will install Software Packages from above option."
     localize_info "MAIN-MENU-DEBUG-MODE"    "Debug Mode"
+    localize_info "MAIN-MENU-I-DEBUG-MODE"      "Debug Mode: Adds Debugging Information and pauses; helps troubleshoot, Call first, i.e. 4 1 2"
     localize_info "MAIN-MENU-SIMULATE-MODE" "SIMULATE Mode"
+    localize_info "MAIN-MENU-I-SIMULATE-MODE"   "SIMULATE Mode: Do not Format Drive or Install Software, will only Create Scripts files for Importing into Live OS."
     localize_info "MAIN-MENU-NETWORK"       "Network Troubleshooting."
+    localize_info "MAIN-MENU-I-NETWORK"         "Network Troubleshooting"
     localize_info "MAIN-MENU-CONFIG"        "Config"
+    localize_info "MAIN-MENU-I-CONFIG"          "Configuration Files: View, Edit, Backup and Restore Configuration files."
     localize_info "MAIN-MENU-TEST"          "Test"
+    localize_info "MAIN-MENU-I-TEST"            "Test: Put functions or Code that you wish to test here, for easy access."
     localize_info "MAIN-MENU-REBOOT"        "Reboot"
+    localize_info "MAIN-MENU-I-REBOOT"          "Reboot: Reboot the Computer."
     localize_info "MAIN-MENU-QUIT"          "Quit"
-    # Menu Description Localization
-    localize_info "MAIN-MENU-DESC-SOFTWARE"      "Install Software: Will install Software Packages from Menu Driven Wizards."
-    localize_info "MAIN-MENU-DESC-INSTALL"       "Install Arch Linux: Format Hard Drive and Install Arch Linux."
-    localize_info "MAIN-MENU-DESC-LOAD-SOFTWARE" "Load Software: Will install Software Packages from above option."
-    localize_info "MAIN-MENU-DESC-DEBUG-MODE"    "Debug Mode: Adds Debugging Information and pauses; helps troubleshoot, Call first, i.e. 4 1 2"
-    localize_info "MAIN-MENU-DESC-SIMULATE-MODE" "SIMULATE Mode: Do not Format Drive or Install Software, will only Create Scripts files for Importing into Live OS."
-    localize_info "MAIN-MENU-DESC-NETWORK"       "Network Troubleshooting"
-    localize_info "MAIN-MENU-DESC-CONFIG"        "Configuration Files: View, Edit, Backup and Restore Configuration files."
-    localize_info "MAIN-MENU-DESC-TEST"          "Test: Put functions or Code that you wish to test here, for easy access."
-    localize_info "MAIN-MENU-DESC-REBOOT"        "Reboot: Reboot the Computer."
-    localize_info "MAIN-MENU-DESC-QUIT"          "Quit: Exit back to Command line"
+    localize_info "MAIN-MENU-I-QUIT"            "Quit: Exit back to Command line"
     # Menu Warning Description Localization
     localize_info "MAIN-MENU-WARN-FORMAT"      "Format Hard Drive"
     # Status bar Localization
@@ -548,6 +546,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INVALID_OPTION"          "Invalid Option"
     localize_info "MM-BOOT-MODE-DETECTED"   "Boot Mode Detected."
     localize_info "MM-LIVE-MODE-DETECTED"   "Live Mode Detected."
+    localize_info "MM-LIVE-PREINSTALL-MODE-DETECTED"   "Live Preinstall Mode Detected."
     localize_info "MAIN-MENU-EXTENDED"      "Extended Debugging Mode"
     localize_info "MAIN-MENU-EXTENDED-DESC" "Extended Debugging Mode will only pause on Type 2 Extended Testing."
 fi
@@ -566,16 +565,13 @@ main_menu()
     local -a MenuThemeDflt=( "${BGreen}" "${White}" ")" )
     #
     StatusBar2=" "
-    if [ -d "/home/arch/" ]; then
+    detect_mode
+    if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then
         StatusBar1="MM-BOOT-MODE-DETECTED"
-        DETECTED_RUN_MODE=1
-        RUNTIME_MODE=1
-    else
+    elif [[ "$DETECTED_RUN_MODE" -eq 2 ]]; then
         StatusBar1="MM-LIVE-MODE-DETECTED"
-        DETECTED_RUN_MODE=2
-        MOUNTPOINT=" "
-        RUNTIME_MODE=2
-        DRIVE_FORMATED=1        
+    elif [[ "$DETECTED_RUN_MODE" -eq 3 ]]; then
+        StatusBar1="MM-LIVE-PREINSTALL-MODE-DETECTED"
     fi
     #
     while [[ 1 ]]; do
@@ -599,24 +595,24 @@ main_menu()
         print_this "MM-INFO-9"
         echo 
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NEW-SOFTWARE"  "" ""                      "MAIN-MENU-DESC-SOFTWARE"      "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NEW-SOFTWARE"  "" ""                      "MAIN-MENU-I-SOFTWARE"      "MenuTheme[@]"
         if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-DESC-INSTALL"       "MenuThemeDflt[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-I-INSTALL"       "MenuThemeDflt[@]"
         else # Live Mode
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-DESC-INSTALL"       "MenuThemeWarn[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-I-INSTALL"       "MenuThemeWarn[@]"
         fi
         if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-DESC-LOAD-SOFTWARE" "MenuThemeWarn[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-I-LOAD-SOFTWARE" "MenuThemeWarn[@]"
         else # Live Mode
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-DESC-LOAD-SOFTWARE" "MenuThemeDflt[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-I-LOAD-SOFTWARE" "MenuThemeDflt[@]"
         fi
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-DEBUG-MODE"    "" ""                      "MAIN-MENU-DESC-DEBUG-MODE"    "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-SIMULATE-MODE" "" ""                      "MAIN-MENU-DESC-SIMULATE-MODE" "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NETWORK"       "" ""                      "MAIN-MENU-DESC-NETWORK"       "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-CONFIG"        "" ""                      "MAIN-MENU-DESC-CONFIG"        "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-TEST"          "" ""                      "MAIN-MENU-DESC-TEST"          "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-REBOOT"        "" ""                      "MAIN-MENU-DESC-REBOOT"        "MenuTheme[@]"   
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-QUIT"          "" ""                      "MAIN-MENU-DESC-QUIT"          "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-DEBUG-MODE"    "" ""                      "MAIN-MENU-I-DEBUG-MODE"    "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-SIMULATE-MODE" "" ""                      "MAIN-MENU-I-SIMULATE-MODE" "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NETWORK"       "" ""                      "MAIN-MENU-I-NETWORK"       "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-CONFIG"        "" ""                      "MAIN-MENU-I-CONFIG"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-TEST"          "" ""                      "MAIN-MENU-I-TEST"          "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-REBOOT"        "" ""                      "MAIN-MENU-I-REBOOT"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-QUIT"          "" ""                      "MAIN-MENU-I-QUIT"          "MenuTheme[@]"   
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -631,7 +627,7 @@ main_menu()
                 1)  # Install New Software
                     MenuChecks[$((M_OPT - 1))]=1
                     set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
-                    get_install_mode "$DETECTED_RUN_MODE"
+                    get_install_mode
                     clear_software 1
                     if is_last_config_files ; then
                         show_last_config
@@ -648,7 +644,7 @@ main_menu()
                         run_install_wizzard
                         exit 0
                     else
-                        install_menu
+                        install_main_menu
                     fi
                     StatusBar1=$(localize "MAIN-MENU-SB-SOFTWARE")
                     StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
