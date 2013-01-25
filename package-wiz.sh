@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="21 Jan 2013 16:33"
+# LAST_UPDATE="24 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -54,11 +54,11 @@
 # Menu System
 # *****************************************************************************
 # -----------------------------------------------------------------------------
-# INSTALL MENU {{{
+# INSTALL MAIN {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_menu"
-    USAGE="install_menu"
-    DESCRIPTION=$(localize "INSTALL-MENU-DESC")
+    NAME="install_main_menu"
+    USAGE="install_main_menu"
+    DESCRIPTION=$(localize "INSTALL-MAIN-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
     VERSION="1.0"
@@ -67,70 +67,70 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-MENU-DESC"  "Install Menu"
-    localize_info "INSTALL-MENU-NOTES" "NONE"
+    localize_info "INSTALL-MAIN-DESC"  "Install Menu"
+    localize_info "INSTALL-MAIN-NOTES" "NONE"
     #
-    localize_info "INSTALL-MENU-TITLE" "Arch Wizard Main Menu"
+    localize_info "INSTALL-MAIN-TITLE" "Arch Wizard Main Menu"
     #
-    localize_info "INSTALL-MENU-ITEM-SAVE" "Save Software Configuration for later use" 
-    localize_info "INSTALL-MENU-ITEM-1"    "Wizard"
-    localize_info "INSTALL-MENU-ITEM-2"    "Basic Setup"
-    localize_info "INSTALL-MENU-ITEM-3"    "Desktop Environment"
-    localize_info "INSTALL-MENU-ITEM-4"    "Display Manager"
-    localize_info "INSTALL-MENU-ITEM-5"    "Accessories Apps"
-    localize_info "INSTALL-MENU-ITEM-6"    "Development Apps"
-    localize_info "INSTALL-MENU-ITEM-7"    "Office Apps"
-    localize_info "INSTALL-MENU-ITEM-8"    "System Apps"
-    localize_info "INSTALL-MENU-ITEM-9"    "Internet Apps"
-    localize_info "INSTALL-MENU-ITEM-10"   "Graphics Apps"
-    localize_info "INSTALL-MENU-ITEM-11"   "Audio Apps"
-    localize_info "INSTALL-MENU-ITEM-12"   "Video Apps"
-    localize_info "INSTALL-MENU-ITEM-13"   "Games"
-    localize_info "INSTALL-MENU-ITEM-14"   "Science"
-    localize_info "INSTALL-MENU-ITEM-15"   "Web server"
-    localize_info "INSTALL-MENU-ITEM-16"   "Fonts"
-    localize_info "INSTALL-MENU-ITEM-17"   "Extra"
-    localize_info "INSTALL-MENU-ITEM-18"   "Kernel"
-    localize_info "INSTALL-MENU-ITEM-19"   "Clean Orphan Packages"
-    localize_info "INSTALL-MENU-ITEM-20"   "Edit Configuration"
-    localize_info "INSTALL-MENU-ITEM-21"   "Load Custom Software"
-    localize_info "INSTALL-MENU-ITEM-22"   "Load Software"
-    localize_info "INSTALL-MENU-ITEM-23"   "Save Software"
-    localize_info "INSTALL-MENU-ITEM-24"   "Quit"
-    localize_info "INSTALL-MENU-ITEM-24-L" "Save and Install Software"
+    localize_info "INSTALL-MAIN-MENU-SAVE" "Save Software Configuration for later use" 
+    localize_info "INSTALL-MAIN-COMPLETED" "Completed"
+    localize_info "INSTALL-MAIN-INSTALLED" "Installed"
+    localize_info "INSTALL-MAIN-REMOVED"   "Removed"
+    localize_info "INSTALL-MAIN-REC"       "Recommended Options"
     #
-    localize_info "INSTALL-MENU-INFO-1"    "Wizard: Install packages via a Wizard."
-    localize_info "INSTALL-MENU-INFO-2"    "Basic Setup: Required: SYSTEMD, Video Card, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
-    localize_info "INSTALL-MENU-INFO-3"    "Desktop Environment: Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and Unity."
-    localize_info "INSTALL-MENU-INFO-4"    "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
-    localize_info "INSTALL-MENU-INFO-5"    "Accessories Apps: cairo-dock-bzr, Conky, deepin-scrot, dockbarx, speedcrunch, galculator, gnome-pie, guake, kupfer, pyrenamer, shutter, synapse, terminator, zim, Revelation."
-    localize_info "INSTALL-MENU-INFO-6"    "Development Apps: aptana-studio, bluefish, eclipse, emacs, gvim, geany, IntelliJ IDEA, kdevelop, Oracle Java, Qt and Creator, Sublime Text 2, Debugger Tools, MySQL Workbench, meld, RabbitVCS, Wt, astyle and putty."
-    localize_info "INSTALL-MENU-INFO-7"    "Office Apps: Libre Office, Caligra or Abiword + Gnumeric, latex, calibre, gcstar, homebank, impressive, nitrotasks, ocrfeeder, xmind and zathura."
-    localize_info "INSTALL-MENU-INFO-8"    "System Apps:"
-    localize_info "INSTALL-MENU-INFO-9"    "Internet Apps:"
-    localize_info "INSTALL-MENU-INFO-10"   "Graphics Apps:"
-    localize_info "INSTALL-MENU-INFO-11"   "Audio Apps:"
-    localize_info "INSTALL-MENU-INFO-12"   "Video Apps:"
-    localize_info "INSTALL-MENU-INFO-13"   "Games:"
-    localize_info "INSTALL-MENU-INFO-14"   "Science and Education: ${INSTALL_SCIENCE_EDUCATION}."
-    localize_info "INSTALL-MENU-INFO-15"   "Web server:"
-    localize_info "INSTALL-MENU-INFO-16"   "Fonts:"
-    localize_info "INSTALL-MENU-INFO-17"   "Extra:"
-    localize_info "INSTALL-MENU-INFO-18"   "Install optional Kernals: "
-    localize_info "INSTALL-MENU-INFO-19"   "Clean Orphan Packages:"
-    localize_info "INSTALL-MENU-INFO-20"   "Edit Configuration: Loads Saved Software."
-    localize_info "INSTALL-MENU-INFO-21"   "Load Custom Software; Not yet written."
-    localize_info "INSTALL-MENU-INFO-22"   "Allows you to review and edit configuration variables before installing software."
-    localize_info "INSTALL-MENU-INFO-23"   "Save Software: Saves and Installs list and configurations creates with this menu."
-    localize_info "INSTALL-MENU-INFO-24"   "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
-    localize_info "INSTALL-MENU-INFO-24-L" "Save and Install Software."
-    localize_info "INSTALL-MENU-COMPLETED" "Completed"
-    localize_info "INSTALL-MENU-INSTALLED" "Installed"
-    localize_info "INSTALL-MENU-REMOVED"   "Removed"
-    localize_info "INSTALL-MENU-REC"       "Recommended Options"
+    localize_info "INSTALL-MAIN-MENU-1"    "Wizard"
+    localize_info "INSTALL-MAIN-MENU-I-1"        "Wizard: Install packages via a Wizard."
+    localize_info "INSTALL-MAIN-MENU-2"    "Basic Setup"
+    localize_info "INSTALL-MAIN-MENU-I-2"        "Basic Setup: Required: SYSTEMD, Video Card, Network, DBUS, AVAHI, ACPI, ALSA, (UN)COMPRESS TOOLS, NFS, SAMBA, XORG, CUPS, SSH and more."
+    localize_info "INSTALL-MAIN-MENU-3"    "Desktop Environment"
+    localize_info "INSTALL-MAIN-MENU-I-3"        "Desktop Environment: Mate, Razor-Qt, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME and even Unity."
+    localize_info "INSTALL-MAIN-MENU-4"    "Display Manager"
+    localize_info "INSTALL-MAIN-MENU-I-4"        "Display Manager: GDM, Elsa, LightDM, LXDM and Slim."
+    localize_info "INSTALL-MAIN-MENU-5"    "Accessories Apps"
+    localize_info "INSTALL-MAIN-MENU-I-5"       "Accessories Apps: cairo-dock-bzr, Conky, deepin-scrot, dockbarx, speedcrunch, galculator, gnome-pie, guake, kupfer, pyrenamer, shutter, synapse, terminator, zim, Revelation."
+    localize_info "INSTALL-MAIN-MENU-6"    "Development Apps"
+    localize_info "INSTALL-MAIN-MENU-I-6"       "Development Apps: Qt and Creator, Wt, Aptana-Studio, Bluefish, Eclipse, Emacs, Gvim, Geany, IntelliJ IDEA, DDevelop, Oracle Java, Sublime Text 2, Debugger Tools, PostgreSQL, MySQL Workbench, Meld, RabbitVCS, Astyle and Putty."
+    localize_info "INSTALL-MAIN-MENU-7"    "Office Apps"
+    localize_info "INSTALL-MAIN-MENU-I-7"       "Office Apps: Libre Office, Calligra (KOffice Suite Replacement) or Abiword + Gnumeric, latex, calibre, gcstar, homebank, impressive, nitrotasks, ocrfeeder, xmind and zathura."
+    localize_info "INSTALL-MAIN-MENU-8"    "System Apps"
+    localize_info "INSTALL-MAIN-MENU-I-8"       "System Apps: Gparted, Grsync, Htop, Virtualbox, Webmin, WINE"
+    localize_info "INSTALL-MAIN-MENU-9"    "Internet Apps"
+    localize_info "INSTALL-MAIN-MENU-I-9"       "Internet Apps: Browsers, Download / Fileshare, Email / RSS, Instant Messaging, Internet Relay Chat, Mapping Tools, VNC / Desktop Share"
+    localize_info "INSTALL-MAIN-MENU-10"   "Graphics Apps"
+    localize_info "INSTALL-MAIN-MENU-I-10"      "Graphics Apps: Blender, Handbrake, CD/DVD Burners, Gimp, Gthumb, Inkscape, Mcomix, MyPaint, Scribus, Shotwell, Simple-scan, Xnviewmp, Qt Image Viewers, Qt Image Editors"
+    localize_info "INSTALL-MAIN-MENU-11"   "Audio Apps"
+    localize_info "INSTALL-MAIN-MENU-I-11"      "Audio Apps: Players, Editors / Tools, Codecs"
+    localize_info "INSTALL-MAIN-MENU-12"   "Video Apps"
+    localize_info "INSTALL-MAIN-MENU-I-12"      "Video Apps: Players, Editors / Tools, Codecs"
+    localize_info "INSTALL-MAIN-MENU-13"   "Games"
+    localize_info "INSTALL-MAIN-MENU-I-13"      "Games: Sub Menu... too many Games to Mention."
+    localize_info "INSTALL-MAIN-MENU-14"   "Science"
+    localize_info "INSTALL-MAIN-MENU-I-14"      "Science and Education: ${INSTALL_SCIENCE_EDUCATION}."
+    localize_info "INSTALL-MAIN-MENU-15"   "Web Server"
+    localize_info "INSTALL-MAIN-MENU-I-15"      "Web Server: Apache, Tools, Databases: PostgreSQL or MySQL."
+    localize_info "INSTALL-MAIN-MENU-16"   "Fonts"
+    localize_info "INSTALL-MAIN-MENU-I-16"      "Fonts: Sub Menu of many Fonts Available."
+    localize_info "INSTALL-MAIN-MENU-17"   "Extra"
+    localize_info "INSTALL-MAIN-MENU-I-17"      "Extra: Elementary Project, Yapan"
+    localize_info "INSTALL-MAIN-MENU-18"   "Kernel"
+    localize_info "INSTALL-MAIN-MENU-I-18"      "Install Optional Kernals: Liquorix, LTS, ZEN."
+    localize_info "INSTALL-MAIN-MENU-19"   "Clean Orphan Packages"
+    localize_info "INSTALL-MAIN-MENU-I-19"      "Clean Orphan Packages:"
+    localize_info "INSTALL-MAIN-MENU-20"   "Edit Configuration"
+    localize_info "INSTALL-MAIN-MENU-I-20"      "Edit Configuration: Loads Saved Software."
+    localize_info "INSTALL-MAIN-MENU-21"   "Load Custom Software"
+    localize_info "INSTALL-MAIN-MENU-I-21"      "Load Custom Software; Not yet written."
+    localize_info "INSTALL-MAIN-MENU-22"   "Load Software"
+    localize_info "INSTALL-MAIN-MENU-I-22"      "Allows you to review and edit configuration variables before installing software."
+    localize_info "INSTALL-MAIN-MENU-23"   "Save Software"
+    localize_info "INSTALL-MAIN-MENU-I-23"      "Save Software: Saves and Installs list and configurations creates with this menu."
+    localize_info "INSTALL-MAIN-MENU-24"   "Quit"
+    localize_info "INSTALL-MAIN-MENU-I-24"      "Quit Menu: If in Boot mode will run pacstrap, if in software mode will install Software."
+    localize_info "INSTALL-MAIN-MENU-24-L" "Save and Install Software"
+    localize_info "INSTALL-MAIN-MENU-I-24-L"    "Save and Install Software."
 fi
 # -------------------------------------
-install_menu()
+install_main_menu()
 {
     local -r menu_name="Install-Menu"  # You must define Menu Name here
     local BreakableKey="Q"             # Q=Quit, D=Done, B=Back
@@ -152,41 +152,41 @@ install_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MAIN-REC"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
-        print_title "INSTALL-MENU-TITLE" " - https://github.com/flesh/archwiz"
+        print_title "INSTALL-MAIN-TITLE" " - https://github.com/flesh/archwiz"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-1"  "" "" "INSTALL-MENU-INFO-1"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-2"  "" "" "INSTALL-MENU-INFO-2"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-3"  "" "" "INSTALL-MENU-INFO-3"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-4"  "" "" "INSTALL-MENU-INFO-4"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-5"  "" "" "INSTALL-MENU-INFO-5"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-6"  "" "" "INSTALL-MENU-INFO-6"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-7"  "" "" "INSTALL-MENU-INFO-7"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-8"  "" "" "INSTALL-MENU-INFO-8"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-9"  "" "" "INSTALL-MENU-INFO-9"  "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-10" "" "" "INSTALL-MENU-INFO-10" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-11" "" "" "INSTALL-MENU-INFO-11" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-12" "" "" "INSTALL-MENU-INFO-12" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-13" "" "" "INSTALL-MENU-INFO-13" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-14" "" "" "INSTALL-MENU-INFO-14" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-15" "" "" "INSTALL-MENU-INFO-15" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-16" "" "" "INSTALL-MENU-INFO-16" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-17" "" "" "INSTALL-MENU-INFO-17" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-18" "" "" "INSTALL-MENU-INFO-18" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-19" "" "" "INSTALL-MENU-INFO-19" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-20" "" "" "INSTALL-MENU-INFO-20" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-21" "" "" "INSTALL-MENU-INFO-21" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-22" "" "" "INSTALL-MENU-INFO-22" "MenuTheme[@]"
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-23" "" "" "INSTALL-MENU-INFO-23" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-1"  "" "" "INSTALL-MAIN-MENU-I-1"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-2"  "" "" "INSTALL-MAIN-MENU-I-2"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-3"  "" "" "INSTALL-MAIN-MENU-I-3"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-4"  "" "" "INSTALL-MAIN-MENU-I-4"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-5"  "" "" "INSTALL-MAIN-MENU-I-5"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-6"  "" "" "INSTALL-MAIN-MENU-I-6"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-7"  "" "" "INSTALL-MAIN-MENU-I-7"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-8"  "" "" "INSTALL-MAIN-MENU-I-8"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-9"  "" "" "INSTALL-MAIN-MENU-I-9"  "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-10" "" "" "INSTALL-MAIN-MENU-I-10" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-11" "" "" "INSTALL-MAIN-MENU-I-11" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-12" "" "" "INSTALL-MAIN-MENU-I-12" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-13" "" "" "INSTALL-MAIN-MENU-I-13" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-14" "" "" "INSTALL-MAIN-MENU-I-14" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-15" "" "" "INSTALL-MAIN-MENU-I-15" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-16" "" "" "INSTALL-MAIN-MENU-I-16" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-17" "" "" "INSTALL-MAIN-MENU-I-17" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-18" "" "" "INSTALL-MAIN-MENU-I-18" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-19" "" "" "INSTALL-MAIN-MENU-I-19" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-20" "" "" "INSTALL-MAIN-MENU-I-20" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-21" "" "" "INSTALL-MAIN-MENU-I-21" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-22" "" "" "INSTALL-MAIN-MENU-I-22" "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-23" "" "" "INSTALL-MAIN-MENU-I-23" "MenuTheme[@]"
         if [[ "$MOUNTPOINT" == " " ]]; then
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-24-L" "" "" "INSTALL-MENU-INFO-24-L" "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-24-L" "" "" "INSTALL-MAIN-MENU-I-24-L" "MenuTheme[@]"
         else
-            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MENU-ITEM-24"   "" "" "INSTALL-MENU-INFO-24"   "MenuTheme[@]"
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-MAIN-MENU-24"   "" "" "INSTALL-MAIN-MENU-I-24"   "MenuTheme[@]"
         fi
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
@@ -202,123 +202,123 @@ install_menu()
                 1)  # Wizard
                     run_install_wizzard
                     exit 0
-                    StatusBar1="INSTALL-MENU-ITEM-1"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-1"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 2)  # Basic Setup with Add and Remove
                     if [[ "${MenuChecks[$((OPT - 1))]}" -eq 0 ]]; then
                         MenuChecks[$((OPT - 1))]=1
                         install_basic 1
-                        StatusBar1="INSTALL-MENU-ITEM-2"
-                        StatusBar2=$(localize "INSTALL-MENU-INSTALLED")
+                        StatusBar1="INSTALL-MAIN-MENU-2"
+                        StatusBar2=$(localize "INSTALL-MAIN-INSTALLED")
                     else
                         MenuChecks[$((OPT - 1))]=2
                         install_basic 2
-                        StatusBar1="INSTALL-MENU-ITEM-2"
-                        StatusBar2=$(localize "INSTALL-MENU-REMOVED")
+                        StatusBar1="INSTALL-MAIN-MENU-2"
+                        StatusBar2=$(localize "INSTALL-MAIN-REMOVED")
                     fi
                     ;;
                 3)  # Desktop Environment
                     MenuChecks[$((OPT - 1))]=1
-                    install_desktop_environment_menu 
-                    StatusBar1="INSTALL-MENU-ITEM-3"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    install_desktop_environment_menu
+                    StatusBar1="INSTALL-MAIN-MENU-3"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 4)  # Display Manager
                     MenuChecks[$((OPT - 1))]=1
                     install_display_manager_menu
-                    StatusBar1="INSTALL-MENU-ITEM-4"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-4"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 5)  # Accessories Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_accessories_apps_menu    
-                    StatusBar1="INSTALL-MENU-ITEM-5"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-5"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 6)  # Development Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_development_apps_menu    
-                    StatusBar1="INSTALL-MENU-ITEM-6"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-6"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 7)  # Office Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_office_apps_menu         
-                    StatusBar1="INSTALL-MENU-ITEM-7"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-7"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 8)  # System Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_system_apps_menu
-                    StatusBar1="INSTALL-MENU-ITEM-8"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-8"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                 9)  # Internet Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_internet_apps_menu
-                    StatusBar1="INSTALL-MENU-ITEM-10"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-10"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                10)  # Graphics Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_graphics_apps_menu
-                    StatusBar1="INSTALL-MENU-ITEM-9"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-9"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                11)  # Audio Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_audio_apps_menu
-                    StatusBar1="INSTALL-MENU-ITEM-11"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-11"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                12)  # Video Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_video_apps_menu
-                    StatusBar1="INSTALL-MENU-ITEM-12"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-12"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                13)  # Games
                     MenuChecks[$((OPT - 1))]=1
                     install_games_menu
-                    StatusBar1="INSTALL-MENU-ITEM-13"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-13"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                14)  # Science
                     MenuChecks[$((OPT - 1))]=1
                     install_science
-                    StatusBar1="INSTALL-MENU-ITEM-14"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-14"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                15)  # Web server
                     MenuChecks[$((OPT - 1))]=1
                     install_web_server_menu
-                    StatusBar1="INSTALL-MENU-ITEM-15"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-15"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                16)  # Fonts
                     MenuChecks[$((OPT - 1))]=1
                     install_fonts_menu
-                    StatusBar1="INSTALL-MENU-ITEM-16"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-16"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                17)  # Extra
                     MenuChecks[$((OPT - 1))]=1
                     install_extra_menu
-                    StatusBar1="INSTALL-MENU-ITEM-17"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-17"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                18)  # Kernel
                     MenuChecks[$((OPT - 1))]=1
                     install_kernel_menu
-                    StatusBar1="INSTALL-MENU-ITEM-18"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-18"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                19)  # Clean Orphan Packages
                     MenuChecks[$((OPT - 1))]=1
                     clean_orphan_packages
-                    StatusBar1="INSTALL-MENU-ITEM-19"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-19"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                20)  # Edit Configuration
                     MenuChecks[$((OPT - 1))]=1
@@ -326,27 +326,27 @@ install_menu()
                     configure_timezone
                     get_user_name
                     add_custom_repositories
-                    StatusBar1="INSTALL-MENU-ITEM-20"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-20"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                21)  # Load Custom Software
                     MenuChecks[$((OPT - 1))]=1
                     # load_custom_software
-                    StatusBar1="INSTALL-MENU-ITEM-21"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-21"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                22)  # Load Software
                     MenuChecks[$((OPT - 1))]=1
                     load_software # @FIX
-                    StatusBar1="INSTALL-MENU-ITEM-22"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-22"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                23)  # Save Software
                     MenuChecks[$((OPT - 1))]=1
                     save_software
                     SAVED_SOFTWARE=1
-                    StatusBar1="INSTALL-MENU-ITEM-23"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-23"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     ;;
                24)  # Quit or Save and Install Software
                     MenuChecks[$((OPT - 1))]=1
@@ -359,8 +359,8 @@ install_menu()
                     if [[ "$MOUNTPOINT" == " " ]]; then
                         install_software_live; exit 0; # Calls finish 2, call exit 0
                     fi
-                    StatusBar1="INSTALL-MENU-ITEM-24"
-                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    StatusBar1="INSTALL-MAIN-MENU-24"
+                    StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
                     break;
                     ;;
                 *)  # Catch ALL 
@@ -519,11 +519,11 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-TYPE-MENU-1"   "Normal"
     localize_info "INSTALL-TYPE-MENU-I-1"       "Normal: Minimal well rounded Applications."
     localize_info "INSTALL-TYPE-MENU-2"   "Gamer"
-    localize_info "INSTALL-TYPE-MENU-I-2"       "Gamer: Normal plus a lot of games."
+    localize_info "INSTALL-TYPE-MENU-I-2"       "Gamer: Normal plus a lot of Games."
     localize_info "INSTALL-TYPE-MENU-3"   "Professional"
     localize_info "INSTALL-TYPE-MENU-I-3"       "Professional: Normal plus Video and Audio Applications."
     localize_info "INSTALL-TYPE-MENU-4"   "Programmer"
-    localize_info "INSTALL-TYPE-MENU-I-4"       "Programmer: Professional plus some important Programming Applications"
+    localize_info "INSTALL-TYPE-MENU-I-4"       "Programmer: Professional plus some important Programming Applications."
     # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
 fi
 # -------------------------------------
@@ -531,7 +531,7 @@ install_type_menu()
 {
     local -r menu_name="INSTALL-TYPE"  # You must define Menu Name here
     local BreakableKey="D"             # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="1"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="3"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
@@ -549,8 +549,8 @@ install_type_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-TYPE-TITLE" 
@@ -639,7 +639,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-CUSTOM-DE-MENU-3"   "XFCE"
     localize_info "INSTALL-CUSTOM-DE-MENU-I-3"      "XFCE: Xfce embodies the traditional UNIX philosophy of modularity and re-usability."
     localize_info "INSTALL-CUSTOM-DE-MENU-4"   "Razor-QT & Openbox"
-    localize_info "INSTALL-CUSTOM-DE-MENU-I-4"      "Razor-QT & Openbox: Razor-qt is an advanced, easy-to-use, and fast toolbox-like desktop environment, which is, like KDE, based on Qt technologies. "
+    localize_info "INSTALL-CUSTOM-DE-MENU-I-4"      "Razor-QT & Openbox: Razor-qt is an advanced, easy-to-use, and fast toolbox-like desktop environment, which is, like KDE, based on Qt technologies. Openbox is a lightweight and highly configurable window manager with extensive standards support."
     localize_info "INSTALL-CUSTOM-DE-MENU-5"   "Cinnamon"
     localize_info "INSTALL-CUSTOM-DE-MENU-I-5"      "Cinnamon: Cinnamon is a Linux desktop which provides advanced innovative features and a traditional user experience."
     localize_info "INSTALL-CUSTOM-DE-MENU-6"   "Awesome"
@@ -668,8 +668,8 @@ install_custom_de_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-CUSTOM-DE-TITLE" 
@@ -797,7 +797,7 @@ install_basics_menu()
 {
     local -r menu_name="INSTALL-BASICS-MENU"  # You must define Menu Name here
     local BreakableKey="D"                    # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="1 2 7 11"       # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1 2 7 11 12"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     BASIC_INSTALL_VER=1  # Set in common-wiz.sh to 0; used to run this function; change if you need to run it agian
     #
@@ -837,9 +837,6 @@ install_basics_menu()
         MenuChecks[10]=1                             # Check these, it means they are allready Installed
         MenuChecks[11]=1                             # Check these, it means they are allready Installed
     fi
-    if [[ "$INSTALLED_VIDEO_CARD" -eq 0 ]]; then
-        RecommendedOptions="$RecommendedOptions 12"
-    fi
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
@@ -854,7 +851,7 @@ install_basics_menu()
     RecommendedOptions="$RecommendedOptions $BreakableKey"
     #
     StatusBar1="INSTALL-BASICS-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-BASICS-MENU-TITLE" 
@@ -1659,8 +1656,8 @@ install_additional_firmwares_menu()
     BYPASS="$Old_BYPASS" # Restore Bypass
     if [[ "$YN_OPTION" -eq 1 ]]; then
         #
-        StatusBar1="INSTALL-MENU-REC"
-        StatusBar2="$RecommendedOptions"
+        StatusBar1="INSTALL-MENU-RECOMMENDED"
+        StatusBar2=": $RecommendedOptions"
         while [[ 1 ]]; do
             print_title "INSTALL-ADDITIONAL-FIRMWARE-TITLE"
             print_caution "${StatusBar1}" "${StatusBar2}"
@@ -1878,7 +1875,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-KERNEL-DESC"   "Install Kernel Menu: "
     localize_info "INSTALL-KERNEL-NOTES"  "NONE"
     localize_info "INSTALL-KERNEL-TITLE"  "Kernel Installation:"
-    #
+    # Liquorix, LTS, ZEN
     localize_info "INSTALL-KERNEL-MENU-0"   "Liquorix"
     localize_info "INSTALL-KERNEL-MENU-I-0"     "Liquorix is a distro kernel replacement built using the best configuration and kernel sources for desktop, multimedia, and gaming workloads, often used as a Debian Linux performance replacement kernel. damentz, the maintainer of the Liquorix patchset, is a developer for the Zen patchset as well, so many of the improvements there are found in this patchset. http://liquorix.net/"
     localize_info "INSTALL-KERNEL-MENU-1"   "LTS"
@@ -1911,8 +1908,8 @@ install_kernel_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "CONFIGURE-KERNEL-TITLE" " - https://wiki.archlinux.org/index.php/Kernels"
@@ -2032,24 +2029,6 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10-I"     "Window Managers: A Window Manager (WM) [Awesome, Openbox] is one component of a system's graphical user interface (GUI). Users may prefer to install a full-fledged Desktop Environment, which provides a complete user interface, including icons, windows, toolbars, wallpapers, and desktop widgets. https://wiki.archlinux.org/index.php/Window_Manager"
     #
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-REC"       "Recommended Options"
-    #
-    # Needs a WM: openbox 
-    # Lots of work to get ROX to work
-    # ROX is a fast, user friendly desktop which makes extensive use of drag-and-drop. The interface revolves around the file manager, following the traditional UNIX view that 'everything is a file' rather than trying to hide the filesystem beneath start menus, wizards, or druids. The aim is to make a system that is well designed and clearly presented. The ROX style favors using several small programs together instead of creating all-in-one mega-applications.  
-    # https://wiki.archlinux.org/index.php/ROX
-    # rox python gnupg pygtk
-    # gpg --recv-key --keyserver www.keyserver.net 59A53CC1
-    # wget http://osdn.dl.sourceforge.net/sourceforge/zero-install/zeroinstall-injector-0.26.tar.gz.gpg 
-    # python setup.py install
-    # rox -b Default -p default ; exec openbox
-    #
-    # Lots of work
-    # The Sugar Learning Platform is a computer environment composed of Activities designed to help children from 5 to 12 years of age learn together through rich-media expression. Sugar is the core component of a worldwide effort to provide every child with the opportunity for a quality education — it is currently used by nearly one-million children worldwide speaking 25 languages in over 40 countries. Sugar provides the means to help people lead fulfilling lives through access to a quality education that is currently missed by so many.   
-    # https://wiki.archlinux.org/index.php/Sugar
-    # AUR: sugar
-    #
-    #
-    #
 fi
 # -------------------------------------
 install_desktop_environment_menu() 
@@ -2057,7 +2036,7 @@ install_desktop_environment_menu()
     # 2
     local -r menu_name="DESKTOP-ENVIRONMENT"  # You must define Menu Name here
     local BreakableKey="D"                    # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="10"             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="4 10"           # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
         RecommendedOptions="1"
     elif [[ "$CUSTOM_DE" -eq 2 ]]; then       # KDE
@@ -2088,8 +2067,8 @@ install_desktop_environment_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-DESKTOP-ENVIRONMENT-TITLE" " - https://wiki.archlinux.org/index.php/Desktop_Environment"
@@ -2133,7 +2112,7 @@ install_desktop_environment_menu()
                     ;;
                 4)  # Razor-qt
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_razor_qt_menu
+                    install_razor_qt_common
                     ;;
                 5)  # Cinnamon
                     MenuChecks[$((S_OPT - 1))]=1
@@ -2145,7 +2124,7 @@ install_desktop_environment_menu()
                     ;;
                 7)  # LXDE
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_lxde_menu
+                    install_lxde_common
                     ;;
                 8)  # GNOME
                     MenuChecks[$((S_OPT - 1))]=1
@@ -2175,10 +2154,27 @@ install_desktop_environment_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
+    #
+    # @FIX Things to do
+    # Needs a WM: openbox 
+    # Lots of work to get ROX to work
+    # ROX is a fast, user friendly desktop which makes extensive use of drag-and-drop. The interface revolves around the file manager, following the traditional UNIX view that 'everything is a file' rather than trying to hide the filesystem beneath start menus, wizards, or druids. The aim is to make a system that is well designed and clearly presented. The ROX style favors using several small programs together instead of creating all-in-one mega-applications.  
+    # https://wiki.archlinux.org/index.php/ROX
+    # rox python gnupg pygtk
+    # gpg --recv-key --keyserver www.keyserver.net 59A53CC1
+    # wget http://osdn.dl.sourceforge.net/sourceforge/zero-install/zeroinstall-injector-0.26.tar.gz.gpg 
+    # python setup.py install
+    # rox -b Default -p default ; exec openbox
+    #
+    # Lots of work
+    # The Sugar Learning Platform is a computer environment composed of Activities designed to help children from 5 to 12 years of age learn together through rich-media expression. Sugar is the core component of a worldwide effort to provide every child with the opportunity for a quality education — it is currently used by nearly one-million children worldwide speaking 25 languages in over 40 countries. Sugar provides the means to help people lead fulfilling lives through access to a quality education that is currently missed by so many.   
+    # https://wiki.archlinux.org/index.php/Sugar
+    # AUR: sugar
+    #
+    #
+    #
 }
 #}}}
-
-
 # -----------------------------------------------------------------------------
 # INSTALL WINDOW MANAGER {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
@@ -2204,15 +2200,6 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-WINDOW-MANAGER-MENU-2-I"      "OpenBox: Openbox is a lightweight and highly configurable window manager with extensive standards support. Its features are documented at the official website. This article pertains to installing Openbox under Arch Linux."
     #
     localize_info "INSTALL-WINDOW-MANAGER-REC"       "Recommended Options"
-    #
-    # Fluxbox 
-    # Enlightenment
-    # Metacity
-    # Compiz 
-    # twm
-    # Window Maker
-    # 
-    #
 fi
 # -------------------------------------
 install_window_manager_menu() 
@@ -2251,8 +2238,8 @@ install_window_manager_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-WINDOW-MANAGER-TITLE" " - https://wiki.archlinux.org/index.php/Window_Manager"
@@ -2276,11 +2263,11 @@ install_window_manager_menu()
             case "$S_OPT" in
                 1)  # Awesome
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_awesome_menu
+                    install_awesome_common
                     ;;
                 2)  # OpenBox
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_openbox_menu
+                    install_openbox_common
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2298,6 +2285,16 @@ install_window_manager_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
+    # 
+    # @FIX Things to do
+    # Fluxbox 
+    # Enlightenment
+    # Metacity
+    # Compiz 
+    # twm
+    # Window Maker
+    # 
+    #
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -2371,7 +2368,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-KDE-MENU-1"   "apper"
     localize_info "INSTALL-KDE-MENU-I-1"        "apper: KDE tools for PackageKit"
     localize_info "INSTALL-KDE-MENU-2"   "bangarang"
-    localize_info "INSTALL-KDE-MENU-I-2"        "bangarang: Simple KDE media player."
+    localize_info "INSTALL-KDE-MENU-I-2"        "bangarang: Simple KDE media player. AUR"
     localize_info "INSTALL-KDE-MENU-3"   "choqok"
     localize_info "INSTALL-KDE-MENU-I-3"        "choqok: A Twitter/identi.ca/laconica client for KDE"
     localize_info "INSTALL-KDE-MENU-4"   "digikam"
@@ -2379,7 +2376,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-KDE-MENU-5"   "k3b"
     localize_info "INSTALL-KDE-MENU-I-5"        "k3b: Feature-rich and easy to handle CD burning application"
     localize_info "INSTALL-KDE-MENU-6"   "rosa-icons"
-    localize_info "INSTALL-KDE-MENU-I-6"        "rosa-icons: ROSA icons theme."
+    localize_info "INSTALL-KDE-MENU-I-6"        "rosa-icons: ROSA icons theme. AUR"
     localize_info "INSTALL-KDE-MENU-7"   "Plasma Themes"
     localize_info "INSTALL-KDE-MENU-I-7"        "Plasma Themes: caledonia-bundle, plasma-theme-rosa, ronak-plasmatheme"
     localize_info "INSTALL-KDE-MENU-8"   "yakuake"
@@ -2389,18 +2386,18 @@ fi
 install_kde_menu()
 {
     # 2
-    local -r menu_name="INSTALL-KDE"  # You must define Menu Name here
-    local BreakableKey="D"            # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="1 5 7"  # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local -r menu_name="INSTALL-KDE"   # You must define Menu Name here
+    local BreakableKey="D"             # Q=Quit, D=Done, B=Back
+    local RecommendedOptions="1 4 5 7" # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions"        
+        RecommendedOptions="$RecommendedOptions 3"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        RecommendedOptions="$RecommendedOptions"        
+        RecommendedOptions="$RecommendedOptions 3"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions"    
+        RecommendedOptions="$RecommendedOptions 3 8"    
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -2435,8 +2432,8 @@ install_kde_menu()
     # polkit.service
     # systemd-logind replaced console-kit-daemon.service
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-KDE-TITLE"
@@ -2610,8 +2607,8 @@ install_gnome_menu()
     fi
     # telepathy
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "CONFIGURE-GNOME-TITLE"
@@ -2699,23 +2696,23 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-DESC"     "Install Gnomeshell Extensions"
     #
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-1"   "disper"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-1"   "Disper"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-1"      "disper: An on-the-fly display switch utility, intended to be used on laptops, especially with nVidia cards."
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-2"   "gpaste"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-2"   "Gpaste"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-2"      "gpaste: Clipboard management system with a gnome-shell extension"
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-3"   "mediaplayer"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-3"   "Mediaplayer"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-3"      "mediaplayer: A mediaplayer indicator for the Gnome Shell"
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-4"   "noa11y"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-4"   "Noa11y"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-4"      "noa11y: A gnome-shell extension to remove the accessibility icon from the panel"
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-5"   "pomodoro"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-5"   "Pomodoro"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-5"      "pomodoro: GNOME Shell extension for pomodoro technique."
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-6"   "System-monitor-applet"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-6"      "System-monitor-applet: System monitor extension for Gnome-Shell (display mem swap cpu usage)"
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-7"   "user-theme"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-7"   "User-theme"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-7"      "user-theme: Allows a custom shell theme to be loaded."
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-8"   "weather"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-8"   "Weather"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-8"      "weather: A GNOME Shell extension for displaying weather notifications"
-    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-9"   "gtile"
+    localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-9"   "Gtile"
     localize_info "INSTALL-GNOMESHELL-EXTENSIONS-MENU-I-9"      "gtile: A GNOME Shell Extension to tile your windows as you like. It even supports multiscreen"
 fi
 # -------------------------------------
@@ -2741,8 +2738,8 @@ install_gnome_menushell_extensions_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-GNOMESHELL-EXTENSIONS-DESC"
@@ -2891,8 +2888,8 @@ install_gnome_menushell_themes_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-GNOMESHELL-THEMES-DESC"
@@ -2971,8 +2968,8 @@ install_gnome_menushell_themes_menu()
 # -----------------------------------------------------------------------------
 # INSTALL AWESOME {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_awesome_menu"
-    USAGE="install_awesome_menu"
+    NAME="install_awesome_common"
+    USAGE="install_awesome_common"
     DESCRIPTION=$(localize "INSTALL-AWESOME-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
@@ -2990,7 +2987,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     #
 fi
 # -------------------------------------
-install_awesome_menu()
+install_awesome_common() # Where Common is Menu install_common_apps_menu
 {
     # 4
     local -r menu_name="INSTALL-AWESOME"  # You must define Menu Name here
@@ -3043,8 +3040,8 @@ install_awesome_menu()
 # -----------------------------------------------------------------------------
 # INSTALL OPENBOX {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_openbox_menu"
-    USAGE="install_openbox_menu"
+    NAME="install_openbox_common"
+    USAGE="install_openbox_common"
     DESCRIPTION=$(localize "INSTALL-OPENBOX-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
@@ -3060,7 +3057,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-OPENBOX-INFO-2"    "OPENBOX CUSTOMIZATION"
 fi
 # -------------------------------------
-install_openbox_menu() 
+install_openbox_common() # Where Common is Menu install_common_apps_menu
 { 
     # 8
     local -r menu_name="INSTALL-OPENBOX"  # You must define Menu Name here
@@ -3149,10 +3146,10 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-COMMON-APPS-MENU-11"   "qasmixer"
     localize_info "INSTALL-COMMON-APPS-MENU-I-11"       "qasmixer: Volume Manager for ALSA in Qt."
     localize_info "INSTALL-COMMON-APPS-MENU-12"   "qtfm"
-    localize_info "INSTALL-COMMON-APPS-MENU-I-12"       "qtfm: Qt File Browser."
+    localize_info "INSTALL-COMMON-APPS-MENU-I-12"       "qtfm: Qt File Manager."
     localize_info "INSTALL-COMMON-APPS-MENU-13"   "qterminal"
     localize_info "INSTALL-COMMON-APPS-MENU-I-13"       "qterminal: Qt Terminal"
-    localize_info "INSTALL-COMMON-APPS-MENU-14"  "qpdfview"
+    localize_info "INSTALL-COMMON-APPS-MENU-14"   "qpdfview"
     localize_info "INSTALL-COMMON-APPS-MENU-I-14"      "qpdfview: Qt PDF View"
 fi
 # -------------------------------------
@@ -3163,15 +3160,15 @@ install_common_apps_menu()
     local RecommendedOptions="$1"             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
-        RecommendedOptions="$RecommendedOptions"        
+        RecommendedOptions="$RecommendedOptions 1-3"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions"        
+        RecommendedOptions="$RecommendedOptions 1-3"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        RecommendedOptions="$RecommendedOptions"        
+        RecommendedOptions="$RecommendedOptions 1-14"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions"    
+        RecommendedOptions="$RecommendedOptions 1-10 12-14"    
     fi
-    #
+    # Currently Fails: 11 qasmixer
     if [[ "$CUSTOM_DE" -eq 4 ]]; then
         RecommendedOptions="$RecommendedOptions"
     fi                    
@@ -3184,28 +3181,28 @@ install_common_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]];  do
         print_title "INSTALL-COMMON-APPS-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-1"  "" "" "INSTALL-COMMON-APPS-MENU-I-1"  "MenuTheme[@]" # 1  xcompmgr
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-2"  "" "" "INSTALL-COMMON-APPS-MENU-I-2"  "MenuTheme[@]" # 2  viewnior
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-3"  "" "" "INSTALL-COMMON-APPS-MENU-I-3"  "MenuTheme[@]" # 3  gmrun
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-4"  "" "" "INSTALL-COMMON-APPS-MENU-I-4"  "MenuTheme[@]" # 4  PCManFM
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-5"  "" "" "INSTALL-COMMON-APPS-MENU-I-5"  "MenuTheme[@]" # 5  rxvt-unicode
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-6"  "" "" "INSTALL-COMMON-APPS-MENU-I-6"  "MenuTheme[@]" # 6  scrot
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-7"  "" "" "INSTALL-COMMON-APPS-MENU-I-7"  "MenuTheme[@]" # 7  thunar
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-8"  "" "" "INSTALL-COMMON-APPS-MENU-I-8"  "MenuTheme[@]" # 8  tint2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-9"  "" "" "INSTALL-COMMON-APPS-MENU-I-9"  "MenuTheme[@]" # 9  volwheel
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-10" "" "" "INSTALL-COMMON-APPS-MENU-I-10" "MenuTheme[@]" # 10 xfburn
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-11" "" "" "INSTALL-COMMON-APPS-MENU-I-11" "MenuTheme[@]" # 11 qasmixer
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-12" "" "" "INSTALL-COMMON-APPS-MENU-I-12" "MenuTheme[@]" # 12 qtfm
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-13" "" "" "INSTALL-COMMON-APPS-MENU-I-13" "MenuTheme[@]" # 13 qterminal
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-14" "" "" "INSTALL-COMMON-APPS-MENU-I-14" "MenuTheme[@]" # 14 qpdfview
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-1"  "" ""     "INSTALL-COMMON-APPS-MENU-I-1"  "MenuTheme[@]" # 1  xcompmgr
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-2"  "" ""     "INSTALL-COMMON-APPS-MENU-I-2"  "MenuTheme[@]" # 2  viewnior
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-3"  "" ""     "INSTALL-COMMON-APPS-MENU-I-3"  "MenuTheme[@]" # 3  gmrun
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-4"  "" ""     "INSTALL-COMMON-APPS-MENU-I-4"  "MenuTheme[@]" # 4  PCManFM
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-5"  "" ""     "INSTALL-COMMON-APPS-MENU-I-5"  "MenuTheme[@]" # 5  rxvt-unicode
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-6"  "" ""     "INSTALL-COMMON-APPS-MENU-I-6"  "MenuTheme[@]" # 6  scrot
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-7"  "" ""     "INSTALL-COMMON-APPS-MENU-I-7"  "MenuTheme[@]" # 7  thunar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-8"  "" ""     "INSTALL-COMMON-APPS-MENU-I-8"  "MenuTheme[@]" # 8  tint2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-9"  "" ""     "INSTALL-COMMON-APPS-MENU-I-9"  "MenuTheme[@]" # 9  volwheel
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-10" "" ""     "INSTALL-COMMON-APPS-MENU-I-10" "MenuTheme[@]" # 10 xfburn
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-11" "" "$AUR" "INSTALL-COMMON-APPS-MENU-I-11" "MenuTheme[@]" # 11 qasmixer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-12" "" ""     "INSTALL-COMMON-APPS-MENU-I-12" "MenuTheme[@]" # 12 qtfm
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-13" "" "$AUR" "INSTALL-COMMON-APPS-MENU-I-13" "MenuTheme[@]" # 13 qterminal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-COMMON-APPS-MENU-14" "" "$AUR" "INSTALL-COMMON-APPS-MENU-I-14" "MenuTheme[@]" # 14 qpdfview
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -3318,8 +3315,8 @@ install_common_apps_menu()
 # -----------------------------------------------------------------------------
 # INSTALL RAZOR QT MENU {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_razor_qt_menu"
-    USAGE="install_razor_qt_menu"
+    NAME="install_razor_qt_common"
+    USAGE="install_razor_qt_common"
     DESCRIPTION=$(localize "INSTALL-RAZOR-QT-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
@@ -3332,7 +3329,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-RAZOR-QT-DESC"   "Install Razor-Qt"
 fi
 # -------------------------------------
-install_razor_qt_menu()
+install_razor_qt_common() # Where Common is install_common_apps_menu
 {
     # 4
     local -r menu_name="INSTALL-RAZOR-QT"  # You must define Menu Name here
@@ -3364,11 +3361,11 @@ install_razor_qt_menu()
     #
     # Needs a WM: openbox, fwwm2, kwin, KDE without Plasma Desktop
     #
-    #INSTALL_RAZOR_QT=""
-    #if add_packagemanager "package_install \"$INSTALL_RAZOR_QT\" 'INSTALL-AWESOME'" "INSTALL-AWESOME" ; then add_package "$INSTALL_RAZOR_QT"; fi
+    #install_razor_qt_common=""
+    #if add_packagemanager "package_install \"$install_razor_qt_common\" 'INSTALL-AWESOME'" "INSTALL-AWESOME" ; then add_package "$install_razor_qt_common"; fi
     #
-    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RAZOR_QT\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT" ; then
-        add_aur_package "$AUR_INSTALL_RAZOR_QT"
+    if add_packagemanager "aur_package_install \"$AUR_install_razor_qt_common\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT" ; then
+        add_aur_package "$AUR_install_razor_qt_common"
         add_packagemanager "make_dir \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/razor/session.conf' \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
         add_packagemanager "$(config_xinitrc 'exec razor-session')" "CONFIG-XINITRC-RAZOR"
         #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-RAZOR-QT"
@@ -3393,7 +3390,7 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-CINNAMON-DESC"  "Install Cinnamon"
     #
-    localize_info "INSTALL-CINNAMON-TITLE" "CINNAMON"
+    localize_info "INSTALL-CINNAMON-TITLE"  "CINNAMON"
     localize_info "INSTALL-CINNAMON-INFO-1" "Cinnamon is a fork of GNOME Shell, initially developed by Linux Mint. It attempts to provide a more traditional user environment based on the desktop metaphor, like GNOME 2. Cinnamon uses Muffin, a fork of the GNOME 3 window manager Mutter, as its window manager."
     localize_info "INSTALL-CINNAMON-INFO-2" "CINNAMON CUSTOMIZATION"
     localize_info "INSTALL-CINNAMON-INFO-3" "Installed Cinnamon"
@@ -3447,8 +3444,8 @@ install_cinnamon_menu()
     # not sure how to run these commands; seems like they need to run after GUI is up and running; so adding them as a start up script may be what is needed
     # add_packagemanager "cinnamon-settings; cinnamon-settings panel; cinnamon-settings calendar; cinnamon-settings themes; cinnamon-settings applets; cinnamon-settings windows; cinnamon-settings fonts; cinnamon-settings hotcorner" "AUR-INSTALL-CINNAMON-SETTINGS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-CINNAMON-TITLE" " - https://wiki.archlinux.org/index.php/Cinnamon"
@@ -3582,8 +3579,8 @@ install_e17_menu()
         add_packagemanager "chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-XFCE"
     fi
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-E17-TITLE" " - https://wiki.archlinux.org/index.php/E17"
@@ -3636,8 +3633,8 @@ install_e17_menu()
 # -----------------------------------------------------------------------------
 # INSTALL LXDE {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_lxde_menu"
-    USAGE="install_lxde_menu"
+    NAME="install_lxde_common"
+    USAGE="install_lxde_common"
     DESCRIPTION=$(localize "INSTALL-LXDE-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
@@ -3653,7 +3650,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-LXDE-INFO-2" "LXDE CUSTOMIZATION"
 fi
 # -------------------------------------
-install_lxde_menu()
+install_lxde_common() # Where Common is install_common_apps_menu
 {
     # 7
     local RecommendedOptions="1-14"    # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
@@ -3705,6 +3702,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-XFCE-TITLE"     "XFCE"
     localize_info "INSTALL-XFCE-INFO-1"    "Xfce is a free software desktop environment for Unix and Unix-like platforms, such as Linux, Solaris, and BSD. It aims to be fast and lightweight, while still being visually appealing and easy to use."
     localize_info "INSTALL-XFCE-INFO-2"    "Install XFCE and Accessories."
+    #
     localize_info "INSTALL-XFCE-MENU-1"    "xfce4-volumed"
     localize_info "INSTALL-XFCE-MENU-I-1"        "xfce4-volumed: A volume keys control daemon for Xfce"
 fi
@@ -3746,8 +3744,8 @@ install_xfce_menu()
         add_aur_package "$AUR_INSTALL_XFCE_PACKAGE"
     fi
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-XFCE-TITLE" " - https://wiki.archlinux.org/index.php/Xfce"
@@ -3896,8 +3894,8 @@ install_display_manager_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #    
     while [[ 1 ]];  do
         print_title "INSTALL-DISPLAY-MANAGER-TITLE" " - https://wiki.archlinux.org/index.php/Display_Manager"
@@ -4110,6 +4108,7 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-EXTRA-DESC"     "Install Extra"
     localize_info "INSTALL-EXTRA-TITLE"    "Extra's"
+    # Elementary Project, Yapan
     localize_info "INSTALL-EXTRA-MENU-1"   "Elementary Project"
     localize_info "INSTALL-EXTRA-MENU-I-1"      "ELEMENTARY PROJECT: Media Player, Sharing service, Screencasting, Contacts manager, RSS feeds Reader, File Manager, Note Taking, Compositing Manager, Email client, Dictionary, Maya Calendar, Web Browser, Audio Player, Text Editor, Dock, App Launcher, Desktop Settings Hub, Indicators Topbar, Elementary Icons, and Elementary Theme."
     localize_info "INSTALL-EXTRA-MENU-2"   "Yapan"
@@ -4139,8 +4138,8 @@ install_extra_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-EXTRA-TITLE"
@@ -4208,54 +4207,54 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ELEMENTARY-PROJECT-INFO-1" "Note: Some of these programs still in alpha stage and may not work"
     #
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-1"   "Media Player"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-1"      "Media Player: audience-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-1"      "Media Player: A simple and modern media player - audience-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-2"   "Sharing service"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-2"      "Sharing service: contractor-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-2"      "Sharing service: A sharing service that allows source apps to send their data to registered destination apps - contractor-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-3"   "Screencasting"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-3"      "Screencasting: eidete-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-3"      "Screencasting: A simple screencasting app from the elementary project - eidete-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-4"   "Contacts Manager"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-4"      "Contacts Manager: dexter-contacts-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-4"      "Contacts Manager: The contacts manager from the Elementary project - dexter-contacts-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-5"   "RSS Feeds Reader"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-5"      "RSS Feeds Reader: feedler-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-5"      "RSS Feeds Reader: RSS feeds Reader from the Elementary Project - feedler-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-6"   "File Manager"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-6"      "File Manager: files-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-6"      "File Manager: A simple, powerful and sexy file manager from elementary (Marlin fork) - pantheon-files-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-7"   "Note Taking"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-7"      "Note Taking: footnote-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-7"      "Note Taking: A beautiful, fast, and simple note taking app in the style of elementary - footnote-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-8"   "Compositing Manager"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-8"      "Compositing Manager: gala-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-8"      "Compositing Manager: A window & compositing manager based on libmutter and designed by elementary - gala-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-9"   "Email client"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-9"      "Email client: geary-git"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-9"      "Email client: A new lightweight, easy-to-use, feature-rich email client (beta version) - geary-git"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-10"   "Dictionary"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-10"      "Dictionary: lingo-dictionary-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-10"      "Dictionary: Dictionary application from the Elementary project - lingo-dictionary-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-11"   "Calendar"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-11"      "Calendar: maya-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-11"      "Calendar: Calendar application written in Vala from the Elementary project - maya-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-12"   "Web Browser"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-12"      "Web Browser: midori"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-12"      "Web Browser: Lightweight web browser based on Gtk WebKit - midori"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-13"   "Audio Player"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-13"      "Audio Player: noise-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-13"      "Audio Player: The official audio player of elementary OS. - noise-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-14"   "Text Editor"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-14"      "Text Editor: scratch-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-14"      "Text Editor: A text editor written in Vala by elementary - scratch-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-15"   "Dock"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-15"      "Dock: plank-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-15"      "Dock: A stupidly simple dock from elementary - plank-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-16"   "Terminal"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-16"      "Terminal: pantheon-terminal-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-16"      "Terminal: A super lightweight, beautiful, and simple terminal from the Elementary project - pantheon-terminal-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-17"   "App Launcher"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-17"      "App Launcher: slingshot-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-17"      "App Launcher: A lightweight and stylish app launcher from elementary - slingshot-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-18"   "Desktop Settings Hub"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-18"      "Desktop Settings Hub: switchboard-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-18"      "Desktop Settings Hub: Modular desktop settings hub - switchboard-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-19"   "Indicators Topbar"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-19"      "Indicators Topbar: wingpanel-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-19"      "Indicators Topbar: Stylish top panel that holds indicators and spawns an application launcher - wingpanel-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-20"   "Elementary Icons"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-20"      "Elementary Icons: elementary-icons-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-20"      "Elementary Icons: An icon theme designed to be smooth, sexy, clear, and efficient (Development branch) - elementary-icons-bzr"
     localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-21"   "Elementary Theme"
-    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-21"      "Elementary Theme: egtk-bzr"
+    localize_info "INSTALL-ELEMENTARY-PROJECT-MENU-I-21"      "Elementary Theme: Development branch of the elementary GTK theme. - egtk-bzr"
 fi
 # -------------------------------------feedler-bzr
 install_elementary_project_menu()
 {
     local -r menu_name="ELEMENTARY-PROJECT"  # You must define Menu Name here
     local BreakableKey="B"                   # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="1"             # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="10"            # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
@@ -4264,7 +4263,7 @@ install_elementary_project_menu()
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions 1 3 4 10"    
+        RecommendedOptions="$RecommendedOptions 3 4 10 11 13 16 17 20 21"
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -4273,9 +4272,8 @@ install_elementary_project_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    #audience-bzr
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-ELEMENTARY-PROJECT-DESC"
@@ -4283,27 +4281,27 @@ install_elementary_project_menu()
         print_error "INSTALL-ELEMENTARY-PROJECT-INFO-1"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-1"  "aumidoridience-bzr"    "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-1"  "MenuTheme[@]" # 1  Media Player
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-2"  "contractor-bzr"        "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-2"  "MenuTheme[@]" # 2  Sharing service
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-3"  "eidete-bzr"            "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-3"  "MenuTheme[@]" # 3 Screencasting
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-4"  "dexter-contacts-bzr"   "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-4"  "MenuTheme[@]" # 4  Contacts manager
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-5"  "feedler-bzr"           "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-5"  "MenuTheme[@]" # 5  RSS Feeds Reader
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-6"  "files-bzr"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-6"  "MenuTheme[@]" # 6  File Manager
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-7"  "footnote-bzr"          "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-7"  "MenuTheme[@]" # 7 Note Taking
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-8"  "gala-bzr"              "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-8"  "MenuTheme[@]" # 8  Compositing Manager
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-9"  "geary-git"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-9"  "MenuTheme[@]" # 9 Email client 
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-10" "lingo-dictionary-bzr"  "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-10" "MenuTheme[@]" # 10 Dictionary
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-11" "maya-bzr"              "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-11" "MenuTheme[@]" # 11 Calendar
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-12" "midori"                "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-12" "MenuTheme[@]" # 12 Web Browser
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-13" "noise-bzr"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-13" "MenuTheme[@]" # 13 Audio Player
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-14" "scratch-bzr"           "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-14" "MenuTheme[@]" # 14 Text Editor
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-15" "plank-bzr"             "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-15" "MenuTheme[@]" # 15 Dock
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-16" "pantheon-terminal-bzr" "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-16" "MenuTheme[@]" # 16 Terminal
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-17" "slingshot-bzr"         "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-17" "MenuTheme[@]" # 17 App Launcher
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-18" "switchboard-bzr"       "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-18" "MenuTheme[@]" # 18 Desktop Settings Hub
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-19" "wingpanel-bzr"         "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-19" "MenuTheme[@]" # 19 Indicators Topbar
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-20" "elementary-icons-bzr"  "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-20" "MenuTheme[@]" # 20 Elementary Icons
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-21" "egtk-bzr"              "" "INSTALL-ELEMENTARY-PROJECT-MENU-I-21" "MenuTheme[@]" # 21 Elementary Theme
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-1"  "aumidoridience-bzr"    "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-1"  "MenuTheme[@]" # 1  Media Player
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-2"  "contractor-bzr"        "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-2"  "MenuTheme[@]" # 2  Sharing service
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-3"  "eidete-bzr"            "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-3"  "MenuTheme[@]" # 3 Screencasting
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-4"  "dexter-contacts-bzr"   "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-4"  "MenuTheme[@]" # 4  Contacts manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-5"  "feedler-bzr"           "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-5"  "MenuTheme[@]" # 5  RSS Feeds Reader
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-6"  "files-bzr"             "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-6"  "MenuTheme[@]" # 6  File Manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-7"  "footnote-bzr"          "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-7"  "MenuTheme[@]" # 7 Note Taking
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-8"  "gala-bzr"              "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-8"  "MenuTheme[@]" # 8  Compositing Manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-9"  "geary-git"             "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-9"  "MenuTheme[@]" # 9 Email client 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-10" "lingo-dictionary-bzr"  "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-10" "MenuTheme[@]" # 10 Dictionary
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-11" "maya-bzr"              "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-11" "MenuTheme[@]" # 11 Calendar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-12" "midori"                ""     "INSTALL-ELEMENTARY-PROJECT-MENU-I-12" "MenuTheme[@]" # 12 Web Browser
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-13" "noise-bzr"             "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-13" "MenuTheme[@]" # 13 Audio Player
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-14" "scratch-bzr"           "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-14" "MenuTheme[@]" # 14 Text Editor
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-15" "plank-bzr"             "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-15" "MenuTheme[@]" # 15 Dock
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-16" "pantheon-terminal-bzr" "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-16" "MenuTheme[@]" # 16 Terminal
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-17" "slingshot-bzr"         "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-17" "MenuTheme[@]" # 17 App Launcher
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-18" "switchboard-bzr"       "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-18" "MenuTheme[@]" # 18 Desktop Settings Hub
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-19" "wingpanel-bzr"         "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-19" "MenuTheme[@]" # 19 Indicators Topbar
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-20" "elementary-icons-bzr"  "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-20" "MenuTheme[@]" # 20 Elementary Icons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ELEMENTARY-PROJECT-MENU-21" "egtk-bzr"              "$AUR" "INSTALL-ELEMENTARY-PROJECT-MENU-I-21" "MenuTheme[@]" # 21 Elementary Theme
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -4348,6 +4346,9 @@ install_elementary_project_menu()
                     ;;
                 6)  # File Manager
                     MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_EP_FILES\" 'INSTALL-EP-FILES'" "INSTALL-EP-FILES" ; then
+                        add_package "$INSTALL_EP_FILES"
+                    fi
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FILES\" 'AUR-INSTALL-EP-FILES'" "AUR-INSTALL-EP-FILES" ; then
                         add_aur_package "$AUR_INSTALL_EP_FILES"
                     fi
@@ -4384,8 +4385,8 @@ install_elementary_project_menu()
                     ;;
                12)  # Web Browser
                     MenuChecks[$((SS_OPT - 1))]=1
-                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MIDORI\" 'AUR-INSTALL-EP-MIDORI'" "AUR-INSTALL-EP-MIDORI" ; then
-                        add_aur_package "$AUR_INSTALL_EP_MIDORI"
+                    if add_packagemanager "package_install \"$INSTALL_EP_MIDORI\" 'INSTALL-EP-MIDORI'" "INSTALL-EP-MIDORI" ; then
+                        add_package "$INSTALL_EP_MIDORI"
                     fi
                     ;;
                13)  # Audio Player
@@ -4476,11 +4477,11 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-AUDIO-APPS-DESC"   "Install Audio Apps"
-    #
+    # Players, Editors / Tools, Codecs
     localize_info "INSTALL-AUDIO-APPS-MENU-1"   "Players"
     localize_info "INSTALL-AUDIO-APPS-MENU-I-1"      "Players: Sub Menu"
-    localize_info "INSTALL-AUDIO-APPS-MENU-2"   "Editors | Tools"
-    localize_info "INSTALL-AUDIO-APPS-MENU-I-2"      "Editors | Tools: Sub Menu: soundconverter, puddletag, Audacity, Ocenaudio"
+    localize_info "INSTALL-AUDIO-APPS-MENU-2"   "Editors / Tools"
+    localize_info "INSTALL-AUDIO-APPS-MENU-I-2"      "Editors / Tools: Sub Menu: soundconverter, puddletag, Audacity, Ocenaudio"
     localize_info "INSTALL-AUDIO-APPS-MENU-3"   "Codecs"
     localize_info "INSTALL-AUDIO-APPS-MENU-I-3"      "Codecs: gstreamer0.10-base, gstreamer0.10-good-plugins, mpg123, flac, faac, faad2, lame, libdca, wavpack"
 fi
@@ -4508,8 +4509,8 @@ install_audio_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-AUDIO-APPS-DESC"
@@ -4576,14 +4577,14 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-AUDIO-EDITORS-DESC"   "Install Audio Editors"
     #
-    localize_info "INSTALL-AUDIO-EDITORS-MENU-1"   "soundconverter"
-    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-1"      "soundconverter: or soundkonverter Depending on DE"
-    localize_info "INSTALL-AUDIO-EDITORS-MENU-2"   "puddletag"
-    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-2"      "puddletag: An audio tag editor for GNU/Linux (like Mp3tag)"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-1"   "Sound Converter"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-1"      "soundconverter: or soundkonverter Depending on DE."
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-2"   "Puddle tag"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-2"      "puddletag: An audio tag editor for GNU/Linux (like Mp3tag)."
     localize_info "INSTALL-AUDIO-EDITORS-MENU-3"   "Audacity"
-    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-3"      "Audacity: A program that lets you manipulate digital audio waveforms"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-3"      "Audacity: A program that lets you manipulate digital audio waveforms."
     localize_info "INSTALL-AUDIO-EDITORS-MENU-4"   "Ocenaudio"
-    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-4"      "Ocenaudio: A cross-platform, easy to use, fast and functional audio editor"
+    localize_info "INSTALL-AUDIO-EDITORS-MENU-I-4"      "Ocenaudio: A cross-platform, easy to use, fast and functional audio editor."
 fi
 # -------------------------------------
 install_audio_editors_menu()
@@ -4608,8 +4609,8 @@ install_audio_editors_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-AUDIO-EDITORS-DESC"
@@ -4723,7 +4724,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-PLAYERS-MENU-MENU-12"   "Tomahawk"
     localize_info "INSTALL-PLAYERS-MENU-MENU-I-12"       "Tomahawk: A Music Player App written in C++/Qt"
     localize_info "INSTALL-PLAYERS-MENU-MENU-13"   "Timidity++"
-    localize_info "INSTALL-PLAYERS-MENU-MENU-I-14"       "Timidity++: A MIDI to WAVE converter and player"
+    localize_info "INSTALL-PLAYERS-MENU-MENU-I-13"       "Timidity++: A MIDI to WAVE converter and player"
 fi
 # -------------------------------------
 install_players_menu()
@@ -4739,7 +4740,7 @@ install_players_menu()
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions"    
+        RecommendedOptions="$RecommendedOptions 12 13"    
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -4748,8 +4749,8 @@ install_players_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         #Banshee
@@ -4896,24 +4897,24 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-OFFICE-APPS-MENU-1"    "LibreOffice"
     localize_info "INSTALL-OFFICE-APPS-MENU-1-I"        "Libre Office: LibreOffice is the free power-packed Open Source personal productivity suite for Windows, Macintosh and Linux, that gives you six feature-rich applications for all your document production and data processing needs: Writer, Calc, Impress, Draw, Math and Base. - https://wiki.archlinux.org/index.php/LibreOffice"
     localize_info "INSTALL-OFFICE-APPS-MENU-2"    "Calligra or Abiword + Gnumeric"
-    localize_info "INSTALL-OFFICE-APPS-MENU-2-I"        "Calligra (Calligra is the new name of the KOffice suite, so the Calligra packages will replace the KOffice packages.) or Abiword (A fully-featured word processor) + Gnumeric (A GNOME Spreadsheet Program): Depending on DE"
-    localize_info "INSTALL-OFFICE-APPS-MENU-3"    "latex"
+    localize_info "INSTALL-OFFICE-APPS-MENU-2-I"        "Calligra (Calligra is the new name of the KOffice Suite, so the Calligra packages will replace the KOffice packages.) or Abiword (A fully-featured word processor) + Gnumeric (A GNOME Spreadsheet Program): Depending on DE"
+    localize_info "INSTALL-OFFICE-APPS-MENU-3"    "Latex"
     localize_info "INSTALL-OFFICE-APPS-MENU-3-I"        "LaTeX is a popular markup language and document preparation system, often used in the sciences. The current implementation in Arch Linux is TeX Live. - https://wiki.archlinux.org/index.php/LaTeX"
-    localize_info "INSTALL-OFFICE-APPS-MENU-4"    "calibre"
+    localize_info "INSTALL-OFFICE-APPS-MENU-4"    "Calibre"
     localize_info "INSTALL-OFFICE-APPS-MENU-4-I"        "calibre: Ebook management application"
-    localize_info "INSTALL-OFFICE-APPS-MENU-5"    "gcstar"
+    localize_info "INSTALL-OFFICE-APPS-MENU-5"    "GcStar"
     localize_info "INSTALL-OFFICE-APPS-MENU-5-I"        "gcstar: A collection management application"
-    localize_info "INSTALL-OFFICE-APPS-MENU-6"    "homebank"
+    localize_info "INSTALL-OFFICE-APPS-MENU-6"    "Homebank"
     localize_info "INSTALL-OFFICE-APPS-MENU-6-I"        "homebank: Free, easy, personal accounting for everyone: http://homebank.free.fr/"
-    localize_info "INSTALL-OFFICE-APPS-MENU-7"    "impressive"
+    localize_info "INSTALL-OFFICE-APPS-MENU-7"    "Impressive"
     localize_info "INSTALL-OFFICE-APPS-MENU-7-I"        "impressive: A fancy PDF presentation program (previously known as KeyJNote)."
-    localize_info "INSTALL-OFFICE-APPS-MENU-8"    "nitrotasks"
+    localize_info "INSTALL-OFFICE-APPS-MENU-8"    "Nitrotasks"
     localize_info "INSTALL-OFFICE-APPS-MENU-8-I"        "nitrotasks: An eyecandy task managment tool"
-    localize_info "INSTALL-OFFICE-APPS-MENU-9"    "ocrfeeder"
+    localize_info "INSTALL-OFFICE-APPS-MENU-9"    "OCR Feeder"
     localize_info "INSTALL-OFFICE-APPS-MENU-9-I"        "ocrfeeder: GTK+ document layout analysis and optical character recognition application"
-    localize_info "INSTALL-OFFICE-APPS-MENU-10"   "xmind"
-    localize_info "INSTALL-OFFICE-APPS-MENU-10-I"       "xmind: Brainstorming and Mind Mapping Software"
-    localize_info "INSTALL-OFFICE-APPS-MENU-11"   "zathura"
+    localize_info "INSTALL-OFFICE-APPS-MENU-10"   "Xmind"
+    localize_info "INSTALL-OFFICE-APPS-MENU-10-I"       "xmind: Brainstorming and Mind Mapping Software - http://www.xmind.net/"
+    localize_info "INSTALL-OFFICE-APPS-MENU-11"   "Zathura"
     localize_info "INSTALL-OFFICE-APPS-MENU-11-I"       "zathura: a document viewer"
 fi
 # -------------------------------------
@@ -4929,9 +4930,9 @@ install_office_apps_menu()
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
-        RecommendedOptions="$RecommendedOptions 6 7 9"        
+        RecommendedOptions="$RecommendedOptions 6 7 9 10 11"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions 6"    
+        RecommendedOptions="$RecommendedOptions 2 6 7 8 9 10 11"    
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -4940,8 +4941,8 @@ install_office_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-OFFICE-APPS-TITLE"
@@ -4988,7 +4989,7 @@ install_office_apps_menu()
                         fi
                     fi
                     ;;
-                2)  # Caligra or Abiword + Gnumeric
+                2)  # Calligra or Abiword + Gnumeric
                     MenuChecks[$((S_OPT - 1))]=1
                     if [[ "QT_INSTALL" -eq 1 ]]; then
                         if [[ "$GNOME_INSTALL" -eq 1 ]]; then
@@ -5111,7 +5112,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-SYSTEM-APPS-DESC"  "Install System Tools Applications."
     localize_info "INSTALL-SYSTEM-APPS-NOTES" "Install System Tools Applications."
     localize_info "INSTALL-SYSTEM-APPS-TITLE" "Notes."
-    #
+    # Gparted, Grsync, Htop, Virtualbox, Webmin, WINE
     localize_info "INSTALL-SYSTEM-APPS-MENU-1"   "Gparted"
     localize_info "INSTALL-SYSTEM-APPS-MENU-I-1"        "Gparted: A Partition Magic clone, frontend to GNU Parted. https://wiki.archlinux.org/index.php/GParted"
     localize_info "INSTALL-SYSTEM-APPS-MENU-2"   "Grsync"
@@ -5149,8 +5150,8 @@ install_system_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-SYSTEM-APPS-TITLE"
@@ -5303,8 +5304,8 @@ install_gnome_de_extras_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
     #
@@ -5389,8 +5390,8 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-GTK-THEMES-MENU-I-8"      "Orion: A modern and light GTK theme"
     localize_info "INSTALL-GTK-THEMES-MENU-9"    "Zukini"
     localize_info "INSTALL-GTK-THEMES-MENU-I-9"      "Zukini: A gtk2, gtk3, metacity, gnome-shell and unity theme..."
-    localize_info "INSTALL-GTK-THEMES-MENU-10"    "Zukitwo"
-    localize_info "INSTALL-GTK-THEMES-MENU-I-10"      "Zukitwo: A theme for gtk3, gtk2, metacity, xfwm4, gnome-shell and unity..."
+    localize_info "INSTALL-GTK-THEMES-MENU-10"   "Zukitwo"
+    localize_info "INSTALL-GTK-THEMES-MENU-I-10"     "Zukitwo: A theme for gtk3, gtk2, metacity, xfwm4, gnome-shell and unity..."
 fi
 # -------------------------------------
 install_gtk_themes_menu() 
@@ -5416,8 +5417,8 @@ install_gtk_themes_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-GTK-THEMES-DESC"
@@ -5580,8 +5581,8 @@ install_icons_menu()
         add_package "$INSTALL_GTK_ICONS"
     fi
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-ICONS-TITLE"
@@ -5758,8 +5759,8 @@ install_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_nameMisc}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-DUNGEON-GAMES-TITLE" " - https://wiki.archlinux.org/index.php/Games"
@@ -5915,7 +5916,7 @@ install_action_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions"        
+        RecommendedOptions="1-9"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -5928,8 +5929,8 @@ install_action_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-ACTION-GAMES-TITLE"
@@ -6043,24 +6044,24 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ARCADE-GAMES-DESC"  "Install Arcade Platformer Games"
     localize_info "INSTALL-ARCADE-GAMES-TITLE" "Install Arcade Platformer Games"
     #
-    localize_info "INSTALL-ARCADE-GAMES-MENU-1"    "Abuse"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-1"        "Abuse: A side-scroller action game that pits you against ruthless alien killers."
-    localize_info "INSTALL-ARCADE-GAMES-MENU-2"    "Battle Tanks"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-2"        "Battle Tanks: Fast 2d tank arcade game with multiplayer and split-screen modes."
-    localize_info "INSTALL-ARCADE-GAMES-MENU-3"    "Bomberclone"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-3"        "Bomberclone: A clone of the game AtomicBomberMan."
-    localize_info "INSTALL-ARCADE-GAMES-MENU-4"    "Those Funny Funguloids"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-4"        "Those Funny Funguloids: 3D game about collecting mushrooms in outerspace"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-5"    "Frogatto"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-5"        ": Frogatto: An old-school 2d platformer game, starring a certain quixotic frog"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-6"    "Goonies"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-6"        "Goonies: A remake of the MSX Goonies game"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-7"    "Mari0"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-7"        "Mari0: The Mario game with Portal gun mechanics"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-8"    "Neverball"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-8"        "Neverball: 3D game similar to Super Monkey Ball or Marble Madness"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-9"    "Opensonic"
-    localize_info "INSTALL-ARCADE-GAMES-MENU-I-9"        "Opensonic: Game based on the Sonic the Hedgehog Universe."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-1"     "Abuse"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-1"         "Abuse: A side-scroller action game that pits you against ruthless alien killers."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-2"     "Battle Tanks"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-2"         "Battle Tanks: Fast 2d tank arcade game with multiplayer and split-screen modes."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-3"     "Bomberclone"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-3"         "Bomberclone: A clone of the game AtomicBomberMan."
+    localize_info "INSTALL-ARCADE-GAMES-MENU-4"     "Those Funny Funguloids"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-4"         "Those Funny Funguloids: 3D game about collecting mushrooms in outerspace"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-5"     "Frogatto"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-5"         "Frogatto: An old-school 2d platformer game, starring a certain quixotic frog"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-6"     "Goonies"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-6"         "Goonies: A remake of the MSX Goonies game"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-7"     "Mari0"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-7"         "Mari0: The Mario game with Portal gun mechanics"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-8"     "Neverball"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-8"         "Neverball: 3D game similar to Super Monkey Ball or Marble Madness"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-9"     "Opensonic"
+    localize_info "INSTALL-ARCADE-GAMES-MENU-I-9"         "Opensonic: Game based on the Sonic the Hedgehog Universe."
     localize_info "INSTALL-ARCADE-GAMES-MENU-10"    "Robombs"
     localize_info "INSTALL-ARCADE-GAMES-MENU-I-10"        "Robombs: A free LAN game inspired by Bomberman"
     localize_info "INSTALL-ARCADE-GAMES-MENU-11"    "Super Mario Chronicles"
@@ -6078,7 +6079,7 @@ install_arade_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-12"        
+        RecommendedOptions="1-12"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions 1 2"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6091,8 +6092,8 @@ install_arade_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-ARCADE-GAMES-TITLE"
@@ -6247,7 +6248,7 @@ install_dungon_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-5"        
+        RecommendedOptions="1-5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6260,8 +6261,8 @@ install_dungon_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-DUNGEON-GAMES-DESC"
@@ -6373,7 +6374,7 @@ install_emulator_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-8"        
+        RecommendedOptions="1-8"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6386,8 +6387,8 @@ install_emulator_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-EMULATORS-GAMES-DESC"
@@ -6514,7 +6515,7 @@ install_fps_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-5"        
+        RecommendedOptions="1-5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6527,8 +6528,8 @@ install_fps_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-FPS-GAMES-DESC"
@@ -6636,7 +6637,7 @@ install_mmo_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-6"        
+        RecommendedOptions="1-6"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6649,8 +6650,8 @@ install_mmo_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-MMO-GAMES-DESC"
@@ -6757,7 +6758,7 @@ install_puzzle_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-2"        
+        RecommendedOptions="1-2"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6770,8 +6771,8 @@ install_puzzle_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-PUZZLE-GAMES-DESC"
@@ -6852,7 +6853,7 @@ install_rpg_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-3"        
+        RecommendedOptions="1-3"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6865,8 +6866,8 @@ install_rpg_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-RPG-GAMES-DESC"
@@ -6958,7 +6959,7 @@ install_racing_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-5"        
+        RecommendedOptions="1-5"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -6971,8 +6972,8 @@ install_racing_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-RACING-GAMES-DESC"
@@ -7060,7 +7061,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-SIMULATION-GAMES-MENU-1"    "Simutrans"
     localize_info "INSTALL-SIMULATION-GAMES-MENU-I-1"        "Simutrans: An Open Source Transportation Simulation Game"
     localize_info "INSTALL-SIMULATION-GAMES-MENU-2"    "Theme Hospital"
-    localize_info "INSTALL-SIMULATION-GAMES-MENU-I-2"        "Theme Hospital:  	Reimplementation of the Game Engine of Theme Hospital. corsix-th"
+    localize_info "INSTALL-SIMULATION-GAMES-MENU-I-2"        "Theme Hospital: Reimplementation of the Game Engine of Theme Hospital. corsix-th"
     localize_info "INSTALL-SIMULATION-GAMES-MENU-3"    "Openttd"
     localize_info "INSTALL-SIMULATION-GAMES-MENU-I-3"        "Openttd: An Engine for Running Transport Tycoon Deluxe."
 fi
@@ -7074,7 +7075,7 @@ install_simulation_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1 2"        
+        RecommendedOptions="1-3"
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -7087,8 +7088,8 @@ install_simulation_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-SIMULATION-GAMES-DESC"
@@ -7184,7 +7185,7 @@ install_strategy_games_menu()
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 1 ]]; then # Gamer
-        RecommendedOptions="$RecommendedOptions 1-7"        
+        RecommendedOptions="1-7"        
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
@@ -7197,8 +7198,8 @@ install_strategy_games_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-STRATEGY-GAMES-DESC"
@@ -7352,7 +7353,7 @@ install_web_server_menu()
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions"    
+        RecommendedOptions="$RecommendedOptions"  # As a Programmer, I'm not interested in Apache, but Wt, so I left it out
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -7361,8 +7362,8 @@ install_web_server_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         #
@@ -7480,8 +7481,8 @@ install_fonts_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-FONTS-DESC" " - https://wiki.archlinux.org/index.php/Fonts"
@@ -7643,8 +7644,8 @@ get_network_manager_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "GET-NETWORK-MANAGER-TITLE"
@@ -7811,7 +7812,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ACCESSORIES-APPS-MENU-14"   "Zim"
     localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-14"      "Zim: A WYSIWYG text editor that aims at bringing the concept of a wiki to the desktop."
     localize_info "INSTALL-ACCESSORIES-APPS-MENU-15"   "Revelation"
-    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-16"      "Revelation: Password Safe."
+    localize_info "INSTALL-ACCESSORIES-APPS-MENU-I-15"      "Revelation: Password Safe."
 fi
 # -------------------------------------
 install_accessories_apps_menu()
@@ -7837,8 +7838,8 @@ install_accessories_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-ACCESSORIES-APPS-TITLE"
@@ -8009,48 +8010,48 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DEVELOPMENT-APPS-DESC"    "Install Development Apps"
     #
     MENU_NUMBER=1
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Qt and Creator"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Qt and Creator"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Wt"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Qt and Creator"      # 1
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Qt and Creator: A cross-platform application and UI framework"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Wt"                  # 2
     localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Wt Pronounced [Witty]: C++ Web Applications Frame work based on Widgets."
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "PostgreSQL"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "PostgreSQL"          # 3
     localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "PostgreSQL: A sophisticated Object-Relational DBMS"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "MySQL and Workbench"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "MySQL and Workbench" # 4
     localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "MySQL and Workbench: In AUR - DBMS - Commercial License."
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Aptana-Studio"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Aptana-Studio"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Bluefish"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Bluefish"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Eclipse"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Eclipse: Sub menu for Customizing."
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "emacs"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "emacs"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "gvim"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "gvim"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "geany"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "geany"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "IntelliJ IDEA"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "IntelliJ IDEA"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "kdevelop"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "kdevelop"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Netbeans"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Netbeans"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Oracle Java"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Oracle Java: https://wiki.archlinux.org/index.php/Java"    
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Sublime Text 2"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Sublime Text 2"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Debugger Tools"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Debugger Tools"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "meld"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "meld"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "RabbitVCS"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "RabbitVCS"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "astyle"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "astyle"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "putty"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "putty"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Utilities"
-    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Utilities"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Aptana-Studio"       # 5
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Aptana-Studio: The professional, open source development tool for the open web."
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Bluefish"            # 6
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Bluefish: A powerful HTML editor for experienced web designers and programmers"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Eclipse"             # 7
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "Eclipse: An IDE for Java and other languages - Sub menu for Customizing."
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Emacs"               # 8
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "emacs: The extensible, customizable, self-documenting real-time display editor"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "gVim"                # 9
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "gvim: Vi Improved, a highly configurable, improved version of the vi text editor (with advanced features, such as a GUI)"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Geany"               # 10
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                   "geany: Fast and lightweight IDE"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "IntelliJ IDEA"       # 11
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "IntelliJ IDEA: IDE for Java, Groovy and other programming languages with advanced refactoring features"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "kDevelop"            # 12
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "kdevelop: A C/C++ development environment for KDE"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Netbeans"           # 13
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Netbeans: IDE for Java, PHP, Groovy, C, C++ and Python"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Oracle Java"        # 14
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Oracle Java: Java 7 Development Kit - https://wiki.archlinux.org/index.php/Java & http://www.oracle.com/technetwork/java/javase/downloads/index.html"    
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Sublime Text 2"     # 15
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Sublime Text 2: sophisticated text editor for code, html and prose"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Debugger Tools"     # 16
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Debugger Tools: $AUR_INSTALL_DEBUGGER_TOOLS"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Meld"               # 17
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "meld: Visual diff and merge tool"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "RabbitVCS"          # 18
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "RabbitVCS: A project with the goal of developing a collection of utilities to allow for better client integration with some of the popular version control systems (core)"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "aStyle"             # 19
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "astyle: A free, fast and small automatic formatter for C, C++, C#, and Java source code."
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Putty"              # 20
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "putty: A terminal integrated SSH/Telnet client"
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$MENU_NUMBER"         "Utilities"          # 21
+    localize_info "INSTALL-DEVELOPMENT-APPS-MENU-$((MENU_NUMBER++))-I"                  "Utilities: $INSTALL_UTILITES"
 fi
 # -------------------------------------
 install_development_apps_menu()
@@ -8067,7 +8068,7 @@ install_development_apps_menu()
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions 2 5"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions 2 3 5 6 12 15 18-20"    
+        RecommendedOptions="$RecommendedOptions 2 3 6 7 13 16 19-21"    
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -8076,34 +8077,35 @@ install_development_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-DEVELOPMENT-APPS-DESC"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-1"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-1-I"  "MenuTheme[@]" # 1  Qt and Creator
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-2"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-2-I"  "MenuTheme[@]" # 2  Wt
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-3"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-3-I"  "MenuTheme[@]" # 3  postgresql
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-4"  "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-4-I"  "MenuTheme[@]" # 4  MySQL and Workbench
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-5"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-5-I"  "MenuTheme[@]" # 5  Aptana-Studio
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-6"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-6-I"  "MenuTheme[@]" # 6  Bluefish
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-7"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-7-I"  "MenuTheme[@]" # 7  Eclipse
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-8"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-8-I"  "MenuTheme[@]" # 8  emacs
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-9"  "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-9-I"  "MenuTheme[@]" # 9  gvim
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-10" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-10-I" "MenuTheme[@]" # 10 geany
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-11" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-11-I" "MenuTheme[@]" # 11 IntelliJ IDEA
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-12" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-12-I" "MenuTheme[@]" # 12 kdevelop
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-13" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-13-I" "MenuTheme[@]" # 13 Netbeans
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-14" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-14-I" "MenuTheme[@]" # 14 Oracle Java
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-15" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-15-I" "MenuTheme[@]" # 15 Sublime Text 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-16" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-16-I" "MenuTheme[@]" # 16 Debugger Tools
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-17" "" "$AUR" "INSTALL-DEVELOPMENT-APPS-MENU-17-I" "MenuTheme[@]" # 17 RabbitVCS
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-18" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-18-I" "MenuTheme[@]" # 18 astyle
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-19" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-19-I" "MenuTheme[@]" # 19 putty
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-20" "" ""     "INSTALL-DEVELOPMENT-APPS-MENU-20-I" "MenuTheme[@]" # 20 Utilities
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-1"  "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-1-I"  "MenuTheme[@]" # 1  Qt and Creator
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-2"  "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-2-I"  "MenuTheme[@]" # 2  Wt
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-3"  "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-3-I"  "MenuTheme[@]" # 3  postgresql
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-4"  "" "$AUR"      "INSTALL-DEVELOPMENT-APPS-MENU-4-I"  "MenuTheme[@]" # 4  MySQL and Workbench
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-5"  "" "$AUR"      "INSTALL-DEVELOPMENT-APPS-MENU-5-I"  "MenuTheme[@]" # 5  Aptana-Studio
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-6"  "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-6-I"  "MenuTheme[@]" # 6  Bluefish
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-7"  "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-7-I"  "MenuTheme[@]" # 7  Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-8"  "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-8-I"  "MenuTheme[@]" # 8  emacs
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-9"  "" "$SOME_AUR" "INSTALL-DEVELOPMENT-APPS-MENU-9-I"  "MenuTheme[@]" # 9  gvim
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-10" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-10-I" "MenuTheme[@]" # 10 geany
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-11" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-11-I" "MenuTheme[@]" # 11 IntelliJ IDEA
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-12" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-12-I" "MenuTheme[@]" # 12 kdevelop
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-13" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-13-I" "MenuTheme[@]" # 13 Netbeans
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-14" "" "$AUR"      "INSTALL-DEVELOPMENT-APPS-MENU-14-I" "MenuTheme[@]" # 14 Oracle Java
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-15" "" "$AUR"      "INSTALL-DEVELOPMENT-APPS-MENU-15-I" "MenuTheme[@]" # 15 Sublime Text 2
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-16" "" "$AUR"      "INSTALL-DEVELOPMENT-APPS-MENU-16-I" "MenuTheme[@]" # 16 Debugger Tools
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-17" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-17-I" "MenuTheme[@]" # 17 Meld
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-18" "" "$AUR"      "INSTALL-DEVELOPMENT-APPS-MENU-18-I" "MenuTheme[@]" # 18 RabbitVCS
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-19" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-19-I" "MenuTheme[@]" # 19 astyle
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-20" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-20-I" "MenuTheme[@]" # 20 putty
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DEVELOPMENT-APPS-MENU-21" "" ""          "INSTALL-DEVELOPMENT-APPS-MENU-21-I" "MenuTheme[@]" # 21 Utilities
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -8164,7 +8166,7 @@ install_development_apps_menu()
                     fi
                     ;;
                 9)  # gvim
-                    MenuChecks[$((S_OPT - 1))]=1
+                    MenuChecks[$((S_OPT - 1))]=1	
                     if add_packagemanager "package_install \"$INSTALL_VIM\" 'INSTALL-VIM'" "INSTALL-VIM" ; then
                         add_packagemanager "package_remove 'vim'" "REMOVE-GVIM"
                         add_package "$INSTALL_VIM"
@@ -8196,6 +8198,7 @@ install_development_apps_menu()
                     if add_packagemanager "package_install \"$INSTALL_NETBEANS\" 'INSTALL-NETBEANS'" "INSTALL-NETBEANS" ; then
                         add_package "$INSTALL_NETBEANS"
                     fi
+                    
                     ;;
                14)  # Oracle Java
                     MenuChecks[$((S_OPT - 1))]=1
@@ -8248,7 +8251,9 @@ install_development_apps_menu()
                     ;;
                21)  # Utilities
                     MenuChecks[$((S_OPT - 1))]=1
-                    install_utilities
+                    if add_packagemanager "package_install \"$INSTALL_UTILITES\" 'INSTALL-UTITILTIES'" "INSTALL-UTITILTIES" ; then
+                        add_package "$INSTALL_UTILITES"
+                    fi
                     ;;
                 *)  # Catch ALL
                     if [[ $(to_lower_case "$S_OPT") == $(to_lower_case "$BreakableKey") ]]; then
@@ -8291,9 +8296,9 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-ECLIPSE-DEV-MENU-4" "Web Development Tools for Eclipse"
     localize_info "INSTALL-ECLIPSE-DEV-MENU-5" "PHP Development Tools for Eclipse"
     localize_info "INSTALL-ECLIPSE-DEV-MENU-6" "Python Development Tools for Eclipse"
-    localize_info "INSTALL-ECLIPSE-DEV-MENU-7" "Aptana Studio plugin for Eclipse"
-    localize_info "INSTALL-ECLIPSE-DEV-MENU-8" "Vim-like editing plugin for Eclipse"
-    localize_info "INSTALL-ECLIPSE-DEV-MENU-9" "Git support plugin for Eclipse"
+    localize_info "INSTALL-ECLIPSE-DEV-MENU-7" "Aptana Studio Plugin for Eclipse"
+    localize_info "INSTALL-ECLIPSE-DEV-MENU-8" "Vim-like Editing Plugin for Eclipse"
+    localize_info "INSTALL-ECLIPSE-DEV-MENU-9" "Git support Plugin for Eclipse"
 fi
 # -------------------------------------
 install_eclipse_dev_menu()
@@ -8318,8 +8323,8 @@ install_eclipse_dev_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-ECLIPSE-DEV-DESC" " - https://wiki.archlinux.org/index.php/Eclipse"
@@ -8327,15 +8332,15 @@ install_eclipse_dev_menu()
         print_info  "INSTALL-ECLIPSE-DEV-INFO-1"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-1" "" ""     "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-2" "" ""     "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-3" "" "$AUR" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-4" "" "$AUR" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-5" "" "$AUR" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-6" "" "$AUR" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-7" "" "$AUR" "" "MenuTheme[@]" # 7
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-8" "" "$AUR" "" "MenuTheme[@]" # 8
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-9" "" "$AUR" "" "MenuTheme[@]" # 9
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-1" "" ""     "" "MenuTheme[@]" # 1 Eclipse IDE
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-2" "" ""     "" "MenuTheme[@]" # 2 Eclipse IDE for C/C++ Developers
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-3" "" "$AUR" "" "MenuTheme[@]" # 3 Android Development Tools for Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-4" "" "$AUR" "" "MenuTheme[@]" # 4 Web Development Tools for Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-5" "" "$AUR" "" "MenuTheme[@]" # 5 PHP Development Tools for Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-6" "" "$AUR" "" "MenuTheme[@]" # 6 Python Development Tools for Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-7" "" "$AUR" "" "MenuTheme[@]" # 7 Aptana Studio Plugin for Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-8" "" "$AUR" "" "MenuTheme[@]" # 8 Vim-like Editing Plugin for Eclipse
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-ECLIPSE-DEV-MENU-9" "" "$AUR" "" "MenuTheme[@]" # 9 Git support Plugin for Eclipse
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -8345,43 +8350,43 @@ install_eclipse_dev_menu()
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # 
+                1)  # Eclipse IDE
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ECLIPSE\" 'INSTALL-ECLIPSE'" "INSTALL-ECLIPSE" ; then
                         add_package "$INSTALL_ECLIPSE"
                     fi
                     ;;
-                2)  # 
+                2)  # Eclipse IDE for C/C++ Developers
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ECLIPSE_CDT\" 'INSTALL-ECLIPSE-CDT'" "INSTALL-ECLIPSE-CDT" ; then
                         add_package "$INSTALL_ECLIPSE_CDT"
                     fi
                     ;;
-                3)  # 
+                3)  # Android Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_ANDROID\" 'AUR-INSTALL-ECLIPSE-ANDROID'" "AUR-INSTALL-ECLIPSE-ANDROID" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_ANDROID"
                     fi
                     ;;
-                4)  # 
+                4)  # Web Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_WTP\" 'AUR-INSTALL-ECLIPSE-WTP'" "AUR-INSTALL-ECLIPSE-WTP" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_WTP"
                     fi
                     ;;
-                5)  # 
+                5)  # PHP Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PDT\" 'AUR-INSTALL-ECLIPSE-PDT'" "AUR-INSTALL-ECLIPSE-PDT" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_PDT"
                     fi
                     ;;
-                6)  # 
+                6)  # Python Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PYDEV\" 'AUR-INSTALL-ECLIPSE-PYDEV'" "AUR-INSTALL-ECLIPSE-PYDEV" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_PYDEV"
                     fi
                     ;;
-                7)  # 
+                7)  # Aptana Studio Plugin for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_APTANA\" 'AUR-INSTALL-ECLIPSE-APTANA'" "AUR-INSTALL-ECLIPSE-APTANA" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_APTANA"
@@ -8418,37 +8423,6 @@ install_eclipse_dev_menu()
 }
 #}}}
 # -----------------------------------------------------------------------------
-# INSTALL UTILITES {{{
-if [[ "$RUN_HELP" -eq 1 ]]; then
-    NAME="install_utilities"
-    USAGE="install_utilities"
-    DESCRIPTION=$(localize "Install Utilities")
-    NOTES=$(localize "NONE")
-    AUTHOR="Flesher"
-    VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
-    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
-fi
-if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "Install Utilities" "Install Utilities" 
-fi
-# -------------------------------------
-install_utilities()
-{
-    # 3 sub 20
-    print_title "Utilites"
-    print_info "faac gpac espeak faac antiword unrtf odt2txt txt2tags nrg2iso bchunk gnome-disk-utility"
-    print_info "Full List: $INSTALL_UTILITES" 
-    read_input_yn "Install Utilities" " " 1  # Allow Bypass
-    if [[ "$YN_OPTION" -eq 1 ]]; then
-        if add_packagemanager "package_install \"$INSTALL_UTILITES\" 'INSTALL-UTITILTIES'" "INSTALL-UTITILTIES" ; then
-            add_package "$INSTALL_UTILITES"
-        fi
-    fi
-}
-#}}}
-# -----------------------------------------------------------------------------
 # INSTALL INTERNET APPS {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_internet_apps_menu"
@@ -8464,14 +8438,21 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-INTERNET-APPS-DESC"  "Install Internet Applications"
     localize_info "INSTALL-INTERNET-APPS-TITLE" "Internet Applications"
-    #
-    localize_info "INSTALL-INTERNET-MENU-1"     "Browser"
-    localize_info "INSTALL-INTERNET-MENU-2"     "Download | Fileshare"
-    localize_info "INSTALL-INTERNET-MENU-3"     "Email | RSS"
+    # Browsers, Download / Fileshare, Email / RSS, Instant Messaging, Internet Relay Chat, Mapping Tools, VNC / Desktop Share
+    localize_info "INSTALL-INTERNET-MENU-1"     "Browsers"
+    localize_info "INSTALL-INTERNET-MENU-I-1"       "Browsers: Sub Menu: Firefox, Chrome, Opera"
+    localize_info "INSTALL-INTERNET-MENU-2"     "Download / Fileshare"
+    localize_info "INSTALL-INTERNET-MENU-I-2"       "Download / Fileshare: Transmission"
+    localize_info "INSTALL-INTERNET-MENU-3"     "Email / RSS"
+    localize_info "INSTALL-INTERNET-MENU-I-3"       "Email / RSS: Evolution, Firebird"
     localize_info "INSTALL-INTERNET-MENU-4"     "Instant Messaging"
-    localize_info "INSTALL-INTERNET-MENU-5"     "IRC"
+    localize_info "INSTALL-INTERNET-MENU-I-4"       "Instant Messaging (IM): Pidgin, Skype"
+    localize_info "INSTALL-INTERNET-MENU-5"     "Internet Relay Chat"
+    localize_info "INSTALL-INTERNET-MENU-I-5"       "Internet Relay Chat (IRC): "
     localize_info "INSTALL-INTERNET-MENU-6"     "Mapping Tools"
-    localize_info "INSTALL-INTERNET-MENU-7"     "VNC | Desktop Share"
+    localize_info "INSTALL-INTERNET-MENU-I-6"       "Mapping Tools: Google Map, NASA"
+    localize_info "INSTALL-INTERNET-MENU-7"     "VNC / Desktop Share"
+    localize_info "INSTALL-INTERNET-MENU-I-7"       "VNC / Desktop Share: "
 fi
 # -------------------------------------
 install_internet_apps_menu()
@@ -8497,21 +8478,21 @@ install_internet_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-INTERNET-APPS-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-1" "" "" "" "MenuTheme[@]" # 1
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-2" "" "" "" "MenuTheme[@]" # 2
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-3" "" "" "" "MenuTheme[@]" # 3
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-4" "" "" "" "MenuTheme[@]" # 4
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-5" "" "" "" "MenuTheme[@]" # 5
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-6" "" "" "" "MenuTheme[@]" # 6
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-7" "" "" "" "MenuTheme[@]" # 7
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-1" "" "" "INSTALL-INTERNET-MENU-I-1" "MenuTheme[@]" # 1 Browser
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-2" "" "" "INSTALL-INTERNET-MENU-I-2" "MenuTheme[@]" # 2 Download / Fileshare
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-3" "" "" "INSTALL-INTERNET-MENU-I-3" "MenuTheme[@]" # 3 Email / RSS
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-4" "" "" "INSTALL-INTERNET-MENU-I-4" "MenuTheme[@]" # 4 Instant Messaging
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-5" "" "" "INSTALL-INTERNET-MENU-I-5" "MenuTheme[@]" # 5 Internet Relay Chat
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-6" "" "" "INSTALL-INTERNET-MENU-I-6" "MenuTheme[@]" # 6 Mapping Tools
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-INTERNET-MENU-7" "" "" "INSTALL-INTERNET-MENU-I-7" "MenuTheme[@]" # 7 VNC / Desktop Share
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -8521,31 +8502,31 @@ install_internet_apps_menu()
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
             case "$S_OPT" in
-                1)  # 
+                1)  # Browser
                     MenuChecks[$((S_OPT - 1))]=1
                     install_browsers_menu
                     ;;
-                2)  # 
+                2)  # Download / Fileshare
                     MenuChecks[$((S_OPT - 1))]=1
                     install_download_fileshare_menu
                     ;;
-                3)  # 
+                3)  # Email / RSS
                     MenuChecks[$((S_OPT - 1))]=1
                     install_email_menu
                     ;;
-                4)  # 
+                4)  # Instant Messaging
                     MenuChecks[$((S_OPT - 1))]=1
                     install_im_menu
                     ;;
-                5)  # 
+                5)  # Internet Relay Chat
                     MenuChecks[$((S_OPT - 1))]=1
                     install_irc_menu
                     ;;
-                6)  # 
+                6)  # Mapping Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     install_mapping_menu
                     ;;
-                7)  # 
+                7)  # VNC / Desktop Share
                     MenuChecks[$((S_OPT - 1))]=1
                     install_desktop_share_menu
                     ;;
@@ -8571,7 +8552,7 @@ install_internet_apps_menu()
 # INSTALL BROWSERS {{{
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_browsers_menu"
-    USAGE="install_internet_apps_menu"
+    USAGE="install_browsers_menu"
     DESCRIPTION=$(localize "INSTALL-BROWSERS-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="Flesher"
@@ -8614,8 +8595,8 @@ install_browsers_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-BROWSERS-TITLE"
@@ -8728,7 +8709,7 @@ install_download_fileshare_menu()
 {
     local -r menu_name="INSTALL-DOWNLOAD-FILESHARE"  # You must define Menu Name here
     local BreakableKey="B"                           # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="8"                     # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1"                     # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
@@ -8746,8 +8727,8 @@ install_download_fileshare_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-DOWNLOAD-FILESHARE-DESC"
@@ -8868,7 +8849,8 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-EMAIL-DESC"     "Install Email / RSS Apps"
+    localize_info "INSTALL-EMAIL-DESC"     "Install Email / RSS Applications"
+    #
     localize_info "INSTALL-EMAIL-MENU-1"    "Evolution"
     localize_info "INSTALL-EMAIL-MENU-I-1"         "Evolution: Evolution is a GNOME mail client it supports IMAP, Microsoft Exchange Server and Novell GroupWise. It also has a calender function that supports vcal,csv, google calendar and many more. You can also organise your contacts, tasks and memos with Evolution. The beautiful thing about evolution is that it's easy to use and integrates with the gnome environment. You can see your calendar, tasks and location in the GNOME panel along with the weather and date. Just add the clock to your gnome panel."
     localize_info "INSTALL-EMAIL-MENU-2"    "Thunderbird"
@@ -8901,8 +8883,8 @@ install_email_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-EMAIL-DESC"
@@ -8980,14 +8962,14 @@ fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-IM-DESC"   "Install IM - Instant Messaging"
     #
-    localize_info "INSTALL-IM-MENU-1"   "Emesene"
-    localize_info "INSTALL-IM-MENU-I-1"      "Emesene: A pygtk MSN Messenger client"
-    localize_info "INSTALL-IM-MENU-2"   "Google Talkplugin"
-    localize_info "INSTALL-IM-MENU-I-2"      "Google Talkplugin: Video chat browser plug-in for Google Talk"
-    localize_info "INSTALL-IM-MENU-3"   "Pidgin"
-    localize_info "INSTALL-IM-MENU-I-3"      "Pidgin: Multi-protocol instant messaging client"
-    localize_info "INSTALL-IM-MENU-4"   "Skype"
-    localize_info "INSTALL-IM-MENU-I-4"      "Skype: P2P software for high-quality voice communication - with a Commerical License."
+    localize_info "INSTALL-IM-MENU-1"   "Pidgin"
+    localize_info "INSTALL-IM-MENU-I-1"      "Pidgin: Multi-protocol instant messaging client"
+    localize_info "INSTALL-IM-MENU-2"   "Skype"
+    localize_info "INSTALL-IM-MENU-I-2"      "Skype: P2P software for high-quality voice communication - with a Commerical License."
+    localize_info "INSTALL-IM-MENU-3"   "Emesene"
+    localize_info "INSTALL-IM-MENU-I-3"      "Emesene: A pygtk MSN Messenger client"
+    localize_info "INSTALL-IM-MENU-4"   "Google Talkplugin"
+    localize_info "INSTALL-IM-MENU-I-4"      "Google Talkplugin: Video chat browser plug-in for Google Talk"
     localize_info "INSTALL-IM-MENU-5"   "Teamspeak3"
     localize_info "INSTALL-IM-MENU-I-5"      "Teamspeak3: TeamSpeak is software for quality voice communication via the Internet"
 fi
@@ -8996,7 +8978,7 @@ install_im_menu()
 {
     local -r menu_name="INSTALL-IM"  # You must define Menu Name here
     local BreakableKey="B"           # Q=Quit, D=Done, B=Back
-    local RecommendedOptions="3 4"   # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
+    local RecommendedOptions="1 2"   # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
         RecommendedOptions="$RecommendedOptions"        
@@ -9014,18 +8996,18 @@ install_im_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-IM-DESC"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-1" "" ""     "INSTALL-IM-MENU-I-1" "MenuTheme[@]" # 1 Emesene
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-2" "" "$AUR" "INSTALL-IM-MENU-I-2" "MenuTheme[@]" # 2 Google Talkplugin
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-3" "" ""     "INSTALL-IM-MENU-I-3" "MenuTheme[@]" # 3 Pidgin
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-4" "" ""     "INSTALL-IM-MENU-I-4" "MenuTheme[@]" # 4 Skype
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-3" "" ""     "INSTALL-IM-MENU-I-3" "MenuTheme[@]" # 1 Pidgin
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-4" "" ""     "INSTALL-IM-MENU-I-4" "MenuTheme[@]" # 2 Skype
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-1" "" ""     "INSTALL-IM-MENU-I-1" "MenuTheme[@]" # 3 Emesene
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-2" "" "$AUR" "INSTALL-IM-MENU-I-2" "MenuTheme[@]" # 4 Google Talkplugin
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-IM-MENU-5" "" "$AUR" "INSTALL-IM-MENU-I-5" "MenuTheme[@]" # 5 Teamspeak3
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
@@ -9036,29 +9018,29 @@ install_im_menu()
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
             case "$SS_OPT" in
-                1)  # Emesene
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    if add_packagemanager "package_install \"$INSTALL_EMESENE\"  'INSTALL-EMESENE'" "INSTALL-EMESENE" ; then
-                        add_package "$INSTALL_EMESENE"
-                    fi
-                    ;;
-                2)  # Google Talkplugin
-                    MenuChecks[$((SS_OPT - 1))]=1
-                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_TALKPLUGIN\" 'AUR-INSTALL-GOOGLE-TALKPLUGIN'" "AUR-INSTALL-GOOGLE-TALKPLUGIN" ; then
-                        add_aur_package "$AUR_INSTALL_GOOGLE_TALKPLUGIN"
-                    fi
-                    ;;
-                3)  # Pidgin
+                1)  # Pidgin
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_PIDGIN\" 'INSTALL-PIDGIN'" "INSTALL-PIDGIN" ; then
                         add_package "$INSTALL_PIDGIN"
                     fi
                     ;;
-                4)  # Skype
+                2)  # Skype
                     MenuChecks[$((SS_OPT - 1))]=1
                     add_taskmanager "required_repo 'multilib'" "REQUIRED-REPO-MULTILIB"                    
                     if add_packagemanager "package_install \"$INSTALL_SKYPE\" 'INSTALL-SKYPE'" "INSTALL-SKYPE" ; then
                         add_package "$INSTALL_SKYPE"
+                    fi
+                    ;;
+                3)  # Emesene
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_EMESENE\"  'INSTALL-EMESENE'" "INSTALL-EMESENE" ; then
+                        add_package "$INSTALL_EMESENE"
+                    fi
+                    ;;
+                4)  # Google Talkplugin
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_TALKPLUGIN\" 'AUR-INSTALL-GOOGLE-TALKPLUGIN'" "AUR-INSTALL-GOOGLE-TALKPLUGIN" ; then
+                        add_aur_package "$AUR_INSTALL_GOOGLE_TALKPLUGIN"
                     fi
                     ;;
                 5)  # Teamspeak3
@@ -9129,8 +9111,8 @@ install_irc_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-IRC-DESC"
@@ -9233,8 +9215,8 @@ install_mapping_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #                    
     while [[ 1 ]];  do
         print_title "INSTALL-MAPPING-DESC"
@@ -9304,7 +9286,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DESKTOP-SHARE-MENU-1"   "Remmina"
     localize_info "INSTALL-DESKTOP-SHARE-MENU-I-1"       "Remmina: Remmina is a remote desktop client written in GTK+."
     localize_info "INSTALL-DESKTOP-SHARE-MENU-2"   "Teamviewer"
-    localize_info "INSTALL-DESKTOP-SHARE-MENU-I-2"       "Teamviewer: All-in-one solution for accessing PC's using the internet"
+    localize_info "INSTALL-DESKTOP-SHARE-MENU-I-2"       "Teamviewer: All-in-one solution for accessing PC's using the internet - has Commercial license."
 fi
 # -------------------------------------
 install_desktop_share_menu()
@@ -9329,8 +9311,8 @@ install_desktop_share_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-DESKTOP-SHARE-DESC"
@@ -9397,7 +9379,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-GRAPHICS-APPS-TITLE"    "GRAPHICS APPS"
     localize_info "INSTALL-GRAPHICS-APPS-INFO"     "AV Studio:"
     localize_info "INSTALL-GRAPHICS-APPS-INFO-2"   "and from AUR"
-    #
+    # Blender, Handbrake, CD/DVD Burners, Gimp, Gthumb, Inkscape, Mcomix, MyPaint, Scribus, Shotwell, Simple-scan, Xnviewmp, Qt Image Viewers, Qt Image Editors
     localize_info "INSTALL-GRAPHICS-APPS-MENU-1"   "AV Studio"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-I-1"      "AV Studio: Installs all Below and more Audio and Video Apps"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-2"   "Blender"
@@ -9456,8 +9438,8 @@ install_graphics_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-GRAPHICS-APPS-TITLE"
@@ -9708,11 +9690,11 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-VIDEO-APPS-DESC"     "Install Video Apps"
-    #
+    # Players, Editors \ Tools, Codecs
     localize_info "INSTALL-VIDEO-APPS-MENU-1"   "Players"
     localize_info "INSTALL-VIDEO-APPS-MENU-I-1"     "Players: Sub Menu"
-    localize_info "INSTALL-VIDEO-APPS-MENU-2"   "Editors | Tools"
-    localize_info "INSTALL-VIDEO-APPS-MENU-I-2"     "Editors | Tools: Sub Menu"
+    localize_info "INSTALL-VIDEO-APPS-MENU-2"   "Editors / Tools"
+    localize_info "INSTALL-VIDEO-APPS-MENU-I-2"     "Editors / Tools: Sub Menu"
     localize_info "INSTALL-VIDEO-APPS-MENU-3"   "Codecs"
     localize_info "INSTALL-VIDEO-APPS-MENU-I-3"     "Codecs: $AUR_INSTALL_CODECS_64"
 fi
@@ -9740,8 +9722,8 @@ install_video_apps_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-VIDEO-APPS-DESC"
@@ -9818,7 +9800,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-VIDEO-PLAYERS-DESC"   "Install Video Players"
 
     localize_info "INSTALL-VIDEO-PLAYERS-MENU-1"   "Audience-bzr"
-    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-1"       "Audience-bzr: A simple and modern media player"
+    localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-1"       "Audience-bzr: A simple and modern media player."
     localize_info "INSTALL-VIDEO-PLAYERS-MENU-2"   "Gnome-mplayer"
     localize_info "INSTALL-VIDEO-PLAYERS-MENU-I-2"       "Gnome-mplayer: A simple MPlayer GUI."
     localize_info "INSTALL-VIDEO-PLAYERS-MENU-3"   "Parole"
@@ -9850,7 +9832,7 @@ install_video_players_menu()
     elif [[ "$INSTALL_TYPE" -eq 2 ]]; then # Professional
         RecommendedOptions="$RecommendedOptions  4"        
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
-        RecommendedOptions="$RecommendedOptions 1-9"    
+        RecommendedOptions="$RecommendedOptions 2-9"    
     fi
     #
     RecommendedOptions="$RecommendedOptions $BreakableKey"
@@ -9859,8 +9841,8 @@ install_video_players_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-VIDEO-PLAYERS-DESC"
@@ -10016,8 +9998,8 @@ install_video_editors_tools_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         print_title "INSTALL-VIDEO-EDITORS-TOOLS-TITLE"
@@ -10265,8 +10247,8 @@ install_video_cards_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    StatusBar1="INSTALL-MENU-REC"
-    StatusBar2="$RecommendedOptions"
+    StatusBar1="INSTALL-MENU-RECOMMENDED"
+    StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
         #
