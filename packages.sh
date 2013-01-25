@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="11 Jan 2013 16:33"
+# LAST_UPDATE="24 Jan 2013 16:33"
 #
 # Software Packages:
 # If I declare them here, I can use them in menus
@@ -255,8 +255,10 @@ INSTALL_BLUEZ_FIREWARE="bluez-firmware"
 INSTALL_LIBFFADO="libffado"
 INSTALL_LIBRAW1394="libraw1394"
 INSTALL_SANE_GT68XX_FIRMWARE="sane-gt68xx-firmware"
+#
 INSTALL_WT="wt boost boost-build sqlite libharu graphicsmagick mercurial"
-INSTALL_QT="qt qtcreator qt-doc"
+INSTALL_QT="qt qtcreator qt-doc qt-gstreamer"
+#
 INSTALL_BLUEFISH="bluefish"
 INSTALL_XFBURN="xfburn"
 INSTALL_THUNAR="thunar tumbler"
@@ -268,6 +270,7 @@ INSTALL_PCMANFM="pcmanfm"
 INSTALL_GMRUN="gmrun"
 INSTALL_VIEWNIOR="viewnior"
 INSTALL_XCOMPMGR="xcompmgr transset-df"
+INSTALL_EP_MIDORI="midori"
 # *****************************************************************************
 # AUR PACKAGES
 AUR_INSTALL_QTERMINAL="qterminal-git"
@@ -331,13 +334,16 @@ AUR_INSTALL_EP_CONTRACTOR="contractor-bzr"
 AUR_INSTALL_EP_EIDETE="eidete-bzr"
 AUR_INSTALL_EP_DEXTER="dexter-contacts-bzr"
 AUR_INSTALL_EP_FEEDLER="feedler-bzr"
-AUR_INSTALL_EP_FILES="files-bzr tumbler"
+#
+INSTALL_EP_FILES="tumbler"
+AUR_INSTALL_EP_FILES="pantheon-files-bzr" # files-bzr
+#
 AUR_INSTALL_EP_FOOTNOTE="footnote-bzr"
 AUR_INSTALL_EP_GALA="gala-bzr"
 AUR_INSTALL_EP_GEARY="geary-git"
 AUR_INSTALL_EP_LINGO="lingo-dictionary-bzr"
 AUR_INSTALL_EP_MAYA="maya-bzr"
-AUR_INSTALL_EP_MIDORI="midori"
+
 AUR_INSTALL_EP_NOISE="noise-bzr"
 AUR_INSTALL_EP_SCRATCH="scratch-bzr"
 AUR_INSTALL_EP_PLANK="plank-bzr"
