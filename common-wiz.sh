@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="24 Jan 2013 16:33"
+# LAST_UPDATE="25 Jan 2013 16:33"
 # SCRIPT_VERSION="1.0.0.a"
 #
 # THINGS TO DO
@@ -4340,7 +4340,7 @@ fi
 # -------------------------------------
 add_packagemanager()
 {
-    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO")${BYellow} |$@| ${BWhite} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$2" ]; then
         print_error "ADD-PACKAGEMANAGER-ERROR"
         abort_install "$RUNTIME_MODE"
@@ -4427,7 +4427,7 @@ fi
 # -------------------------------------
 add_taskmanager()
 {
-    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO") $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
+    if [[ "$#" -ne "2" ]]; then echo -e "${BRed}$(gettext -s "WRONG-NUMBER-ARGUMENTS-PASSED-TO")${BYellow} |$@| ${BWhite} -> $FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO ${White}"; exit 1; fi
     if [ -z "$2" ]; then
         print_error "ADD-TASKMANAGER-ERROR"
         abort_install "$RUNTIME_MODE"
