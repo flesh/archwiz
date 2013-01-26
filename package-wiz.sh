@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="24 Jan 2013 16:33"
+# LAST_UPDATE="25 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
@@ -201,9 +201,10 @@ install_main_menu()
             case "$OPT" in
                 1)  # Wizard
                     run_install_wizzard
-                    exit 0
                     StatusBar1="INSTALL-MAIN-MENU-1"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "INSTALL-MAIN-COMPLETED"
+                    exit 0
                     ;;
                 2)  # Basic Setup with Add and Remove
                     if [[ "${MenuChecks[$((OPT - 1))]}" -eq 0 ]]; then
@@ -217,108 +218,126 @@ install_main_menu()
                         StatusBar1="INSTALL-MAIN-MENU-2"
                         StatusBar2=$(localize "INSTALL-MAIN-REMOVED")
                     fi
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Desktop Environment
                     MenuChecks[$((OPT - 1))]=1
-                    install_desktop_environment_menu
+                    install_desktop_environment_menu 0
                     StatusBar1="INSTALL-MAIN-MENU-3"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Display Manager
                     MenuChecks[$((OPT - 1))]=1
                     install_display_manager_menu
                     StatusBar1="INSTALL-MAIN-MENU-4"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Accessories Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_accessories_apps_menu    
                     StatusBar1="INSTALL-MAIN-MENU-5"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Development Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_development_apps_menu    
                     StatusBar1="INSTALL-MAIN-MENU-6"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Office Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_office_apps_menu         
                     StatusBar1="INSTALL-MAIN-MENU-7"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # System Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_system_apps_menu
                     StatusBar1="INSTALL-MAIN-MENU-8"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Internet Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_internet_apps_menu
                     StatusBar1="INSTALL-MAIN-MENU-10"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Graphics Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_graphics_apps_menu
                     StatusBar1="INSTALL-MAIN-MENU-9"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Audio Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_audio_apps_menu
                     StatusBar1="INSTALL-MAIN-MENU-11"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Video Apps
                     MenuChecks[$((OPT - 1))]=1
                     install_video_apps_menu
                     StatusBar1="INSTALL-MAIN-MENU-12"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # Games
                     MenuChecks[$((OPT - 1))]=1
                     install_games_menu
                     StatusBar1="INSTALL-MAIN-MENU-13"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # Science
                     MenuChecks[$((OPT - 1))]=1
                     install_science
                     StatusBar1="INSTALL-MAIN-MENU-14"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                15)  # Web server
                     MenuChecks[$((OPT - 1))]=1
                     install_web_server_menu
                     StatusBar1="INSTALL-MAIN-MENU-15"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                16)  # Fonts
                     MenuChecks[$((OPT - 1))]=1
                     install_fonts_menu
                     StatusBar1="INSTALL-MAIN-MENU-16"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                17)  # Extra
                     MenuChecks[$((OPT - 1))]=1
                     install_extra_menu
                     StatusBar1="INSTALL-MAIN-MENU-17"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                18)  # Kernel
                     MenuChecks[$((OPT - 1))]=1
                     install_kernel_menu
                     StatusBar1="INSTALL-MAIN-MENU-18"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                19)  # Clean Orphan Packages
                     MenuChecks[$((OPT - 1))]=1
                     clean_orphan_packages
                     StatusBar1="INSTALL-MAIN-MENU-19"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                20)  # Edit Configuration
                     MenuChecks[$((OPT - 1))]=1
@@ -328,18 +347,21 @@ install_main_menu()
                     add_custom_repositories
                     StatusBar1="INSTALL-MAIN-MENU-20"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                21)  # Load Custom Software
                     MenuChecks[$((OPT - 1))]=1
                     # load_custom_software
                     StatusBar1="INSTALL-MAIN-MENU-21"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                22)  # Load Software
                     MenuChecks[$((OPT - 1))]=1
                     load_software # @FIX
                     StatusBar1="INSTALL-MAIN-MENU-22"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                23)  # Save Software
                     MenuChecks[$((OPT - 1))]=1
@@ -347,6 +369,7 @@ install_main_menu()
                     SAVED_SOFTWARE=1
                     StatusBar1="INSTALL-MAIN-MENU-23"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                24)  # Quit or Save and Install Software
                     MenuChecks[$((OPT - 1))]=1
@@ -361,6 +384,7 @@ install_main_menu()
                     fi
                     StatusBar1="INSTALL-MAIN-MENU-24"
                     StatusBar2=$(localize "INSTALL-MAIN-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 *)  # Catch ALL 
@@ -428,7 +452,8 @@ run_install_wizzard()
     INSTALL_WIZARD=1
     install_basic 1 # make sure INSTALL_WIZARD=1
     INSTALL_WIZARD=0
-    install_desktop_environment_menu
+    install_desktop_environment_menu 1
+    INSTALL_WIZARD=0
     install_display_manager_menu
     INSTALL_WIZARD=1
     # 0=Normal, 1=Gamer, 2=Professional and 3=Programmer
@@ -576,24 +601,40 @@ install_type_menu()
                     MenuChecks[$((S_OPT - 1))]=1
                     INSTALL_TYPE=0
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 2)  # Gamer
                     MenuChecks[$((S_OPT - 1))]=1
                     INSTALL_TYPE=1
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 3)  # Professional 
                     MenuChecks[$((S_OPT - 1))]=1
                     S_OPT="$BreakableKey"
                     INSTALL_TYPE=2
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 4)  # Programmer
                     MenuChecks[$((S_OPT - 1))]=1
                     INSTALL_TYPE=3
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 *)  # Catch ALL 
@@ -697,36 +738,60 @@ install_custom_de_menu()
                     MenuChecks[$((S_OPT - 1))]=1
                     CUSTOM_DE=1
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-CUSTOM-DE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 2)  # KDE
                     MenuChecks[$((S_OPT - 1))]=1
                     CUSTOM_DE=2
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-CUSTOM-DE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 3)  # XFCE 
                     MenuChecks[$((S_OPT - 1))]=1
                     S_OPT="$BreakableKey"
                     CUSTOM_DE=3
+                    # Progress Status
+                    StatusBar1="INSTALL-CUSTOM-DE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 4)  # Razor-QT & Openbox
                     MenuChecks[$((S_OPT - 1))]=1
                     S_OPT="$BreakableKey"
                     CUSTOM_DE=4
+                    # Progress Status
+                    StatusBar1="INSTALL-CUSTOM-DE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 5)  # Cinnamon 
                     MenuChecks[$((S_OPT - 1))]=1
                     S_OPT="$BreakableKey"
                     CUSTOM_DE=5
+                    # Progress Status
+                    StatusBar1="INSTALL-CUSTOM-DE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 6)  # Awesome
                     MenuChecks[$((S_OPT - 1))]=1
                     CUSTOM_DE=6
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-CUSTOM-DE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 *)  # Catch ALL 
@@ -898,6 +963,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-1"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # SAMBA
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -911,6 +978,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-2"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Laptop Mode Tools
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -924,6 +993,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-3"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Preload
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -937,6 +1008,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-4"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Zram
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -950,6 +1023,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-5"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Tor
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -963,6 +1038,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-6"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # CUPS
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -976,6 +1053,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-7"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # USB 3G MODEM
                     #if [[ "${MenuChecks[$((S_OPT - 1))]}" -eq 0 ]]; then
@@ -989,6 +1068,8 @@ install_basics_menu()
                     #    StatusBar1="INSTALL-BASICS-MENU-8"
                     #    StatusBar2=$(localize "INSTALL-MENU-REMOVED")
                     #fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Addition Firmwares
                     install_additional_firmwares_menu 1
@@ -997,14 +1078,24 @@ install_basics_menu()
                     else
                         MenuChecks[$((S_OPT - 1))]=2
                     fi
+                    # Progress Status
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Choose AUR Helper 
                     MenuChecks[$((S_OPT - 1))]=1
                     choose_aurhelper
+                    # Progress Status
+                    StatusBar1="INSTALL-BASICS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Network Managers
                     MenuChecks[$((S_OPT - 1))]=1                     
                     get_network_manager_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-BASICS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Install Video Cards 
                     install_video_cards_menu 1
@@ -1015,6 +1106,10 @@ install_basics_menu()
                         MenuChecks[$((S_OPT - 1))]=1
                         INSTALLED_VIDEO_CARD=1         # Same as VIDEO_CARD != 7 
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-BASICS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -1698,6 +1793,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     2)  # ipw2100-fw
                         if [[ "$1" -eq 1 ]]; then
@@ -1712,6 +1811,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     3)  # ipw2200-fw 
                         if [[ "$1" -eq 1 ]]; then
@@ -1726,6 +1829,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     4)  # b43-firmware
                         if [[ "$1" -eq 1 ]]; then
@@ -1740,6 +1847,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     5)  # b43-firmware-legacy
                         if [[ "$1" -eq 1 ]]; then
@@ -1754,6 +1865,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     6)  # broadcom-wl
                         if [[ "$1" -eq 1 ]]; then
@@ -1768,6 +1883,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     7)  # zd1211-firmware
                         if [[ "$1" -eq 1 ]]; then
@@ -1782,6 +1901,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     8)  # bluez-firmware
                         if [[ "$1" -eq 1 ]]; then
@@ -1796,6 +1919,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     9)  # libffado
                         if [[ "$1" -eq 1 ]]; then
@@ -1810,6 +1937,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                    10)  # libraw1394
                         if [[ "$1" -eq 1 ]]; then
@@ -1824,6 +1955,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                    11)  # sane-gt68xx-firmware
                         if [[ "$1" -eq 1 ]]; then
@@ -1838,6 +1973,10 @@ install_additional_firmwares_menu()
                             return 0
                         fi                    
                         INSTALL_FIRMWARE=1
+                        # Progress Status
+                        StatusBar1="INSTALL-ADDITIONAL-FIRMWARE-MENU-$((S_OPT - 1))"
+                        StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                        print_this "$StatusBar1 $StatusBar2"
                         ;;
                     *)  # Catch ALL
                         if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -1945,6 +2084,10 @@ install_kernel_menu()
                     fi
                     # @FIX too many other things to do
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 2)  # linux-lts 
@@ -1953,6 +2096,10 @@ install_kernel_menu()
                         add_package        "$INSTALL_LTS"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 3)  # linux-zen 
@@ -1961,11 +2108,19 @@ install_kernel_menu()
                         add_aur_package    "$AUR_INSTALL_ZEN"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 4)  # 
                     MenuChecks[$((S_OPT - 1))]=1
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-TYPE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 *)  # Catch ALL 
@@ -2024,7 +2179,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-8"    "GNOME"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-8-I"      "GNOME: The GNOME project provides two things: The GNOME desktop environment, an attractive and intuitive desktop for users, and the GNOME development platform, an extensive framework for building applications that integrate into the rest of the desktop. GNOME is free, usable, accessible, international, developer-friendly, organized, supported, and a community. https://wiki.archlinux.org/index.php/GNOME"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9"    "GNOME DE Extras"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9-I"      "Gnome Desktop Extras:"
+    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-9-I"      "Gnome Desktop Extras Sub Menu: GNOME Icons, GTK Themes and even Unity"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10"   "Window Managers"
     localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-10-I"     "Window Managers: A Window Manager (WM) [Awesome, Openbox] is one component of a system's graphical user interface (GUI). Users may prefer to install a full-fledged Desktop Environment, which provides a complete user interface, including icons, windows, toolbars, wallpapers, and desktop widgets. https://wiki.archlinux.org/index.php/Window_Manager"
     #
@@ -2094,6 +2249,7 @@ install_desktop_environment_menu()
         read_input_options "$RecommendedOptions" "$BreakableKey"
         RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         BYPASS="$Old_BYPASS" # Restore Bypass
+        INSTALL_WIZARD="$1"
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -2101,42 +2257,82 @@ install_desktop_environment_menu()
                 1)  # Mate
                     MenuChecks[$((S_OPT - 1))]=1
                     install_mate_now
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # KDE
                     MenuChecks[$((S_OPT - 1))]=1
                     install_kde_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # XFCE
                     MenuChecks[$((S_OPT - 1))]=1
                     install_xfce_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Razor-qt
                     MenuChecks[$((S_OPT - 1))]=1
                     install_razor_qt_common
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Cinnamon
                     MenuChecks[$((S_OPT - 1))]=1
                     install_cinnamon_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # E17
                     MenuChecks[$((S_OPT - 1))]=1
                     install_e17_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # LXDE
                     MenuChecks[$((S_OPT - 1))]=1
                     install_lxde_common
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # GNOME
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gnome_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # GNOME DE Extras
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gnome_de_extras_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Window Managers
                     MenuChecks[$((S_OPT - 1))]=1
                     install_window_manager_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-ENVIRONMENT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2190,7 +2386,7 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-WINDOW-MANAGER-DESC"    "Install Window Manager"
-    localize_info "INSTALL-WINDOW-MANAGER-TITLE"   "Desktop Environment"
+    localize_info "INSTALL-WINDOW-MANAGER-TITLE"   "Window Environment"
     localize_info "INSTALL-WINDOW-MANAGER-INFO-1"  "A Desktop environments (DE) provide a complete graphical user interface (GUI) for a system by bundling together a variety of X clients written using a common widget toolkit and set of libraries."
     localize_info "INSTALL-WINDOW-MANAGER-INFO-2"  "Mate, KDE, XFCE, Awesome, Cinnamon, E17, LXDE, OpenBox, GNOME, and Unity"
     #
@@ -2253,10 +2449,8 @@ install_window_manager_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        local Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
         read_input_options "$RecommendedOptions" "$BreakableKey"
         RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
-        BYPASS="$Old_BYPASS"  # Restore Bypass
         #
         local S_OPT
         for S_OPT in ${OPTIONS[@]}; do
@@ -2264,10 +2458,18 @@ install_window_manager_menu()
                 1)  # Awesome
                     MenuChecks[$((S_OPT - 1))]=1
                     install_awesome_common
+                    # Progress Status
+                    StatusBar1="INSTALL-WINDOW-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # OpenBox
                     MenuChecks[$((S_OPT - 1))]=1
                     install_openbox_common
+                    # Progress Status
+                    StatusBar1="INSTALL-WINDOW-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2463,42 +2665,70 @@ install_kde_menu()
                     if add_packagemanager "package_install \"$INSTALL_APPER\" 'INSTALL-APPER'" "INSTALL-APPER" ; then
                         add_package "$INSTALL_APPER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # bangarang
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_BANGARANG\" 'AUR-INSTALL-BANGARANG'" "AUR-INSTALL-BANGARANG" ; then
                         add_aur_package "$AUR_INSTALL_BANGARANG"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # choqok
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_CHOQOK\" 'INSTALL-CHOQOK'" "INSTALL-CHOQOK" ; then
                         add_package "$INSTALL_CHOQOK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # digikam
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_DIGIKAM\" 'INSTALL-DIGIKAM'" "INSTALL-DIGIKAM" ; then
                         add_package "$INSTALL_DIGIKAM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # k3b
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_K3B\" 'INSTALL-K3B'" "INSTALL-K3B" ; then
                         add_package "$INSTALL_K3B"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # rosa-icons
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_ICONS\" 'AUR-INSTALL-ROSA-ICONS'" "AUR-INSTALL-ROSA-ICONS" ; then
                         add_aur_package "$AUR_INSTALL_ROSA_ICONS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Plasma Themes
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_PLASMA_THEMES\" 'AUR-INSTALL-PLASMA-THEMES'" "AUR-INSTALL-PLASMA-THEMES" ; then
                         add_aur_package "$AUR_INSTALL_PLASMA_THEMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # yakuake
                     MenuChecks[$((S_OPT - 1))]=1
@@ -2508,6 +2738,10 @@ install_kde_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_YAKUAKE\" 'AUR-INSTALL-YAKUAKE'" "AUR-INSTALL-YAKUAKE" ; then
                         add_aur_package "$AUR_INSTALL_YAKUAKE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-KDE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2531,8 +2765,8 @@ install_kde_menu()
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_gnome_menu"
     USAGE="install_gnome_menu"
-    DESCRIPTION=$(localize "CONFIGURE-GNOME-DESC")
-    NOTES=$(localize "CONFIGURE-GNOME-NOTES")
+    DESCRIPTION=$(localize "INSTALL-GNOME-DESC")
+    NOTES=$(localize "INSTALL-GNOME-NOTES")
     AUTHOR="helmuthdu and Flesher"
     VERSION="1.0"
     CREATED="11 SEP 2012"
@@ -2540,27 +2774,27 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "CONFIGURE-GNOME-DESC"      "Install Gnome"
-    localize_info "CONFIGURE-GNOME-NOTES"     "None."
-    localize_info "CONFIGURE-GNOME-TITLE"     "GNOME CUSTOMIZATION"
+    localize_info "INSTALL-GNOME-DESC"      "Install Gnome"
+    localize_info "INSTALL-GNOME-NOTES"     "None."
+    localize_info "INSTALL-GNOME-TITLE"     "GNOME Customization"
     #
-    localize_info "CONFIGURE-GNOME-TITLE"     "GNOME"
-    localize_info "CONFIGURE-GNOME-INFO-1"    "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
-    localize_info "CONFIGURE-GNOME-INFO-2"    "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
-    localize_info "CONFIGURE-GNOME-INFO-3"    "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
+    localize_info "INSTALL-GNOME-TITLE"     "GNOME"
+    localize_info "INSTALL-GNOME-INFO-1"    "GNOME is a desktop environment and graphical user interface that runs on top of a computer operating system. It is composed entirely of free and open source software. It is an international project that includes creating software development frameworks, selecting application software for the desktop, and working on the programs that manage application launching, file handling, and window and task management."
+    localize_info "INSTALL-GNOME-INFO-2"    "GNOME Shell Extensions: disper gpaste gnome-shell-extension-gtile-git gnome-shell-extension-mediaplayer-git gnome-shell-extension-noa11y-git gnome-shell-extension-pomodoro-git gnome-shell-extension-user-theme-git gnome-shell-extension-weather-git gnome-shell-system-monitor-applet-git"
+    localize_info "INSTALL-GNOME-INFO-3"    "GNOME Shell Themes: gnome-shell-theme-default-mod gnome-shell-theme-dark-shine gnome-shell-theme-elegance gnome-shell-theme-eos gnome-shell-theme-frieze gnome-shell-theme-google+"
     #
-    localize_info "CONFIGURE-GNOME-MENU-1"    "GNOME Shell Extensions"
-    localize_info "CONFIGURE-GNOME-MENU-I-1"        "GNOME Shell Extensions: Sub Menu: User-created extensions for the GNOME Shell environment"
-    localize_info "CONFIGURE-GNOME-MENU-2"    "GNOME Shell Themes"
-    localize_info "CONFIGURE-GNOME-MENU-I-2"        "GNOME Shell Themes: Sub Menu"
-    localize_info "CONFIGURE-GNOME-MENU-3"    "GNOME Packagekit"
-    localize_info "CONFIGURE-GNOME-MENU-I-3"        "GNOME Packagekit: Collection of graphical tools for PackageKit to be used in the GNOME desktop"
-    localize_info "CONFIGURE-GNOME-MENU-4"    "activity-journal"
-    localize_info "CONFIGURE-GNOME-MENU-I-4"        "activity-journal: Tool for easily browsing and finding files on your computer using the Zeitgeist engine"
-    localize_info "CONFIGURE-GNOME-MENU-5"    "activity-log-manager"
-    localize_info "CONFIGURE-GNOME-MENU-I-5"        "activity-log-manager: A graphical user interface which lets you easily control what gets logged by Zeitgeist"
-    localize_info "CONFIGURE-GNOME-MENU-6"    "gloobus-sushi-bzr"
-    localize_info "CONFIGURE-GNOME-MENU-I-6"        "gloobus-sushi-bzr: GloobusPreview replacement for Gnome Sushi"
+    localize_info "INSTALL-GNOME-MENU-1"    "GNOME Shell Extensions"
+    localize_info "INSTALL-GNOME-MENU-I-1"        "GNOME Shell Extensions: Sub Menu: User-created extensions for the GNOME Shell environment"
+    localize_info "INSTALL-GNOME-MENU-2"    "GNOME Shell Themes"
+    localize_info "INSTALL-GNOME-MENU-I-2"        "GNOME Shell Themes: Sub Menu"
+    localize_info "INSTALL-GNOME-MENU-3"    "GNOME Packagekit"
+    localize_info "INSTALL-GNOME-MENU-I-3"        "GNOME Packagekit: Collection of graphical tools for PackageKit to be used in the GNOME desktop"
+    localize_info "INSTALL-GNOME-MENU-4"    "activity-journal"
+    localize_info "INSTALL-GNOME-MENU-I-4"        "activity-journal: Tool for easily browsing and finding files on your computer using the Zeitgeist engine"
+    localize_info "INSTALL-GNOME-MENU-5"    "activity-log-manager"
+    localize_info "INSTALL-GNOME-MENU-I-5"        "activity-log-manager: A graphical user interface which lets you easily control what gets logged by Zeitgeist"
+    localize_info "INSTALL-GNOME-MENU-6"    "gloobus-sushi-bzr"
+    localize_info "INSTALL-GNOME-MENU-I-6"        "gloobus-sushi-bzr: GloobusPreview replacement for Gnome Sushi"
 fi
 # -------------------------------------
 install_gnome_menu()
@@ -2589,10 +2823,10 @@ install_gnome_menu()
     local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
     IFS="$Last_IFS"
     #
-    print_title "CONFIGURE-GNOME-TITLE" " - https://wiki.archlinux.org/index.php/GNOME"
-    print_info  "CONFIGURE-GNOME-INFO-1"
-    print_info  "CONFIGURE-GNOME-INFO-2"
-    print_info  "CONFIGURE-GNOME-INFO-3"
+    print_title "INSTALL-GNOME-TITLE" " - https://wiki.archlinux.org/index.php/GNOME"
+    print_info  "INSTALL-GNOME-INFO-1"
+    print_info  "INSTALL-GNOME-INFO-2"
+    print_info  "INSTALL-GNOME-INFO-3"
     if add_packagemanager "package_install \"$INSTALL_GNOME\" 'INSTALL-GNOME'" "INSTALL-GNOME" ; then
         add_package "$INSTALL_GNOME" 
         #Gnome Display Manager (a reimplementation of xdm)
@@ -2611,16 +2845,16 @@ install_gnome_menu()
     StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
-        print_title "CONFIGURE-GNOME-TITLE"
+        print_title "INSTALL-GNOME-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-1" "MenuTheme[@]" # 1 GNOME Shell Extensions
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" ""     "CONFIGURE-GNOME-MENU-I-2" "MenuTheme[@]" # 2 GNOME Shell Themes
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" ""     "CONFIGURE-GNOME-MENU-I-3" "MenuTheme[@]" # 3 GNOME Packagekit
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-4" "MenuTheme[@]" # 4 activity-journal 
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-5" "MenuTheme[@]" # 5 activity-log-manager
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIGURE-GNOME-MENU-" "" "$AUR" "CONFIGURE-GNOME-MENU-I-6" "MenuTheme[@]" # 6 gloobus-sushi-bzr
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-MENU-1" "" "$AUR" "INSTALL-GNOME-MENU-I-1" "MenuTheme[@]" # 1 GNOME Shell Extensions
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-MENU-2" "" ""     "INSTALL-GNOME-MENU-I-2" "MenuTheme[@]" # 2 GNOME Shell Themes
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-MENU-3" "" ""     "INSTALL-GNOME-MENU-I-3" "MenuTheme[@]" # 3 GNOME Packagekit
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-MENU-4" "" "$AUR" "INSTALL-GNOME-MENU-I-4" "MenuTheme[@]" # 4 activity-journal 
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-MENU-5" "" "$AUR" "INSTALL-GNOME-MENU-I-5" "MenuTheme[@]" # 5 activity-log-manager
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-MENU-6" "" "$AUR" "INSTALL-GNOME-MENU-I-6" "MenuTheme[@]" # 6 gloobus-sushi-bzr
         #
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
@@ -2634,34 +2868,58 @@ install_gnome_menu()
                 1)  # GNOME Shell Extensions
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gnome_menushell_extensions_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # GNOME Shell Themes
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gnome_menushell_themes_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # GNOME Packagekit
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT" ; then
                         add_package "$INSTALL_GNOME_PACKAGEKIT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # activity-journal
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL'" "AUR-INSTALL-GNOME-CUSTOM-ACT-JOURNAL" ; then
                         add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_JOURNAL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # activity-log-manager
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER\" 'AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER'" "AUR-INSTALL-GNOME-CUSTOM-ACT-LOG-MANAGER" ; then
                         add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_ACT_LOG_MANAGER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # gloobus-sushi-bzr
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS\" 'AUR-INSTALL-GNOME-CUSTOM-GLOOBUS'" "AUR-INSTALL-GNOME-CUSTOM-GLOOBUS" ; then
                         add_aur_package "$AUR_INSTALL_GNOME_CUSTOM_GLOOBUS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2669,6 +2927,7 @@ install_gnome_menu()
                             SAVED_MAIN_MENU=1
                         fi
                         S_OPT="$BreakableKey"
+                        break;
                     else
                         invalid_option "$S_OPT"
                     fi
@@ -2769,54 +3028,90 @@ install_gnome_menushell_extensions_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_DISPER\" 'AUR-INSTALL-GSHELL-DISPER'" "AUR-INSTALL-GSHELL-DISPER" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_DISPER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # gpaste
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GPASTE\" 'AUR-INSTALL-GSHELL-GPASTE'" "AUR-INSTALL-GSHELL-GPASTE" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_GPASTE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # mediaplayer
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_MEDIAPLAYER\" 'AUR-INSTALL-GSHELL-MEDIAPLAYER'" "AUR-INSTALL-GSHELL-MEDIAPLAYER" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_MEDIAPLAYER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # noa11y
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_NOA11Y\" 'AUR-INSTALL-GSHELL-NOA11Y'" "AUR-INSTALL-GSHELL-NOA11Y" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_NOA11Y"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # pomodoro
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_POMODORO\" 'AUR-INSTALL-GSHELL-POMODORO'" "AUR-INSTALL-GSHELL-POMODORO" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_POMODORO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # System-monitor-applet
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_SYSTEM_MONITOR\" 'AUR-INSTALL-GSHELL-SYSTEM-MONITOR'" "AUR-INSTALL-GSHELL-SYSTEM-MONITOR" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_SYSTEM_MONITOR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # user-theme
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_USER_THEME\" 'AUR-INSTALL-GSHELL-USER-THEME'" "AUR-INSTALL-GSHELL-USER-THEME" ; then
                         add_aur_package "$AUR_INSTALL_USER_THEME"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # weather
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_WEATHER\" 'AUR-INSTALL-GSHELL-WEATHER'" "AUR-INSTALL-GSHELL-WEATHER" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_WEATHER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # gtile
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_GTILE\" 'AUR-INSTALL-GSHELL-GTILE'" "AUR-INSTALL-GSHELL-GTILE" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_GTILE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-EXTENSIONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2916,36 +3211,60 @@ install_gnome_menushell_themes_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DEFAULT\" 'AUR-INSTALL-GSHELL-THEMES-DEFAULT'" "AUR-INSTALL-GSHELL-THEMES-DEFAULT" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DEFAULT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # dark-shine
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE\" 'AUR-INSTALL-GSHELL-THEMES-DARK-SHINE'" "AUR-INSTALL-GSHELL-THEMES-DARK-SHINE" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_THEMES_DARK_SHINE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # elegance
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_ELEGANCE\" 'AUR-INSTALL-GSHELL-THEMES-ELEGANCE'" "AUR-INSTALL-GSHELL-THEMES-ELEGANCE" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_THEMES_ELEGANCE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # eos
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_EOS\" 'AUR-INSTALL-GSHELL-THEMES-EOS'" "AUR-INSTALL-GSHELL-THEMES-EOS" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_THEMES_EOS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # frieze
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_FRIEZE\" 'AUR-INSTALL-GSHELL-THEMES-FRIEZE'" "AUR-INSTALL-GSHELL-THEMES-FRIEZE" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_THEMES_FRIEZE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # gnome-shell-theme-google
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GSHELL_THEMES_GOOGLE\" 'AUR-INSTALL-GSHELL-THEMES-GOOGLE'" "AUR-INSTALL-GSHELL-THEMES-GOOGLE" ; then
                         add_aur_package "$AUR_INSTALL_GSHELL_THEMES_GOOGLE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOMESHELL-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -2990,8 +3309,6 @@ fi
 install_awesome_common() # Where Common is Menu install_common_apps_menu
 {
     # 4
-    local -r menu_name="INSTALL-AWESOME"  # You must define Menu Name here
-    local BreakableKey="D"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="4 6"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
@@ -3003,15 +3320,7 @@ install_awesome_common() # Where Common is Menu install_common_apps_menu
     elif [[ "$INSTALL_TYPE" -eq 3 ]]; then # Programmer
         RecommendedOptions="$RecommendedOptions 1-14"    
     fi
-    #
-    RecommendedOptions="$RecommendedOptions $BreakableKey"
-    #
-    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
-    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
-    IFS="$Last_IFS"
-    #
-    AWESOME_INSTALLED=1
-    #
+    # @FIX Make a function that creates the Menu System
     # https://github.com/terceiro/awesome-freedesktop
     # http://awesome.naquadah.org/wiki/Revelation
     # http://awesome.naquadah.org/wiki/Quickly_Setting_up_Awesome_with_Gnome
@@ -3023,18 +3332,19 @@ install_awesome_common() # Where Common is Menu install_common_apps_menu
     # https://github.com/mikar/awesome-themes 2 years old
     #
     if add_packagemanager "package_install \"$INSTALL_AWESOME\" 'INSTALL-AWESOME'" "INSTALL-AWESOME" ; then
+        AWESOME_INSTALLED=1
         add_package "$INSTALL_AWESOME"
         # Abstraction for enumerating power devices, listening to device events and querying history and statistics
         # A framework for defining and tracking users, login sessions, and seats
         # systemd-logind replaced console-kit-daemon.service
         "systemctl enable upower.service" "SYSTEMD-ENABLE-AWESOME"
+        if add_packagemanager "aur_package_install \"$AUR_INSTALL_AWESOME\" 'AUR-INSTALL-AWESOME'" "AUR-INSTALL-AWESOME" ; then
+            add_aur_package "$AUR_INSTALL_AWESOME"
+            add_packagemanager "make_dir \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/awesome/rc.lua' \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
+        fi
+        #
+        install_common_apps_menu "$RecommendedOptions" "$(localize "INSTALL-AWESOME-DESC")"
     fi
-    if add_packagemanager "aur_package_install \"$AUR_INSTALL_AWESOME\" 'AUR-INSTALL-AWESOME'" "AUR-INSTALL-AWESOME" ; then
-        add_aur_package "$AUR_INSTALL_AWESOME"
-        add_packagemanager "make_dir \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/awesome/rc.lua' \"/home/$USERNAME/.config/awesome/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
-    fi
-    #
-    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3060,8 +3370,6 @@ fi
 install_openbox_common() # Where Common is Menu install_common_apps_menu
 { 
     # 8
-    local -r menu_name="INSTALL-OPENBOX"  # You must define Menu Name here
-    local BreakableKey="D"                # Q=Quit, D=Done, B=Back
     local RecommendedOptions="4 6"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$CUSTOM_DE" -eq 1 ]]; then         # Mate
@@ -3088,22 +3396,16 @@ install_openbox_common() # Where Common is Menu install_common_apps_menu
         RecommendedOptions="$RecommendedOptions 1-14"    
     fi
     #
-    RecommendedOptions="$RecommendedOptions $BreakableKey"
-    #
-    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
-    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
-    IFS="$Last_IFS"
-    #
-    OPENBOX_INSTALLED=1
     if add_packagemanager "package_install \"$INSTALL_OPENBOX\" 'INSTALL-OPENBOX'" "INSTALL-OPENBOX" ; then
+        OPENBOX_INSTALLED=1
         add_package "$INSTALL_OPENBOX"
+        if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENBOX\" 'AUR-INSTALL-OPENBOX'" "AUR-INSTALL-OPENBOX" ; then
+            add_aur_package "$AUR_INSTALL_OPENBOX"
+            add_packagemanager "make_dir \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/rc.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/menu.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/autostart' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-OPENBOX"  
+        fi
+        #
+        install_common_apps_menu "$RecommendedOptions" "$(localize "INSTALL-OPENBOX-DESC")"
     fi
-    if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENBOX\" 'AUR-INSTALL-OPENBOX'" "AUR-INSTALL-OPENBOX" ; then
-        add_aur_package "$AUR_INSTALL_OPENBOX"
-        add_packagemanager "make_dir \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/rc.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/menu.xml' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/openbox/autostart' \"/home/$USERNAME/.config/openbox/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-OPENBOX"  
-    fi
-    #
-    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3172,7 +3474,7 @@ install_common_apps_menu()
     if [[ "$CUSTOM_DE" -eq 4 ]]; then
         RecommendedOptions="$RecommendedOptions"
     fi                    
-    #
+    # @FIX remove BreakableKey and add it to the end
     if ! $(is_needle_in_haystack "$BreakableKey" "$RecommendedOptions" 5) ; then # 5=Anywhere
         RecommendedOptions="$RecommendedOptions $BreakableKey"
     fi
@@ -3182,7 +3484,7 @@ install_common_apps_menu()
     IFS="$Last_IFS"
     #
     StatusBar1="INSTALL-MENU-RECOMMENDED"
-    StatusBar2=": $RecommendedOptions"
+    StatusBar2=": $RecommendedOptions -> $2"
     #
     while [[ 1 ]];  do
         print_title "INSTALL-COMMON-APPS-TITLE"
@@ -3217,84 +3519,140 @@ install_common_apps_menu()
                     if add_packagemanager "package_install \"$INSTALL_XCOMPMGR\" 'INSTALL-XCOMPMGR'" "INSTALL-XCOMPMGR" ; then
                         add_package "$INSTALL_XCOMPMGR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # viewnior
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_VIEWNIOR\" 'INSTALL-VIEWNIOR'" "INSTALL-VIEWNIOR" ; then
                         add_package "$INSTALL_VIEWNIOR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # gmrun
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GMRUN\" 'INSTALL-GMRUN'" "INSTALL-GMRUN" ; then
                         add_package "$INSTALL_GMRUN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # PCManFM
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_PCMANFM\" 'INSTALL-PCMANFM'" "INSTALL-PCMANFM" ; then
                         add_package "$INSTALL_PCMANFM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # rxvt-unicode
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_RXVT_UNICODE\" 'INSTALL-RXVT-UNICODE'" "INSTALL-RXVT-UNICODE" ; then
                         add_package "$INSTALL_RXVT_UNICODE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # scrot
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SCROT\" 'INSTALL-SCROT'" "INSTALL-SCROT" ; then
                         add_package "$INSTALL_SCROT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # thunar
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_THUNAR\" 'INSTALL-THUNAR'" "INSTALL-THUNAR" ; then
                         add_package "$INSTALL_THUNAR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # tint2
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_TINT2\" 'INSTALL-TINT2'" "INSTALL-TINT2" ; then
                         add_package "$INSTALL_TINT2"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # volwheel
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_VOLWHEEL\" 'INSTALL-VOLWHEEL'" "INSTALL-VOLWHEEL" ; then
                         add_package "$INSTALL_VOLWHEEL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # xfburn
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_XFBURN\" 'INSTALL-XFBURN'" "INSTALL-XFBURN" ; then
                         add_package "$INSTALL_XFBURN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # qasmixer 
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_QASMIXER\" 'AUR-INSTALL-QASMIXER'" "AUR-INSTALL-QASMIXER" ; then
                         add_aur_package "$AUR_INSTALL_QASMIXER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # qtfm
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_QTFM\" 'INSTALL-QTFM'" "INSTALL-QTFM" ; then
                         add_package "$INSTALL_QTFM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # qterminal
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_QTERMINAL\" 'AUR-INSTALL-QTERMINAL'" "AUR-INSTALL-QTERMINAL" ; then
                         add_aur_package "$AUR_INSTALL_QTERMINAL" 
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # qpdfview
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_QT_PDF\" 'AUR-INSTALL-QT-PDF'" "AUR-INSTALL-QT-PDF" ; then
                         add_aur_package "$AUR_QT_PDF"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-COMMON-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL 
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3302,6 +3660,7 @@ install_common_apps_menu()
                             SAVED_MAIN_MENU=1
                         fi
                         S_OPT="$BreakableKey"
+                        break;
                     else
                         invalid_option "$S_OPT"
                     fi
@@ -3319,10 +3678,10 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     USAGE="install_razor_qt_common"
     DESCRIPTION=$(localize "INSTALL-RAZOR-QT-DESC")
     NOTES=$(localize "NONE")
-    AUTHOR="helmuthdu and Flesher"
+    AUTHOR="Flesher"
     VERSION="1.0"
-    CREATED="11 SEP 2012"
-    REVISION="5 Dec 2012"
+    CREATED="14 Jan 2013"
+    REVISION="14 Jan 2013"
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
@@ -3332,8 +3691,6 @@ fi
 install_razor_qt_common() # Where Common is install_common_apps_menu
 {
     # 4
-    local -r menu_name="INSTALL-RAZOR-QT"  # You must define Menu Name here
-    local BreakableKey="D"                 # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1-14"        # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
     if [[ "$INSTALL_TYPE" -eq 0 ]]; then   # Normal
@@ -3350,28 +3707,21 @@ install_razor_qt_common() # Where Common is install_common_apps_menu
         RecommendedOptions="$RecommendedOptions"
     fi                    
     #
-    RecommendedOptions="$RecommendedOptions $BreakableKey"
-    #
-    local Last_IFS="$IFS"; IFS=$'\n\t'; # Very Important
-    local -a MenuChecks=( $(load_array "${MENU_PATH}/${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
-    IFS="$Last_IFS"
-    #
-    RAZOR_QT_INSTALLED=1
-    QT_INSTALL=1
-    #
     # Needs a WM: openbox, fwwm2, kwin, KDE without Plasma Desktop
     #
     #install_razor_qt_common=""
     #if add_packagemanager "package_install \"$install_razor_qt_common\" 'INSTALL-AWESOME'" "INSTALL-AWESOME" ; then add_package "$install_razor_qt_common"; fi
     #
-    if add_packagemanager "aur_package_install \"$AUR_install_razor_qt_common\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT" ; then
-        add_aur_package "$AUR_install_razor_qt_common"
-        add_packagemanager "make_dir \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/razor/session.conf' \"/home/$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; chown -R $USERNAME:$USERNAME /home/$USERNAME/.config" "CONFIG-AWESOME"   
+    if add_packagemanager "aur_package_install \"$AUR_INSTALL_RAZOR_QT\" 'AUR-INSTALL-RAZOR-QT'" "AUR-INSTALL-RAZOR-QT" ; then
+        RAZOR_QT_INSTALLED=1
+        QT_INSTALL=1
+        add_aur_package "$AUR_INSTALL_RAZOR_QT"
+        add_packagemanager "make_dir \"/home/\$USERNAME/.config/razor/\" \"$(basename $BASH_SOURCE) : $LINENO\"; copy_file '/etc/xdg/razor/session.conf' \"/home/\$USERNAME/.config/razor/\" \"\$(basename \$BASH_SOURCE) : \$LINENO\"; chown -R \$USERNAME:\$USERNAME /home/\$USERNAME/.config" "CONFIG-AWESOME"   
         add_packagemanager "$(config_xinitrc 'exec razor-session')" "CONFIG-XINITRC-RAZOR"
         #add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-RAZOR-QT"
+        #
+        install_common_apps_menu "$RecommendedOptions" "$(localize "INSTALL-RAZOR-QT-DESC")"
     fi
-    #
-    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3473,18 +3823,30 @@ install_cinnamon_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_APPLETS\" 'AUR-INSTALL-CINNAMON-APPLETS'" "AUR-INSTALL-CINNAMON-APPLETS" ; then
                         add_aur_package "$AUR_INSTALL_CINNAMON_APPLETS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-CINNAMON-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Themes
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_CINNAMON_THEMES\" 'AUR-INSTALL-CINNAMON-THEMES'" "AUR-INSTALL-CINNAMON-THEMES" ; then
                         add_aur_package "$AUR_INSTALL_CINNAMON_THEMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-CINNAMON-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # GNOME Packagekit
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GNOME_PACKAGEKIT\" 'INSTALL-GNOME-PACKAGEKIT'" "INSTALL-GNOME-PACKAGEKIT" ; then
                         add_package "$INSTALL_GNOME_PACKAGEKIT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-CINNAMON-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # GNOME Activity Journal
                     MenuChecks[$((S_OPT - 1))]=1
@@ -3494,12 +3856,20 @@ install_cinnamon_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL\" 'AUR-INSTALL-GNOME-ACTIVITY-JOURNAL'" "AUR-INSTALL-GNOME-ACTIVITY-JOURNAL" ; then
                         add_aur_package "$AUR_INSTALL_GNOME_ACTIVITY_JOURNAL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-CINNAMON-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # gloobus-sushi-bzr
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GLOOBUS\" 'AUR-INSTALL-GLOOBUS'" "AUR-INSTALL-GLOOBUS" ; then
                         add_aur_package "$AUR_INSTALL_GLOOBUS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-CINNAMON-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3507,6 +3877,7 @@ install_cinnamon_menu()
                             SAVED_MAIN_MENU=1
                         fi
                         S_OPT="$BreakableKey"
+                        break;
                     else
                         invalid_option "$S_OPT"
                     fi
@@ -3515,7 +3886,7 @@ install_cinnamon_menu()
         done
         is_breakable "$S_OPT" "$BreakableKey"
     done
-    write_log "INSTALL-CINNAMON-INFO-3"
+    write_log "INSTALL-CINNAMON-INFO-3" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3605,12 +3976,20 @@ install_e17_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_ICONS\" 'AUR-INSTALL-E17-ICONS'" "AUR-INSTALL-E17-ICONS" ; then
                         add_aur_package "$AUR_INSTALL_E17_ICONS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-E17-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # e17-themes
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_E17_THEMES\" 'AUR-INSTALL-E17-THEMES'" "AUR-INSTALL-E17-THEMES" ; then
                         add_aur_package "$AUR_INSTALL_E17_THEMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-E17-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3618,6 +3997,7 @@ install_e17_menu()
                             SAVED_MAIN_MENU=1
                         fi
                         S_OPT="$BreakableKey"
+                        break;
                     else
                         invalid_option "$S_OPT"
                     fi
@@ -3627,7 +4007,7 @@ install_e17_menu()
         is_breakable "$S_OPT" "$BreakableKey"
     done
     RecommendedOptions="1-14"
-    install_common_apps_menu "$RecommendedOptions"
+    install_common_apps_menu "$RecommendedOptions" "$(localize "INSTALL-E17-DESC")"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3665,23 +4045,20 @@ install_lxde_common() # Where Common is install_common_apps_menu
         RecommendedOptions="$RecommendedOptions"    
     fi
     #
-    RecommendedOptions="$RecommendedOptions $BreakableKey"
-    #
-    LXDE_INSTALLED=1
-    #
     if add_packagemanager "package_install \"$INSTALL_LXDE\" 'INSTALL-LXDE'" "INSTALL-LXDE" ; then
+        LXDE_INSTALLED=1
         # Abstraction for enumerating power devices, listening to device events and querying history and statistics
         # A framework for defining and tracking users, login sessions, and seats
         # systemd-logind replaced console-kit-daemon.service
         add_packagemanager "systemctl enable upower.service" "SYSTEMD-ENABLE-LXDE"
         add_package "$INSTALL_LXDE"
+        #
+        if add_packagemanager "aur_package_install \"$AUR_INSTALL_LXDE\" 'AUR-INSTALL-LXDE'" "AUR-INSTALL-LXDE" ; then
+            add_aur_package "$AUR_INSTALL_LXDE"
+        fi
+        #
+        install_common_apps_menu "$RecommendedOptions" "$(localize "INSTALL-LXDE-DESC")"
     fi
-    #
-    if add_packagemanager "aur_package_install \"$AUR_INSTALL_LXDE\" 'AUR-INSTALL-LXDE'" "AUR-INSTALL-LXDE" ; then
-        add_aur_package "$AUR_INSTALL_LXDE"
-    fi
-    #
-    install_common_apps_menu "$RecommendedOptions"
 }
 #}}}
 # -----------------------------------------------------------------------------
@@ -3768,6 +4145,10 @@ install_xfce_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_XFCE_CUSTOM\" 'AUR-INSTALL-XFCE-CUSTOM'" "AUR-INSTALL-XFCE-CUSTOM" ; then
                         add_aur_package "$AUR_INSTALL_XFCE_CUSTOM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-XFCE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -3775,6 +4156,7 @@ install_xfce_menu()
                             SAVED_MAIN_MENU=1
                         fi
                         S_OPT="$BreakableKey"
+                        break;
                     else
                         invalid_option "$S_OPT"
                     fi
@@ -3949,6 +4331,10 @@ install_display_manager_menu()
                         add_package "$INSTALL_GDM_CONTROL"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 2)  # KDM
@@ -3987,6 +4373,10 @@ install_display_manager_menu()
                         fi
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break;
                     ;;
                 3)  # Slim
@@ -3997,6 +4387,10 @@ install_display_manager_menu()
                         add_packagemanager "systemctl enable slim.service" "SYSTEMD-ENABLE-SLIM"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 4)  # LightDM
@@ -4041,6 +4435,10 @@ install_display_manager_menu()
                         fi
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 5)  # LXDM
@@ -4052,6 +4450,10 @@ install_display_manager_menu()
                         add_packagemanager "$(config_xinitrc 'startlxde')" "CONFIG-XINITRC-GNOME"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 6)  # Qingy
@@ -4062,6 +4464,10 @@ install_display_manager_menu()
                         add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-QINGY"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 7)  # XDM
@@ -4072,6 +4478,10 @@ install_display_manager_menu()
                         add_packagemanager "systemctl enable qingy@ttyX" "SYSTEMD-ENABLE-XDM"
                     fi
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-DISPLAY-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 *)  # Catch ALL
@@ -4160,6 +4570,10 @@ install_extra_menu()
                 1)  # Elementary Project
                     MenuChecks[$((S_OPT - 1))]=1
                     install_elementary_project_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-EXTRA-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Yapan
                     MenuChecks[$((S_OPT - 1))]=1
@@ -4170,6 +4584,10 @@ install_extra_menu()
                         add_aur_package "$AUR_INSTALL_YAPAN"
                     fi
                     break; 
+                    # Progress Status
+                    StatusBar1="INSTALL-EXTRA-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4319,30 +4737,50 @@ install_elementary_project_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_AUDIENCE\" 'AUR-INSTALL-EP-AUDIENCE'" "AUR-INSTALL-EP-AUDIENCE" ; then
                         add_aur_package "$AUR_INSTALL_EP_AUDIENCE" # gtk3
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Sharing service
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_CONTRACTOR\" 'AUR-INSTALL-EP-CONTRACTOR'" "AUR-INSTALL-EP-CONTRACTOR" ; then
                         add_aur_package "$AUR_INSTALL_EP_CONTRACTOR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Screencasting
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EIDETE\" 'AUR-INSTALL-EP-EIDETE'" "AUR-INSTALL-EP-EIDETE" ; then
                         add_aur_package "$AUR_INSTALL_EP_EIDETE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Contacts manager
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_DEXTER\" 'AUR-INSTALL-EP-DEXTER'" "AUR-INSTALL-EP-DEXTER" ; then
                         add_aur_package "$AUR_INSTALL_EP_DEXTER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # RSS Feeds Reader
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FEEDLER\" 'AUR-INSTALL-EP-FEEDLER'" "AUR-INSTALL-EP-FEEDLER" ; then
                         add_aur_package "$AUR_INSTALL_EP_FEEDLER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # File Manager
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -4352,84 +4790,140 @@ install_elementary_project_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FILES\" 'AUR-INSTALL-EP-FILES'" "AUR-INSTALL-EP-FILES" ; then
                         add_aur_package "$AUR_INSTALL_EP_FILES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Note Taking
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_FOOTNOTE\" 'AUR-INSTALL-EP-FOOTNOTE'" "AUR-INSTALL-EP-FOOTNOTE" ; then
                         add_aur_package "$AUR_INSTALL_EP_FOOTNOTE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # Compositing Manager
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GALA\" 'AUR-INSTALL-EP-GALA'" "AUR-INSTALL-EP-GALA" ; then
                         add_aur_package "$AUR_INSTALL_EP_GALA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Email client
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_GEARY\" 'AUR-INSTALL-EP-GEARY'" "AUR-INSTALL-EP-GEARY" ; then
                         add_aur_package "$AUR_INSTALL_EP_GEARY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Dictionary
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_LINGO\" 'AUR-INSTALL-EP-LINGO'" "AUR-INSTALL-EP-LINGO" ; then
                         add_aur_package "$AUR_INSTALL_EP_LINGO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Calendar
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_MAYA\" 'AUR-INSTALL-EP-MAYA'" "AUR-INSTALL-EP-MAYA" ; then
                         add_aur_package "$AUR_INSTALL_EP_MAYA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Web Browser
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_EP_MIDORI\" 'INSTALL-EP-MIDORI'" "INSTALL-EP-MIDORI" ; then
                         add_package "$INSTALL_EP_MIDORI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # Audio Player
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_NOISE\" 'AUR-INSTALL-EP-NOISE'" "AUR-INSTALL-EP-NOISE" ; then
                         add_aur_package "$AUR_INSTALL_EP_NOISE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # Text Editor
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SCRATCH\" 'AUR-INSTALL-EP-SCRATCH'" "AUR-INSTALL-EP-SCRATCH" ; then
                         add_aur_package "$AUR_INSTALL_EP_SCRATCH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                15)  # Dock
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PLANK\" 'AUR-INSTALL-EP-PLANK'" "AUR-INSTALL-EP-PLANK" ; then
                         add_aur_package "$AUR_INSTALL_EP_PLANK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                16)  # Terminal
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_PANTHEON\" 'AUR-INSTALL-EP-PANTHEON'" "AUR-INSTALL-EP-PANTHEON" ; then
                         add_aur_package "$AUR_INSTALL_EP_PANTHEON"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                17)  # App Launcher
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SLINGSHOT\" 'AUR-INSTALL-EP-SLINGSHOT'" "AUR-INSTALL-EP-SLINGSHOT" ; then
                         add_aur_package "$AUR_INSTALL_EP_SLINGSHOT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                18)  # Desktop Settings Hub
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_SWITCHBOARD\" 'AUR-INSTALL-EP-SWITCHBOARD" "AUR-INSTALL-EP-SWITCHBOARD" ; then
                         add_aur_package "$AUR_INSTALL_EP_SWITCHBOARD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                19)  # Indicators Topbar
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_WINGPANEL\" 'AUR-INSTALL-EP-WINGPANEL'" "AUR-INSTALL-EP-WINGPANEL" ; then
                         add_aur_package "$AUR_INSTALL_EP_WINGPANEL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                20)  # Elementary Icons
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -4437,12 +4931,20 @@ install_elementary_project_menu()
                         add_aur_package "$AUR_INSTALL_EP_ICONS"
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary" "RUN-GTK_UPDATE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                21)  # Elementary Theme
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EP_EGTK\" 'AUR-INSTALL-EP-EGTK'" "AUR-INSTALL-EP-EGTK" ; then
                         add_aur_package "$AUR_INSTALL_EP_EGTK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ELEMENTARY-PROJECT-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4523,7 +5025,7 @@ install_audio_apps_menu()
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
-        read_input_options "$RecommendedOptions" "$BreakableKey"$INSTALL_AUDIO_CODECS
+        read_input_options "$RecommendedOptions" "$BreakableKey"
         RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
         #
         local S_OPT
@@ -4532,16 +5034,28 @@ install_audio_apps_menu()
                 1)  # Players
                     MenuChecks[$((S_OPT - 1))]=1
                     install_players_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Editors | Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     install_audio_editors_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Codecs
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_AUDIO_CODECS\" 'INSTALL-AUDIO-CODECS'" "INSTALL-AUDIO-CODECS" ; then
                         add_package "$INSTALL_AUDIO_CODECS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4645,25 +5159,41 @@ install_audio_editors_menu()
                         if add_packagemanager "package_install \"$INSTALL_SOUNDCONVERTER\" 'INSTALL-SOUNDCONVERTER'" "INSTALL-SOUNDCONVERTER" ; then
                             add_package "$INSTALL_SOUNDCONVERTER"
                         fi
-                     fi
-                     ;;
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-EDITORS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
                 2)  # puddletag
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_PUDDLETAG\" 'AUR-INSTALL-PUDDLETAG'" "AUR-INSTALL-PUDDLETAG" ; then
                         add_aur_package "$AUR_INSTALL_PUDDLETAG"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-EDITORS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Audacity
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_AUDACITY\" 'INSTALL-AUDACITY'" "INSTALL-AUDACITY" ; then
                         add_package "$INSTALL_AUDACITY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-EDITORS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Ocenaudio
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_OCENAUDIO\" 'AUR-INSTALL-OCENAUDIO'" "AUR-INSTALL-OCENAUDIO" ; then
                         add_aur_package "$AUR_INSTALL_OCENAUDIO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-AUDIO-EDITORS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4785,72 +5315,120 @@ install_players_menu()
                     if add_packagemanager "package_install \"$INSTALL_AMAROK\" 'INSTALL-AMAROK'" "INSTALL-AMAROK" ; then
                         add_package "$INSTALL_AMAROK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Audacious
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_AUDACIOUS\" 'INSTALL-AUDACIOUS'" "INSTALL-AUDACIOUS" ; then
                         add_package "$INSTALL_AUDACIOUS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Banshee
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_BANSHEE\" 'INSTALL-BANSHEE'" "INSTALL-BANSHEE" ; then
                         add_package "$INSTALL_BANSHEE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Clementine
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_CLEMENTINE\" 'INSTALL-CLEMENTINE'" "INSTALL-CLEMENTINE" ; then
                         add_package "$INSTALL_CLEMENTINE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Dead beef
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_DEADBEEF\" 'INSTALL-DEADBEEF'" "INSTALL-DEADBEEF" ; then
                         add_package "$INSTALL_DEADBEEF"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Exaile
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EXAILE\" 'AUR-INSTALL-EXAILE'" "AUR-INSTALL-EXAILE" ; then
                         add_aur_package "$AUR_INSTALL_EXAILE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Musique
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MUSIQUE\" 'AUR-INSTALL-MUSIQUE'" "AUR-INSTALL-MUSIQUE" ; then
                         add_aur_package "$AUR_INSTALL_MUSIQUE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # Nuvola Player
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_NUVOLAPLAYER\" 'AUR-INSTALL-NUVOLAPLAYER" "AUR-INSTALL-NUVOLAPLAYER" ; then
                         add_aur_package "$AUR_INSTALL_NUVOLAPLAYER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Rhythmbox
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_RHYTHMBOX\" 'INSTALL-RHYTHMBOX'" "INSTALL-RHYTHMBOX" ; then
                         add_package "$INSTALL_RHYTHMBOX"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Radio tray
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_RADIOTRAY\" 'AUR-INSTALL-RADIOTRAY'" "AUR-INSTALL-RADIOTRAY" ; then
                         add_aur_package "$AUR_INSTALL_RADIOTRAY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Spotify
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SPOTIFY\" 'AUR-INSTALL-SPOTIFY'" "AUR-INSTALL-SPOTIFY" ; then
                         add_aur_package "$AUR_INSTALL_SPOTIFY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Tomahawk
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_TOMAHAWK\" 'AUR-INSTALL-TOMAHAWK'" "AUR-INSTALL-TOMAHAWK" ; then
                         add_aur_package "$AUR_INSTALL_TOMAHAWK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # Timidity++
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -4858,6 +5436,10 @@ install_players_menu()
                         add_aur_package "$AUR_INSTALL_TIMIDITY"
                         add_packagemanager"echo -e 'soundfont /usr/share/soundfonts/fluidr3/FluidR3GM.SF2' >> /etc/timidity++/timidity.cfg" "RUN-TIMIDITY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PLAYERS-MENU-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -4899,7 +5481,7 @@ if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
     localize_info "INSTALL-OFFICE-APPS-MENU-2"    "Calligra or Abiword + Gnumeric"
     localize_info "INSTALL-OFFICE-APPS-MENU-2-I"        "Calligra (Calligra is the new name of the KOffice Suite, so the Calligra packages will replace the KOffice packages.) or Abiword (A fully-featured word processor) + Gnumeric (A GNOME Spreadsheet Program): Depending on DE"
     localize_info "INSTALL-OFFICE-APPS-MENU-3"    "Latex"
-    localize_info "INSTALL-OFFICE-APPS-MENU-3-I"        "LaTeX is a popular markup language and document preparation system, often used in the sciences. The current implementation in Arch Linux is TeX Live. - https://wiki.archlinux.org/index.php/LaTeX"
+    localize_info "INSTALL-OFFICE-APPS-MENU-3-I"        "LaTeX: LaTeX is a popular markup language and document preparation system, often used in the sciences. The current implementation in Arch Linux is TeX Live. - https://wiki.archlinux.org/index.php/LaTeX"
     localize_info "INSTALL-OFFICE-APPS-MENU-4"    "Calibre"
     localize_info "INSTALL-OFFICE-APPS-MENU-4-I"        "calibre: Ebook management application"
     localize_info "INSTALL-OFFICE-APPS-MENU-5"    "GcStar"
@@ -4988,6 +5570,10 @@ install_office_apps_menu()
                             add_package "$INSTALL_LIBRE_OFFICE_GNOME"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Calligra or Abiword + Gnumeric
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5011,6 +5597,10 @@ install_office_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_LANGUAGE\" \"AUR-INSTALL-ASPELL-LANGUAGE\"" "AUR-INSTALL-ASPELL-LANGUAGE" ; then
                         add_aur_package "$AUR_INSTALL_ASPELL_LANGUAGE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # LATEX
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5025,57 +5615,93 @@ install_office_apps_menu()
                             add_aur_package "$AUR_INSTALL_ABNTEX"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # calibre
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_CALIBRE\" 'INSTALL-CALIBRE'" "INSTALL-CALIBRE" ; then
                         add_package "$INSTALL_CALIBRE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # gcstar
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GCSTAR\" 'INSTALL-GCSTAR'" "INSTALL-GCSTAR" ; then
                         add_package "$INSTALL_GCSTAR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # homebank
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_HOMEBANK\" 'INSTALL-HOMEBANK'" "INSTALL-HOMEBANK" ; then
                         add_package "$INSTALL_HOMEBANK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # impressive
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_IMPRESSIVE\" 'INSTALL-IMPRESSIVE'" "INSTALL-IMPRESSIVE" ; then
                         add_package "$INSTALL_IMPRESSIVE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # nitrotasks
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROTASKS\" 'AUR-INSTALL-NITROTASKS'" "AUR-INSTALL-NITROTASKS" ; then
                         add_aur_package "$AUR_INSTALL_NITROTASKS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # ocrfeeder
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_OCRFEEDER\" 'INSTALL-OCRFEEDER'" "INSTALL-OCRFEEDER" ; then
                         add_package "$INSTALL_OCRFEEDER"
                     fi
-                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_$LANGUAGE_AS\" \"AUR-INSTALL-ASPELL-$LANGUAGE_AS\"" "AUR-INSTALL-ASPELL-$LANGUAGE_AS" ; then
-                        add_aur_package "$AUR_INSTALL_ASPELL_$LANGUAGE_AS"
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ASPELL_LANGUAGE\" \"AUR-INSTALL-ASPELL-$LANGUAGE_AS\"" "AUR-INSTALL-ASPELL-$LANGUAGE_AS" ; then
+                        add_aur_package "$AUR_INSTALL_ASPELL_LANGUAGE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
-                10)  # xmind
+               10)  # xmind
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_XMIND\" 'AUR-INSTALL-XMIND'" "AUR-INSTALL-XMIND" ; then
                         add_aur_package "$AUR_INSTALL_XMIND"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
-                11)  # zathura
+               11)  # zathura
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ZATHURA\" 'INSTALL-ZATHURA'" "INSTALL-ZATHURA" ; then
                         add_package "$INSTALL_ZATHURA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-OFFICE-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5178,18 +5804,30 @@ install_system_apps_menu()
                     if add_packagemanager "package_install \"$INSTALL_GPARTED\" 'INSTALL-GPARTED'" "INSTALL-GPARTED" ; then
                         add_package "$INSTALL_GPARTED"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SYSTEM-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Grsync
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GRSYNC\" 'INSTALL-GRSYNC'" "INSTALL-GRSYNC" ; then
                         add_package "$INSTALL_GRSYNC"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SYSTEM-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Htop
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_HTOP\" 'INSTALL-HTOP'" "INSTALL-HTOP" ; then
                         add_package "$INSTALL_HTOP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SYSTEM-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Virtualbox
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5202,6 +5840,10 @@ install_system_apps_menu()
                         add_packagemanager "systemctl enable vboxservice.service" "SYSTEMD-ENABLE-VIRTUALBOX"
                         add_packagemanager "add_user_2_group 'vboxusers'" "GROUPADD-VBOXUSERS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SYSTEM-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Webmin
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5209,6 +5851,10 @@ install_system_apps_menu()
                         add_package "$INSTALL_WEBMIN"
                         add_packagemanager "systemctl enable webmin.service" "SYSTEMD-ENABLE-WEBMIN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SYSTEM-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # WINE
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5237,6 +5883,10 @@ install_system_apps_menu()
                             add_package "$INSTALL_WINE_ALSA"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SYSTEM-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5261,7 +5911,7 @@ install_system_apps_menu()
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_gnome_de_extras_menu"
     USAGE="install_gnome_de_extras_menu"
-    DESCRIPTION=$(localize "INSTALL-DE-EXTRAS-DESC")
+    DESCRIPTION=$(localize "INSTALL-GNOME-DE-EXTRAS-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
     VERSION="1.0"
@@ -5270,21 +5920,21 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-DE-EXTRAS-DESC"  "Install DE Extras"
-    localize_info "INSTALL-DE-EXTRAS-TITLE" "Gnome Desktop Environments Extras"
-    #
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-1"    "GNOME Icons"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I"      "GNOME Icons: awoken-icons faenza-icon-theme faenza-cupertino-icon-theme faience-icon-theme elementary-icons-bzr"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2"    "GTK Themes"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I"      "GTK Themes: gtk-theme-adwaita-cupertino gtk-theme-boomerang xfce-theme-blackbird xfce-theme-bluebird egtk-bzr xfce-theme-greybird light-themes orion-gtk-theme zukini-theme zukitwo-themes"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3"    "Unity"
-    localize_info "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I"      "Unity: Unity is an alternative shell for the GNOME desktop environment, developed by Canonical in its Ayatana project. It consists of several components including the Launcher, Dash, lenses, Panel, indicators, Notify OSD and Overlay Scrollbar. Unity used to available in two implementations: 'Unity' is the 3D accelerated version, which uses Compiz window manager and Nux toolkit; and 'Unity 2D' is a lighter alternative, which uses Metacity window manager and Qt toolkit. Unity 2D is already dropped by Canonical from Ubuntu 12.10."
+    localize_info "INSTALL-GNOME-DE-EXTRAS-DESC"  "Install GNOME Desktop Extras"
+    localize_info "INSTALL-GNOME-DE-EXTRAS-TITLE" "Gnome Desktop Environments Extras"
+    # GNOME Icons, GTK Themes and even Unity
+    localize_info "INSTALL-GNOME-DE-EXTRAS-MENU-1"    "GNOME Icons"
+    localize_info "INSTALL-GNOME-DE-EXTRAS-MENU-1-I"      "GNOME Icons: awoken-icons faenza-icon-theme faenza-cupertino-icon-theme faience-icon-theme elementary-icons-bzr"
+    localize_info "INSTALL-GNOME-DE-EXTRAS-MENU-2"    "GTK Themes"
+    localize_info "INSTALL-GNOME-DE-EXTRAS-MENU-2-I"      "GTK Themes: gtk-theme-adwaita-cupertino gtk-theme-boomerang xfce-theme-blackbird xfce-theme-bluebird egtk-bzr xfce-theme-greybird light-themes orion-gtk-theme zukini-theme zukitwo-themes"
+    localize_info "INSTALL-GNOME-DE-EXTRAS-MENU-3"    "Unity"
+    localize_info "INSTALL-GNOME-DE-EXTRAS-MENU-3-I"      "Unity: Unity is an alternative shell for the GNOME desktop environment, developed by Canonical in its Ayatana project. It consists of several components including the Launcher, Dash, lenses, Panel, indicators, Notify OSD and Overlay Scrollbar. Unity used to available in two implementations: 'Unity' is the 3D accelerated version, which uses Compiz window manager and Nux toolkit; and 'Unity 2D' is a lighter alternative, which uses Metacity window manager and Qt toolkit. Unity 2D is already dropped by Canonical from Ubuntu 12.10."
 fi
 # -------------------------------------
 install_gnome_de_extras_menu()
 {
     # 11
-    local -r menu_name="INSTALL-DE-EXTRAS"  # You must define Menu Name here
+    local -r menu_name="INSTALL-GNOME-DE-EXTRAS"  # You must define Menu Name here
     local BreakableKey="B"                  # Q=Quit, D=Done, B=Back
     local RecommendedOptions="1 2"          # Recommended Options to run in AUTOMAN or INSTALL_WIZARD Mode
     #
@@ -5310,13 +5960,13 @@ install_gnome_de_extras_menu()
     local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
     #
     while [[ 1 ]]; do
-        print_title "INSTALL-DE-EXTRAS-TITLE"
+        print_title "INSTALL-GNOME-DE-EXTRAS-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-1-I" "MenuTheme[@]"     # 1 GNOME Icons
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-2-I" "MenuTheme[@]"     # 2 GTK Themes
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3" "" "$AUR" "INSTALL-DESKTOP-ENVIRONMENT-MENU-3-I" "MenuThemeWarn[@]" # Unity
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-DE-EXTRAS-MENU-1" "" "$AUR" "INSTALL-GNOME-DE-EXTRAS-MENU-1-I" "MenuTheme[@]"     # 1 GNOME Icons
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-DE-EXTRAS-MENU-2" "" "$AUR" "INSTALL-GNOME-DE-EXTRAS-MENU-2-I" "MenuTheme[@]"     # 2 GTK Themes
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GNOME-DE-EXTRAS-MENU-3" "" "$AUR" "INSTALL-GNOME-DE-EXTRAS-MENU-3-I" "MenuThemeWarn[@]" # Unity
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -5329,14 +5979,26 @@ install_gnome_de_extras_menu()
                 1)  # GNOME Icons
                     MenuChecks[$((S_OPT - 1))]=1
                     install_icons_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-DE-EXTRAS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # GTK Themes
                     MenuChecks[$((S_OPT - 1))]=1
                     install_gtk_themes_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-DE-EXTRAS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Unity
                     MenuChecks[$((S_OPT - 1))]=1
                     install_unity_now
+                    # Progress Status
+                    StatusBar1="INSTALL-GNOME-DE-EXTRAS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5449,60 +6111,100 @@ install_gtk_themes_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ADWAITA\" 'AUR-INSTALL-GTK-THEMES-ADWAITA'" "AUR-INSTALL-GTK-THEMES-ADWAITA" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_ADWAITA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Boomerang
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BOOMERANG\" 'AUR-INSTALL-GTK-THEMES-BOOMERANG'" "AUR-INSTALL-GTK-THEMES-BOOMERANG" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_BOOMERANG"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Blackbird
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLACKBIRD\" 'AUR-INSTALL-GTK-THEMES-BLACKBIRD'" "AUR-INSTALL-GTK-THEMES-BLACKBIRD" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_BLACKBIRD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Bluebird
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_BLUEBIRD\" 'AUR-INSTALL-GTK-THEMES-BLUEBIRD'" "AUR-INSTALL-GTK-THEMES-BLUEBIRD" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_BLUEBIRD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # eGTK
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_EGTK\" 'AUR-INSTALL-GTK-THEMES-EGTK'" "AUR-INSTALL-GTK-THEMES-EGTK" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_EGTK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Greybird
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD\" 'AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD'" "AUR-INSTALL-GTK-THEMES-XFCE-GREYBIRD" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_XFCE_GREYBIRD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Light
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES\" 'AUR-INSTALL-GTK-THEMES-LIGHT-THEMES'" "AUR-INSTALL-GTK-THEMES-LIGHT-THEMES" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_LIGHT_THEMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # Orion
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ORION\" 'AUR-INSTALL-GTK-THEMES-ORION'" "AUR-INSTALL-GTK-THEMES-ORION" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_ORION"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Zukini
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKINI\" 'AUR-INSTALL-GTK-THEMES-ZUKINI'" "AUR-INSTALL-GTK-THEMES-ZUKINI" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKINI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Zukitwo
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GTK_THEMES_ZUKITWO\" 'AUR-INSTALL-GTK-THEMES-ZUKITWO'" "AUR-INSTALL-GTK-THEMES-ZUKITWO" ; then
                         add_aur_package "$AUR_INSTALL_GTK_THEMES_ZUKITWO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GTK-THEMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5611,6 +6313,10 @@ install_icons_menu()
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken" "RUN-GTK-ICONS-1"
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/AwOken-Dark" "RUN-GTK-ICONS-2"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-INSTALL-ICONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Faenza
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5621,6 +6327,10 @@ install_icons_menu()
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darker" "RUN-GTK-ICONS-5"
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Darkest" "RUN-GTK-ICONS-6"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-INSTALL-ICONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Faenza-Cupertino
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5631,6 +6341,10 @@ install_icons_menu()
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darker" "RUN-GTK-ICONS-9"
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faenza-Cupertino-Darkest" "RUN-GTK-ICONS-10"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-INSTALL-ICONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Faience
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5641,6 +6355,10 @@ install_icons_menu()
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Claire" "RUN-GTK-ICONS-13"
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/Faience-Ocre" "RUN-GTK-ICONS-14"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-INSTALL-ICONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Elementary
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5657,6 +6375,10 @@ install_icons_menu()
                             add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/elementary-xfce-dark" "RUN-GTK-ICONS-17"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-INSTALL-ICONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Nitrux
                     MenuChecks[$((S_OPT - 1))]=1
@@ -5670,6 +6392,10 @@ install_icons_menu()
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-G" "RUN-GTK-ICONS-23"
                         add_packagemanager "gtk-update-icon-cache -f /usr/share/icons/NITRUX-G-lightpnl" "RUN-GTK-ICONS-24"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-INSTALL-ICONS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5694,7 +6420,7 @@ install_icons_menu()
 if [[ "$RUN_HELP" -eq 1 ]]; then
     NAME="install_games_menu"
     USAGE="install_games_menu"
-    DESCRIPTION=$(localize "INSTALL-DUNGEON-GAMES-DESC")
+    DESCRIPTION=$(localize "INSTALL-GAMES-DESC")
     NOTES=$(localize "NONE")
     AUTHOR="helmuthdu and Flesher"
     VERSION="1.0"
@@ -5703,37 +6429,37 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-DUNGEON-GAMES-DESC"   "Install Games"
-    localize_info "INSTALL-DUNGEON-GAMES-TITLE"  "GAMES"
+    localize_info "INSTALL-GAMES-DESC"   "Install Games"
+    localize_info "INSTALL-GAMES-TITLE"  "GAMES"
     #
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-1"    "Action | Adventure"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-1"       "Action | Adventure: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-2"    "Arcade | Platformer"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-2"       "Arcade | Platformer: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-3"    "Dungeon"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-3"       "Dungeon: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-4"    "Emulators"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-4"       "Emulators: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-5"    "FPS"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-5"       "FPS: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-6"    "MMO"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-6"       "MMO: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-7"    "Puzzle"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-7"       "Puzzle: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-8"    "RPG"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-8"       "RPG: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-9"    "Racing"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-9"       "Racing: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-10"   "Simulation"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-10"      "Simulation: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-11"   "Strategy"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-11"      "Strategy: Sub Menu"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-12"   "Gnome"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-12"      "Gnome: $INSTALL_GNOME_GAMES"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-13"   "KDE"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-13"      "KDE: $INSTALL_KDE_GAMES"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-14"   "Misc"
-    localize_info "INSTALL-DUNGEON-GAMES-MENU-I-14"      "Misc: $INSTALL_MISC_GAMES"
+    localize_info "INSTALL-GAMES-MENU-1"    "Action | Adventure"
+    localize_info "INSTALL-GAMES-MENU-I-1"       "Action | Adventure: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-2"    "Arcade | Platformer"
+    localize_info "INSTALL-GAMES-MENU-I-2"       "Arcade | Platformer: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-3"    "Dungeon"
+    localize_info "INSTALL-GAMES-MENU-I-3"       "Dungeon: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-4"    "Emulators"
+    localize_info "INSTALL-GAMES-MENU-I-4"       "Emulators: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-5"    "FPS"
+    localize_info "INSTALL-GAMES-MENU-I-5"       "FPS: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-6"    "MMO"
+    localize_info "INSTALL-GAMES-MENU-I-6"       "MMO: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-7"    "Puzzle"
+    localize_info "INSTALL-GAMES-MENU-I-7"       "Puzzle: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-8"    "RPG"
+    localize_info "INSTALL-GAMES-MENU-I-8"       "RPG: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-9"    "Racing"
+    localize_info "INSTALL-GAMES-MENU-I-9"       "Racing: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-10"   "Simulation"
+    localize_info "INSTALL-GAMES-MENU-I-10"      "Simulation: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-11"   "Strategy"
+    localize_info "INSTALL-GAMES-MENU-I-11"      "Strategy: Sub Menu"
+    localize_info "INSTALL-GAMES-MENU-12"   "Gnome"
+    localize_info "INSTALL-GAMES-MENU-I-12"      "Gnome: $INSTALL_GNOME_GAMES"
+    localize_info "INSTALL-GAMES-MENU-13"   "KDE"
+    localize_info "INSTALL-GAMES-MENU-I-13"      "KDE: $INSTALL_KDE_GAMES"
+    localize_info "INSTALL-GAMES-MENU-14"   "Misc"
+    localize_info "INSTALL-GAMES-MENU-I-14"      "Misc: $INSTALL_MISC_GAMES"
 fi
 # -------------------------------------
 install_games_menu()
@@ -5763,24 +6489,24 @@ install_games_menu()
     StatusBar2=": $RecommendedOptions"
     #
     while [[ 1 ]]; do
-        print_title "INSTALL-DUNGEON-GAMES-TITLE" " - https://wiki.archlinux.org/index.php/Games"
+        print_title "INSTALL-GAMES-TITLE" " - https://wiki.archlinux.org/index.php/Games"
         print_caution "${StatusBar1}" "${StatusBar2}"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-1"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-1"  "MenuTheme[@]" # 1  Action | Adventure
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-2"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-2"  "MenuTheme[@]" # 2  Arcade | Platformer
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-3"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-3"  "MenuTheme[@]" # 3  Dungeon
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-4"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-4"  "MenuTheme[@]" # 4  Emulators
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-5"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-5"  "MenuTheme[@]" # 5  FPS
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-6"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-6"  "MenuTheme[@]" # 6  MMO
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-7"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-7"  "MenuTheme[@]" # 7  Puzzle
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-8"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-8"  "MenuTheme[@]" # 8  RPG
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-9"  "" "" "INSTALL-DUNGEON-GAMES-MENU-I-9"  "MenuTheme[@]" # 9  Racing
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-10" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-10" "MenuTheme[@]" # 10 Simulation
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-11" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-11" "MenuTheme[@]" # 11 Strategy
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-12" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-12" "MenuTheme[@]" # 12 Gnome
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-13" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-13" "MenuTheme[@]" # 13 KDE
-        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-DUNGEON-GAMES-MENU-14" "" "" "INSTALL-DUNGEON-GAMES-MENU-I-14" "MenuTheme[@]" # 14 Misc
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-1"  "" "" "INSTALL-GAMES-MENU-I-1"  "MenuTheme[@]" # 1  Action | Adventure
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-2"  "" "" "INSTALL-GAMES-MENU-I-2"  "MenuTheme[@]" # 2  Arcade | Platformer
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-3"  "" "" "INSTALL-GAMES-MENU-I-3"  "MenuTheme[@]" # 3  Dungeon
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-4"  "" "" "INSTALL-GAMES-MENU-I-4"  "MenuTheme[@]" # 4  Emulators
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-5"  "" "" "INSTALL-GAMES-MENU-I-5"  "MenuTheme[@]" # 5  FPS
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-6"  "" "" "INSTALL-GAMES-MENU-I-6"  "MenuTheme[@]" # 6  MMO
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-7"  "" "" "INSTALL-GAMES-MENU-I-7"  "MenuTheme[@]" # 7  Puzzle
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-8"  "" "" "INSTALL-GAMES-MENU-I-8"  "MenuTheme[@]" # 8  RPG
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-9"  "" "" "INSTALL-GAMES-MENU-I-9"  "MenuTheme[@]" # 9  Racing
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-10" "" "" "INSTALL-GAMES-MENU-I-10" "MenuTheme[@]" # 10 Simulation
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-11" "" "" "INSTALL-GAMES-MENU-I-11" "MenuTheme[@]" # 11 Strategy
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-12" "" "" "INSTALL-GAMES-MENU-I-12" "MenuTheme[@]" # 12 Gnome
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-13" "" "" "INSTALL-GAMES-MENU-I-13" "MenuTheme[@]" # 13 KDE
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GAMES-MENU-14" "" "" "INSTALL-GAMES-MENU-I-14" "MenuTheme[@]" # 14 Misc
         #
         print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
@@ -5793,64 +6519,120 @@ install_games_menu()
                 1)  # Action | Adventure
                     MenuChecks[$((S_OPT - 1))]=1
                     install_action_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Arcade | Platformer
                     MenuChecks[$((S_OPT - 1))]=1
                     install_arade_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Dungeon
                     MenuChecks[$((S_OPT - 1))]=1
                     install_dungon_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Emulators
                     MenuChecks[$((S_OPT - 1))]=1
                     install_emulator_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # FPS
                     MenuChecks[$((S_OPT - 1))]=1
                     install_fps_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # MMO
                     MenuChecks[$((S_OPT - 1))]=1
                     install_mmo_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Puzzle
                     MenuChecks[$((S_OPT - 1))]=1
                     install_puzzle_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # RPG
                     MenuChecks[$((S_OPT - 1))]=1
                     install_rpg_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Racing
                     MenuChecks[$((S_OPT - 1))]=1
                     install_racing_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Simulation
                     MenuChecks[$((S_OPT - 1))]=1
                     install_simulation_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Strategy
                     MenuChecks[$((S_OPT - 1))]=1
                     install_strategy_games_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Gnome
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GNOME_GAMES\" 'INSTALL-GNOME-GAMES'" "INSTALL-GNOME-GAMES" ; then
                         add_package "$INSTALL_GNOME_GAMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # KDE
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_KDE_GAMES\" 'INSTALL-KDE-GAMES'" "INSTALL-KDE-GAMES" ; then
                         add_package "$INSTALL_KDE_GAMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # Misc
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MISC_GAMES\" 'INSTALL-MISC-GAMES'" "INSTALL-MISC-GAMES" ; then
                         add_package "$INSTALL_MISC_GAMES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -5960,54 +6742,90 @@ install_action_games_menu()
                     if add_packagemanager "package_install \"$INSTALL_ASTROMENANCE\" 'INSTALL-ASTROMENANCE'" "INSTALL-ASTROMENANCE" ; then
                         add_package "$INSTALL_ASTROMENANCE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Counter-Strike 2D
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_COUNTER_STRIKE_2D\" 'AUR-INSTALL-COUNTER-STRIKE-2D'" "AUR-INSTALL-COUNTER-STRIKE-2D" ; then
                         add_aur_package "$AUR_INSTALL_COUNTER_STRIKE_2D"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Dead Cyborg Episode 1
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEAD_CYBORG_EP_1\" 'AUR-INSTALL-DEAD-CYBORG-EP-1'" "AUR-INSTALL-DEAD-CYBORG-EP-1" ; then
                         add_aur_package "$AUR_INSTALL_DEAD_CYBORG_EP_1"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MARS_SHOOTER\" 'AUR-INSTALL-MARS-SHOOTER'" "AUR-INSTALL-MARS-SHOOTER" ; then
                         add_aur_package "$AUR_INSTALL_MARS_SHOOTER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_NIKKI\" 'AUR-INSTALL-NIKKI'" "AUR-INSTALL-NIKKI" ; then
                         add_aur_package "$AUR_INSTALL_NIKKI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENTYRIAN\" 'AUR-INSTALL-OPENTYRIAN'" "AUR-INSTALL-OPENTYRIAN" ; then
                         add_aur_package "$AUR_INSTALL_OPENTYRIAN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SRB2\" 'AUR-INSTALL-SRB2" "AUR-INSTALL-SRB2" ; then
                         add_aur_package "$AUR_INSTALL_SRB2"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_STEELSTORM\" 'AUR-INSTALL-STEELSTORM'" "AUR-INSTALL-STEELSTORM" ; then
                         add_aur_package "$AUR_INSTALL_STEELSTORM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_YOFRANKIE\" 'AUR-INSTALL-YOFRANKIE'" "AUR-INSTALL-YOFRANKIE" ; then
                         add_aur_package "$AUR_INSTALL_YOFRANKIE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACTION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6126,72 +6944,120 @@ install_arade_games_menu()
                     if add_packagemanager "package_install \"$INSTALL_ABUSE\" 'INSTALL-ABUSE'" "INSTALL-ABUSE" ; then
                         add_package "$INSTALL_ABUSE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Battle Tanks
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_BTANKS\" 'INSTALL-BTANKS'" "INSTALL-BTANKS" ; then
                         add_package "$INSTALL_BTANKS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Bomberclone
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_BOMBERCLONE\" 'INSTALL-BOMBERCLONE'" "INSTALL-BOMBERCLONE" ; then
                         add_package "$INSTALL_BOMBERCLONE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Those Funny Funguloids
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_FUNGULOIDS\" 'AUR-INSTALL-FUNGULOIDS'" "AUR-INSTALL-FUNGULOIDS" ; then
                         add_aur_package "$AUR_INSTALL_FUNGULOIDS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Frogatto
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_FROGATTO\" 'INSTALL-FROGATTO'" "INSTALL-FROGATTO" ; then
                         add_package "$INSTALL_FROGATTO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Goonies
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOONIES\" 'AUR-INSTALL-GOONIES'" "AUR-INSTALL-GOONIES" ; then
                         add_aur_package "$AUR_INSTALL_GOONIES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Mari0
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MARI0\" 'AUR-INSTALL-MARI0'" "AUR-INSTALL-MARI0" ; then
                         add_aur_package "$AUR_INSTALL_MARI0"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # Neverball
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_NEVERBALL\" 'INSTALL-NEVERBALL'" "INSTALL-NEVERBALL" ; then
                         add_package "$INSTALL_NEVERBALL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Opensonic
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_OPENSONIC\" 'AUR-INSTALL-OPENSONIC'" "AUR-INSTALL-OPENSONIC" ; then
                         add_aur_package "$AUR_INSTALL_OPENSONIC"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Robombs
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ROBOMBS_BIN\" 'AUR-INSTALL-ROBOMBS-BIN'" "AUR-INSTALL-ROBOMBS-BIN" ; then
                         add_aur_package "$AUR_INSTALL_ROBOMBS_BIN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Super Mario Chronicles
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SMC\" 'INSTALL-SMC'" "INSTALL-SMC" ; then
                         add_package "$INSTALL_SMC"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Xmoto
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_XMOTO\" 'INSTALL-XMOTO'" "INSTALL-XMOTO" ; then
                         add_package "$INSTALL_XMOTO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ARCADE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6288,30 +7154,50 @@ install_dungon_games_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ADOM\" 'AUR-INSTALL-ADOM'" "AUR-INSTALL-ADOM" ; then
                         add_aur_package "$AUR_INSTALL_ADOM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DUNGEON-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Tales of MajEyal
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_TOME4\" 'AUR-INSTALL-TOME4'" "AUR-INSTALL-TOME4" ; then
                         add_aur_package "$AUR_INSTALL_TOME4"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DUNGEON-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Lost Labyrinth
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_LOST_LABYRINTH\" 'AUR-INSTALL-LOST-LABYRINTH'" "AUR-INSTALL-LOST-LABYRINTH" ; then
                         add_aur_package "$AUR_INSTALL_LOST_LABYRINTH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DUNGEON-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # S.C.O.U.R.G.E.
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SCOURGE\" 'AUR-INSTALL-SCOURGE'" "AUR-INSTALL-SCOURGE" ; then
                         add_aur_package "$AUR_INSTALL_SCOURGE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DUNGEON-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Stone-Soupe
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_STONE_SOUP\" 'AUR-INSTALL-STONE-SOUP'" "AUR-INSTALL-STONE-SOUP" ; then
                         add_aur_package "$AUR_INSTALL_STONE_SOUP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DUNGEON-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6417,48 +7303,80 @@ install_emulator_games_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_BSNES\" 'AUR-INSTALL-BSNES'" "AUR-INSTALL-BSNES" ; then
                         add_aur_package "$AUR_INSTALL_BSNES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Desmume-svn
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DESMUME\" 'AUR-INSTALL-DESMUME'" "AUR-INSTALL-DESMUME" ; then
                         add_aur_package "$AUR_INSTALL_DESMUME"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Dolphin
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DOLPHIN\" 'AUR-INSTALL-DOLPHIN'" "AUR-INSTALL-DOLPHIN" ; then
                         add_aur_package "$AUR_INSTALL_DOLPHIN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Epsxe
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_EPSXE\" 'AUR-INSTALL-EPSXE'" "AUR-INSTALL-EPSXE" ; then
                         add_aur_package "$AUR_INSTALL_EPSXE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Project 64
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_PROJECT_64\" 'AUR-INSTALL-PROJECT-64'" "AUR-INSTALL-PROJECT-64" ; then
                         add_aur_package "$AUR_INSTALL_PROJECT_64"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Visual Boy Advanced
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_VBA\" 'AUR-INSTALL-VBA'" "AUR-INSTALL-VBA" ; then
                         add_aur_package "$AUR_INSTALL_VBA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # wxmupen64plus
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_WXMUPEN64PLUS\" 'AUR-INSTALL-WXMUPEN64PLUS'" "AUR-INSTALL-WXMUPEN64PLUS" ; then
                         add_aur_package "$AUR_INSTALL_WXMUPEN64PLUS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # zsnes
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ZSNES\" 'INSTALL-ZSNES'" "INSTALL-ZSNES" ; then
                         add_package "$INSTALL_ZSNES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMULATORS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6555,30 +7473,50 @@ install_fps_games_menu()
                     if add_packagemanager "package_install \"$INSTALL_ALIENARENA\" 'INSTALL-ALIENARENA'" "INSTALL-ALIENARENA" ; then
                         add_package "$INSTALL_ALIENARENA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FPS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Warsow
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_WARSOW\" 'INSTALL-WARSOW'" "INSTALL-WARSOW" ; then
                         add_package "$INSTALL_WARSOW"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FPS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Wolfenstein
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ENEMY_TERRITORY\" 'AUR-INSTALL-ENEMY-TERRITORY'" "AUR-INSTALL-ENEMY-TERRITORY" ; then
                         add_aur_package "$AUR_INSTALL_ENEMY_TERRITORY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FPS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # World of Padman
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLD_OF_PADMAN\" 'AUR-INSTALL-WORLD-OF-PADMAN'" "AUR-INSTALL-WORLD-OF-PADMAN" ; then
                         add_aur_package "$AUR_INSTALL_WORLD_OF_PADMAN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FPS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Xonotic
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_XONOTIC\" 'INSTALL-XONOTIC'" "INSTALL-XONOTIC" ; then
                         add_package "$INSTALL_XONOTIC"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FPS-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6678,36 +7616,60 @@ install_mmo_games_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_HON\" 'AUR-INSTALL-HON'" "AUR-INSTALL-HON" ; then
                         add_aur_package "$AUR_INSTALL_HON"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MMO-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Manaplus
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MANAPLUS\" 'AUR-INSTALL-MANAPLUS'" "AUR-INSTALL-MANAPLUS" ; then
                         add_aur_package "$AUR_INSTALL_MANAPLUS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MMO-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Runescape
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_RUNESCAPE\" 'AUR-INSTALL-RUNESCAPE'" "AUR-INSTALL-RUNESCAPE" ; then
                         add_aur_package "$AUR_INSTALL_RUNESCAPE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MMO-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Savage 2
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SAVAGE_2\" 'AUR-INSTALL-SAVAGE-2'" "AUR-INSTALL-SAVAGE-2" ; then
                         add_aur_package "$AUR_INSTALL_SAVAGE_2"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MMO-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Spiral Knights
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_KNIGHTS\" 'AUR-INSTALL-SPIRAL-KNIGHTS'" "AUR-INSTALL-SPIRAL-KNIGHTS" ; then
                         add_aur_package "$AUR_INSTALL_SPIRAL_KNIGHTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MMO-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Wakfu
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_WAKFU\" 'AUR-INSTALL-WAKFU'" "AUR-INSTALL-WAKFU" ; then
                         add_aur_package "$AUR_INSTALL_WAKFU"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MMO-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6795,12 +7757,20 @@ install_puzzle_games_menu()
                     if add_packagemanager "package_install \"$INSTALL_FROZEN_BUBBLE\" 'INSTALL-FROZEN-BUBBLE'" "INSTALL-FROZEN-BUBBLE" ; then
                         add_package "$INSTALL_FROZEN_BUBBLE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PUZZLE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Numptyphysics
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_NUMPTYPHYSICS\" 'AUR-INSTALL-NUMPTYPHYSICS'" "AUR-INSTALL-NUMPTYPHYSICS" ; then
                         add_aur_package "$AUR_INSTALL_NUMPTYPHYSICS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-PUZZLE-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6891,18 +7861,30 @@ install_rpg_games_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ARDENTRYST\" 'AUR-INSTALL-ARDENTRYST'" "AUR-INSTALL-ARDENTRYST" ; then
                         add_aur_package "$AUR_INSTALL_ARDENTRYST"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RPG-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Flare RPG
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_FLARE_RPG\" 'AUR-INSTALL-FLARE-RPG'" "AUR-INSTALL-FLARE-RPG" ; then
                         add_aur_package "$AUR_INSTALL_FLARE_RPG"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RPG-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Freedroid RPG
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_FREEDROUDRPG\" 'INSTALL-FREEDROUDRPG'" "INSTALL-FREEDROUDRPG" ; then
                         add_package "$INSTALL_FREEDROUDRPG"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RPG-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -6999,30 +7981,50 @@ install_racing_games_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MANIADRIVE\" 'AUR-INSTALL-MANIADRIVE'" "AUR-INSTALL-MANIADRIVE" ; then
                         add_aur_package "$AUR_INSTALL_MANIADRIVE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RACING-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Death Rally
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEATH_RALLY\" 'AUR-INSTALL-DEATH-RALLY'" "AUR-INSTALL-DEATH-RALLY" ; then
                         add_aur_package "$AUR_INSTALL_DEATH_RALLY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RACING-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Stun Trally
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_STUNTRALLY\" 'AUR-INSTALL-STUNTRALLY'" "AUR-INSTALL-STUNTRALLY" ; then
                         add_aur_package "$AUR_INSTALL_STUNTRALLY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RACING-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Supertuxkart
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SUPTERTUXKART\" 'INSTALL-SUPTERTUXKART'" "INSTALL-SUPTERTUXKART" ; then
                         add_package "$INSTALL_SUPTERTUXKART"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RACING-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Speed Dreams
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SPEED_DREAMS\" 'INSTALL-SPEED-DREAMS'" "INSTALL-SPEED-DREAMS" ; then
                         add_package "$INSTALL_SPEED_DREAMS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-RACING-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7113,18 +8115,30 @@ install_simulation_games_menu()
                     if add_packagemanager "package_install \"$INSTALL_SIMUTRANS\" 'INSTALL-SIMUTRANS'" "INSTALL-SIMUTRANS" ; then
                         add_package "$INSTALL_SIMUTRANS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SIMULATION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Theme Hospital
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_CORSIX_TH\" 'AUR-INSTALL-CORSIX-TH'" "AUR-INSTALL-CORSIX-TH" ; then
                         add_aur_package "$AUR_INSTALL_CORSIX_TH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SIMULATION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Openttd
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_OPENTTD\" 'INSTALL-OPENTTD'" "INSTALL-OPENTTD" ; then
                         add_package "$INSTALL_OPENTTD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-SIMULATION-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7227,42 +8241,70 @@ install_strategy_games_menu()
                     if add_packagemanager "package_install \"$INSTALL_0AD\" 'INSTALL-0AD'" "INSTALL-0AD" ; then
                         add_package "$INSTALL_0AD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Hedgewars
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_HEDGEWARS\" 'INSTALL-HEDGEWARS'" "INSTALL-HEDGEWARS" ; then
                         add_package "$INSTALL_HEDGEWARS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Megaglest
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MEGAGLEST\" 'INSTALL-MEGAGLEST'" "INSTALL-MEGAGLEST" ; then
                         add_package "$INSTALL_MEGAGLEST"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Unknown-horizons
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_UNKNOW_HORIZONS\" 'INSTALL-UNKNOW-HORIZONS'" "INSTALL-UNKNOW-HORIZONS" ; then
                         add_package "$INSTALL_UNKNOW_HORIZONS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Warzone2100
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_WARZONE2100\" 'INSTALL-WARZONE2100'" "INSTALL-WARZONE2100" ; then
                         add_package "$INSTALL_WARZONE2100"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Wesnoth
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_WESNOTH\"  'INSTALL-WESNOTH'" "INSTALL-WESNOTH" ; then
                         add_package "$INSTALL_WESNOTH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Zod
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_COMMANDER_ZOD\" 'AUR-INSTALL-COMMANDER-ZOD'" "AUR-INSTALL-COMMANDER-ZOD" ; then
                         add_aur_package "$AUR_INSTALL_COMMANDER_ZOD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-STRATEGY-GAMES-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7389,9 +8431,14 @@ install_web_server_menu()
                     if add_packagemanager "package_install \"$INSTALL_WEB_SERVER_1\" 'INSTALL-WEB-SERVER-1'" "INSTALL-WEB-SERVER-1" ; then
                         add_package "$INSTALL_WEB_SERVER_1"
                     fi
+                    #
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ADMINER\" 'AUR-INSTALL-ADMINER'" "AUR-INSTALL-ADMINER" ; then # if you add something, change this name
                         add_aur_package "$AUR_INSTALL_ADMINER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-WEB-SERVER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # MYSQL
                     MenuChecks[$((S_OPT - 1))]=1
@@ -7404,8 +8451,11 @@ install_web_server_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ADMINER\" 'AUR-INSTALL-ADMINER'" "AUR-INSTALL-ADMINER" ; then # if you add something, change this name
                         add_aur_package "$AUR_INSTALL_ADMINER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-WEB-SERVER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
-
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
                         if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
@@ -7498,7 +8548,7 @@ install_fonts_menu()
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-7"  "" "$AUR" "INSTALL-FONTS-MENU-I-7" "MenuTheme[@]" # 7 ttf-vista-fonts 
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-FONTS-MENU-8"  "" ""     "INSTALL-FONTS-MENU-I-8" "MenuTheme[@]" # 8 wqy-microhei
         #
-        print_menu "MenuItems[@]" "MenuInfo[ttf-kochi-substitute@]" "$BreakableKey"
+        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
         #
         read_input_options "$RecommendedOptions" "$BreakableKey"
         RecommendedOptions="" # Clear All previously entered Options so we do not repeat them
@@ -7511,6 +8561,10 @@ install_fonts_menu()
                     if add_packagemanager "package_install \"$INSTALL_TTF_DEJAVU\" 'INSTALL-TTF-DEJAVU'" "INSTALL-TTF-DEJAVU" ; then
                         add_package "$INSTALL_TTF_DEJAVU"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # ttf-google-webfonts
                     MenuChecks[$((S_OPT - 1))]=1
@@ -7518,42 +8572,70 @@ install_fonts_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_WEBFONTS\" 'AUR-INSTALL-GOOGLE-WEBFONTS'" "AUR-INSTALL-GOOGLE-WEBFONTS" ; then
                         add_aur_package "$AUR_INSTALL_GOOGLE_WEBFONTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # ttf-funfonts
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_FUN_FONTS\" 'AUR-INSTALL-FUN-FONTS'" "AUR-INSTALL-FUN-FONTS" ; then
                         add_aur_package "$AUR_INSTALL_FUN_FONTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # ttf-kochi-substitute
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_KOCHI_FONTS\" 'AUR-INSTALL-KOCHI-FONTS'" "AUR-INSTALL-KOCHI-FONTS" ; then
                         add_aur_package "$AUR_INSTALL_KOCHI_FONTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # ttf-liberation
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_TTF_LIBERATION\" 'INSTALL-TTF-LIBERATION'" "INSTALL-TTF-LIBERATION" ; then
                         add_package "$INSTALL_TTF_LIBERATION"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # ttf-ms-fonts
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MS_FONTS\" 'AUR-INSTALL-MS-FONTS'" "AUR-INSTALL-MS-FONTS" ; then
                         add_aur_package "$AUR_INSTALL_MS_FONTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # ttf-vista-fonts
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_VISTA_FONTS\" 'AUR-INSTALL-VISTA-FONTS'" "AUR-INSTALL-VISTA-FONTS" ; then
                         add_aur_package "$AUR_INSTALL_VISTA_FONTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # wqy-microhei
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_WQY_FONTS\" 'INSTALL-WQY-FONTS'" "INSTALL-WQY-FONTS" ; then
                         add_package "$INSTALL_WQY_FONTS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-FONTS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -7667,16 +8749,28 @@ get_network_manager_menu()
                 1)  # networkmanager
                     NETWORK_MANAGER="networkmanager"
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-NETWORK-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 2)  # wicd
                     NETWORK_MANAGER="wicd"
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-NETWORK-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 3)  # None
                     NETWORK_MANAGER="" # @FIX Insure Null value in save
                     S_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-NETWORK-MANAGER-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 *)  # Catch ALL
@@ -7875,30 +8969,50 @@ install_accessories_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_CAIRO\" 'AUR-INSTALL-CAIRO'" "AUR-INSTALL-CAIRO" ; then
                         add_aur_package "$AUR_INSTALL_CAIRO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Conky + CONKY-colors
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_CONKY\" 'AUR-INSTALL-CONKY'" "AUR-INSTALL-CONKY" ; then
                         add_aur_package "$AUR_INSTALL_CONKY" 
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Deepin Screenshot
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEEPIN_SCROT\" 'AUR-INSTALL-DEEPIN-SCROT'" "AUR-INSTALL-DEEPIN-SCROT" ; then
                         add_aur_package "$AUR_INSTALL_DEEPIN_SCROT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Dockbarx
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DOCKBARX\" 'AUR-INSTALL-DOCKBARX'" "AUR-INSTALL-DOCKBARX" ; then
                         add_aur_package "$AUR_INSTALL_DOCKBARX"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Docky
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_DOCKY\" 'INSTALL-DOCKY'" "INSTALL-DOCKY" ; then
                         add_package "$INSTALL_DOCKY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Speedcrunch or galculator
                     MenuChecks[$((S_OPT - 1))]=1
@@ -7916,36 +9030,60 @@ install_accessories_apps_menu()
                             add_aur_package "$AUR_INSTALL_GALGULATOR"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Gnome Pie
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GNOME_PIE\" 'AUR-INSTALL-GNOME-PIE'" "AUR-INSTALL-GNOME-PIE" ; then
                         add_aur_package "$AUR_INSTALL_GNOME_PIE" 
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # Guake
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GUAKE\" 'INSTALL-GUAKE'" "INSTALL-GUAKE" ; then
                         add_package "$INSTALL_GUAKE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Kupfer
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_KUPFER\" 'AUR-INSTALL-KUPFER'" "AUR-INSTALL-KUPFER" ; then
                         add_aur_package "$AUR_INSTALL_KUPFER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # Pyrenamer
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_PYRENAMER\" 'AUR-INSTALL-PYRENAMER'" "AUR-INSTALL-PYRENAMER" ; then
                         add_aur_package "$AUR_INSTALL_PYRENAMER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Shutter
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SHUTTER\" 'AUR-INSTALL-SHUTTER'" "AUR-INSTALL-SHUTTER" ; then
                         add_aur_package "$AUR_INSTALL_SHUTTER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Synapse
                     MenuChecks[$((S_OPT - 1))]=1
@@ -7955,18 +9093,30 @@ install_accessories_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ZEITGEIST\" 'AUR-INSTALL-ZEITGEIST'" "AUR-INSTALL-ZEITGEIST" ; then
                         add_aur_package "$AUR_INSTALL_ZEITGEIST"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # Terminator
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_TERMINATOR\" 'INSTALL-TERMINATOR'" "INSTALL-TERMINATOR" ; then
                         add_package "$INSTALL_TERMINATOR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # Zim
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ZIM\" 'INSTALL-ZIM'" "INSTALL-ZIM" ; then
                         add_package "$INSTALL_ZIM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                15)  # Revelation
                     MenuChecks[$((S_OPT - 1))]=1
@@ -7974,6 +9124,10 @@ install_accessories_apps_menu()
                         add_aur_package "$AUR_INSTALL_REVELATION"
                         add_packagemanager "make_dir '/etc/gconf/schemas/' \"$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO\"; cd /etc/gconf/schemas/; ln -s /usr/share/gconf/schemas/revelation.schemas; cd \$(pwd)" "AUR-INSTALL-REVELATION-SETUP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ACCESSORIES-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8124,46 +9278,78 @@ install_development_apps_menu()
                         add_packagemanager "mv monokai.xml /home/\$USERNAME/.config/Nokia/qtcreator/styles/" "RUN-QT-3"
                         add_packagemanager "chown -R \$USERNAME:\$USERNAME /home/\$USERNAME/.config" "RUN-QT-4"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Wt
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_WT\" 'INSTALL-WT'" "INSTALL-WT" ; then
                         add_package "$INSTALL_WT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # postgresql 
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_POSTGRESQL\" 'INSTALL-POSTGRESQL'" "INSTALL-POSTGRESQL" ; then
                         add_package "$INSTALL_POSTGRESQL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;                    
                 4)  # MySQL and Workbenchhttps://wiki.archlinux.org/index.php/Java
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_MYSQL_WORKBENCH\" 'AUR-INSTALL-MYSQL-WORKBENCH'" "AUR-INSTALL-MYSQL-WORKBENCH" ; then
                         add_aur_package "$AUR_INSTALL_MYSQL_WORKBENCH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Aptana-Studio
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_APTANA_STUDIO\" 'AUR-INSTALL-APTANA-STUDIO'" "AUR-INSTALL-APTANA-STUDIO" ; then
                         add_aur_package "$AUR_INSTALL_APTANA_STUDIO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Bluefish
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_BLUEFISH\" 'INSTALL-BLUEFISH'" "INSTALL-BLUEFISH" ; then
                         add_package "$INSTALL_BLUEFISH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Eclipse
                     MenuChecks[$((S_OPT - 1))]=1
                     install_eclipse_dev_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # emacs
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_EMACS\" 'INSTALL-EMACS'" "INSTALL-EMACS" ; then
                         add_package "$INSTALL_EMACS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # gvim
                     MenuChecks[$((S_OPT - 1))]=1	
@@ -8174,31 +9360,50 @@ install_development_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DISCOUNT\" 'AUR-INSTALL-DISCOUNT'" "AUR-INSTALL-DISCOUNT" ; then
                         add_aur_package "$AUR_INSTALL_DISCOUNT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # geany
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GEANY\" 'INSTALL-GEANY'" "INSTALL-GEANY" ; then
                         add_package "$INSTALL_GEANY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # IntelliJ IDEA
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_INTELLIJ\" 'INSTALL-INTELLIJ'" "INSTALL-INTELLIJ" ; then
                         add_package "$INSTALL_INTELLIJ"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # kdevelop
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_KDEVELOP\" 'INSTALL-KDEVELOP'" "INSTALL-KDEVELOP" ; then
                         add_package "$INSTALL_KDEVELOP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # Netbeans
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_NETBEANS\" 'INSTALL-NETBEANS'" "INSTALL-NETBEANS" ; then
                         add_package "$INSTALL_NETBEANS"
                     fi
-                    
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # Oracle Java
                     MenuChecks[$((S_OPT - 1))]=1
@@ -8206,24 +9411,40 @@ install_development_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_JDK\" 'AUR-INSTALL-JDK'" "AUR-INSTALL-JDK" ; then
                         add_aur_package "$AUR_INSTALL_JDK"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                15)  # Sublime Text 2
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SUBLIME\" 'AUR-INSTALL-SUBLIME'" "AUR-INSTALL-SUBLIME" ; then
                         add_aur_package "$AUR_INSTALL_SUBLIME"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                16)  # Debugger Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DEBUGGER_TOOLS\" 'AUR-INSTALL-DEBUGGER-TOOLS'" "AUR-INSTALL-DEBUGGER-TOOLS" ; then
                         add_aur_package "$AUR_INSTALL_DEBUGGER_TOOLS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                17)  # meld
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MELD\" 'INSTALL-MELD'" "INSTALL-MELD" ; then
                         add_package "$INSTALL_MELD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                18)  # RabbitVCS
                     MenuChecks[$((S_OPT - 1))]=1
@@ -8236,24 +9457,40 @@ install_development_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_RABBITVCS_CLI\" 'AUR-INSTALL-RABBITVCS-CLI'" "AUR-INSTALL-RABBITVCS-CLI" ; then
                         add_aur_package "$AUR_INSTALL_RABBITVCS_CLI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                19)  # astyle
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ASTYLE\"  'INSTALL-ASTYLE'" "INSTALL-ASTYLE" ; then
                         add_package "$INSTALL_ASTYLE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                20)  # putty
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_PUTTY\" 'INSTALL-PUTTY'" "INSTALL-PUTTY" ; then
                         add_package "$INSTALL_PUTTY"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                21)  # Utilities
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_UTILITES\" 'INSTALL-UTITILTIES'" "INSTALL-UTITILTIES" ; then
                         add_package "$INSTALL_UTILITES"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DEVELOPMENT-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ $(to_lower_case "$S_OPT") == $(to_lower_case "$BreakableKey") ]]; then
@@ -8355,54 +9592,90 @@ install_eclipse_dev_menu()
                     if add_packagemanager "package_install \"$INSTALL_ECLIPSE\" 'INSTALL-ECLIPSE'" "INSTALL-ECLIPSE" ; then
                         add_package "$INSTALL_ECLIPSE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Eclipse IDE for C/C++ Developers
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_ECLIPSE_CDT\" 'INSTALL-ECLIPSE-CDT'" "INSTALL-ECLIPSE-CDT" ; then
                         add_package "$INSTALL_ECLIPSE_CDT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Android Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_ANDROID\" 'AUR-INSTALL-ECLIPSE-ANDROID'" "AUR-INSTALL-ECLIPSE-ANDROID" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_ANDROID"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Web Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_WTP\" 'AUR-INSTALL-ECLIPSE-WTP'" "AUR-INSTALL-ECLIPSE-WTP" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_WTP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # PHP Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PDT\" 'AUR-INSTALL-ECLIPSE-PDT'" "AUR-INSTALL-ECLIPSE-PDT" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_PDT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Python Development Tools for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_PYDEV\" 'AUR-INSTALL-ECLIPSE-PYDEV'" "AUR-INSTALL-ECLIPSE-PYDEV" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_PYDEV"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Aptana Studio Plugin for Eclipse
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_APTANA\" 'AUR-INSTALL-ECLIPSE-APTANA'" "AUR-INSTALL-ECLIPSE-APTANA" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_APTANA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_VRAPPER\" 'AUR-INSTALL-ECLIPSE-VRAPPER'" "AUR-INSTALL-ECLIPSE-VRAPPER" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_VRAPPER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ECLIPSE_EGIT\" 'AUR-INSTALL-ECLIPSE-EGIT'" "AUR-INSTALL-ECLIPSE-EGIT" ; then
                         add_aur_package "$AUR_INSTALL_ECLIPSE_EGIT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-ECLIPSE-DEV-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8505,30 +9778,58 @@ install_internet_apps_menu()
                 1)  # Browser
                     MenuChecks[$((S_OPT - 1))]=1
                     install_browsers_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Download / Fileshare
                     MenuChecks[$((S_OPT - 1))]=1
                     install_download_fileshare_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Email / RSS
                     MenuChecks[$((S_OPT - 1))]=1
                     install_email_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Instant Messaging
                     MenuChecks[$((S_OPT - 1))]=1
                     install_im_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Internet Relay Chat
                     MenuChecks[$((S_OPT - 1))]=1
                     install_irc_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Mapping Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     install_mapping_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # VNC / Desktop Share
                     MenuChecks[$((S_OPT - 1))]=1
                     install_desktop_share_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-INTERNET-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8622,24 +9923,40 @@ install_browsers_menu()
                     if add_packagemanager "package_install \"$INSTALL_FIREFOX\" 'INSTALL-FIREFOX'" "INSTALL-FIREFOX" ; then
                         add_package "$INSTALL_FIREFOX"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-BROWSERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_CHROMIUM\" 'INSTALL-CHROMIUM'" "INSTALL-CHROMIUM" ; then
                         add_package "$INSTALL_CHROMIUM"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-BROWSERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_CHROME\" 'AUR-INSTALL-GOOGLE-CHROME'" "AUR-INSTALL-GOOGLE-CHROME" ; then
                         add_aur_package "$AUR_INSTALL_GOOGLE_CHROME"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-BROWSERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_OPERA\" 'INSTALL-OPERA'" "INSTALL-OPERA" ; then
                         add_package "$INSTALL_OPERA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-BROWSERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # 
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -8652,6 +9969,10 @@ install_browsers_menu()
                             add_package "$INSTALL_MIDORI"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-BROWSERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8768,12 +10089,20 @@ install_download_fileshare_menu()
                             add_package "$INSTALL_TRANSMISSION_GTK"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # deluge
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_DELUGE\" 'INSTALL-DELUGE'" "INSTALL-DELUGE" ; then
                         add_package "$INSTALL_DELUGE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # dropbox
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -8786,36 +10115,60 @@ install_download_fileshare_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_DROPBOX_CLI\" 'AUR-INSTALL-DROPBOX-CLI'" "AUR-INSTALL-DROPBOX-CLI" ; then
                         add_aur_package "$AUR_INSTALL_DROPBOX_CLI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # insync
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_INSYNC\" 'AUR-INSTALL-INSYNC'" "AUR-INSTALL-INSYNC" ; then
                         add_aur_package "$AUR_INSTALL_INSYNC"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # jdownloader
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_JDOWNLOADER\" 'AUR-INSTALL-JDOWNLOADER'" "AUR-INSTALL-JDOWNLOADER" ; then
                         add_aur_package "$AUR_INSTALL_JDOWNLOADER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # nitroshare
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_NITROSHARE\" 'AUR-INSTALL-NITROSHARE" "AUR-INSTALL-NITROSHARE" ; then
                         add_aur_package "$AUR_INSTALL_NITROSHARE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # sparkleshare
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SPARKLESHARE\" 'INSTALL-SPARKLESHARE'" "INSTALL-SPARKLESHARE" ; then
                         add_package "$INSTALL_SPARKLESHARE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # steadyflow-bzr
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_STEADYFLOW\" 'AUR-INSTALL-STEADYFLOW'" "AUR-INSTALL-STEADYFLOW" ; then
                         add_aur_package "$AUR_INSTALL_STEADYFLOW"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DOWNLOAD-FILESHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -8909,24 +10262,40 @@ install_email_menu()
                     if add_packagemanager "package_install \"$INSTALL_EVOLUTION\" 'INSTALL-EVOLUTION'" "INSTALL-EVOLUTION" ; then
                         add_package "$INSTALL_EVOLUTION"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMAIL-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Thunderbird
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_THUNDERBIRD\" 'INSTALL-THUNDERBIRD'" "INSTALL-THUNDERBIRD" ; then
                         add_package "$INSTALL_THUNDERBIRD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMAIL-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Liferea
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_LIFEREA\" 'INSTALL-LIFEREA'" "INSTALL-LIFEREA" ; then
                         add_package "$INSTALL_LIFEREA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMAIL-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Lightread
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_LIGHTREAD\" 'AUR-INSTALL-LIGHTREAD'" "AUR-INSTALL-LIGHTREAD" ; then
                         add_aur_package "$AUR_INSTALL_LIGHTREAD"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-EMAIL-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9023,6 +10392,10 @@ install_im_menu()
                     if add_packagemanager "package_install \"$INSTALL_PIDGIN\" 'INSTALL-PIDGIN'" "INSTALL-PIDGIN" ; then
                         add_package "$INSTALL_PIDGIN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IM-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Skype
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -9030,24 +10403,40 @@ install_im_menu()
                     if add_packagemanager "package_install \"$INSTALL_SKYPE\" 'INSTALL-SKYPE'" "INSTALL-SKYPE" ; then
                         add_package "$INSTALL_SKYPE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IM-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Emesene
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_EMESENE\"  'INSTALL-EMESENE'" "INSTALL-EMESENE" ; then
                         add_package "$INSTALL_EMESENE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IM-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # Google Talkplugin
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_TALKPLUGIN\" 'AUR-INSTALL-GOOGLE-TALKPLUGIN'" "AUR-INSTALL-GOOGLE-TALKPLUGIN" ; then
                         add_aur_package "$AUR_INSTALL_GOOGLE_TALKPLUGIN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IM-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Teamspeak3
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMSPEAK3\" 'AUR-INSTALL-TEAMSPEAK3'" "AUR-INSTALL-TEAMSPEAK3" ; then
                         add_aur_package "$AUR_INSTALL_TEAMSPEAK3"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IM-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9135,6 +10524,10 @@ install_irc_menu()
                     if add_packagemanager "package_install \"$INSTALL_IRSSI\" 'INSTALL-IRSSI'" "INSTALL-IRSSI" ; then
                         add_package "$INSTALL_IRSSI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IRC-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # quassel or xchat
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -9152,6 +10545,10 @@ install_irc_menu()
                             add_package "$INSTALL_XCHAT"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-IRC-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9243,12 +10640,20 @@ install_mapping_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GOOGLE_EARTH\" 'AUR-INSTALL-GOOGLE-EARTH'" "AUR-INSTALL-GOOGLE-EARTH" ; then
                         add_aur_package "$AUR_INSTALL_GOOGLE_EARTH"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MAPPING-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # NASA World Wind
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_WORLDWIND\" 'AUR-INSTALL-WORLDWIND'" "AUR-INSTALL-WORLDWIND" ; then
                         add_aur_package "$AUR_INSTALL_WORLDWIND"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-MAPPING-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9335,12 +10740,20 @@ install_desktop_share_menu()
                     if add_packagemanager "package_install \"$INSTALL_REMMINA\" 'INSTALL-REMMINA'" "INSTALL-REMMINA" ; then
                         add_package "$INSTALL_REMMINA"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-SHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Teamviewer
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_TEAMVIEWER\" 'AUR-INSTALL-TEAMVIEWER'" "AUR-INSTALL-TEAMVIEWER" ; then
                         add_aur_package "$AUR_INSTALL_TEAMVIEWER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-DESKTOP-SHARE-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9374,11 +10787,9 @@ if [[ "$RUN_HELP" -eq 1 ]]; then
     create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
 fi
 if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
-    localize_info "INSTALL-GRAPHICS-APPS-DESC"   "Install Graphic Apps"
+    localize_info "INSTALL-GRAPHICS-APPS-DESC"   "Install Graphic Applications"
     #
-    localize_info "INSTALL-GRAPHICS-APPS-TITLE"    "GRAPHICS APPS"
-    localize_info "INSTALL-GRAPHICS-APPS-INFO"     "AV Studio:"
-    localize_info "INSTALL-GRAPHICS-APPS-INFO-2"   "and from AUR"
+    localize_info "INSTALL-GRAPHICS-APPS-TITLE"    "Graphic Applications"
     # Blender, Handbrake, CD/DVD Burners, Gimp, Gthumb, Inkscape, Mcomix, MyPaint, Scribus, Shotwell, Simple-scan, Xnviewmp, Qt Image Viewers, Qt Image Editors
     localize_info "INSTALL-GRAPHICS-APPS-MENU-1"   "AV Studio"
     localize_info "INSTALL-GRAPHICS-APPS-MENU-I-1"      "AV Studio: Installs all Below and more Audio and Video Apps"
@@ -9444,7 +10855,6 @@ install_graphics_apps_menu()
     while [[ 1 ]]; do
         print_title "INSTALL-GRAPHICS-APPS-TITLE"
         print_caution "${StatusBar1}" "${StatusBar2}"
-        print_info  "INSTALL-GRAPHICS-APPS-INFO" " $AV_STUDIO $(localize "INSTALL-GRAPHICS-APPS-INFO-2") $AV_STUDIO_AUR"
         local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
         #
         add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "INSTALL-GRAPHICS-APPS-MENU-1"  "" "$SOME_AUR" "INSTALL-GRAPHICS-APPS-MENU-I-1"  "MenuTheme[@]" # AV Studio
@@ -9551,18 +10961,30 @@ install_graphics_apps_menu()
                     if add_packagemanager "aur_package_install \"$AV_STUDIO_AUR\" 'AUR-INSTALL-AUDIO-VIDEO-STUDIO'" "AUR-INSTALL-AUDIO-VIDEO-STUDIO" ; then
                         add_aur_package "$AV_STUDIO_AUR"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Blender
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_BLENDER\" 'INSTALL-BLENDER'" "INSTALL-BLENDER" ; then
                         add_package "$INSTALL_BLENDER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Handbrake
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_HANDBRAKE\" 'INSTALL-HANDBRAKE'" "INSTALL-HANDBRAKE" ; then
                         add_package "$INSTALL_HANDBRAKE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # CD/DVD Burners
                     MenuChecks[$((S_OPT - 1))]=1
@@ -9573,12 +10995,20 @@ install_graphics_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_CD_DVD_BURNERS\" 'AUR-INSTALL-CD-DVD-BURNERS'" "AUR-INSTALL-CD-DVD-BURNERS" ; then
                         add_aur_package "$AUR_INSTALL_CD_DVD_BURNERS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 5)  # Gimp
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GIMP\"  'INSTALL-GIMP'" "INSTALL-GIMP" ; then
                         add_package "$INSTALL_GIMP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Gimp-plugins
                     MenuChecks[$((S_OPT - 1))]=1
@@ -9589,12 +11019,20 @@ install_graphics_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_GIMP_PLUGINS\" 'AUR-INSTALL-GIMP-PLUGINS'" "AUR-INSTALL-GIMP-PLUGINS" ; then
                         add_aur_package "$AUR_INSTALL_GIMP_PLUGINS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # Gthumb
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_GTHUMB\" 'INSTALL-GTHUMB'" "INSTALL-GTHUMB" ; then
                         add_package "$INSTALL_GTHUMB"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # Inkscape
                     MenuChecks[$((S_OPT - 1))]=1
@@ -9604,42 +11042,70 @@ install_graphics_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_SOZI\" 'AUR-INSTALL-SOZI'" "AUR-INSTALL-SOZI" ; then
                         add_aur_package "$AUR_INSTALL_SOZI"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # Mcomix
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MCOMIX\" 'INSTALL-MCOMIX'" "INSTALL-MCOMIX" ; then
                         add_package "$INSTALL_MCOMIX"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                10)  # MyPaint
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MYPAINT\"  'INSTALL-MYPAINT'" "INSTALL-MYPAINT" ; then
                         add_package "$INSTALL_MYPAINT"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                11)  # Scribus
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SCRIBUS\" 'INSTALL-SCRIBUS'" "INSTALL-SCRIBUS" ; then
                         add_package "$INSTALL_SCRIBUS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                12)  # Shotwell
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SHOTWELL\" 'INSTALL-SHOTWELL'" "INSTALL-SHOTWELL" ; then
                         add_package "$INSTALL_SHOTWELL"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                13)  # Simple-scan
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SIMPLE_SCAN\" 'INSTALL-SIMPLE-SCAN'" "INSTALL-SIMPLE-SCAN" ; then
                         add_package "$INSTALL_SIMPLE_SCAN"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                14)  # Xnviewmp
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_XNVIEWMP\" 'AUR-INSTALL-XNVIEWMP'" "AUR-INSTALL-XNVIEWMP" ; then
                         add_aur_package "$AUR_INSTALL_XNVIEWMP"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                15)  # Qt Image Viewers 
                     MenuChecks[$((S_OPT - 1))]=1
@@ -9650,12 +11116,20 @@ install_graphics_apps_menu()
                     if add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_VIEWERS\" 'AUR-INSTALL-QT-IMAGE-VIEWERS'" "AUR-INSTALL-QT-IMAGE-VIEWERS" ; then
                         add_package "$AUR_QT_IMAGE_VIEWERS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                16)  # Qt Image Editors
                     MenuChecks[$((S_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_QT_IMAGE_EDITORS\" 'AUR-INSTALL-QT-IMAGE-EDITORS'" "AUR-INSTALL-QT-IMAGE-EDITORS" ; then
                         add_aur_package "$AUR_QT_IMAGE_EDITORS"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-GRAPHICS-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9745,10 +11219,18 @@ install_video_apps_menu()
                 1)  # Players
                     MenuChecks[$((S_OPT - 1))]=1
                     install_video_players_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Editors | Tools
                     MenuChecks[$((S_OPT - 1))]=1
                     install_video_editors_tools_menu
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Codecs
                     MenuChecks[$((S_OPT - 1))]=1
@@ -9764,6 +11246,10 @@ install_video_apps_menu()
                             add_aur_package "$AUR_INSTALL_CODECS_64"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-APPS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$S_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -9872,42 +11358,70 @@ install_video_players_menu()
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_AUDIENCE\" 'AUR-INSTALL-AUDIENCE'" "AUR-INSTALL-AUDIENCE" ; then
                         add_aur_package "$AUR_INSTALL_AUDIENCE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 2)  # Gnome-mplayer
                     MenuChecks[$((SS_OPT - 1))]=1
-                    if add_packagemanager "package_install \"$INSTALSMPLAYERL_GNOME_MPLAYER\"  'INSTALL-GNOME-MPLAYER'" "INSTALL-GNOME-MPLAYER" ; then
+                    if add_packagemanager "package_install \"$INSTALL_GNOME_MPLAYER\"  'INSTALL-GNOME-MPLAYER'" "INSTALL-GNOME-MPLAYER" ; then
                         add_package "$INSTALL_GNOME_MPLAYER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 3)  # Parole
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_PAROLE\" 'INSTALL-PAROLE'" "INSTALL-PAROLE" ; then
                         add_package "$INSTALL_PAROLE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 4)  # MiniTube
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MINITUBE\" 'INSTALL-MINITUBE'" "INSTALL-MINITUBE" ; then
                         add_package "$INSTALL_MINITUBE"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
-                5)  # MiroSMPLAYER
+                5)  # Miro
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_MIRO\" 'INSTALL-MIRO'" "INSTALL-MIRO" ; then
                         add_package "$INSTALL_MIRO"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 6)  # Rosa Media Player
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "aur_package_install \"$AUR_INSTALL_ROSA_MEDIA_PLAYER\" 'AUR-INSTALL-ROSA-MEDIA-PLAYER'" "AUR-INSTALL-ROSA-MEDIA-PLAYER" ; then
                         add_aur_package "$AUR_INSTALL_ROSA_MEDIA_PLAYER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 7)  # smplayer
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_SMPLAYER\" 'INSTALL-SMPLAYER'" "INSTALL-SMPLAYER" ; then
                         add_package "$INSTALL_SMPLAYER"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 8)  # VLC
                     MenuChecks[$((SS_OPT - 1))]=1
@@ -9919,12 +11433,20 @@ install_video_players_menu()
                             add_package "$INSTALL_VLC_KDE"
                         fi
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 9)  # XBMC
                     MenuChecks[$((SS_OPT - 1))]=1
                     if add_packagemanager "package_install \"$INSTALL_XBNC\" 'INSTALL-XBNC'" "INSTALL-XBNC" ; then
                         add_package "$INSTALL_XBNC"
                     fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-PLAYERS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
@@ -10020,43 +11542,67 @@ install_video_editors_tools_menu()
         #
         local SS_OPT
         for SS_OPT in ${OPTIONS[@]}; do
-           case "$SS_OPT" in
-               1)  # Arista-transcoder
-                   MenuChecks[$((SS_OPT - 1))]=1
-                   if add_packagemanager "aur_package_install \"$AUR_INSTALL_ARISTA_TRANSCODER\" 'AUR-INSTALL-ARISTA-TRANSCODER'" "AUR-INSTALL-ARISTA-TRANSCODER" ; then
-                       add_package "$AUR_INSTALL_ARISTA_TRANSCODER"
-                   fi
-                   ;;
-               2)  # Transmageddon
-                   MenuChecks[$((SS_OPT - 1))]=1
-                   if add_packagemanager "package_install \"$INSTALL_TRAMSMAGEDDON\" 'INSTALL-TRAMSMAGEDDON'" "INSTALL-TRAMSMAGEDDON" ; then
-                       add_package "$INSTALL_TRAMSMAGEDDON"
-                   fi
-                   ;;
-               3)  # KDEenlive
-                   MenuChecks[$((SS_OPT - 1))]=1
-                   if add_packagemanager "package_install \"$INSTALL_KDENLIVE\" 'INSTALL-KDENLIVE'" "INSTALL-KDENLIVE" ; then
-                       add_package "$INSTALL_KDENLIVE"
-                   fi
-                   ;;
-               4)  # Openshot
-                   MenuChecks[$((SS_OPT - 1))]=1
-                   if add_packagemanager "package_install \"$INSTALL_OPENSHOT\" 'INSTALL-OPENSHOT'" "INSTALL-OPENSHOT" ; then
-                       add_package "$INSTALL_OPENSHOT"
-                   fi
-                   ;;
-               5)  # Pitivi
-                   MenuChecks[$((SS_OPT - 1))]=1
-                   if add_packagemanager "package_install \"$INSTALL_PITIVI\" 'INSTALL-PITIVI'" "INSTALL-PITIVI" ; then
-                       add_package "$INSTALL_PITIVI"
-                   fi
-                   ;;
-               6)  # Kazam-bzr
-                   MenuChecks[$((SS_OPT - 1))]=1
-                   if add_packagemanager "aur_package_install \"$AUR_INSTALL_KAZAM_BZR\" 'AUR-INSTALL-KAZAM-BZR'" "AUR-INSTALL-KAZAM-BZR" ; then
-                       add_aur_package "$AUR_INSTALL_KAZAM_BZR"
-                   fi
-                   ;;
+            case "$SS_OPT" in
+                1)  # Arista-transcoder
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_ARISTA_TRANSCODER\" 'AUR-INSTALL-ARISTA-TRANSCODER'" "AUR-INSTALL-ARISTA-TRANSCODER" ; then
+                        add_package "$AUR_INSTALL_ARISTA_TRANSCODER"
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-EDITORS-TOOLS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
+                2)  # Transmageddon
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_TRAMSMAGEDDON\" 'INSTALL-TRAMSMAGEDDON'" "INSTALL-TRAMSMAGEDDON" ; then
+                        add_package "$INSTALL_TRAMSMAGEDDON"
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-EDITORS-TOOLS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
+                3)  # KDEenlive
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_KDENLIVE\" 'INSTALL-KDENLIVE'" "INSTALL-KDENLIVE" ; then
+                        add_package "$INSTALL_KDENLIVE"
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-EDITORS-TOOLS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
+                4)  # Openshot
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_OPENSHOT\" 'INSTALL-OPENSHOT'" "INSTALL-OPENSHOT" ; then
+                        add_package "$INSTALL_OPENSHOT"
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-EDITORS-TOOLS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
+                5)  # Pitivi
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "package_install \"$INSTALL_PITIVI\" 'INSTALL-PITIVI'" "INSTALL-PITIVI" ; then
+                        add_package "$INSTALL_PITIVI"
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-EDITORS-TOOLS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
+                6)  # Kazam-bzr
+                    MenuChecks[$((SS_OPT - 1))]=1
+                    if add_packagemanager "aur_package_install \"$AUR_INSTALL_KAZAM_BZR\" 'AUR-INSTALL-KAZAM-BZR'" "AUR-INSTALL-KAZAM-BZR" ; then
+                        add_aur_package "$AUR_INSTALL_KAZAM_BZR"
+                    fi
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-EDITORS-TOOLS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
+                    ;;
                 *)  # Catch ALL
                     if [[ "$SS_OPT" == $(to_lower_case "$BreakableKey") ]]; then
                         if save_array "MenuChecks[@]" "${MENU_PATH}" "${menu_name}.db" ; then
@@ -10289,6 +11835,10 @@ install_video_cards_menu()
                     #    remove_packagemanager "RUN-NVIDIA-XCONFIG"
                     #fi
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 2)  # Nouveau
@@ -10304,6 +11854,10 @@ install_video_cards_menu()
                     #    remove_packagemanager "INSTALL-NOUVEAU"
                     #fi
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 3)  # Intel
@@ -10318,6 +11872,10 @@ install_video_cards_menu()
                     #    remove_packagemanager "INSTALL-INTEL"
                     #fi
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 4)  # ATI
@@ -10333,6 +11891,10 @@ install_video_cards_menu()
                     #    remove_packagemanager "INSTALL-ATI"
                     #fi
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 5)  # Vesa
@@ -10347,6 +11909,10 @@ install_video_cards_menu()
                     #    remove_packagemanager "INSTALL-VESA"
                     #fi
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 6)  # VIRTUALBOX
@@ -10365,12 +11931,20 @@ install_video_cards_menu()
                     #    remove_packagemanager "INSTALL-VIRTUALBOX"
                     #fi
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 7)  # SKIP
                     MenuChecks[$((SS_OPT - 1))]=1
                     VIDEO_CARD=7 # 7 SKIP, No Video Card Installed
                     SS_OPT="$BreakableKey"
+                    # Progress Status
+                    StatusBar1="INSTALL-VIDEO-CARDS-MENU-$((S_OPT - 1))"
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    print_this "$StatusBar1 $StatusBar2"
                     break
                     ;;
                 *)  # Catch ALL
