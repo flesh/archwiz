@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="24 Jan 2013 16:33"
+# LAST_UPDATE="25 Jan 2013 16:33"
 #
 # Software Packages:
 # If I declare them here, I can use them in menus
@@ -367,7 +367,6 @@ AUR_INSTALL_ASPELL_LANGUAGE="aspell-$LANGUAGE_AS"
 AUR_INSTALL_TEXMAKER="texmaker"
 AUR_INSTALL_ABNTEX="abntex"
 AUR_INSTALL_NITROTASKS="nitrotasks"
-AUR_INSTALL_ASPELL_LANGUAGE="aspell-$LANGUAGE_AS"
 AUR_INSTALL_XMIND="xmind"
 AUR_INSTALL_VIRTUALBOX_EXT_ORACLE="virtualbox-ext-oracle"
 AUR_INSTALL_GTK_THEMES_ADWAITA="gtk-theme-adwaita-cupertino gtk-theme-adwaita-cupertino-glassy"
