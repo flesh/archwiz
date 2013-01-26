@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="24 Jan 2013 16:33"
+# LAST_UPDATE="25 Jan 2013 16:33"
 #
 declare ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
 #
@@ -70,6 +70,12 @@ if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
             ./bashtest
             read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
             RUN_TEST=2
+            DEBUGGING=1
+        fi
+        if [[ "$1" == "-x" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_TEST=3
             DEBUGGING=1
         fi
         if [[ "$1" == "-a" ]]; then
@@ -775,6 +781,8 @@ elif [[ "$RUN_HELP" -eq 1 ]]; then
 elif [[ "$RUN_TEST" -eq 1 ]]; then
     print_info "RUN-TEST"
 elif [[ "$RUN_TEST" -eq 2 ]]; then
+    print_info "RUN-TEST"
+elif [[ "$RUN_TEST" -eq 3 ]]; then
     print_info "RUN-TEST"
 elif [[ "$AUTOMAN" -eq 1 ]]; then
     verify_config "$DETECTED_RUN_MODE"
