@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# LAST_UPDATE="24 Jan 2013 16:33"
+# LAST_UPDATE="25 Jan 2013 16:33"
 #
 #-------------------------------------------------------------------------------
 # This script will install Arch Linux, although it could be adapted to install any Linux distro that uses the same package names.
