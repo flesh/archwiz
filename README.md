@@ -26,7 +26,7 @@ To start the install from a Flash Drive to a Hard Drive you wish to Format, do t
     Now we are in Boot Mode:
     ./wiz # This is all Menu Driven.
     Note: The Following command will build the Localized Database, this must be done prior to using this script:
-    ./wiz -l # Localize
+    ./wiz -l # Update Localize Files
     Then you must build the Help File if you wish to view it
     ./wiz -h # Help File for browser: file:///home/USERNAME/Full-Path/archwiz/help.html
     Automatic install option is -a, it will automatically preform install.
@@ -89,4 +89,9 @@ Wizard API:
     2. Self Documenting.
     3. Self Testing, ability to run Test and Determine if program is working correctly.
     
+THINGS TO DO:
+    The List of things to do is long and not conclusive:
+    1. Finish Create AUR Package Repository
+    2. Finish Asynchronous Downloads 
+    3. Finish Packages
 End of Document
