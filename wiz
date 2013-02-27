@@ -1,0 +1,839 @@
+#!/bin/bash
+#
+# LAST_UPDATE="27 Feb 2013 16:33"
+#
+declare ARCH_WIZ_SCRIPT_NAME="Arch Wizard"
+#
+declare FULL_SCRIPT_PATH=$(dirname $(readlink -f "$0"))
+#
+declare CLEAN_ENV=1
+if [[ "$CLEAN_ENV" -eq 1 ]]; then
+    source "/etc/profile" > /dev/null
+    #set -eu
+    # -e causes menu to fail
+    set -u
+    shopt -s nullglob dotglob
+    #IFS=$'\n\t'
+    IFS=$' '
+    umask 022
+    unalias -a
+    unset -f $(declare -F | sed "s/^declare -f //")
+else
+    #set -o nounset 
+    echo ""
+fi
+
+# Wizard API Script for core Interface
+if [ -f "${FULL_SCRIPT_PATH}/wizard.sh" ]; then
+    declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale" # Where the po.langage file goes -> Edit this line as needed for project
+    declare LOCALIZED_FILE="arch-wizard.sh"                # Name to call the Langage File referanced above -> Edit this line as needed for project
+    declare AUTOMAKE="1.13"                                # automake version
+    declare LOCALIZED_FILES_SAFE=0                         # Set to 1 the first time you start Hand Translating your Localization files so they do not get overwriten.
+    declare DEFAULT_LOCALIZED_LANG='en'                    # Change this to the Default Language that the Localized files are in
+    #
+    export TEXTDOMAINDIR="$LOCALIZED_PATH"                 # Multilingual Langage File Path -> from above: declare -r LOCALIZED_PATH="${FULL_SCRIPT_PATH}/locale"
+    export TEXTDOMAIN="$LOCALIZED_FILE"                    # Multilingual Langage File Name -> from above: declare LOCALIZED_FILE="wizard.sh"
+    declare -i RUN_LOCALIZER=0                             # Localization of all script tags to support language
+    declare -i RUN_HELP=0                                  # Create Help.html
+    declare -i RUN_TEST=0                                  # 0=Disable, 1=Run, 2=Run Extended Test
+    declare -i AUTOMAN=0                                   # Automatically install from saved settings
+    declare -i DETECTED_RUN_MODE=0                         # Detected Run Mode
+    declare -i RUNTIME_MODE=1                              # 1 = Boot Mode, 2 = Live
+    declare -i DRIVE_FORMATED=0                            # Is Target Drive Formated yet
+    declare DATE_TIME=`date +"%d-%b-%Y @ %r"`              # 21-Jan-2013 @ 01:25:29 PM
+    declare LOG_DATE_TIME=$(date +"%d-%b-%Y-T-%H-%M")      # Day-Mon-YYYY-T-HH-MM: 21-Jan-2013-T-13-24
+    if [ -d "/home/arch/" ]; then
+        DETECTED_RUN_MODE=1
+        RUNTIME_MODE=1
+    else
+        DETECTED_RUN_MODE=2
+        RUNTIME_MODE=2
+        DRIVE_FORMATED=1        
+    fi
+    #
+    if [[ "$#" -gt 0 ]]; then
+        if [[ "$1" == "-l" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_LOCALIZER=1
+        fi
+        if [[ "$1" == "-h" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_HELP=1
+        fi
+        if [[ "$1" == "-t" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_TEST=1
+            DEBUGGING=1
+        fi
+        if [[ "$1" == "-s" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_TEST=2
+            DEBUGGING=1
+        fi
+        if [[ "$1" == "-x" ]]; then
+            ./bashtest
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            RUN_TEST=3
+            DEBUGGING=1
+        fi
+        if [[ "$1" == "-a" ]]; then
+            AUTOMAN=1
+        fi
+        if [[ "$1" == "-d" ]]; then
+            mv -Rv "${FULL_SCRIPT_PATH}/var/" "${FULL_SCRIPT_PATH}/Archive/${LOG_DATE_TIME}/var/" 
+            cp -Rfv "/var/log/" "${FULL_SCRIPT_PATH}/var/" 
+            chown -R jflesher:jflesher "${FULL_SCRIPT_PATH}"
+            read -e -sn 1 -p "$(gettext -s "PRESS-ANY-KEY-CONTINUE")"
+            exit 0
+        fi
+    fi
+    # change to project needs
+    declare CONFIG_NAME="archwiz"
+    declare LOG_PATH="${FULL_SCRIPT_PATH}/LOG"
+    declare CONFIG_PATH="${FULL_SCRIPT_PATH}/CONFIG"
+    declare USER_FOLDER="${FULL_SCRIPT_PATH}/USER"    
+    declare ERROR_LOG="${LOG_PATH}/0-${CONFIG_NAME}-error.log"
+    declare ACTIVITY_LOG="${LOG_PATH}/1-${CONFIG_NAME}-activity.log"
+    declare SCRIPT_LOG="${LOG_PATH}/2-${CONFIG_NAME}-script.log"
+    #. "${FULL_SCRIPT_PATH}/wizard.sh"
+    echo " Loading wizard.sh "
+    source "${FULL_SCRIPT_PATH}/wizard.sh"
+else
+    echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/wizard.sh"
+    exit 1
+fi
+# Common Wizard
+if [ -f "${FULL_SCRIPT_PATH}/common-wiz.sh" ]; then
+    echo " Loading common-wiz.sh " 
+    source "${FULL_SCRIPT_PATH}/common-wiz.sh"
+else
+    echo "ERROR - ${FULL_SCRIPT_PATH}/common-wiz NOT FOUND"
+    exit 1
+fi
+# Arch Wizard
+if [ -f "${FULL_SCRIPT_PATH}/arch-wiz.sh" ]; then
+    echo " Loading arch-wiz.sh " 
+    source "${FULL_SCRIPT_PATH}/arch-wiz.sh"
+else
+    echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/arch-wiz.sh"
+    exit 1
+fi
+# Packages
+if [ -f "${FULL_SCRIPT_PATH}/packages.sh" ]; then
+    echo " Loading packages.sh " 
+    source "${FULL_SCRIPT_PATH}/packages.sh"
+else
+    echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/packages.sh"
+    exit 1
+fi
+# Package Wizard
+if [ -f "${FULL_SCRIPT_PATH}/package-wiz.sh" ]; then
+    echo " Loading package-wiz.sh " 
+    source "${FULL_SCRIPT_PATH}/package-wiz.sh"
+else
+    echo "ERROR FILE NOT FOUND: - ${FULL_SCRIPT_PATH}/package-wiz.sh"
+    exit 1
+fi
+#
+#-------------------------------------------------------------------------------
+# This script will install Arch Linux, although it could be adapted to install any Linux distribution that uses the same package names.
+# This Script Assumes you wish GPT disk format, and gives you the choice to use UEFI, BIOS or no boot loader.
+# The first time you use it, call it with the -a or -da for debugging help if needed, this will start the Wizard, follow instructions.
+# You have the Option of Installing Software, this is just a list of Configuration files, and will save a series of files for later use.
+# After reboot you have the option to run -i to install software; you can load the Software list if you already saved it; or create a new one.
+# If after reboot you have no Internet access, run the Script with a -n and pick option 1 to setup network, then the option to ping.
+#-------------------------------------------------------------------------------
+# Programmers:
+# 1. Created by helmuthdu mailto: helmuthdu[at]gmail[dot]com prior to Nov 2012
+# 2. Re-factored and Added Functionality by Jeffrey Scottconfigure_sudo Flesher to make it a Wizard.
+#-------------------------------------------------------------------------------
+# Changes:
+#-------------------------------------------------------------------------------
+# @FIX
+# 1. Localization
+# 2. Save all installed and removed into file for testing
+# 3. Finish Menu load and save option.
+# 4. Custom Install
+# 5. Ask what drive to save log files to; only if live mode, case running from root, and want logs on flash drive.
+#-------------------------------------------------------------------------------
+# This Program is under the Free License. It is Free of any License or Laws Governing it.
+# You are Free to apply what ever License you wish to it below this License.
+# The Free License means that the End User has total Freedom will using the License,
+# whereas all other License types fall short due to the Laws governing them,
+# Free License is not covered by any Law, all programmers writing under the Free License,
+# take an oath that the Software Contains No Malice: Viruses, Malware, or Spybots...
+# and only does what it was intended to do, notifying End Users before doing it.
+# All Programmers and End Users are Free to Distribute or Modify this script,
+# as long as they list themselves as Programmers and Document Changes.
+# Free License is also Free of any Liability or Legal Actions, Freedom starts with Free.
+#-------------------------------------------------------------------------------
+# Other LICENSES:
+# 1. GNU
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# -----------------------------------------------------------------------------
+# TEST {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="test"
+    USAGE="test"
+    DESCRIPTION=$(localize "TEST-DESC")
+    NOTES=$(localize "TEST-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 Sep 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "TEST-DESC"  "Test functions out for Developers" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "TEST-NOTES" "Put what ever code in there you want to Test." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
+test()
+{
+    test_install
+    #
+    if [[ "$DEBUGGING" -eq 1 ]]; then pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"; fi
+}
+#}}}
+# -----------------------------------------------------------------------------
+# CONFIG MENU {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="config_menu"
+    USAGE="config_menu"
+    DESCRIPTION=$(localize "CONFIG-MENU-DESC")
+    NOTES=$(localize "CONFIG-MENU-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 Sep 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "CONFIG-MENU-DESC"               "Configuration Menu gives access to all Configuration Files." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-NOTES"              "Fast place to make changes and verify Settings." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Menu Localization
+    localize_info "CONFIG-MENU-CREATE-CONF"        "Create Config" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-CREATE"                "Create all Configuration files" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-EDIT-CONF"          "Edit Config" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-EDIT"                  "Edit all etc Configuration files" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-BACKUP-CONF"        "Backup Config" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-BACKUP"                "Backup all Configuration files from Hard Drive to Flash Drive." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-RESTORE-CONF"       "Restore Config" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-RESTORE"               "Restore all Configuration files from Flash Drive." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-CUSTOM-NAMESERVER"  "Custom Nameserver" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-C-NAMESERVERS"         "Edit Custom Nameserver File and resolv.conf" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-WEB-SERVER"         "Web Server" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-WEB-SERVER"            "Web Server Configuration" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-FLESH"              "Flesh" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-FLESH"                 "Flesh Configuration Files" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-LOGS"               "LOGS" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-LOGS"                  "Copy LOGS and Configuration Files" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-EXPORT"             "Export Scripts" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-EXPORT"                "Export Scripts so you can Import them into a Live System, used after you have already Installed Step 2." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-RETURN"             "Return" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-I-RETURN"                "Return to Main Menu" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Status bar Localization
+    localize_info "Make-Choose"                    "Make a Choose:" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-CREATE"          "Create Configuration files Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-EDIT"            "Edit etc Configuration files Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-BACKUP"          "Backup Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-RESTORE"         "Restore Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-C-NAMESERVERS"   "Custom Name Servers Completed" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-WEB-SERVER"      "Web Server Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-FLESH"           "Flesh Completed" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-LOGS"            "Logs Copy Completed" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "CONFIG-MENU-SB-EXPORT"          "Scrips Exported" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Title Localization
+    localize_info "CONFIG-MENU-TITLE"  "Configuration Menu" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Localization
+    localize_info "EDIT-HOSTS"         "Edit Configuration file /etc/hosts" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-FSTAB"         "Edit Configuration file /etc/fstab" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-DHCPCD"        "Edit Configuration file /etc/dhcpcd.conf" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-DHCPD"         "Edit Configuration file /etc/conf.d/dhcpd" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-LOCALE-CONF"   "Edit Configuration file /etc/locale.conf" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-LOCALE-GEN"    "Edit Configuration file /etc/locale.gen" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-PACMAN-MIRROR" "Edit Configuration file /etc/pacman.d/mirrorlist" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-SUDOERS"       "Edit Configuration file /etc/sudoers" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-RESOLV"        "Edit Configuration file /etc/resolv.conf" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-SSH"           "Edit Configuration file /etc/ssh/sshd_config" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-VCONSOLE"      "Edit Configuration file /etc/vconsole.conf" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-PACMAN"        "Edit Configuration file /etc/pacman.conf" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "EDIT-HOSTNAME"      "Edit Configuration file /etc/hostname" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
+config_menu()
+{
+    local -r menu_name="Config-Menu"  # You must define Menu Name here
+    local BreakableKey="B"            # Q=Quit, D=Done, B=Back
+    # No reason to save menu
+    OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    local -a MenuChecks=( $(create_data_array 0 0 ) ) 
+    IFS="$OLD_IFS"
+    #
+    while [[ 1 ]]; do
+        #
+        print_title "CONFIG-MENU-TITLE" "$TEXT_SCRIPT_ID"
+        print_caution "${StatusBar1}" "${StatusBar2}"
+        #
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset        
+        #
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CREATE-CONF"       "" "" "CONFIG-MENU-I-CREATE"        "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EDIT-CONF"         "" "" "CONFIG-MENU-I-EDIT"          "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-BACKUP-CONF"       "" "" "CONFIG-MENU-I-BACKUP"        "MenuTheme[@]"
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RESTORE-CONF"      "" "" "CONFIG-MENU-I-RESTORE"       "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-CUSTOM-NAMESERVER" "" "" "CONFIG-MENU-I-C-NAMESERVERS" "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-WEB-SERVER"        "" "" "CONFIG-MENU-I-WEB-SERVER"    "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-FLESH"             "" "" "CONFIG-MENU-I-FLESH"         "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-LOGS"              "" "" "CONFIG-MENU-I-LOGS"          "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-EXPORT"            "" "" "CONFIG-MENU-I-EXPORT"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "CONFIG-MENU-RETURN"            "" "" "CONFIG-MENU-I-RETURN"        "MenuTheme[@]"   
+        #
+        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+        #-1-
+        local SUB_OPTIONS=""        
+        #
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        #
+        local S_OPT
+        for S_OPT in ${OPTIONS[@]}; do
+            case "$S_OPT" in
+                1)  # View Config
+                    MenuChecks[$((S_OPT - 1))]=1
+
+                    create_config
+                    
+                    StatusBar1=$(localize "CONFIG-MENU-SB-CREATE")
+                    StatusBar2=": $S_OPT"
+                    ;;
+                2)  # Edit Config
+                    MenuChecks[$((S_OPT - 1))]=1
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass                    
+                    cat ${MOUNTPOINT}/etc/pacman.conf
+                    read_input_yn "EDIT-PACMAN" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/pacman.conf
+                    fi
+                    pause_function "/etc/pacman.conf $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/pacman.d/mirrorlist
+                    read_input_yn "EDIT-PACMAN-MIRROR" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/pacman.d/mirrorlist
+                    fi
+                    pause_function "/etc/pacman.d/mirrorlist $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/fstab
+                    read_input_yn "EDIT-FSTAB" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/fstab
+                    fi
+                    pause_function "/etc/fstab $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/hosts
+                    read_input_yn "EDIT-HOSTS" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/hosts
+                    fi
+                    pause_function "/etc/hosts $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/hostname
+                    pause_function "/etc/hostname $LINENO"
+                    read_input_yn "EDIT-HOSTNAME" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/hostname
+                    fi
+                    pause_function "/etc/hostname $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/locale.conf
+                    read_input_yn "EDIT-LOCALE-CONF" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/locale.conf
+                    fi
+                    pause_function "/etc/locale.conf $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/locale.gen
+                    read_input_yn "EDIT-LOCALE-GEN" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/locale.gen
+                    fi
+                    pause_function "/etc/locale.gen $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/sudoers
+                    read_input_yn "EDIT-SUDOERS" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/sudoers
+                    fi
+                    pause_function "/etc/sudoers $LINENO"
+                    #
+                    cat ${MOUNTPOINT}/etc/resolv.conf
+                    read_input_yn "EDIT-RESOLV" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        chattr -i ${MOUNTPOINT}/etc/resolv.conf
+                        $EDITOR ${MOUNTPOINT}/etc/resolv.conf
+                        chattr +i ${MOUNTPOINT}/etc/resolv.conf
+                    fi
+                    pause_function "/etc/resolv.conf $LINENO"
+                    #
+                    if [ -f ${MOUNTPOINT}/etc/conf.d/dhcpd ]; then
+                        cat ${MOUNTPOINT}/etc/conf.d/dhcpd
+                        read_input_yn "EDIT-DHCPD" " " 0
+                        if [[ "$YN_OPTION" -eq 1 ]]; then
+                            $EDITOR ${MOUNTPOINT}/etc/conf.d/dhcpd
+                        fi
+                        pause_function "/etc/conf.d/dhcpd $LINENO"
+                    fi
+                    #
+                    if [ -f ${MOUNTPOINT}/etc/dhcpcd.conf ]; then
+                        cat ${MOUNTPOINT}/etc/dhcpcd.conf
+                        read_input_yn "EDIT-DHCPCD" " " 0
+                        if [[ "$YN_OPTION" -eq 1 ]]; then
+                            $EDITOR ${MOUNTPOINT}/etc/dhcpcd.conf
+                        fi
+                        pause_function "/etc/dhcpcd.conf $LINENO"
+                    fi
+                    #
+                    if [ -f ${MOUNTPOINT}/etc/ssh/sshd_config ]; then
+                        cat ${MOUNTPOINT}/etc/ssh/sshd_config
+                        read_input_yn "EDIT-SSH" " " 0
+                        if [[ "$YN_OPTION" -eq 1 ]]; then
+                            $EDITOR ${MOUNTPOINT}/etc/ssh/sshd_config
+                        fi
+                        pause_function "/etc/ssh/sshd_config $LINENO"
+                    fi
+                    #
+                    cat ${MOUNTPOINT}/etc/vconsole.conf
+                    read_input_yn "EDIT-VCONSOLE" " " 0
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        $EDITOR ${MOUNTPOINT}/etc/vconsole.conf
+                    fi
+                    pause_function "/etc/vconsole.conf $LINENO"
+
+                    StatusBar1=$(localize "CONFIG-MENU-SB-EDIT")
+                    StatusBar2=": $S_OPT"
+                    BYPASS="$Old_BYPASS" # Restore Bypass
+                    break
+                    ;;
+                3)  # Backup Config
+                    MenuChecks[$((S_OPT - 1))]=1
+                    
+                    backup
+                    
+                    StatusBar1=$(localize "CONFIG-MENU-SB-BACKUP")
+                    StatusBar2=": $S_OPT"
+                    ;;
+                4)  # Restore Config
+                    MenuChecks[$((S_OPT - 1))]=1
+                    
+                    copy_dir "${FULL_SCRIPT_PATH}/etc/" "/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    
+                    StatusBar1=$(localize "CONFIG-MENU-SB-RESTORE") 
+                    StatusBar2=": $S_OPT"
+                    ;;
+                5)  # Custom Nameservers
+                    MenuChecks[$((S_OPT - 1))]=1
+                    DEBUGGING=1
+                    custom_nameservers
+                    StatusBar1=$(localize "CONFIG-MENU-SB-C-NAMESERVERS")
+                    StatusBar2=": $S_OPT"
+                    ;;
+                6)  # Web Server
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-WEB-SERVER")
+                    StatusBar2=": $S_OPT"
+                    ;;
+                7)  # Flesh
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-FLESH")
+                    StatusBar2=": $S_OPT"
+                    break;
+                    ;;
+                8)  # Log Files
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-LOGS")
+                    StatusBar2=": $S_OPT"
+                    copy_dir "/var/log/" "${FULL_SCRIPT_PATH}/var/" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    break;
+                    ;;
+                9)  # Export Scirpts @FIX not at all ready, idea here is to create this script, then use another function to import it, see custom load software
+                    MenuChecks[$((S_OPT - 1))]=1
+                    StatusBar1=$(localize "CONFIG-MENU-SB-EXPORT")
+                    StatusBar2=": $S_OPT"
+                    echo "${CONFIG_PATH}/${CONFIG_NAME}-1-taskmanager.db" > "${FULL_SCRIPT_PATH}/export.sh"
+                    echo "${CONFIG_PATH}/${CONFIG_NAME}-0-packagemanager.db" >> "${FULL_SCRIPT_PATH}/export.sh"
+                    break;
+                    ;;
+               10)  # Return; same as Quit
+                    MenuChecks[$((S_OPT - 1))]=1
+                    S_OPT="$BreakableKey"
+                    break;
+                    ;;
+                *)
+                    if [[ $(to_lower_case "$S_OPT") == $(to_lower_case "$BreakableKey") ]]; then
+                        S_OPT="$BreakableKey"
+                        break;
+                    fi
+                    invalid_option "$S_OPT"
+                    StatusBar1=$(localize "INVALID_OPTION")
+                    ;;
+            esac
+        done
+        is_breakable "$S_OPT" "$BreakableKey"
+    done
+}
+#}}}
+# -----------------------------------------------------------------------------
+# MAIN MENU {{{
+if [[ "$RUN_HELP" -eq 1 ]]; then
+    NAME="main_menu"
+    USAGE="main_menu"
+    DESCRIPTION=$(localize "MAIN-MENU-DESC")
+    NOTES=$(localize "MAIN-MENU-NOTES")
+    AUTHOR="Flesher"
+    VERSION="1.0"
+    CREATED="11 Sep 2012"
+    REVISION="5 Dec 2012"
+    create_help "$NAME" "$USAGE" "$DESCRIPTION" "$NOTES" "$AUTHOR" "$VERSION" "$CREATED" "$REVISION" "$(basename $BASH_SOURCE) : $LINENO"
+fi
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "MAIN-MENU-DESC"   "Main Menu" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-NOTES"  "This is the Main Menu Notes." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-WIZARD" "Use Installation Wizard." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Menu Localization
+    localize_info "MAIN-MENU-NEW-SOFTWARE"  "New Software Configure File" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-SOFTWARE"        "Install Software: Will install Software Packages from Menu Driven Wizards." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-INSTALL"       "Install Arch Linux" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-INSTALL"         "Install Arch Linux: Format Hard Drive and Install Arch Linux." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-LOAD-SOFTWARE" "Load Software Configuration File" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-LOAD-SOFTWARE"   "Load Software: Will install Software Packages from above option." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-DEBUG-MODE"    "Debug Mode" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-DEBUG-MODE"      "Debug Mode: Adds Debugging Information and pauses; helps troubleshoot, Call first, i.e. 4 1 2" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SIMULATE-MODE" "SIMULATE Mode" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-SIMULATE-MODE"   "SIMULATE Mode: Do not Format Drive or Install Software, will only Create Scripts files for Importing into Live OS." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-NETWORK"       "Network Troubleshooting." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-NETWORK"         "Network Troubleshooting" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-CONFIG"        "Config" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-CONFIG"          "Configuration Files: View, Edit, Backup and Restore Configuration files." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-TEST"          "Test" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-TEST"            "Test: Put functions or Code that you wish to test here, for easy access." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-REBOOT"        "Reboot" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-REBOOT"          "Reboot: Reboot the Computer." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-QUIT"          "Quit" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-I-QUIT"            "Quit: Exit back to Command line" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Menu Warning Description Localization
+    localize_info "MAIN-MENU-WARN-FORMAT"      "Format Hard Drive" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Status bar Localization
+    localize_info "MAIN-MENU-SB-SOFTWARE"      "Software and Configuration files are ready." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-INSTALL"       "Hard Drive ready for Reboot." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-LOAD-SOFTWARE" "Software Configuration Loaded." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-DEBUG-MODE"    "Debugging Mode set to On." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-SIMULATE-MODE" "SIMULATE Mode set to On, will only Create Script Files."     "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-NETWORK"       "Network Troubleshooting Completed" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-CONFIG"        "Configuration Files Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-SB-TEST"          "Test Completed." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    # Title Localization
+    localize_info "MAIN-MENU-TITLE" "Main Menu for Arch Wizard Installation Script" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    #
+    localize_info "MM-INFO-1"               "This is the Wizards way of installing an Arch OS in 3 Steps:" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-2"               "1. Configure our Settings Data, which include our:" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-3"               "   A. User Session: this includes User Name, Locale, Time Zone, and other User Specific Settings." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-4"               "   B. Software: this includes Desktop Environment, Display Manager, and other Applications." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-5"               "   C. Disk Manager: this includes the Disk Boot Scheme, Partitions, and other Disk format options." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-6"               "2. Format Hard Drive, Install Bases System, and then do other options; like load a custom Repository." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-7"               "3. Install Software." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-8"               "First time use, Configure all settings, Wizard will guild you through all Steps, after its finished; you will reboot, then just run option to Load Software Configuration File." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-INFO-9"               "If you have an problems while running script; pick Debug Mode; it will give you pauses to see how each step is doing; also review error.log." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "INVALID_OPTION"          "Invalid Option" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-BOOT-MODE-DETECTED"   "Boot Mode Detected." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-LIVE-MODE-DETECTED"   "Live Mode Detected." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MM-LIVE-PREINSTALL-MODE-DETECTED"   "Live Preinstall Mode Detected." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-EXTENDED"      "Extended Debugging Mode" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-MENU-EXTENDED-DESC" "Extended Debugging Mode will only pause on Type 2 Extended Testing." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+fi
+# -------------------------------------
+main_menu()
+{
+    local -r menu_name="MainMenu"  # You must define Menu Name here
+    local BreakableKey="Q"         # Q=Quit, D=Done, B=Back
+    # No reason to save menu
+    local OLD_IFS="$IFS"; IFS=$'\n\t'; # Very Important
+    #local -a MenuChecks=( $(load_array "${MENU_PATH}" "${menu_name}.db" 0 0 ) ) # MENU_PATH is Global
+    local -a MenuChecks=( $(create_data_array 0 0 ) )
+    IFS="$OLD_IFS"
+    local Old_BYPASS="$BYPASS"
+    local -a MenuThemeWarn=( "${BRed}" "${White}" ")" )
+    local -a MenuThemeDflt=( "${BGreen}" "${White}" ")" )
+    #
+    StatusBar2=" "
+    detect_mode
+    if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then
+        StatusBar1="MM-BOOT-MODE-DETECTED"
+    elif [[ "$DETECTED_RUN_MODE" -eq 2 ]]; then
+        StatusBar1="MM-LIVE-MODE-DETECTED"
+    elif [[ "$DETECTED_RUN_MODE" -eq 3 ]]; then
+        StatusBar1="MM-LIVE-PREINSTALL-MODE-DETECTED"
+    fi
+    #
+    while [[ 1 ]]; do
+        local -i OLD_DEBUGGING=DEBUGGING # Save setting
+        #
+        local -a MenuItems=(); local -a MenuInfo=(); RESET_MENU=1; # Reset
+        #IFS=" "
+        #
+        print_title "MAIN-MENU-TITLE" "$TEXT_SCRIPT_ID"
+        print_caution "${StatusBar1}" "${StatusBar2}"
+        #
+        print_this "MM-INFO-1"
+        print_this "MM-INFO-2"
+        print_this "MM-INFO-3"
+        print_this "MM-INFO-4"
+        print_this "MM-INFO-5"
+        print_this "MM-INFO-6"
+        print_this "MM-INFO-7"
+        echo 
+        print_this "MM-INFO-8"
+        print_this "MM-INFO-9"
+        echo 
+        #
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NEW-SOFTWARE"  "" ""                      "MAIN-MENU-I-SOFTWARE"      "MenuTheme[@]"
+        if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-I-INSTALL"       "MenuThemeDflt[@]"
+        else # Live Mode
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-INSTALL"       "" "MAIN-MENU-WARN-FORMAT" "MAIN-MENU-I-INSTALL"       "MenuThemeWarn[@]"
+        fi
+        if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-I-LOAD-SOFTWARE" "MenuThemeWarn[@]"
+        else # Live Mode
+            add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-LOAD-SOFTWARE" "" ""                      "MAIN-MENU-I-LOAD-SOFTWARE" "MenuThemeDflt[@]"
+        fi
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-DEBUG-MODE"    "" ""                      "MAIN-MENU-I-DEBUG-MODE"    "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-SIMULATE-MODE" "" ""                      "MAIN-MENU-I-SIMULATE-MODE" "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-NETWORK"       "" ""                      "MAIN-MENU-I-NETWORK"       "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-CONFIG"        "" ""                      "MAIN-MENU-I-CONFIG"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-TEST"          "" ""                      "MAIN-MENU-I-TEST"          "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-REBOOT"        "" ""                      "MAIN-MENU-I-REBOOT"        "MenuTheme[@]"   
+        add_menu_item "MenuChecks" "MenuItems" "MenuInfo" "MAIN-MENU-QUIT"          "" ""                      "MAIN-MENU-I-QUIT"          "MenuTheme[@]"   
+        #
+        print_menu "MenuItems[@]" "MenuInfo[@]" "$BreakableKey"
+        #
+        local SUB_OPTIONS=""
+        #
+        read_input_options "$SUB_OPTIONS" "$BreakableKey"
+        SUB_OPTIONS="" # Clear All previously entered Options so we do not repeat them
+        #="$BYPASS"
+        local M_OPT
+        for M_OPT in ${OPTIONS[@]}; do
+            case "$M_OPT" in
+                1)  # Install New Software
+                    MenuChecks[$((M_OPT - 1))]=1
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    get_install_mode
+                    clear_software 1
+                    if is_last_config_files ; then
+                        show_last_config
+                    else
+                        print_info "VERIFY-CONFIG-NO-CONFIG"
+                        create_config
+                        show_last_config
+                        pause_function "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    fi        
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+                    read_input_yn "MAIN-MENU-WIZARD" "" 1
+                    BYPASS="$Old_BYPASS" # Restore Bypass
+                    if [[ "$YN_OPTION" -eq 1 ]]; then
+                        run_install_wizard
+                        exit 0
+                    else
+                        install_main_menu
+                    fi
+                    StatusBar1=$(localize "MAIN-MENU-SB-SOFTWARE")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                2)  # Install OS
+                    MenuChecks[$((="$BYPASS"M_OPT - 1))]=1
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    FAST_INSTALL=1
+                    BOOT_MODE=1
+                    # Assume Boot mode
+                    verify_config "$DETECTED_RUN_MODE"
+                    start_screen 
+                    StatusBar1=$(localize "MAIN-MENU-SB-INSTALL")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    break        
+                    ;;
+                3)  # Load Software
+                    MenuChecks[$((M_OPT - 1))]=1
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    verify_config "$DETECTED_RUN_MODE"
+                    if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
+                        echo "No Repository"
+                    elif [[ "$PACMAN_REPO_TYPE" -eq 1 ]]; then # 1=Server
+                        if [ ! -d "/mnt/${CUSTOM_PACKAGES_NAME}/" ]; then
+                            copy_custom_repo "${CUSTOM_PACKAGES}" "${CUSTOM_REPO_NAME}" "/mnt/${CUSTOM_PACKAGES_NAME}/"                        
+                        fi
+                    elif [[ "$PACMAN_REPO_TYPE" -eq 2 ]]; then # 2=Client
+                        echo "mount repo"
+                    fi
+                    install_loaded_software
+                    StatusBar1=$(localize "MAIN-MENU-SB-LOAD-SOFTWARE")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                4)  # Debug mode
+                    MenuChecks[$((M_OPT - 1))]=1
+                    Old_BYPASS="$BYPASS"; BYPASS=0; # Do Not Allow Bypass
+                    print_this "MAIN-MENU-EXTENDED-DESC"
+                    read_input_yn "MAIN-MENU-EXTENDED" "" 0
+                    BYPASS="$Old_BYPASS" # Restore Bypass
+                    if [[ "$YN_OPTION" -eq 0 ]]; then
+                        DEBUGGING=1
+                    else
+                        DEBUGGING=2
+                    fi
+                    StatusBar1=$(localize "MAIN-MENU-SB-DEBUG-MODE")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                5)  # SIMULATE
+                    MenuChecks[$((M_OPT - 1))]=1
+                    SIMULATE=1
+                    StatusBar1=$(localize "MAIN-MENU-SB-NETWORK")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                6)  # Network
+                    MenuChecks[$((M_OPT - 1))]=1
+                    print_this "MAIN-MENU-NETWORK"
+                    DEBUGGING=1
+                    network_troubleshooting
+                    DEBUGGING=OLD_DEBUGGING # Restor Setting
+                    StatusBar1=$(localize "MAIN-MENU-SB-NETWORK")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                7)  # Config
+                    MenuChecks[$((M_OPT - 1))]=1
+                    DEBUGGING=1
+                    verify_config "$DETECTED_RUN_MODE"
+                    config_menu
+                    DEBUGGING=OLD_DEBUGGING # Restor Setting
+                    StatusBar1=$(localize "MAIN-MENU-SB-CONFIG")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                8)  # Test
+                    MenuChecks[$((M_OPT - 1))]=1
+                    DEBUGGING=1
+                    set_debugging_mode "$DETECTED_RUN_MODE" "$FUNCNAME @ $(basename $BASH_SOURCE) : $LINENO"
+                    verify_config "$DETECTED_RUN_MODE" # That puts this in test mode also
+                    test
+                    DEBUGGING=OLD_DEBUGGING # Restor Setting
+                    #
+                    StatusBar1=$(localize "MAIN-MENU-SB-TEST")
+                    StatusBar2=$(localize "INSTALL-MENU-COMPLETED")
+                    ;;
+                9)  # Reboot
+                    MenuChecks[$((M_OPT - 1))]=1
+                    reboot
+                    break
+                    ;;
+               10)  # Quit
+                    MenuChecks[$((M_OPT - 1))]=1
+                    M_OPT="$BreakableKey"
+                    break
+                    ;;
+                *)  # Catch ALL
+                    if [[ "$M_OPT" == $(to_lower_case "$BreakableKey") ]]; then
+                        M_OPT="$BreakableKey"
+                        break;
+                    else
+                        invalid_option "$M_OPT"
+                    fi
+                    StatusBar1=$(localize "INVALID_OPTION")
+                    StatusBar2=""
+                    ;;
+            esac
+        done
+        is_breakable "$M_OPT" "$BreakableKey"
+    done
+    chown -R ${USERNAME}:${USERNAME} "${CONFIG_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${LOG_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${MENU_PATH}/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/etc/"
+    chown -R ${USERNAME}:${USERNAME} "${FULL_SCRIPT_PATH}/var/"
+}
+#}}}
+# -----------------------------------------------------------------------------
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    localize_info "WIZ-BYY"                 "Exit Wizard" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "RUN-TEST"                "Run Self-Test" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-WIZ-AUTOMAN-MODE"   "Auto Manual Mode Engaged, do you wish to continue in" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-WIZ-NO-REPO"        "No Repository" "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+    localize_info "MAIN-WIZ-MODE-3"         "AUTOMAN not allowed in Live OS Mode." "Comment: FunctionName @ $(basename $BASH_SOURCE) : $LINENO"
+fi
+#
+if [[ "$RUN_LOCALIZER" -eq 1 ]]; then
+    SILENT_MODE=1
+    localize_save
+    SILENT_MODE=0
+elif [[ "$RUN_HELP" -eq 1 ]]; then
+    SILENT_MODE=1
+    print_help
+    SILENT_MODE=0
+elif [[ "$RUN_TEST" -eq 1 ]]; then
+    print_info "RUN-TEST"
+elif [[ "$RUN_TEST" -eq 2 ]]; then
+    print_info "RUN-TEST"
+elif [[ "$RUN_TEST" -eq 3 ]]; then
+    print_info "RUN-TEST"
+elif [[ "$AUTOMAN" -eq 1 ]]; then
+    BYPASS=0; # Do Not Allow Bypass
+    read_input_yn "MAIN-WIZ-AUTOMAN-MODE" " " 0 # Allow Bypass
+    if [[ "$YN_OPTION" -eq 0 ]]; then
+        exit 0
+    fi
+    BYPASS=1
+    verify_config "$DETECTED_RUN_MODE"
+    BYPASS=1
+    FAST_INSTALL=1
+    if [[ "$DETECTED_RUN_MODE" -eq 1 ]]; then # Boot Mode
+        BYPASS=1
+        setup_os
+        exit 0
+    elif [[ "$DETECTED_RUN_MODE" -eq 3 ]]; then # Live OS Mode
+        print_warning "MAIN-WIZ-MODE-3"
+        exit 0
+    else                                 # Live Mode
+        BYPASS=1
+        MOUNTPOINT=" "
+        if [[ "$PACMAN_REPO_TYPE" -eq 0 ]]; then # 0=None, 1=Server, 2=Client
+            print_caution "MAIN-WIZ-NO-REPO"
+        elif [[ "$PACMAN_REPO_TYPE" -eq 1 ]]; then # 1=Server
+            if [ ! -d "/mnt/${CUSTOM_PACKAGES_NAME}/" ]; then
+                copy_custom_repo "${CUSTOM_PACKAGES}" "${CUSTOM_REPO_NAME}" "/mnt/${CUSTOM_PACKAGES_NAME}/"                        
+            fi
+        elif [[ "$PACMAN_REPO_TYPE" -eq 2 ]]; then # 2=Client
+            echo "mount repo" # place holder @FIX add function
+        fi
+        BYPASS=1
+        install_loaded_software        
+    fi
+else
+    cls
+    clear_logs
+    main_menu
+fi
+print_this "WIZ-BYY"
+# *** End of Script ***********************************************************
